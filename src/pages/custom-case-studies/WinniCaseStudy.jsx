@@ -1,70 +1,84 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import MainLayout from '../../layouts/MainLayout';
 import SEO from '../../components/common/SEO';
 import { getCaseStudySchema } from '../../lib/schema';
 
+// Subcomponents
+import WinniHero from '../../components/case-study/winni/WinniHero';
+import WinniProblem from '../../components/case-study/winni/WinniProblem';
+import WinniIdea from '../../components/case-study/winni/WinniIdea';
+import WinniChallenge from '../../components/case-study/winni/WinniChallenge';
+import WinniScanExperience from '../../components/case-study/winni/WinniScanExperience';
+import WinniPrivacy from '../../components/case-study/winni/WinniPrivacy';
+import WinniLocation from '../../components/case-study/winni/WinniLocation';
+import WinniPhysicalProduct from '../../components/case-study/winni/WinniPhysicalProduct';
+import WinniSystemMatrix from '../../components/case-study/winni/WinniSystemMatrix';
+import WinniVisualSystem from '../../components/case-study/winni/WinniVisualSystem';
+import WinniMotion from '../../components/case-study/winni/WinniMotion';
+import WinniScope from '../../components/case-study/winni/WinniScope';
+import WinniOutcome from '../../components/case-study/winni/WinniOutcome';
+import WinniCTA from '../../components/case-study/winni/WinniCTA';
+
 export default function WinniCaseStudy() {
   const schema = getCaseStudySchema({
     title: 'WINNI — Physical + Digital Identity System',
-    description: 'WINNI is a physical + digital identity system that helps people reconnect with lost belongings through a simple QR/NFC interaction.',
+    description:
+      'WINNI is a physical + digital identity system that helps people reconnect with lost belongings through a simple QR/NFC interaction. Product design case study by Naïm Bsili.',
     slug: 'winni',
   });
 
   return (
     <MainLayout>
       <SEO
-        title="WINNI — Case Study"
-        description="WINNI is a physical + digital identity system that helps people reconnect with lost belongings through a simple QR/NFC interaction."
+        title="WINNI — Case Study · Naïm Bsili"
+        description="WINNI — Physical + digital identity system that helps people reconnect with lost belongings. Product design case study by Naïm Bsili."
         canonical="/work/winni"
         schema={schema}
       />
 
-      <header className="case-hero">
-        <div className="container">
-          <Link className="text-link" to="/#work">
-            <i className="bi bi-arrow-left"></i> Back to selected work
-          </Link>
-          <div className="eyebrow mt-4">
-            <span></span> WINNI · BESPOKE CASE STUDY
-          </div>
-          <h1>Giving lost things a way back.</h1>
-          <p className="case-hero-lead">
-            WINNI is a physical + digital identity system that helps people reconnect with lost belongings through a simple QR/NFC interaction.
-          </p>
-          <div className="case-meta">
-            <span>Role: Product Designer · UX/UI · Product Strategy · Brand</span>
-            <span>Timeline: 2026 · Ongoing</span>
-            <span>Scope: Physical Product · Web App · Mobile Flow</span>
-          </div>
-        </div>
-      </header>
+      <main className="winni-page">
+        {/* 01. Hero */}
+        <WinniHero />
 
-      <section className="case-section">
-        <div className="container text-center py-5">
-          <div className="eyebrow justify-content-center">
-            <span></span> BESPOKE CASE STUDY PLACEHOLDER
-          </div>
-          <h3>Full WINNI Editorial Case Study</h3>
-          <p className="hero-lead mx-auto" style={{ maxWidth: '640px' }}>
-            The deep bespoke WINNI case study architecture will be fully migrated in a subsequent dedicated phase.
-          </p>
-          <Link to="/#work" className="btn btn-primary-custom rounded-pill px-4 mt-3">
-            <i className="bi bi-arrow-left"></i> Back to selected work
-          </Link>
-        </div>
-      </section>
+        {/* 02. The Problem */}
+        <WinniProblem />
 
-      <section className="case-nav">
-        <div className="container d-flex justify-content-between">
-          <Link to="/#work">
-            <i className="bi bi-arrow-left"></i> Back to selected work
-          </Link>
-          <a href="#contact">
-            Let's talk <i className="bi bi-arrow-up-right"></i>
-          </a>
-        </div>
-      </section>
+        {/* 03. The Idea */}
+        <WinniIdea />
+
+        {/* 04. Product Challenge */}
+        <WinniChallenge />
+
+        {/* 05. The Scan Experience (5 Screen Sequence) */}
+        <WinniScanExperience />
+
+        {/* 06. Privacy by Design */}
+        <WinniPrivacy />
+
+        {/* 07. Location — But Not Tracking */}
+        <WinniLocation />
+
+        {/* 08. Physical Product */}
+        <WinniPhysicalProduct />
+
+        {/* 09. Unified System Matrix */}
+        <WinniSystemMatrix />
+
+        {/* 10. Visual System */}
+        <WinniVisualSystem />
+
+        {/* 11. Motion */}
+        <WinniMotion />
+
+        {/* 12. Scope of Work (What I Designed) */}
+        <WinniScope />
+
+        {/* 13. The Design Principle + 14. Outcome */}
+        <WinniOutcome />
+
+        {/* 15. Final CTA + Pagination */}
+        <WinniCTA />
+      </main>
     </MainLayout>
   );
 }
