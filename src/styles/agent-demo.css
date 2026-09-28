@@ -1,0 +1,211 @@
+/* ==============================================================================
+   AGENT INTERACTIVE DEMO STYLES: agent-demo.css
+   ============================================================================== */
+
+.agent-demo-shell {
+  min-height: 100vh;
+  background: var(--paper);
+}
+
+.agent-demo-header {
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  padding: 14px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.agent-demo-back {
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.15s ease;
+}
+
+.agent-demo-back:hover {
+  color: var(--green);
+}
+
+.agent-demo-badge-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #e6f6f1;
+  color: var(--green);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 50px;
+  border: 1px solid rgba(8, 127, 102, 0.2);
+}
+
+.agent-demo-badge-live .live-dot {
+  font-size: 0.65rem;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.4; }
+  50% { opacity: 1; }
+  100% { opacity: 0.4; }
+}
+
+.agent-demo-hero {
+  padding: 60px 0 35px;
+}
+
+.agent-demo-hero h1 {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  letter-spacing: -0.04em;
+  margin-bottom: 10px;
+  font-family: "Space Grotesk", sans-serif;
+}
+
+.agent-demo-lead {
+  color: var(--ink-soft);
+  max-width: 720px;
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+/* Input Workspace Card */
+.agent-demo-input-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 6px 24px rgba(16, 36, 42, 0.04);
+  margin-bottom: 30px;
+}
+
+.agent-demo-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.agent-demo-textarea {
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  padding: 14px 16px;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: #fdfdfc;
+  resize: vertical;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.agent-demo-textarea:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(8, 127, 102, 0.15);
+  background: #fff;
+}
+
+.agent-demo-suggestions {
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+
+.suggestion-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.suggestion-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.suggestion-pill {
+  background: #f8faf8;
+  border: 1px solid var(--line);
+  border-radius: 50px;
+  padding: 6px 14px;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.suggestion-pill:hover:not(:disabled) {
+  background: #e6f6f1;
+  border-color: var(--green);
+  color: var(--green);
+}
+
+/* Result Workspace Card */
+.agent-demo-result-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(16, 36, 42, 0.05);
+  animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.agent-result-header {
+  padding: 16px 24px;
+  background: #f8faf8;
+  border-bottom: 1px solid var(--line);
+}
+
+.agent-result-header .result-dot {
+  color: var(--green);
+  font-size: 0.75rem;
+}
+
+.agent-result-body {
+  padding: 28px 24px;
+}
+
+.agent-output-text p {
+  color: var(--ink);
+  font-size: 0.96rem;
+  line-height: 1.6;
+}
+
+.agent-output-text p:last-child {
+  margin-bottom: 0;
+}
+
+.agent-result-footer {
+  padding: 12px 24px;
+  background: #fafbf9;
+  border-top: 1px solid var(--line);
+}
+
+/* Alert States */
+.agent-demo-alert {
+  border-radius: 16px;
+  padding: 18px 22px;
+  border: 1px solid transparent;
+}
+
+.agent-demo-alert.danger {
+  background: #fff5f5;
+  border-color: #fed7d7;
+}
+
+.agent-demo-alert.warning {
+  background: #fffdf5;
+  border-color: #feebc8;
+}

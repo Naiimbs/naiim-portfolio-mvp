@@ -147,23 +147,12 @@ export default function AgentCaseStudyPage() {
               ))}
 
           {/* Direct CTA Row if Demo / GitHub exists */}
-          {(demo_type !== 'none' && demo_url) || github_url ? (
+          {(demo_type !== 'none' && (demo_url || slug)) || github_url ? (
             <div className="d-flex flex-wrap gap-3 mt-4">
-              {demo_type !== 'none' && demo_url && (
-                demo_type === 'internal' || demo_url.startsWith('/') ? (
-                  <Link to={demo_url} className="btn btn-success rounded-pill px-4">
-                    <i className="bi bi-lightning-charge-fill me-1"></i> Try Live Agent
-                  </Link>
-                ) : (
-                  <a
-                    href={demo_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-success rounded-pill px-4"
-                  >
-                    <i className="bi bi-box-arrow-up-right me-1"></i> Launch Demo
-                  </a>
-                )
+              {demo_type !== 'none' && (
+                <Link to={`/agents/${slug}/demo`} className="btn btn-success rounded-pill px-4">
+                  <i className="bi bi-lightning-charge-fill me-1"></i> Try Interactive Demo
+                </Link>
               )}
 
               {github_url && (

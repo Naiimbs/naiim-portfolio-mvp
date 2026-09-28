@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage';
 import PlaceholderPage from './pages/PlaceholderPage';
 import AgentsPage from './pages/AgentsPage';
 import AgentCaseStudyPage from './pages/AgentCaseStudyPage';
+import AgentDemoPage from './pages/AgentDemoPage';
 import CaseStudyRenderer from './components/case-study/CaseStudyRenderer';
 
 // Admin CMS
@@ -30,6 +31,7 @@ export default function App() {
         <Route path="/work/:slug" element={<CaseStudyRenderer />} />
         <Route path="/agents" element={<AgentsPage />} />
         <Route path="/agents/:slug" element={<AgentCaseStudyPage />} />
+        <Route path="/agents/:slug/demo" element={<AgentDemoPage />} />
         <Route path="/plugins" element={<PlaceholderPage title="Figma Plugins" description="Tools and utilities built for design systems." />} />
         <Route path="/blog" element={<PlaceholderPage title="Blog & Articles" description="Writing about design, AI and technology." />} />
         <Route path="/blog/:slug" element={<PlaceholderPage title="Article" description="Post details." />} />
