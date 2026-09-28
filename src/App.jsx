@@ -4,20 +4,50 @@ import HomePage from './pages/HomePage';
 import PlaceholderPage from './pages/PlaceholderPage';
 import CaseStudyRenderer from './components/case-study/CaseStudyRenderer';
 
+// Admin CMS
+import { AuthProvider } from './admin/context/AuthContext';
+import AdminGuard from './admin/components/AdminGuard';
+import AdminLayout from './admin/layouts/AdminLayout';
+import AdminLogin from './admin/pages/AdminLogin';
+import AdminDashboard from './admin/pages/AdminDashboard';
+import AdminProjects from './admin/pages/AdminProjects';
+import AdminProjectEditor from './admin/pages/AdminProjectEditor';
+import AdminCaseStudies from './admin/pages/AdminCaseStudies';
+import AdminMedia from './admin/pages/AdminMedia';
+
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/work" element={<PlaceholderPage title="Selected Work" description="Case studies & digital products directory." />} />
-      <Route path="/work/:slug" element={<CaseStudyRenderer />} />
-      <Route path="/agents" element={<PlaceholderPage title="AI Agents" description="Intelligent agents & automation systems." />} />
-      <Route path="/agents/:slug" element={<PlaceholderPage title="AI Agent" description="Dedicated agent showcase." />} />
-      <Route path="/plugins" element={<PlaceholderPage title="Figma Plugins" description="Tools and utilities built for design systems." />} />
-      <Route path="/blog" element={<PlaceholderPage title="Blog & Articles" description="Writing about design, AI and technology." />} />
-      <Route path="/blog/:slug" element={<PlaceholderPage title="Article" description="Post details." />} />
-      <Route path="/about" element={<PlaceholderPage title="About Me" description="Career journey, experience and skills." />} />
-      <Route path="/copilot" element={<PlaceholderPage title="Naïm Copilot" description="Interactive AI Assistant." />} />
-      <Route path="*" element={<PlaceholderPage title="404 — Page Not Found" description="The page you are looking for does not exist." />} />
-    </Routes>
+    <AuthProvider>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/work" element={<PlaceholderPage title="Selected Work" description="Case studies & digital products directory." />} />
+        <Route path="/work/:slug" element={<CaseStudyRenderer />} />
+        <Route path="/agents" element={<PlaceholderPage title="AI Agents" description="Intelligent agents & automation systems." />} />
+        <Route path="/agents/:slug" element={<PlaceholderPage title="AI Agent" description="Dedicated agent showcase." />} />
+        <Route path="/plugins" element={<PlaceholderPage title="Figma Plugins" description="Tools and utilities built for design systems." />} />
+        <Route path="/blog" element={<PlaceholderPage title="Blog & Articles" description="Writing about design, AI and technology." />} />
+        <Route path="/blog/:slug" element={<PlaceholderPage title="Article" description="Post details." />} />
+        <Route path="/about" element={<PlaceholderPage title="About Me" description="Career journey, experience and skills." />} />
+        <Route path="/copilot" element={<PlaceholderPage title="Naïm Copilot" description="Interactive AI Assistant." />} />
+
+        {/* Admin Login Route */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+
+        {/* Protected Admin CMS Routes */}
+        <Route element={<AdminGuard />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="projects" element={<AdminProjects />} />
+            <Route path="projects/:id" element={<AdminProjectEditor />} />
+            <Route path="case-studies" element={<AdminCaseStudies />} />
+            <Route path="media" element={<AdminMedia />} />
+          </Route>
+        </Route>
+
+        {/* 404 Route */}
+        <Route path="*" element={<PlaceholderPage title="404 — Page Not Found" description="The page you are looking for does not exist." />} />
+      </Routes>
+    </AuthProvider>
   );
 }

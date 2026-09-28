@@ -112,3 +112,23 @@ Role-based access control for administrative users:
 To guarantee 100% build stability and zero downtime during local development or offline states:
 1. `src/lib/supabase.js` checks for `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
 2. If absent or network requests fail, `src/services/projects.js` and `src/services/caseStudies.js` automatically serve the local snapshot from `src/data/`.
+
+---
+
+## 6. Admin CMS Foundation (Phase 12)
+* **Protected Routes**:
+  - `/admin/login` — Supabase password-based authentication.
+  - `/admin` — High-level project, draft, case study & media stats dashboard.
+  - `/admin/projects` — Catalog table with status filters and edit links.
+  - `/admin/projects/:id` — Metadata editor form for projects.
+  - `/admin/case-studies` — Overview of custom React vs standard CMS case studies.
+  - `/admin/media` — Indexed storage media asset table.
+* **Authentication Flow**:
+  - `AuthProvider` monitors session state via `supabase.auth.onAuthStateChange()`.
+  - `AdminGuard` validates presence of authenticated session and checks `profiles.role IN ('admin', 'editor')`.
+  - Unauthenticated visits to `/admin/*` redirect immediately to `/admin/login`.
+* **Security Boundaries**:
+  - Frontend guard prevents UI exposure, while PostgreSQL RLS remains the authoritative security boundary.
+  - All admin routes inject `<meta name="robots" content="noindex, nofollow" />`.
+* **Deferred to Phase 13**:
+  - Drag-and-drop block builder, rich text editor, batch media file uploads, and blog management.

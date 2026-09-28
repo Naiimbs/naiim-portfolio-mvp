@@ -1,0 +1,37 @@
+import React from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import AdminSidebar from '../components/AdminSidebar';
+import AdminHeader from '../components/AdminHeader';
+import '../styles/admin.css';
+
+export default function AdminLayout() {
+  const location = useLocation();
+
+  const getPageTitle = (path) => {
+    if (path === '/admin') return 'Dashboard';
+    if (path.startsWith('/admin/projects')) return 'Projects';
+    if (path.startsWith('/admin/case-studies')) return 'Case Studies';
+    if (path.startsWith('/admin/media')) return 'Media Library';
+    return 'Admin CMS';
+  };
+
+  const title = getPageTitle(location.pathname);
+
+  return (
+    <div className="admin-layout">
+      <Helmet>
+        <title>{`${title} — Admin CMS`}</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+
+      <AdminSidebar />
+      <div className="admin-main">
+        <AdminHeader title={title} />
+        <main className="admin-content">
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
+}
