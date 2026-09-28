@@ -1,0 +1,302 @@
+/* ==========================================================================
+   Assestini Case Study — Page-specific Stylesheet
+   ========================================================================== */
+
+/* Workflow pill row */
+.workflow-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 28px 0;
+}
+
+.workflow-pill {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 50px;
+  padding: 8px 18px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--ink);
+}
+
+.workflow-pill.active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
+.workflow-arrow {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* Section flow diagram */
+.flow-diagram {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 32px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* AI input/output sequence */
+.ai-sequence {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  gap: 0;
+  align-items: stretch;
+}
+
+.ai-seq-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.ai-seq-card.highlight {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
+.ai-seq-card.highlight .ai-seq-label,
+.ai-seq-card.highlight p {
+  color: #a4b5ba;
+}
+
+.ai-seq-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--green);
+  margin-bottom: 8px;
+}
+
+.ai-seq-card.highlight .ai-seq-label {
+  color: #5dd4b1;
+}
+
+.ai-seq-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  color: var(--muted);
+  font-size: 1.25rem;
+}
+
+@media (max-width: 768px) {
+  .ai-sequence {
+    grid-template-columns: 1fr;
+  }
+
+  .ai-seq-arrow {
+    transform: rotate(90deg);
+    padding: 8px 0;
+  }
+}
+
+/* Screenshot mosaic */
+.screenshot-mosaic {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 16px;
+}
+
+.screenshot-mosaic-sub {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .screenshot-mosaic {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Layer stack diagram */
+.layer-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.layer-item {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  align-items: stretch;
+}
+
+.layer-label {
+  background: var(--ink);
+  color: #fff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #2a353b;
+}
+
+.layer-item:first-child .layer-label {
+  border-radius: 14px 0 0 0;
+}
+
+.layer-item:last-child .layer-label {
+  border-radius: 0 0 0 14px;
+  border-bottom: none;
+}
+
+.layer-content {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-left: none;
+  padding: 16px 22px;
+  border-bottom: none;
+  font-size: 0.84rem;
+  color: var(--ink-soft);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.layer-item:first-child .layer-content {
+  border-radius: 0 14px 0 0;
+  border-top: 1px solid var(--line);
+}
+
+.layer-item:last-child .layer-content {
+  border-radius: 0 0 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.layer-tag {
+  background: var(--green-soft);
+  color: var(--green-dark, #065b49);
+  border-radius: 50px;
+  padding: 3px 10px;
+  font-size: 0.73rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+@media (max-width: 576px) {
+  .layer-item {
+    grid-template-columns: 1fr;
+  }
+
+  .layer-label {
+    border-radius: 0 !important;
+    border-bottom: none;
+    padding: 10px 16px;
+  }
+
+  .layer-content {
+    border-left: 1px solid var(--line) !important;
+    border-radius: 0 !important;
+  }
+}
+
+/* MCP Architecture diagram */
+.mcp-arch {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.mcp-node {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px 24px;
+  text-align: center;
+}
+
+.mcp-node.dark {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
+.mcp-node.accent {
+  background: var(--green-soft);
+  border-color: #b5d9cf;
+}
+
+.mcp-connector {
+  display: flex;
+  justify-content: center;
+  color: var(--green);
+  font-size: 1.3rem;
+  margin: 8px 0;
+}
+
+.mcp-node-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.mcp-node-sub {
+  font-size: 0.76rem;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.mcp-node.dark .mcp-node-sub {
+  color: #7d9099;
+}
+
+/* Quote callout */
+.case-callout {
+  background: var(--ink);
+  color: #fff;
+  border-radius: 20px;
+  padding: 52px 48px;
+}
+
+.case-callout h2 {
+  color: #fff;
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  letter-spacing: -0.04em;
+  margin-bottom: 16px;
+}
+
+.case-callout p {
+  color: #9cb1b8;
+  font-size: 1.08rem;
+  max-width: 680px;
+}
+
+@media (max-width: 576px) {
+  .case-callout {
+    padding: 36px 24px;
+  }
+}
+
+/* Case highlight override for Assestini */
+.case-highlight {
+  border-left: 3px solid var(--green);
+  padding-left: 28px;
+  max-width: 820px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .workflow-pill,
+  .ai-seq-card,
+  .layer-item,
+  .mcp-node {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+}

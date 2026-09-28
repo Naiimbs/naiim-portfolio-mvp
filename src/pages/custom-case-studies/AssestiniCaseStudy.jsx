@@ -1,69 +1,64 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import MainLayout from '../../layouts/MainLayout';
 import SEO from '../../components/common/SEO';
 import { getCaseStudySchema } from '../../lib/schema';
 
+// Subcomponents
+import AssestiniHero from '../../components/case-study/assestini/AssestiniHero';
+import AssestiniChallenge from '../../components/case-study/assestini/AssestiniChallenge';
+import AssestiniWorkflow from '../../components/case-study/assestini/AssestiniWorkflow';
+import AssestiniEstimation from '../../components/case-study/assestini/AssestiniEstimation';
+import AssestiniCommercial from '../../components/case-study/assestini/AssestiniCommercial';
+import AssestiniIntelligence from '../../components/case-study/assestini/AssestiniIntelligence';
+import AssestiniMcp from '../../components/case-study/assestini/AssestiniMcp';
+import AssestiniBuilding from '../../components/case-study/assestini/AssestiniBuilding';
+import AssestiniTechCta from '../../components/case-study/assestini/AssestiniTechCta';
+
 export default function AssestiniCaseStudy() {
   const schema = getCaseStudySchema({
-    title: 'Assestini — AI-powered Operational Intelligence Platform',
-    description: 'Designing an operational layer that connects estimation, delivery, margins, cash flow and AI-assisted decisions.',
+    title: 'Assestini — AI Operational Intelligence Platform',
+    description:
+      'Assestini is an AI-powered operational platform for freelancers, experts, consultants and agencies. From estimation to payment in one connected workflow.',
     slug: 'assestini',
   });
 
   return (
     <MainLayout>
       <SEO
-        title="Assestini — Case Study"
-        description="Designing an operational layer that connects estimation, delivery, margins, cash flow and AI-assisted decisions."
+        title="Assestini — Case Study · Naïm Bsili"
+        description="Assestini — AI-powered Operational Intelligence Platform. Product design case study by Naïm Bsili. From estimation to payment in one connected workflow."
         canonical="/work/assestini"
         schema={schema}
       />
 
-      <header className="case-hero">
-        <div className="container">
-          <Link className="text-link" to="/#work">
-            <i className="bi bi-arrow-left"></i> Back to selected work
-          </Link>
-          <div className="eyebrow mt-4">
-            <span></span> ASSESTINI · BESPOKE CASE STUDY
-          </div>
-          <h1>Assestini · Operational Intelligence Platform</h1>
-          <p className="case-hero-lead">
-            Designing an operational layer that connects estimation, delivery, margins, cash flow and AI-assisted decisions.
-          </p>
-          <div className="case-meta">
-            <span>Role: Product Designer · AI · RAG</span>
-            <span>Context: Operational Intelligence OS</span>
-          </div>
-        </div>
-      </header>
+      <main className="assestini-page">
+        {/* 01. Hero */}
+        <AssestiniHero />
 
-      <section className="case-section">
-        <div className="container text-center py-5">
-          <div className="eyebrow justify-content-center">
-            <span></span> BESPOKE CASE STUDY PLACEHOLDER
-          </div>
-          <h3>Full Assestini Platform Case Study</h3>
-          <p className="hero-lead mx-auto" style={{ maxWidth: '640px' }}>
-            The deep bespoke Assestini case study architecture (workflow pills, flow diagrams, AI sequences) will be migrated in a subsequent dedicated phase.
-          </p>
-          <Link to="/#work" className="btn btn-primary-custom rounded-pill px-4 mt-3">
-            <i className="bi bi-arrow-left"></i> Back to selected work
-          </Link>
-        </div>
-      </section>
+        {/* 02. The Challenge + Role aside */}
+        <AssestiniChallenge />
 
-      <section className="case-nav">
-        <div className="container d-flex justify-content-between">
-          <Link to="/#work">
-            <i className="bi bi-arrow-left"></i> Back to selected work
-          </Link>
-          <a href="#contact">
-            Let's talk <i className="bi bi-arrow-up-right"></i>
-          </a>
-        </div>
-      </section>
+        {/* 03. The Connected Workflow + SVG Diagram + Screenshots */}
+        <AssestiniWorkflow />
+
+        {/* 04. AI Estimation (Input → AI Processing → Structured Output) */}
+        <AssestiniEstimation />
+
+        {/* 05. Commercial Workflow (From Quotation to Delivery) */}
+        <AssestiniCommercial />
+
+        {/* 06. Operational Intelligence + Control Center + Product Thinking */}
+        <AssestiniIntelligence />
+
+        {/* 07. AI Agents & MCP Architecture */}
+        <AssestiniMcp />
+
+        {/* 08. Product Building 5 Layers + Editorial Quote + Product Evidence */}
+        <AssestiniBuilding />
+
+        {/* 09. Technology & Tools + Bottom Case Navigation */}
+        <AssestiniTechCta />
+      </main>
     </MainLayout>
   );
 }

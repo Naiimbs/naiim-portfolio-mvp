@@ -7,6 +7,7 @@ import './i18n';
 import { initClarity } from './lib/clarity';
 import './styles/style.css';
 import './styles/winni.css';
+import './styles/assestini.css';
 
 // Initialize Microsoft Clarity once
 initClarity();
