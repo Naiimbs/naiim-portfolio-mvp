@@ -153,6 +153,8 @@ Role-based access control for administrative users:
 
 ---
 
+---
+
 ## 6. Custom vs Standard Case Studies
 
 | Case Study | Route | Renderer | CMS Role |
@@ -169,10 +171,25 @@ Role-based access control for administrative users:
 
 ---
 
-## 7. Security & Publication Behavior
+## 7. Migration Utility (`src/services/caseStudyMigration.js`)
+Phase 13C provides an explicit migration pipeline:
+- `buildCaseStudyMigrationPayload(slug, localData)` transforms standard case study objects into normalized section and block hierarchies.
+- `migrateStandardCaseStudy(slug)` writes project, case study, section, and block entities into Supabase with referential integrity.
+- `migrateAllStandardCaseStudies()` runs the migration batch across all 7 standard case studies without auto-executing on application start.
+
+---
+
+## 8. Visual Parity & Custom Extensibility
+- **100% Visual Parity**: All CMS block components (`TextBlock`, `ImageBlock`, `ProcessBlock`, `TechStackBlock`) render with the exact CSS class hierarchies (`.case-hero-image`, `.case-process`, `.tech-row`, `.case-role`) used by `StandardCaseStudy.jsx`.
+- **Extensible Block Registry**: Future bespoke blocks can be registered in `blockRegistry` via `custom` and `custom_case_study_block` aliases without touching the core rendering engine.
+
+---
+
+## 9. Security & Publication Behavior
 - **Public Users**:
   - Read access strictly enforced via RLS (`status = 'published'` AND `is_visible = true`).
   - Drafts and hidden sections/blocks are inaccessible to anonymous users.
 - **Admin / Editor Users**:
   - Full CRUD permissions via `profiles.role IN ('admin', 'editor')`.
   - Can draft, preview, reorder, edit, and publish content.
+

@@ -20,7 +20,7 @@ export default function CMSSectionRenderer({ section, index = 0 }) {
               <span></span> {eyebrow}
             </div>
           )}
-          {title && <h2 className="mb-4">{title}</h2>}
+          {title && <h2>{title}</h2>}
 
           {/* Render all visible blocks for this section */}
           {blocks

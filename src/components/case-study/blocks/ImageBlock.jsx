@@ -14,7 +14,7 @@ export default function ImageBlock({ content = {} }) {
   }
 
   return (
-    <figure className="case-hero-image my-4">
+    <figure className="case-hero-image">
       <img
         src={imageSrc}
         alt={alt || 'Case study visual evidence'}

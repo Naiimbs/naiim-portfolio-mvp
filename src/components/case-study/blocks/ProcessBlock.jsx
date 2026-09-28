@@ -6,7 +6,7 @@ export default function ProcessBlock({ content = {} }) {
   if (!steps || steps.length === 0) return null;
 
   return (
-    <div className="case-block case-process my-4">
+    <div className="case-block case-process">
       {steps.map((p, idx) => (
         <div key={idx}>
           <b>{p.number || `0${idx + 1}`}</b>

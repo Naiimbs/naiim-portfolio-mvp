@@ -50,7 +50,7 @@ export default function CMSCaseStudyRenderer({ caseStudy }) {
   return (
     <MainLayout>
       <SEO
-        title={seo_title || `${effectiveTitle} — Case Study · Naïm Bsili`}
+        title={seo_title || effectiveTitle}
         description={seo_description || effectiveLead}
         canonical={canonical_path || `/work/${effectiveSlug}`}
         image={heroImage}
@@ -85,20 +85,14 @@ export default function CMSCaseStudyRenderer({ caseStudy }) {
             heroSection.blocks
               ?.filter((b) => b.block_type !== 'text' && b.is_visible !== false)
               .map((b) => (
-                <div key={b.id} className="mt-4">
-                  {/* Image or gallery block */}
+                <figure key={b.id} className="case-hero-image">
                   <img
                     src={b.content?.media_url || b.content?.url}
                     alt={b.content?.alt || effectiveTitle}
-                    className="img-fluid rounded-4 border w-100"
                     loading="eager"
                   />
-                  {b.content?.caption && (
-                    <figcaption className="text-center text-muted small mt-2">
-                      {b.content.caption}
-                    </figcaption>
-                  )}
-                </div>
+                  {b.content?.caption && <figcaption>{b.content.caption}</figcaption>}
+                </figure>
               ))}
         </div>
       </section>

@@ -1,22 +1,23 @@
 import React from 'react';
 
 export default function TextBlock({ content = {} }) {
-  const { heading, body, metaChips } = content;
+  const { heading, metaChips } = content;
+  const rawText = content.body || content.copy || (Array.isArray(content.items) ? content.items.map((i) => `• ${i}`).join('\n') : '');
 
-  if (!heading && !body && (!metaChips || metaChips.length === 0)) {
+  if (!heading && !rawText && (!metaChips || metaChips.length === 0)) {
     return null;
   }
 
   // Parse multiline string into paragraphs or bullet list if prefixed with • or -
-  const lines = body ? body.split('\n').filter((l) => l.trim().length > 0) : [];
+  const lines = rawText ? rawText.split('\n').filter((l) => l.trim().length > 0) : [];
   const isBulletList = lines.some((l) => l.trim().startsWith('•') || l.trim().startsWith('-'));
 
   return (
-    <div className="case-block case-text-block mb-4">
-      {heading && <h3 className="fs-4 fw-bold mb-3">{heading}</h3>}
+    <div className="case-block case-text-block">
+      {heading && <h3>{heading}</h3>}
 
       {metaChips && metaChips.length > 0 && (
-        <div className="case-meta mb-3">
+        <div className="case-meta">
           {metaChips.map((chip, i) => (
             <span key={i}>{chip}</span>
           ))}

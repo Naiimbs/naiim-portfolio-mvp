@@ -31,6 +31,8 @@ export const blockRegistry = {
   technology_tags: TechStackBlock,
   cta: CTABlock,
   spacer: SpacerBlock,
+  custom: UnsupportedBlock,
+  custom_case_study_block: UnsupportedBlock,
 };
 
 export function renderBlock(block) {
