@@ -1,0 +1,1364 @@
+﻿<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="WINNI — Physical + digital identity system that helps people reconnect with lost belongings. Product design case study by Naïm Bsili.">
+  <title>WINNI — Case Study · Naïm Bsili</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@500;600;700&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/winni.css">
+  <!-- Microsoft Clarity -->
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "x0aaxsot0d");
+  </script></head>
+
+<body>
+  <!-- Navigation Header -->
+  <nav class="navbar navbar-expand-lg fixed-top site-nav" id="topNav">
+    <div class="container">
+      <a class="navbar-brand brand" href="../index.html">NAÏM BSILI <span class="beta-badge">Beta</span></a>
+      <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"
+        data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="bi bi-list fs-2"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav mx-auto gap-lg-2">
+          <li class="nav-item"><a class="nav-link active" href="../index.html#work">Work</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#copilot">Copilot</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#career">Career</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#lab">Lab</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#about">About</a></li>
+        </ul>
+        <a class="btn btn-dark rounded-pill px-4" href="../index.html#contact">Let's Talk <i
+            class="bi bi-arrow-up-right"></i></a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <!-- =========================================================================
+         01. HERO
+         ========================================================================= -->
+    <header class="winni-hero">
+      <div class="container">
+        <a class="text-link" href="../index.html#work"><i class="bi bi-arrow-left"></i> Back to selected work</a>
+
+        <div class="mt-4">
+          <div class="winni-hero-badge">
+            <span class="dot"></span> WINNI · PRODUCT DESIGN · BRAND · DIGITAL EXPERIENCE
+          </div>
+        </div>
+
+        <h1 class="winni-hero-title">Giving lost things<br>a way back.</h1>
+
+        <p class="winni-hero-desc">
+          WINNI is a physical + digital identity system that helps people reconnect with lost belongings through a
+          simple QR/NFC interaction.
+        </p>
+
+        <div class="winni-meta-row">
+          <div class="winni-meta-chip">
+            <i class="bi bi-person-badge"></i>
+            <span>Role: <strong>Product Designer · UX/UI · Product Strategy · Brand &amp; Visual System</strong></span>
+          </div>
+          <div class="winni-meta-chip">
+            <i class="bi bi-calendar3"></i>
+            <span>Timeline: <strong>2026 · Ongoing</strong></span>
+          </div>
+          <div class="winni-meta-chip">
+            <i class="bi bi-layers"></i>
+            <span>Scope: <strong>Physical Product · Web App · Mobile Flow</strong></span>
+          </div>
+        </div>
+
+        <!-- PHOTO 01 — Hero: WINNI sticker attached to a real car -->
+        <figure class="winni-hero-figure">
+          <img src="../assets/winni-hero-page.png"
+            alt="Close-up of WINNI sticker cleanly attached to a real car quarter window panel in neutral daylight">
+
+        </figure>
+      </div>
+    </header>
+
+    <!-- =========================================================================
+         02. THE PROBLEM
+         ========================================================================= -->
+    <section class="winni-section" id="problem">
+      <div class="container">
+        <div class="row align-items-start g-5">
+          <div class="col-lg-6">
+            <span class="winni-section-num">02 · THE PROBLEM</span>
+            <h2 class="winni-section-title">When something gets lost, the object loses its connection to its owner.</h2>
+            <p class="winni-copy">
+              Most physical belongings have no practical way to identify their owner without exposing private
+              information.
+            </p>
+            <ul class="case-list mt-3 mb-4">
+              <li><strong>A phone number</strong> can be unsafe and invasive to publish openly on an object.</li>
+              <li><strong>A name alone</strong> is not enough to create an actionable communication link.</li>
+              <li><strong>A traditional label</strong> can label an object, but cannot create a safe, dynamic way to
+                reconnect.</li>
+            </ul>
+            <div class="winni-pullquote">
+              “What if every physical object could have a digital identity?”
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <!-- PHOTO 02 — Object family: Car, Motorcycle, Luggage -->
+            <figure class="winni-hero-figure mb-3">
+              <img src="../assets/winni-object-family.jpg"
+                alt="Wide editorial photograph combining a car, motorcycle, and travel luggage on clean pavement">
+
+            </figure>
+            <div class="row g-3">
+              <div class="col-4">
+                <div class="winni-object-card text-center p-3">
+                  <div class="icon-wrap mx-auto"><i class="bi bi-car-front"></i></div>
+                  <h4 class="fs-6 mb-1">Car</h4>
+                  <p class="small text-muted">Vehicle windshield &amp; panel tag</p>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="winni-object-card text-center p-3">
+                  <div class="icon-wrap mx-auto"><i class="bi bi-bicycle"></i></div>
+                  <h4 class="fs-6 mb-1">Motorcycle</h4>
+                  <p class="small text-muted">Durable chassis &amp; tank cut</p>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="winni-object-card text-center p-3">
+                  <div class="icon-wrap mx-auto"><i class="bi bi-suitcase"></i></div>
+                  <h4 class="fs-6 mb-1">Luggage</h4>
+                  <p class="small text-muted">Waterproof travel tag</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         03. THE IDEA
+         ========================================================================= -->
+    <section class="winni-section alt-bg" id="idea">
+      <div class="container">
+        <div class="winni-section-header">
+          <span class="winni-section-num">03 · THE IDEA</span>
+          <h2 class="winni-section-title">Give your things a way back.</h2>
+          <p class="winni-copy-lg">
+            WINNI connects a physical object to a private digital identity. A finder doesn't need to download an
+            application or create an account. They simply scan the WINNI tag.
+          </p>
+        </div>
+
+        <div class="row g-4 align-items-center mb-5">
+          <div class="col-lg-5">
+            <h3 class="fs-4 fw-bold mb-3">The return is the story.</h3>
+            <p class="winni-copy">
+              Technology is not the narrative—the safe return of the belongings is the narrative. WINNI establishes a
+              direct, frictionless bridge between the physical world and a private cloud channel.
+            </p>
+            <div class="p-4 bg-white rounded-3 border mt-3">
+              <div class="small fw-bold text-uppercase text-muted mb-2 tracking-wide">Core Recovery Journey</div>
+              <div class="d-flex flex-wrap align-items-center gap-2 fw-bold text-dark font-monospace small">
+                <span class="badge bg-dark text-white px-2 py-1">SCAN</span>
+                <i class="bi bi-arrow-right text-muted"></i>
+                <span class="badge bg-light text-dark border px-2 py-1">REACH</span>
+                <i class="bi bi-arrow-right text-muted"></i>
+                <span class="badge bg-light text-dark border px-2 py-1">OPTIONAL LOCATION</span>
+                <i class="bi bi-arrow-right text-muted"></i>
+                <span class="badge bg-light text-dark border px-2 py-1">NOTIFY</span>
+                <i class="bi bi-arrow-right text-muted"></i>
+                <span class="badge bg-success text-white px-2 py-1">RETURN</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-7">
+            <!-- ASSET 03: SVG Illustration Sequence (Inline for instant, verified rendering) -->
+            <div class="bg-white p-3 p-md-4 rounded-4 border shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 340" width="100%" height="auto" class="d-block"
+                fill="none">
+                <rect x="2" y="2" width="1076" height="336" rx="16" fill="#fcfdfa" stroke="#e3e8e5" stroke-width="1" />
+
+                <!-- Upper Row: 4 Main Touchpoints -->
+                <!-- 01: Physical Object -->
+                <g transform="translate(40, 36)">
+                  <rect width="210" height="130" rx="12" fill="#ffffff" stroke="#dfe5e1" stroke-width="1.25" />
+                  <text x="24" y="34" font-family="'Space Grotesk', sans-serif" font-size="11" font-weight="700"
+                    fill="#087f66" letter-spacing="0.08em">01 · PHYSICAL</text>
+                  <!-- Object Icon (Car) -->
+                  <path d="M 24 64 L 32 50 L 52 50 L 58 64 Z M 22 64 L 60 64 L 62 76 L 20 76 Z" stroke="#111418"
+                    stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+                  <circle cx="28" cy="76" r="3.5" stroke="#111418" stroke-width="1.75" />
+                  <circle cx="54" cy="76" r="3.5" stroke="#111418" stroke-width="1.75" />
+                  <text x="76" y="62" font-family="'Space Grotesk', sans-serif" font-size="15" font-weight="700"
+                    fill="#111418">Physical Object</text>
+                  <text x="76" y="80" font-family="'DM Sans', sans-serif" font-size="12" fill="#718187">Car, Moto,
+                    Luggage</text>
+                  <text x="24" y="112" font-family="'DM Sans', sans-serif" font-size="12" fill="#718187">Lost in
+                    real-world context</text>
+                </g>
+
+                <!-- Arrow 1 -> 2 -->
+                <g transform="translate(262, 101)">
+                  <line x1="0" y1="0" x2="26" y2="0" stroke="#99a7a2" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                  <polyline points="21,-4 26,0 21,4" stroke="#99a7a2" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" fill="none" />
+                </g>
+
+                <!-- 02: WINNI Tag -->
+                <g transform="translate(300, 36)">
+                  <rect width="210" height="130" rx="12" fill="#111418" stroke="#111418" stroke-width="1.25" />
+                  <text x="24" y="34" font-family="'Space Grotesk', sans-serif" font-size="11" font-weight="700"
+                    fill="#65d6b4" letter-spacing="0.08em">02 · IDENTITY</text>
+                  <!-- Tag / QR Icon -->
+                  <rect x="24" y="50" width="28" height="28" rx="4" stroke="#ffffff" stroke-width="1.75"
+                    stroke-linecap="round" stroke-linejoin="round" fill="none" />
+                  <rect x="28" y="54" width="7" height="7" fill="#ffffff" />
+                  <rect x="41" y="54" width="7" height="7" fill="#ffffff" />
+                  <rect x="28" y="67" width="7" height="7" fill="#ffffff" />
+                  <rect x="41" y="67" width="3" height="3" fill="#ffffff" />
+                  <text x="64" y="62" font-family="'Space Grotesk', sans-serif" font-size="15" font-weight="700"
+                    fill="#ffffff">WINNI Tag</text>
+                  <text x="64" y="80" font-family="'DM Sans', sans-serif" font-size="12" fill="#b8c0c4">Durable QR /
+                    NFC</text>
+                  <text x="24" y="112" font-family="'DM Sans', sans-serif" font-size="12" fill="#b8c0c4">Attached to
+                    object body</text>
+                </g>
+
+                <!-- Arrow 2 -> 3 -->
+                <g transform="translate(522, 101)">
+                  <line x1="0" y1="0" x2="26" y2="0" stroke="#99a7a2" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                  <polyline points="21,-4 26,0 21,4" stroke="#99a7a2" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" fill="none" />
+                </g>
+
+                <!-- 03: Finder Phone -->
+                <g transform="translate(560, 36)">
+                  <rect width="210" height="130" rx="12" fill="#ffffff" stroke="#dfe5e1" stroke-width="1.25" />
+                  <text x="24" y="34" font-family="'Space Grotesk', sans-serif" font-size="11" font-weight="700"
+                    fill="#087f66" letter-spacing="0.08em">03 · FINDER</text>
+                  <!-- Phone Icon -->
+                  <rect x="24" y="50" width="20" height="32" rx="3" stroke="#111418" stroke-width="1.75"
+                    stroke-linecap="round" stroke-linejoin="round" fill="none" />
+                  <line x1="31" y1="76" x2="37" y2="76" stroke="#111418" stroke-width="1.75" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                  <text x="56" y="62" font-family="'Space Grotesk', sans-serif" font-size="15" font-weight="700"
+                    fill="#111418">Finder Phone</text>
+                  <text x="56" y="80" font-family="'DM Sans', sans-serif" font-size="12" fill="#718187">Zero app
+                    install</text>
+                  <text x="24" y="112" font-family="'DM Sans', sans-serif" font-size="12" fill="#718187">Scans tag,
+                    reaches owner</text>
+                </g>
+
+                <!-- Arrow 3 -> 4 -->
+                <g transform="translate(782, 101)">
+                  <line x1="0" y1="0" x2="26" y2="0" stroke="#99a7a2" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                  <polyline points="21,-4 26,0 21,4" stroke="#99a7a2" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" fill="none" />
+                </g>
+
+                <!-- 04: Owner -->
+                <g transform="translate(820, 36)">
+                  <rect width="220" height="130" rx="12" fill="#ffffff" stroke="#dfe5e1" stroke-width="1.25" />
+                  <text x="24" y="34" font-family="'Space Grotesk', sans-serif" font-size="11" font-weight="700"
+                    fill="#087f66" letter-spacing="0.08em">04 · RECOVERY</text>
+                  <!-- Shield Icon -->
+                  <path d="M 24 53 L 36 49 L 48 53 C 48 68 36 78 36 78 C 36 78 24 68 24 53 Z" stroke="#111418"
+                    stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+                  <polyline points="31,63 35,67 42,59" stroke="#111418" stroke-width="1.75" stroke-linecap="round"
+                    stroke-linejoin="round" fill="none" />
+                  <text x="60" y="62" font-family="'Space Grotesk', sans-serif" font-size="15" font-weight="700"
+                    fill="#111418">Owner Notified</text>
+                  <text x="60" y="80" font-family="'DM Sans', sans-serif" font-size="12" fill="#718187">Private &amp;
+                    Instant</text>
+                  <text x="24" y="112" font-family="'DM Sans', sans-serif" font-size="12" fill="#718187">Receives alert
+                    + returns</text>
+                </g>
+
+                <!-- Divider Line -->
+                <line x1="40" y1="195" x2="1040" y2="195" stroke="#e8ecea" stroke-width="1" stroke-dasharray="4 4" />
+
+                <!-- Lower Row: The 5-Step Journey (Underneath) -->
+                <text x="40" y="235" font-family="'Space Grotesk', sans-serif" font-size="11" font-weight="700"
+                  fill="#718187" letter-spacing="0.12em">CORE RECOVERY JOURNEY</text>
+
+                <!-- Step 1: SCAN -->
+                <g transform="translate(40, 255)">
+                  <rect width="170" height="48" rx="20" fill="#f2f5f3" stroke="#dfe5e1" stroke-width="1" />
+                  <text x="18" y="29" font-family="'Space Grotesk', sans-serif" font-size="11" font-weight="700"
+                    fill="#087f66">01</text>
+                  <text x="44" y="29" font-family="'Space Grotesk', sans-serif" font-size="11.5" font-weight="700"
+                    fill="#24353a" letter-spacing="0.05em">SCAN</text>
+                  <text x="96" y="29" font-family="'DM Sans', sans-serif" font-size="11" fill="#718187">No
+                    account</text>
+                </g>
+
+                <!-- Arrow -->
+                <g transform="translate(218, 279)">
+                  <line x1="0" y1="0" x2="14" y2="0" stroke="#087f66" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                  <polyline points="10,-3 14,0 10,3" stroke="#087f66" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" fill="none" />
+                </g>
+
+                <!-- Step 2: REACH -->
+                <g transform="translate(240, 255)">
+                  <rect width="170" height="48" rx="20" fill="#f2f5f3" stroke="#dfe5e1" stroke-width="1" />
+                  <text x="18" y="29" font-family="'Space Grotesk', sans-serif" font-size="11" font-weight="700"
+                    fill="#087f66">02</text>
+                  <text x="44" y="29" font-family="'Space Grotesk', sans-serif" font-size="11.5" font-weight="700"
+                    fill="#24353a" letter-spacing="0.05em">REACH</text>
+                  <text x="100" y="29" font-family="'DM Sans', sans-serif" font-size="11" fill="#718187">Private
+                    msg</text>
+                </g>
+
+                <!-- Arrow -->
+                <g transform="translate(418, 279)">
+                  <line x1="0" y1="0" x2="14" y2="0" stroke="#087f66" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                  <polyline points="10,-3 14,0 10,3" stroke="#087f66" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" fill="none" />
+                </g>
+
+                <!-- Step 3: OPTIONAL LOCATION -->
+                <g transform="translate(440, 255)">
+                  <rect width="215" height="48" rx="20" fill="#f2f5f3" stroke="#dfe5e1" stroke-width="1" />
+                  <text x="18" y="29" font-family="'Space Grotesk', sans-serif" font-size="11" font-weight="700"
+                    fill="#087f66">03</text>
+                  <text x="44" y="29" font-family="'Space Grotesk', sans-serif" font-size="11.5" font-weight="700"
+                    fill="#24353a" letter-spacing="0.05em">LOCATION</text>
+                  <text x="122" y="29" font-family="'DM Sans', sans-serif" font-size="11" fill="#718187">100%
+                    Optional</text>
+                </g>
+
+                <!-- Arrow -->
+                <g transform="translate(663, 279)">
+                  <line x1="0" y1="0" x2="14" y2="0" stroke="#087f66" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                  <polyline points="10,-3 14,0 10,3" stroke="#087f66" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" fill="none" />
+                </g>
+
+                <!-- Step 4: NOTIFY -->
+                <g transform="translate(685, 255)">
+                  <rect width="165" height="48" rx="20" fill="#f2f5f3" stroke="#dfe5e1" stroke-width="1" />
+                  <text x="18" y="29" font-family="'Space Grotesk', sans-serif" font-size="11" font-weight="700"
+                    fill="#087f66">04</text>
+                  <text x="44" y="29" font-family="'Space Grotesk', sans-serif" font-size="11.5" font-weight="700"
+                    fill="#24353a" letter-spacing="0.05em">NOTIFY</text>
+                  <text x="106" y="29" font-family="'DM Sans', sans-serif" font-size="11" fill="#718187">Owner
+                    alert</text>
+                </g>
+
+                <!-- Arrow -->
+                <g transform="translate(858, 279)">
+                  <line x1="0" y1="0" x2="14" y2="0" stroke="#087f66" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                  <polyline points="10,-3 14,0 10,3" stroke="#087f66" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" fill="none" />
+                </g>
+
+                <!-- Step 5: RETURN -->
+                <g transform="translate(880, 255)">
+                  <rect width="160" height="48" rx="20" fill="#e7f3ef" stroke="#b5dcce" stroke-width="1" />
+                  <text x="18" y="29" font-family="'Space Grotesk', sans-serif" font-size="11" font-weight="700"
+                    fill="#087f66">05</text>
+                  <text x="44" y="29" font-family="'Space Grotesk', sans-serif" font-size="11.5" font-weight="700"
+                    fill="#075b4b" letter-spacing="0.05em">RETURN</text>
+                  <text x="110" y="29" font-family="'DM Sans', sans-serif" font-size="11" fill="#087f66">Solved</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         04. PRODUCT CHALLENGE
+         ========================================================================= -->
+    <section class="winni-section" id="challenge">
+      <div class="container">
+        <div class="row align-items-center g-5">
+          <div class="col-lg-6">
+            <span class="winni-section-num">04 · PRODUCT CHALLENGE</span>
+            <h2 class="winni-section-title">Designing the moment between a stranger and an owner.</h2>
+            <p class="winni-copy">
+              The most important UX challenge wasn't building another complex management dashboard. It was designing the
+              <strong>finder experience</strong>.
+            </p>
+            <p class="winni-copy">
+              When someone spots an object with a WINNI tag, the context is unpredictable:
+            </p>
+            <ul class="case-list">
+              <li>They <strong>don't know WINNI</strong> and have never heard of it.</li>
+              <li>They <strong>don't have an account</strong> and will abandon if forced to sign up.</li>
+              <li>They <strong>may be in a hurry</strong> on the street, in a parking lot, or at an airport terminal.
+              </li>
+              <li>They <strong>need to trust the interface</strong> immediately without fear of malware or phishing.
+              </li>
+              <li>They <strong>should not see the owner's private information</strong> (no phone numbers or email
+                exposed).</li>
+              <li>They <strong>may optionally share where the object was found</strong> without feeling surveilled.</li>
+            </ul>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="p-4 p-md-5 bg-white rounded-4 border shadow-sm">
+              <h3 class="fs-4 fw-bold mb-2">The Experience Imperative</h3>
+              <p class="text-muted small mb-4">Every screen in the finder journey must strictly honor four core pillars:
+              </p>
+
+              <div class="winni-finder-traits winni-screens-row">
+                <div class="winni-trait-pill">
+                  <strong>Fast</strong>
+                  <span>Instant scan under 2 seconds</span>
+                </div>
+                <div class="winni-trait-pill">
+                  <strong>Clear</strong>
+                  <span>Zero ambiguity on next step</span>
+                </div>
+                <div class="winni-trait-pill">
+                  <strong>Private</strong>
+                  <span>No data leaks or owner info</span>
+                </div>
+                <div class="winni-trait-pill">
+                  <strong>Reassuring</strong>
+                  <span>Calm tone, positive intent</span>
+                </div>
+              </div>
+
+              <div class="mt-4 pt-3 border-top text-muted small">
+                <i class="bi bi-shield-check text-success me-2"></i> No login wall, no mandatory GPS, no advertising, no
+                tracking cookies.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         05. THE SCAN EXPERIENCE (MAIN UI SECTION)
+         ========================================================================= -->
+    <section class="winni-section alt-bg" id="scan-experience">
+      <div class="container">
+        <div class="winni-section-header text-center mx-auto">
+          <span class="winni-section-num">05 · THE SCAN EXPERIENCE</span>
+          <h2 class="winni-section-title">One scan. One clear path.</h2>
+          <p class="winni-copy-lg">
+            This is the core interface of WINNI: five sequential mobile states engineered to move from a physical glance
+            to a resolved contact in seconds.
+          </p>
+        </div>
+
+        <!-- 5 High-Fidelity Large Mobile UI Screens -->
+        <div class="winni-screens-row">
+
+          <!-- Screen 01: Scan -->
+          <div class="winni-screen-col">
+            <div class="winni-screen-step">01 — SCAN</div>
+            <div class="winni-screen-label">Recognized</div>
+            <div class="winni-phone-frame">
+              <div class="winni-phone-speaker"></div>
+              <div class="winni-phone-screen">
+                <div class="winni-phone-brand">WINNI</div>
+
+                <div class="phone-card text-center py-3">
+                  <div class="phone-tag active"><i class="bi bi-check2-circle"></i> WINNI ID ACTIF</div>
+                  <div class="fw-bold fs-6 mt-1">Vous avez trouvé un objet WINNI</div>
+                  <div class="text-muted small mt-1">Véhicule identifié en toute sécurité.</div>
+                </div>
+
+                <div class="phone-card bg-white">
+                  <div class="text-muted" style="font-size:0.68rem;">OBJET SÉCURISÉ</div>
+                  <div class="fw-bold mt-1"><i class="bi bi-car-front text-dark"></i> Véhicule Automobile</div>
+                  <div class="text-muted" style="font-size:0.7rem;">ID: WN-2026-R18G8</div>
+                </div>
+
+                <div class="mt-auto">
+                  <p class="text-center text-muted" style="font-size:0.68rem; margin-bottom:8px;">
+                    Le propriétaire a activé la mise en relation sécurisée.
+                  </p>
+                  <button class="phone-btn-primary">
+                    <i class="bi bi-chat-text-fill me-1"></i> Contacter le propriétaire
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Screen 02: Reach -->
+          <div class="winni-screen-col">
+            <div class="winni-screen-step">02 — REACH</div>
+            <div class="winni-screen-label">Safe Contact</div>
+            <div class="winni-phone-frame">
+              <div class="winni-phone-speaker"></div>
+              <div class="winni-phone-screen">
+                <div class="winni-phone-brand">WINNI</div>
+
+                <div class="mb-2">
+                  <span class="phone-tag"><i class="bi bi-lock-fill"></i> Canal Privé</span>
+                  <div class="fw-bold" style="font-size:0.88rem;">Contacter le propriétaire</div>
+                  <div class="text-muted" style="font-size:0.68rem;">Sélectionnez une alerte rapide ou écrivez un
+                    message.</div>
+                </div>
+
+                <!-- Preset Quick Buttons -->
+                <div class="d-flex flex-column gap-1 mb-2">
+                  <div class="p-2 border rounded bg-white" style="font-size:0.7rem; font-weight:600; cursor:pointer;">
+                    💡 Feux allumés sur le parking
+                  </div>
+                  <div class="p-2 border rounded bg-white" style="font-size:0.7rem; font-weight:600; cursor:pointer;">
+                    🚗 Véhicule gênant le passage
+                  </div>
+                  <div class="p-2 border rounded bg-white" style="font-size:0.7rem; font-weight:600; cursor:pointer;">
+                    🪟 Fenêtre restée ouverte
+                  </div>
+                </div>
+
+                <div class="phone-card p-2">
+                  <div class="text-muted" style="font-size:0.65rem;">MESSAGE LIBRE</div>
+                  <div class="text-dark mt-1" style="font-size:0.72rem; min-height:36px; color:#495057;">
+                    Bonjour, vos feux de croisement sont restés allumés...
+                  </div>
+                </div>
+
+                <div class="mt-auto">
+                  <button class="phone-btn-primary">
+                    Continuer vers localisation <i class="bi bi-arrow-right"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Screen 03: Optional Location -->
+          <div class="winni-screen-col">
+            <div class="winni-screen-step">03 — LOCATION</div>
+            <div class="winni-screen-label">100% Optional</div>
+            <div class="winni-phone-frame">
+              <div class="winni-phone-speaker"></div>
+              <div class="winni-phone-screen">
+                <div class="winni-phone-brand">WINNI</div>
+
+                <div class="mb-2">
+                  <span class="phone-tag"><i class="bi bi-geo-alt"></i> Lieu indicatif</span>
+                  <div class="fw-bold" style="font-size:0.88rem;">Partager le lieu où vous l'avez trouvé</div>
+                  <div class="text-muted" style="font-size:0.68rem;">Aide le propriétaire à repérer son bien.</div>
+                </div>
+
+                <!-- Map preview sketch -->
+                <div class="phone-card p-2 text-center"
+                  style="background:#edf2ee; min-height:120px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                  <div class="bg-white p-2 rounded-circle shadow-sm mb-2 text-success">
+                    <i class="bi bi-geo-alt-fill fs-5"></i>
+                  </div>
+                  <div class="fw-bold text-dark" style="font-size:0.72rem;">Zone repérée par le navigateur</div>
+                  <div class="text-muted" style="font-size:0.65rem;">Transmis une seule fois. Pas de suivi GPS continu.
+                  </div>
+                </div>
+
+                <div class="mt-auto">
+                  <button class="phone-btn-primary" style="background:#087f66;">
+                    <i class="bi bi-send-fill me-1"></i> Partager cette position
+                  </button>
+                  <button class="phone-btn-outline">
+                    Continuer sans localisation
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Screen 04: Notify -->
+          <div class="winni-screen-col">
+            <div class="winni-screen-step">04 — NOTIFY</div>
+            <div class="winni-screen-label">Confirmation</div>
+            <div class="winni-phone-frame">
+              <div class="winni-phone-speaker"></div>
+              <div class="winni-phone-screen text-center justify-content-center">
+                <div class="winni-phone-brand">WINNI</div>
+
+                <div class="my-auto py-3">
+                  <div class="d-inline-flex p-3 rounded-circle bg-success text-white mb-3"
+                    style="background:#087f66 !important;">
+                    <i class="bi bi-check-lg fs-3"></i>
+                  </div>
+                  <div class="fw-bold fs-6">Message transmis !</div>
+                  <p class="text-muted small mt-2 px-2" style="font-size:0.72rem;">
+                    Le propriétaire a reçu votre notification instantanément par canal sécurisé.
+                  </p>
+                  <div class="phone-card bg-light border text-start mt-3 p-2">
+                    <div class="text-muted" style="font-size:0.65rem;">RÉSUMÉ TRANSMIS</div>
+                    <div class="fw-bold text-dark" style="font-size:0.72rem;">Alerte feux allumés + Position partagée
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-auto">
+                  <div class="text-muted" style="font-size:0.68rem; margin-bottom:8px;">Merci pour votre geste citoyen.
+                  </div>
+                  <button class="phone-btn-outline">Fermer la page</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Screen 05: Return -->
+          <div class="winni-screen-col">
+            <div class="winni-screen-step">05 — RETURN</div>
+            <div class="winni-screen-label">Owner View</div>
+            <div class="winni-phone-frame">
+              <div class="winni-phone-speaker"></div>
+              <div class="winni-phone-screen">
+                <div class="winni-phone-brand">ESPACE PROPRIÉTAIRE</div>
+
+                <div class="phone-card bg-dark text-white p-3 mb-2" style="background:#111418 !important;">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="badge bg-danger" style="font-size:0.62rem;">NOUVELLE ALERTE</span>
+                    <span class="text-muted" style="font-size:0.65rem;">Il y a 2 min</span>
+                  </div>
+                  <div class="fw-bold" style="font-size:0.8rem;">Votre Voiture a été signalée</div>
+                  <div class="small text-light opacity-75 mt-1" style="font-size:0.7rem;">
+                    « Bonjour, vos feux de croisement sont restés allumés sur le parking. »
+                  </div>
+                </div>
+
+                <div class="phone-card">
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <i class="bi bi-geo-alt-fill text-success"></i>
+                    <strong style="font-size:0.72rem;">Position indiquée par le trouveur</strong>
+                  </div>
+                  <div class="text-muted" style="font-size:0.68rem;">Près du Parking Sud · Précision ~15m</div>
+                </div>
+
+                <div class="mt-auto">
+                  <div class="d-flex gap-2">
+                    <button class="phone-btn-primary mt-0" style="background:#087f66;">
+                      Remercier le trouveur
+                    </button>
+                  </div>
+                  <button class="phone-btn-outline">Marquer comme résolu</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="text-center mt-5 text-muted small">
+          <i class="bi bi-phone me-1"></i> Screen sequence tested across iOS Safari, Android Chrome, and
+          low-connectivity mobile environments.
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         06. PRIVACY BY DESIGN
+         ========================================================================= -->
+    <section class="winni-section" id="privacy">
+      <div class="container">
+        <div class="winni-section-header">
+          <span class="winni-section-num">06 · PRIVACY BY DESIGN</span>
+          <h2 class="winni-section-title">Helping without exposing.</h2>
+          <p class="winni-copy-lg">
+            WINNI doesn't need to reveal the owner's phone number or personal identity to the finder. The entire
+            interaction happens mediated safely through the product.
+          </p>
+        </div>
+
+        <div class="row align-items-center g-5">
+          <div class="col-lg-5">
+            <p class="winni-copy">
+              In traditional lost-and-found situations, leaving a phone number or address on luggage or vehicle
+              dashboards presents serious security and harassment risks.
+            </p>
+            <p class="winni-copy">
+              With WINNI, the finder only interacts with a secure, ephemeral proxy. Both parties remain completely
+              anonymous while enabling full operational communication.
+            </p>
+            <div class="p-4 rounded-3 border bg-light mt-4">
+              <strong class="d-block mb-1 text-dark">Why this matters in product design:</strong>
+              <p class="small text-muted mb-0">
+                This demonstrates <strong>product thinking</strong> over plain UI design: solving human trust boundaries
+                before laying down visual pixels.
+              </p>
+            </div>
+          </div>
+
+          <div class="col-lg-7">
+            <!-- Privacy Diagram -->
+            <div class="winni-privacy-board">
+              <div class="row align-items-center g-3 text-center">
+                <!-- Finder -->
+                <div class="col-md-3">
+                  <div class="privacy-node">
+                    <div class="node-icon"><i class="bi bi-person-circle"></i></div>
+                    <h4>FINDER</h4>
+                    <div class="node-subtitle">Scans physical tag with camera</div>
+                    <span class="badge bg-light text-muted border mt-2">Zero Account</span>
+                  </div>
+                </div>
+
+                <!-- Flow arrow -->
+                <div class="col-md-1 d-none d-md-block text-muted">
+                  <i class="bi bi-arrow-right fs-4"></i>
+                </div>
+
+                <!-- WINNI Proxy Core -->
+                <div class="col-md-4">
+                  <div class="privacy-node active-proxy">
+                    <div class="node-icon text-success"><i class="bi bi-shield-lock-fill"></i></div>
+                    <h4>WINNI</h4>
+                    <div class="node-subtitle text-light">Secure Communication Proxy</div>
+                    <div class="small mt-2 text-warning" style="font-size:0.7rem;">
+                      🔒 Personal data encrypted &amp; masked
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Flow arrow -->
+                <div class="col-md-1 d-none d-md-block text-muted">
+                  <i class="bi bi-arrow-right fs-4"></i>
+                </div>
+
+                <!-- Owner -->
+                <div class="col-md-3">
+                  <div class="privacy-node">
+                    <div class="node-icon"><i class="bi bi-person-check-fill text-success"></i></div>
+                    <h4>OWNER</h4>
+                    <div class="node-subtitle">Receives push/SMS alert instantly</div>
+                    <span class="badge bg-light text-success border mt-2">100% Private</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         07. LOCATION — BUT NOT TRACKING
+         ========================================================================= -->
+    <section class="winni-section alt-bg" id="location">
+      <div class="container">
+        <div class="winni-section-header">
+          <span class="winni-section-num">07 · LOCATION</span>
+          <h2 class="winni-section-title">Location is a choice, not surveillance.</h2>
+          <p class="winni-copy-lg">
+            WINNI can allow the finder to share where they found the object. But WINNI is <strong>not a live tracking
+              system</strong>.
+          </p>
+        </div>
+
+        <div class="location-contrast-box shadow-sm mb-4">
+          <div class="row g-0">
+            <!-- Rejected Surveillance Paradigm -->
+            <div class="col-md-6 contrast-col rejected">
+              <span class="contrast-tag danger"><i class="bi bi-x-circle-fill"></i> REJECTED PARADIGM</span>
+              <h3 class="fs-4 fw-bold text-danger mb-3">Live Tracking / Continuous Surveillance</h3>
+              <p class="winni-copy small mb-3">
+                Generic tracking devices promote live GPS pings, invasive battery tracking, and surveillance beams.
+                Finders feel observed; owners mistake tags for military-grade radars.
+              </p>
+              <div class="p-3 bg-white border rounded text-muted font-monospace small mb-3">
+                <span class="text-danger fw-bold">❌ Rejected Copy:</span> "Enable continuous GPS tracking", "Object is
+                being tracked by owner"
+              </div>
+              <ul class="case-list small text-muted">
+                <li>Creates intimidation and mistrust for the finder.</li>
+                <li>Falsely promises continuous telemetry on unpowered tags.</li>
+                <li>Breeds surveillance anxiety instead of human solidarity.</li>
+              </ul>
+            </div>
+
+            <!-- Approved WINNI Paradigm -->
+            <div class="col-md-6 contrast-col approved">
+              <span class="contrast-tag success"><i class="bi bi-check-circle-fill"></i> WINNI DIRECTION</span>
+              <h3 class="fs-4 fw-bold text-dark mb-3">One-time Contextual Sharing</h3>
+              <p class="winni-copy small mb-3">
+                The finder voluntarily offers a single location snapshot to assist the owner. If permissions are denied,
+                the recovery flow continues without interruption.
+              </p>
+              <div class="p-3 bg-white border rounded text-dark font-monospace small mb-3">
+                <span class="text-success fw-bold">✓ Approved Copy:</span> "Share where you found it."
+              </div>
+              <ul class="case-list small text-muted">
+                <li>Restrained location graphic (calm radius, no pulsing beams).</li>
+                <li>Failure or refusal never blocks the contact form.</li>
+                <li>Communicates mutual helpfulness and voluntary civic action.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         08. PHYSICAL PRODUCT
+         ========================================================================= -->
+    <section class="winni-section" id="physical-product">
+      <div class="container">
+        <div class="winni-section-header">
+          <span class="winni-section-num">08 · PHYSICAL PRODUCT</span>
+          <h2 class="winni-section-title">The interface doesn't end on the screen.</h2>
+          <p class="winni-copy-lg">
+            WINNI exists on the actual object. This tactile existence strongly differentiates the product from a
+            conventional SaaS utility.
+          </p>
+        </div>
+
+        <div class="row g-4">
+          <!-- Car -->
+          <div class="col-lg-4">
+            <div class="winni-physical-card">
+              <div class="card-img-wrap">
+                <img src="../assets/winni-car-tag-detail-hero.jpg"
+                  alt="PHOTO 03 — Car WINNI sticker attached to vehicle glass">
+              </div>
+              <div class="card-body-content">
+                <span class="phone-tag active">PHOTO 03 · CAR</span>
+                <h4 class="fw-bold mt-1">Car Vehicle Tag</h4>
+                <p class="text-muted small">
+                  Sticker attached to rear window quarter panel or bodywork. Designed to withstand weather,
+                  high-pressure car washes, and UV exposure.
+                </p>
+                <ul class="winni-spec-list mt-auto">
+                  <li><i class="bi bi-shield-check"></i> 100% Waterproof vinyl</li>
+                  <li><i class="bi bi-sun"></i> Anti-UV protective lamination</li>
+                  <li><i class="bi bi-check2"></i> Zero adhesive residue on removal</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Motorcycle -->
+          <div class="col-lg-4">
+            <div class="winni-physical-card">
+              <div class="card-img-wrap">
+                <img src="../assets/winni-moto-tag.jpg" alt="PHOTO 04 — Motorcycle WINNI sticker on metal chassis">
+              </div>
+              <div class="card-body-content">
+                <span class="phone-tag active">PHOTO 04 · MOTORCYCLE</span>
+                <h4 class="fw-bold mt-1">Motorcycle Frame Cut</h4>
+                <p class="text-muted small">
+                  Sticker applied to durable metal chassis or tank. High contrast typography and QR density optimized
+                  for immediate smartphone lens focus.
+                </p>
+                <ul class="winni-spec-list mt-auto">
+                  <li><i class="bi bi-shield-check"></i> High chemical resistance (petrol/grease)</li>
+                  <li><i class="bi bi-lightning-charge"></i> Instant scan from 1.5m distance</li>
+                  <li><i class="bi bi-check2"></i> Discreet industrial monochrome cut</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Luggage -->
+          <div class="col-lg-4">
+            <div class="winni-physical-card">
+              <div class="card-img-wrap">
+                <img src="../assets/winni-luggage-tag.jpg"
+                  alt="PHOTO 05 — Premium luggage tag with WINNI identifier in airport">
+              </div>
+              <div class="card-body-content">
+                <span class="phone-tag active">PHOTO 05 · LUGGAGE</span>
+                <h4 class="fw-bold mt-1">Travel Tag &amp; Badge</h4>
+                <p class="text-muted small">
+                  Attached to hard-shell suitcases or bags in travel environments. Replaces vulnerable paper luggage
+                  tags with an indestructible digital link.
+                </p>
+                <ul class="winni-spec-list mt-auto">
+                  <li><i class="bi bi-shield-check"></i> Flexible strap &amp; rigid shell</li>
+                  <li><i class="bi bi-globe"></i> International airport baggage proof</li>
+                  <li><i class="bi bi-check2"></i> Multilingual scan interface</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-4">
+          <div class="col-12">
+            <div
+              class="p-3 bg-light rounded-3 border d-flex flex-wrap align-items-center justify-content-between text-muted small">
+              <div><i class="bi bi-printer me-2 text-dark"></i> <strong>Industrial Print Standards:</strong> 300 DPI
+                CMYK, polymer technical vinyl, non-conductive inks.</div>
+              <div class="mt-2 mt-md-0"><span class="badge bg-white text-dark border">Cut formats: Large (70x35mm) ·
+                  Compact (50x25mm) · Wide (90x30mm)</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         09. ONE SYSTEM ACROSS PHYSICAL + DIGITAL
+         ========================================================================= -->
+    <section class="winni-section alt-bg" id="system-touchpoints">
+      <div class="container">
+        <div class="winni-section-header">
+          <span class="winni-section-num">09 · UNIFIED SYSTEM</span>
+          <h2 class="winni-section-title">One identity. Multiple touchpoints.</h2>
+          <p class="winni-copy-lg">
+            A cohesive visual and logical architecture spanning physical stickers, mobile web browsers, and
+            administrative controls.
+          </p>
+        </div>
+
+        <div class="winni-matrix-wrap shadow-sm">
+          <table class="winni-matrix-table">
+            <thead>
+              <tr>
+                <th style="width: 25%;">TOUCHPOINT</th>
+                <th style="width: 35%;">PHYSICAL ARTIFACT</th>
+                <th style="width: 40%;">DIGITAL LAYER</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>01 · Identification</strong></td>
+                <td>Durable vinyl sticker with matte black finish and high-contrast QR mark.</td>
+                <td>Direct URL resolution to <code>/scan/:winniId</code> without app store redirects.</td>
+              </tr>
+              <tr>
+                <td><strong>02 · Interaction</strong></td>
+                <td>Camera optical scan or NFC tap directly from physical surface.</td>
+                <td>Lightweight mobile landing page recognizing object category and status.</td>
+              </tr>
+              <tr>
+                <td><strong>03 · Communication</strong></td>
+                <td>Zero on-object contact details (no printed phone number or personal address).</td>
+                <td>Anonymous message proxy routing through secure notification backend.</td>
+              </tr>
+              <tr>
+                <td><strong>04 · Context</strong></td>
+                <td>Object location in physical space (parking spot, train, airport terminal).</td>
+                <td>Optional single-shot geocoordinates with map preview for owner context.</td>
+              </tr>
+              <tr>
+                <td><strong>05 · Resolution</strong></td>
+                <td>Physical hand-off or owner retrieval of belongings.</td>
+                <td>Status transition to "Object Recovered", archive interaction safely.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         10. VISUAL SYSTEM
+         ========================================================================= -->
+    <section class="winni-section" id="visual-system">
+      <div class="container">
+        <div class="winni-section-header">
+          <span class="winni-section-num">10 · VISUAL SYSTEM</span>
+          <h2 class="winni-section-title">Quiet technology.</h2>
+          <p class="winni-copy-lg">
+            Designed around black, white, graphite, and warm neutrals. Functional color is introduced only when it
+            communicates a verified system state.
+          </p>
+        </div>
+
+        <!-- Color Tokens -->
+        <h3 class="fs-5 fw-bold mb-3">Color Foundations</h3>
+        <div class="winni-token-grid winni-roles-grid">
+          <div class="winni-token-card">
+            <div class="winni-token-swatch" style="background:#111418;"></div>
+            <div class="winni-token-info">
+              <strong>Graphite Black</strong>
+              <span>#111418 · Text &amp; Primary</span>
+            </div>
+          </div>
+          <div class="winni-token-card">
+            <div class="winni-token-swatch" style="background:#45575e;"></div>
+            <div class="winni-token-info">
+              <strong>Muted Slate</strong>
+              <span>#45575E · Body Copy</span>
+            </div>
+          </div>
+          <div class="winni-token-card">
+            <div class="winni-token-swatch" style="background:#dfe5e1;"></div>
+            <div class="winni-token-info">
+              <strong>Warm Neutral</strong>
+              <span>#DFE5E1 · Borders</span>
+            </div>
+          </div>
+          <div class="winni-token-card">
+            <div class="winni-token-swatch" style="background:#f8f9f6;"></div>
+            <div class="winni-token-info">
+              <strong>Soft Paper</strong>
+              <span>#F8F9F6 · Background</span>
+            </div>
+          </div>
+          <div class="winni-token-card">
+            <div class="winni-token-swatch" style="background:#087f66;"></div>
+            <div class="winni-token-info">
+              <strong>Status Emerald</strong>
+              <span>#087F66 · Active State</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Typography & Icon System -->
+        <div class="row g-4 mt-1">
+          <div class="col-lg-6">
+            <div class="p-4 bg-white rounded-3 border h-100">
+              <h4 class="fs-6 fw-bold text-muted mb-3">TYPOGRAPHY HIERARCHY</h4>
+              <div class="mb-3">
+                <span class="badge bg-light text-dark border mb-1">Display &amp; Headings</span>
+                <div
+                  style="font-family:'Space Grotesk',sans-serif; font-size:1.8rem; font-weight:700; line-height:1.1;">
+                  Space Grotesk Bold
+                </div>
+                <div class="text-muted small">Geometric, modern, highly legible numbers and acronyms.</div>
+              </div>
+              <div class="pt-3 border-top">
+                <span class="badge bg-light text-dark border mb-1">Body &amp; Micro-copy</span>
+                <div style="font-family:'DM Sans',sans-serif; font-size:1.1rem; line-height:1.5;">
+                  DM Sans Regular &amp; Medium
+                </div>
+                <div class="text-muted small">Humanist proportion, warm curves, optimized for mobile screens.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="p-4 bg-white rounded-3 border h-100">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fs-6 fw-bold text-muted mb-0">ICON SYSTEM (24 × 24 GRID · 1.75PX STROKE)</h4>
+                <span class="badge bg-dark text-white">Consistent Geometry</span>
+              </div>
+              <div class="winni-icons-showcase">
+                <div class="winni-icon-item">
+                  <div class="winni-icon-box"><i class="bi bi-car-front fs-5 text-dark"></i></div>
+                  <span>Voiture</span>
+                </div>
+                <div class="winni-icon-item">
+                  <div class="winni-icon-box"><i class="bi bi-bicycle fs-5 text-dark"></i></div>
+                  <span>Moto</span>
+                </div>
+                <div class="winni-icon-item">
+                  <div class="winni-icon-box"><i class="bi bi-suitcase fs-5 text-dark"></i></div>
+                  <span>Bagage</span>
+                </div>
+                <div class="winni-icon-item">
+                  <div class="winni-icon-box"><i class="bi bi-qr-code-scan fs-5 text-dark"></i></div>
+                  <span>Scan</span>
+                </div>
+                <div class="winni-icon-item">
+                  <div class="winni-icon-box"><i class="bi bi-shield-check fs-5 text-success"></i></div>
+                  <span>Privé</span>
+                </div>
+                <div class="winni-icon-item">
+                  <div class="winni-icon-box"><i class="bi bi-geo-alt fs-5 text-dark"></i></div>
+                  <span>Lieu</span>
+                </div>
+              </div>
+              <p class="text-muted small mt-3 mb-0">
+                Non-directional object icons remain invariant in RTL (Arabic) contexts, maintaining immediate visual
+                recognition across language barriers.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         11. MOTION
+         ========================================================================= -->
+    <section class="winni-section alt-bg" id="motion">
+      <div class="container">
+        <div class="winni-section-header">
+          <span class="winni-section-num">11 · MOTION</span>
+          <h2 class="winni-section-title">Motion should reassure, not entertain.</h2>
+          <p class="winni-copy-lg">
+            Motion is intentionally restrained because the product needs to communicate confidence and continuity rather
+            than entertainment.
+          </p>
+        </div>
+
+        <div class="row g-4">
+          <!-- State 1 -->
+          <div class="col-md-4">
+            <div class="motion-card">
+              <div class="motion-preview-stage">
+                <div class="d-flex align-items-center justify-content-center">
+                  <div class="scan-pulse-ring"></div>
+                  <i class="bi bi-qr-code text-dark position-absolute fs-4"></i>
+                </div>
+              </div>
+              <h4 class="fw-bold fs-6">01 · Scan Recognized</h4>
+              <p class="text-muted small">Subtle confirmation ring confirms successful tag reading without harsh
+                flashes.</p>
+              <div class="motion-timing-pill">120–180ms · micro feedback</div>
+            </div>
+          </div>
+
+          <!-- State 2 -->
+          <div class="col-md-4">
+            <div class="motion-card">
+              <div class="motion-preview-stage">
+                <div class="msg-sent-badge">
+                  <i class="bi bi-check2"></i> Transmis au propriétaire
+                </div>
+              </div>
+              <h4 class="fw-bold fs-6">02 · Message Sent</h4>
+              <p class="text-muted small">Stable success state locks into place, ensuring finder knows the owner was
+                reached.</p>
+              <div class="motion-timing-pill">180–260ms · standard transition</div>
+            </div>
+          </div>
+
+          <!-- State 3 -->
+          <div class="col-md-4">
+            <div class="motion-card">
+              <div class="motion-preview-stage">
+                <div class="d-flex flex-column align-items-center">
+                  <div class="badge bg-white text-success border px-3 py-2 rounded-pill shadow-sm">
+                    <i class="bi bi-house-door-fill me-1"></i> Objet Rentré
+                  </div>
+                </div>
+              </div>
+              <h4 class="fw-bold fs-6">03 · Returned</h4>
+              <p class="text-muted small">Calm completion state closing the ticket and archiving communication
+                gracefully.</p>
+              <div class="motion-timing-pill">260–420ms · meaningful transition</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         12. WHAT I DESIGNED
+         ========================================================================= -->
+    <section class="winni-section" id="what-i-designed">
+      <div class="container">
+        <div class="winni-section-header">
+          <span class="winni-section-num">12 · SCOPE OF WORK</span>
+          <h2 class="winni-section-title">What I Designed</h2>
+          <p class="winni-copy">
+            A comprehensive look at the multidisciplinary responsibilities delivered across physical and digital
+            domains.
+          </p>
+        </div>
+
+        <div class="winni-roles-grid">
+          <div class="winni-role-card">
+            <b>01 · STRATEGY</b>
+            <h4>Product Strategy</h4>
+            <p>Defining the relationship between the physical object and digital identity, business viability, and
+              low-friction recovery mechanics.</p>
+          </div>
+
+          <div class="winni-role-card">
+            <b>02 · UX ARCHITECTURE</b>
+            <h4>UX Design</h4>
+            <p>Designing the scan, finder, contact, location, and return journeys, eliminating login walls and
+              unnecessary cognitive load.</p>
+          </div>
+
+          <div class="winni-role-card">
+            <b>03 · DIGITAL UI</b>
+            <h4>UI Design</h4>
+            <p>Creating the mobile-first product experience, typography scale, responsive breakpoints, and tactile
+              button components.</p>
+          </div>
+
+          <div class="winni-role-card">
+            <b>04 · BRAND SYSTEM</b>
+            <h4>Brand &amp; Visual System</h4>
+            <p>Extending WINNI's identity across digital and physical touchpoints with restrained typography, geometric
+              icons, and monochrome palette.</p>
+          </div>
+
+          <div class="winni-role-card">
+            <b>05 · PHYSICAL FORM</b>
+            <h4>Physical Product</h4>
+            <p>Designing how the identity appears on vehicle stickers, tags, durable cuts, and waterproof polymer
+              adhesives.</p>
+          </div>
+
+          <div class="winni-role-card">
+            <b>06 · VALIDATION</b>
+            <h4>Prototyping</h4>
+            <p>Exploring flows, interactions, error boundaries, and real-world mobile test cases across varied daylight
+              and device conditions.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         13. THE DESIGN PRINCIPLE
+         ========================================================================= -->
+    <section class="winni-editorial-quote" id="principle">
+      <div class="container">
+        <div class="winni-quote-mark">“</div>
+        <div class="winni-quote-text">
+          Technology should disappear into the experience.
+        </div>
+        <p class="winni-quote-sub">
+          WINNI isn't about QR codes. It isn't about tracking. It isn't about dashboards.<br>
+          It's about creating a simple connection between: <strong>a person → an object → its owner.</strong>
+        </p>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         14. OUTCOME
+         ========================================================================= -->
+    <section class="winni-section" id="outcome">
+      <div class="container">
+        <div class="winni-section-header">
+          <span class="winni-section-num">14 · OUTCOME</span>
+          <h2 class="winni-section-title">From concept to working product.</h2>
+          <p class="winni-copy">
+            Rather than relying on unverified vanity percentages, the milestone progression documents concrete system
+            deliverables:
+          </p>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-4 col-sm-6">
+            <div class="outcome-step-card">
+              <div class="step-no">01</div>
+              <strong>Physical product concept</strong>
+              <p class="text-muted small mt-1 mb-0">Material specifications, tag placement, and durability requirements.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-6">
+            <div class="outcome-step-card">
+              <div class="step-no">02</div>
+              <strong>Digital identity model</strong>
+              <p class="text-muted small mt-1 mb-0">Unique alphanumeric IDs, masked proxy channels, and route
+                structures.</p>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-6">
+            <div class="outcome-step-card">
+              <div class="step-no">03</div>
+              <strong>Finder experience</strong>
+              <p class="text-muted small mt-1 mb-0">Zero-login mobile scan flow with optional geolocation sharing.</p>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-6">
+            <div class="outcome-step-card">
+              <div class="step-no">04</div>
+              <strong>Owner experience</strong>
+              <p class="text-muted small mt-1 mb-0">Object setup, notification receiving, and resolution confirmation.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-6">
+            <div class="outcome-step-card">
+              <div class="step-no">05</div>
+              <strong>Physical + digital visual system</strong>
+              <p class="text-muted small mt-1 mb-0">Quiet technology branding across packaging, stickers, and software.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-6">
+            <div class="outcome-step-card">
+              <div class="step-no">06</div>
+              <strong>Product prototype / MVP</strong>
+              <p class="text-muted small mt-1 mb-0">Functional prototype tested with actual physical sticker
+                attachments.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="outcome-status-callout">
+          <div class="pulse-dot"></div>
+          <div>
+            <div class="fw-bold text-dark">Current Product Status</div>
+            <div class="text-muted small">
+              WINNI is currently evolving from product concept into a real-world product system.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         15. FINAL CTA
+         ========================================================================= -->
+    <section class="container pb-5" id="cta">
+      <div class="winni-cta-banner">
+        <span class="badge bg-white text-dark rounded-pill px-3 py-2 mb-3 font-monospace small">WINNI</span>
+        <h2>Give your things a way back.</h2>
+        <p>Physical objects. Digital identity. One simple connection.</p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+          <a href="../index.html#contact" class="winni-cta-btn">
+            Let's talk about product design <i class="bi bi-arrow-up-right"></i>
+          </a>
+          <a href="../index.html#work" class="btn btn-outline-light rounded-pill px-4 py-3">
+            <i class="bi bi-arrow-left me-1"></i> Back to all work
+          </a>
+        </div>
+      </div>
+
+      <!-- Case study pagination -->
+      <div class="case-nav d-flex justify-content-between pt-3">
+        <a href="../index.html#work"><i class="bi bi-arrow-left"></i> Back to selected work</a>
+        <a href="../index.html#contact">Get in touch <i class="bi bi-arrow-up-right"></i></a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Site Footer -->
+
+  <footer class="footer">
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+      <a class="brand" href="../index.html#top">NAÏM BSILI <span class="beta-badge">Beta</span></a>
+      <div class="footer-links">
+        <a href="../index.html#work">Work</a><a href="../index.html#case-studies">Case Studies</a>
+        <a href="../index.html#copilot">Copilot</a>
+        <a href="../index.html#career">Career</a>
+        <a href="../index.html#lab">Lab</a>
+        <a href="../index.html#about">About</a>
+      </div>
+      <div class="socials">
+        <a href="https://tn.linkedin.com/in/bsili-naiim" target="_blank" rel="noopener" aria-label="LinkedIn"><i
+            class="bi bi-linkedin"></i></a>
+        <a href="https://www.instagram.com/designer.tunisien/" target="_blank" rel="noopener" aria-label="Instagram"><i
+            class="bi bi-instagram"></i></a>
+        <a href="https://www.tiktok.com/@bsilinaiim" target="_blank" rel="noopener" aria-label="TikTok"><i
+            class="bi bi-tiktok"></i></a>
+        <a href="https://github.com/naiimbsili" target="_blank" rel="noopener" aria-label="GitHub"><i
+            class="bi bi-github"></i></a>
+        <a href="mailto:hi@naiimbsili.com" aria-label="Email"><i class="bi bi-envelope"></i></a>
+      </div>
+    </div>
+    <div class="container copyright">© 2026 Naïm Bsili. All rights reserved.</div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

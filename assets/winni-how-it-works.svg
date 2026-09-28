@@ -1,0 +1,167 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 340" width="100%" height="100%" fill="none">
+  <defs>
+    <style>
+      .bg { fill: #fcfdfa; stroke: #e3e8e5; stroke-width: 1; rx: 16px; }
+      .box { fill: #ffffff; stroke: #dfe5e1; stroke-width: 1.25; rx: 12px; }
+      .box-active { fill: #111418; stroke: #111418; stroke-width: 1.25; rx: 12px; }
+      .title-text { font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 15px; font-weight: 700; fill: #111418; }
+      .title-text-light { font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 15px; font-weight: 700; fill: #ffffff; }
+      .sub-text { font-family: 'DM Sans', -apple-system, sans-serif; font-size: 12px; fill: #718187; }
+      .sub-text-light { font-family: 'DM Sans', -apple-system, sans-serif; font-size: 12px; fill: #b8c0c4; }
+      .num-tag { font-family: 'Space Grotesk', sans-serif; font-size: 11px; font-weight: 700; fill: #087f66; letter-spacing: 0.08em; }
+      .num-tag-light { font-family: 'Space Grotesk', sans-serif; font-size: 11px; font-weight: 700; fill: #65d6b4; letter-spacing: 0.08em; }
+      .arrow { stroke: #99a7a2; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+      .step-pill { fill: #f2f5f3; stroke: #dfe5e1; stroke-width: 1; rx: 20px; }
+      .step-text { font-family: 'Space Grotesk', sans-serif; font-size: 11.5px; font-weight: 700; fill: #24353a; letter-spacing: 0.05em; }
+      .step-num { font-family: 'Space Grotesk', sans-serif; font-size: 11px; font-weight: 700; fill: #087f66; }
+      .step-arrow { stroke: #087f66; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+      .icon-stroke { stroke: #111418; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+      .icon-stroke-light { stroke: #ffffff; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+
+  <!-- Container Box -->
+  <rect x="2" y="2" width="1076" height="336" class="bg" />
+
+  <!-- Upper Row: 4 Main Touchpoints -->
+  <!-- 01: Physical Object -->
+  <g transform="translate(40, 36)">
+    <rect width="210" height="130" class="box" />
+    <text x="24" y="34" class="num-tag">01 · PHYSICAL</text>
+    <!-- Object Icon (Car / Belonging) -->
+    <path d="M 24 64 L 32 50 L 52 50 L 58 64 Z M 22 64 L 60 64 L 62 76 L 20 76 Z" class="icon-stroke" fill="none" />
+    <circle cx="28" cy="76" r="3.5" class="icon-stroke" />
+    <circle cx="54" cy="76" r="3.5" class="icon-stroke" />
+    <text x="76" y="62" class="title-text">Physical Object</text>
+    <text x="76" y="80" class="sub-text">Car, Moto, Luggage</text>
+    <text x="24" y="112" class="sub-text">Lost in real-world context</text>
+  </g>
+
+  <!-- Arrow 1 -> 2 -->
+  <g transform="translate(262, 101)">
+    <line x1="0" y1="0" x2="26" y2="0" class="arrow" />
+    <polyline points="21,-4 26,0 21,4" class="arrow" fill="none" />
+  </g>
+
+  <!-- 02: WINNI Tag -->
+  <g transform="translate(300, 36)">
+    <rect width="210" height="130" class="box-active" />
+    <text x="24" y="34" class="num-tag-light">02 · IDENTITY</text>
+    <!-- Tag / QR Icon -->
+    <rect x="24" y="50" width="28" height="28" rx="4" class="icon-stroke-light" fill="none" />
+    <rect x="28" y="54" width="7" height="7" fill="#ffffff" />
+    <rect x="41" y="54" width="7" height="7" fill="#ffffff" />
+    <rect x="28" y="67" width="7" height="7" fill="#ffffff" />
+    <rect x="41" y="67" width="3" height="3" fill="#ffffff" />
+    <text x="64" y="62" class="title-text-light">WINNI Tag</text>
+    <text x="64" y="80" class="sub-text-light">Durable QR / NFC</text>
+    <text x="24" y="112" class="sub-text-light">Attached to object body</text>
+  </g>
+
+  <!-- Arrow 2 -> 3 -->
+  <g transform="translate(522, 101)">
+    <line x1="0" y1="0" x2="26" y2="0" class="arrow" />
+    <polyline points="21,-4 26,0 21,4" class="arrow" fill="none" />
+  </g>
+
+  <!-- 03: Finder Phone -->
+  <g transform="translate(560, 36)">
+    <rect width="210" height="130" class="box" />
+    <text x="24" y="34" class="num-tag">03 · FINDER</text>
+    <!-- Phone Icon -->
+    <rect x="24" y="50" width="20" height="32" rx="3" class="icon-stroke" fill="none" />
+    <line x1="31" y1="76" x2="37" y2="76" class="icon-stroke" />
+    <text x="56" y="62" class="title-text">Finder Phone</text>
+    <text x="56" y="80" class="sub-text">Zero app install</text>
+    <text x="24" y="112" class="sub-text">Scans tag, reaches owner</text>
+  </g>
+
+  <!-- Arrow 3 -> 4 -->
+  <g transform="translate(782, 101)">
+    <line x1="0" y1="0" x2="26" y2="0" class="arrow" />
+    <polyline points="21,-4 26,0 21,4" class="arrow" fill="none" />
+  </g>
+
+  <!-- 04: Owner -->
+  <g transform="translate(820, 36)">
+    <rect width="220" height="130" class="box" />
+    <text x="24" y="34" class="num-tag">04 · RECOVERY</text>
+    <!-- Shield / Check Icon -->
+    <path d="M 24 53 L 36 49 L 48 53 C 48 68 36 78 36 78 C 36 78 24 68 24 53 Z" class="icon-stroke" fill="none" />
+    <polyline points="31,63 35,67 42,59" class="icon-stroke" fill="none" />
+    <text x="60" y="62" class="title-text">Owner Notified</text>
+    <text x="60" y="80" class="sub-text">Private & Instant</text>
+    <text x="24" y="112" class="sub-text">Receives alert + returns</text>
+  </g>
+
+  <!-- Divider Line -->
+  <line x1="40" y1="195" x2="1040" y2="195" stroke="#e8ecea" stroke-width="1" stroke-dasharray="4 4" />
+
+  <!-- Lower Row: The 5-Step Journey (Underneath) -->
+  <!-- Label -->
+  <text x="40" y="235" font-family="'Space Grotesk', sans-serif" font-size="11" font-weight="700" fill="#718187" letter-spacing="0.12em">CORE RECOVERY JOURNEY</text>
+
+  <!-- Step 1: SCAN -->
+  <g transform="translate(40, 255)">
+    <rect width="170" height="48" class="step-pill" />
+    <text x="18" y="29" class="step-num">01</text>
+    <text x="44" y="29" class="step-text">SCAN</text>
+    <text x="96" y="29" font-family="'DM Sans', sans-serif" font-size="11" fill="#718187">No account</text>
+  </g>
+
+  <!-- Arrow -->
+  <g transform="translate(218, 279)">
+    <line x1="0" y1="0" x2="14" y2="0" class="step-arrow" />
+    <polyline points="10,-3 14,0 10,3" class="step-arrow" fill="none" />
+  </g>
+
+  <!-- Step 2: REACH -->
+  <g transform="translate(240, 255)">
+    <rect width="170" height="48" class="step-pill" />
+    <text x="18" y="29" class="step-num">02</text>
+    <text x="44" y="29" class="step-text">REACH</text>
+    <text x="100" y="29" font-family="'DM Sans', sans-serif" font-size="11" fill="#718187">Private msg</text>
+  </g>
+
+  <!-- Arrow -->
+  <g transform="translate(418, 279)">
+    <line x1="0" y1="0" x2="14" y2="0" class="step-arrow" />
+    <polyline points="10,-3 14,0 10,3" class="step-arrow" fill="none" />
+  </g>
+
+  <!-- Step 3: OPTIONAL LOCATION -->
+  <g transform="translate(440, 255)">
+    <rect width="215" height="48" class="step-pill" />
+    <text x="18" y="29" class="step-num">03</text>
+    <text x="44" y="29" class="step-text">LOCATION</text>
+    <text x="122" y="29" font-family="'DM Sans', sans-serif" font-size="11" fill="#718187">100% Optional</text>
+  </g>
+
+  <!-- Arrow -->
+  <g transform="translate(663, 279)">
+    <line x1="0" y1="0" x2="14" y2="0" class="step-arrow" />
+    <polyline points="10,-3 14,0 10,3" class="step-arrow" fill="none" />
+  </g>
+
+  <!-- Step 4: NOTIFY -->
+  <g transform="translate(685, 255)">
+    <rect width="165" height="48" class="step-pill" />
+    <text x="18" y="29" class="step-num">04</text>
+    <text x="44" y="29" class="step-text">NOTIFY</text>
+    <text x="106" y="29" font-family="'DM Sans', sans-serif" font-size="11" fill="#718187">Owner alert</text>
+  </g>
+
+  <!-- Arrow -->
+  <g transform="translate(858, 279)">
+    <line x1="0" y1="0" x2="14" y2="0" class="step-arrow" />
+    <polyline points="10,-3 14,0 10,3" class="step-arrow" fill="none" />
+  </g>
+
+  <!-- Step 5: RETURN -->
+  <g transform="translate(880, 255)">
+    <rect width="160" height="48" class="step-pill" style="fill:#e7f3ef; stroke:#b5dcce;" />
+    <text x="18" y="29" class="step-num">05</text>
+    <text x="44" y="29" class="step-text" style="fill:#075b4b;">RETURN</text>
+    <text x="110" y="29" font-family="'DM Sans', sans-serif" font-size="11" fill="#087f66">Solved</text>
+  </g>
+</svg>

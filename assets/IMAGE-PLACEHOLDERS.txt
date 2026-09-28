@@ -1,0 +1,5 @@
+Replaceable image slots:
+- naim-portrait.jpg: main hero portrait/environment photo if you want to swap it.
+- naim-portrait-cutout.png: transparent portrait for future hero treatments.
+- case-study placeholder blocks in Saudi pages: use only approved/anonymized screenshots; keep client/project names confidential.
+- cha9a9a-homepage-reference.png: replace with final approved Cha9a9a screenshot if desired.

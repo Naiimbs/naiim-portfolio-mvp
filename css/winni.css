@@ -1,0 +1,901 @@
+/* ==========================================================================
+   WINNI Case Study — Specific Stylesheet
+   Respecting WINNI Design System: Monochrome-first, minimal, warm neutral,
+   functional accents, restrained motion, physical-meets-digital aesthetic.
+   ========================================================================== */
+
+:root {
+  --winni-black: #111418;
+  --winni-graphite: #1c2127;
+  --winni-card-bg: #ffffff;
+  --winni-neutral-bg: #f8f9f6;
+  --winni-neutral-alt: #f1f4f0;
+  --winni-neutral-border: #dfe5e1;
+  --winni-text-muted: #67777d;
+  --winni-emerald: #087f66;
+  --winni-emerald-soft: #e7f3ef;
+  --winni-emerald-dark: #065b49;
+  --winni-amber: #b87a08;
+  --winni-amber-soft: #fcf4e4;
+  --winni-radius-lg: 20px;
+  --winni-radius-md: 14px;
+  --winni-radius-sm: 8px;
+}
+
+/* --- Hero Section Refinements --- */
+.winni-hero {
+  padding: 140px 0 70px;
+  background: linear-gradient(180deg, #ffffff 0%, #f7f9f6 100%);
+  border-bottom: 1px solid var(--winni-neutral-border);
+}
+
+.winni-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid var(--winni-neutral-border);
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--winni-black);
+  margin-bottom: 24px;
+}
+
+.winni-hero-badge .dot {
+  width: 7px;
+  height: 7px;
+  background: var(--winni-emerald);
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(8, 127, 102, 0.15);
+}
+
+.winni-hero-title {
+  font-size: clamp(2.8rem, 6.2vw, 5.4rem);
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 1.02;
+  margin-bottom: 22px;
+  color: var(--winni-black);
+}
+
+.winni-hero-desc {
+  font-size: 1.25rem;
+  line-height: 1.55;
+  color: #3b4d53;
+  max-width: 820px;
+  margin-bottom: 28px;
+}
+
+.winni-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.winni-meta-chip {
+  background: #ffffff;
+  border: 1px solid var(--winni-neutral-border);
+  padding: 8px 16px;
+  border-radius: 50px;
+  font-size: 0.78rem;
+  color: var(--winni-graphite);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.winni-meta-chip strong {
+  color: var(--winni-black);
+  font-weight: 700;
+}
+
+.winni-hero-figure {
+  margin: 0;
+  border-radius: var(--winni-radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--winni-neutral-border);
+  background: var(--winni-graphite);
+  box-shadow: 0 24px 60px rgba(17, 20, 24, 0.09);
+  position: relative;
+}
+
+.winni-hero-figure img {
+  width: 100%;
+  max-height: 680px;
+  object-fit: cover;
+  display: block;
+}
+
+.winni-figure-caption {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 22px;
+  background: #ffffff;
+  border-top: 1px solid var(--winni-neutral-border);
+  font-size: 0.74rem;
+  color: var(--winni-text-muted);
+}
+
+/* --- Section Typography & Containers --- */
+.winni-section {
+  padding: 95px 0;
+  border-bottom: 1px solid rgba(223, 229, 225, 0.7);
+}
+
+.winni-section.alt-bg {
+  background: #f7f9f6;
+}
+
+.winni-section.dark-bg {
+  background: var(--winni-black);
+  color: #f7f9f6;
+  border-bottom-color: #242b32;
+}
+
+.winni-section.dark-bg h2,
+.winni-section.dark-bg h3 {
+  color: #ffffff;
+}
+
+.winni-section.dark-bg .winni-copy {
+  color: #a4b3b8;
+}
+
+.winni-section-header {
+  margin-bottom: 48px;
+  max-width: 820px;
+}
+
+.winni-section-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--winni-emerald);
+  margin-bottom: 12px;
+  display: block;
+}
+
+.winni-section.dark-bg .winni-section-num {
+  color: #5dd4b1;
+}
+
+.winni-section-title {
+  font-size: clamp(2rem, 4vw, 3.1rem);
+  letter-spacing: -0.04em;
+  line-height: 1.12;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--winni-black);
+}
+
+.winni-copy {
+  font-size: 1.05rem;
+  line-height: 1.68;
+  color: #45575e;
+}
+
+.winni-copy-lg {
+  font-size: 1.22rem;
+  line-height: 1.6;
+  color: var(--winni-graphite);
+}
+
+/* --- Section 02: Problem & 3-Object --- */
+.winni-pullquote {
+  border-left: 3px solid var(--winni-emerald);
+  padding: 14px 24px;
+  margin: 26px 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.45rem;
+  font-weight: 600;
+  color: var(--winni-black);
+  background: #ffffff;
+  border-radius: 0 var(--winni-radius-md) var(--winni-radius-md) 0;
+  border-top: 1px solid var(--winni-neutral-border);
+  border-right: 1px solid var(--winni-neutral-border);
+  border-bottom: 1px solid var(--winni-neutral-border);
+}
+
+.winni-object-card {
+  background: #ffffff;
+  border: 1px solid var(--winni-neutral-border);
+  border-radius: var(--winni-radius-md);
+  padding: 24px;
+  height: 100%;
+  box-shadow: 0 4px 18px rgba(17, 20, 24, 0.03);
+}
+
+.winni-object-card .icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--winni-neutral-alt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: var(--winni-black);
+  margin-bottom: 14px;
+}
+
+.winni-object-card h4 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.winni-object-card p {
+  color: var(--winni-text-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* --- Section 04: Product Challenge Cards --- */
+.winni-finder-traits {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 36px;
+}
+
+.winni-trait-pill {
+  background: #ffffff;
+  border: 1px solid var(--winni-neutral-border);
+  border-radius: 16px;
+  padding: 22px 20px;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(17, 20, 24, 0.03);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.winni-trait-pill:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(17, 20, 24, 0.06);
+}
+
+.winni-trait-pill strong {
+  display: block;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.25rem;
+  color: var(--winni-black);
+  margin-bottom: 6px;
+}
+
+.winni-trait-pill span {
+  font-size: 0.8rem;
+  color: var(--winni-text-muted);
+}
+
+/* --- Section 05: Mobile Phone UI Mockups --- */
+.winni-screens-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  margin-top: 48px;
+}
+
+@media (max-width: 1200px) {
+  .winni-screens-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .winni-screens-row {
+    grid-template-columns: 1fr;
+    max-width: 360px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.winni-screen-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.winni-screen-step {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--winni-emerald);
+  margin-bottom: 6px;
+  letter-spacing: 0.05em;
+}
+
+.winni-screen-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--winni-black);
+}
+
+.winni-phone-frame {
+  background: #ffffff;
+  border: 10px solid #111418;
+  border-radius: 36px;
+  box-shadow: 0 18px 45px rgba(17, 20, 24, 0.12);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 520px;
+  position: relative;
+  background: #ffffff;
+}
+
+.winni-phone-speaker {
+  width: 54px;
+  height: 4px;
+  background: #111418;
+  border-radius: 4px;
+  margin: 8px auto 6px;
+}
+
+.winni-phone-screen {
+  flex: 1;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  background: #fafbf9;
+  font-size: 0.78rem;
+  overflow-y: auto;
+}
+
+.winni-phone-brand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  font-size: 0.84rem;
+  text-align: center;
+  color: var(--winni-black);
+  margin-bottom: 12px;
+}
+
+.phone-card {
+  background: #ffffff;
+  border: 1px solid var(--winni-neutral-border);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.phone-tag {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: var(--winni-neutral-alt);
+  color: var(--winni-graphite);
+  margin-bottom: 6px;
+}
+
+.phone-tag.active {
+  background: var(--winni-emerald-soft);
+  color: var(--winni-emerald);
+}
+
+.phone-btn-primary {
+  display: block;
+  width: 100%;
+  background: var(--winni-black);
+  color: #ffffff;
+  border: none;
+  border-radius: 50px;
+  padding: 9px 12px;
+  font-weight: 600;
+  font-size: 0.74rem;
+  text-align: center;
+  margin-top: 8px;
+}
+
+.phone-btn-outline {
+  display: block;
+  width: 100%;
+  background: transparent;
+  color: var(--winni-graphite);
+  border: 1px solid var(--winni-neutral-border);
+  border-radius: 50px;
+  padding: 8px 12px;
+  font-weight: 500;
+  font-size: 0.72rem;
+  text-align: center;
+  margin-top: 6px;
+}
+
+/* --- Section 06: Privacy Diagram --- */
+.winni-privacy-board {
+  background: #ffffff;
+  border: 1px solid var(--winni-neutral-border);
+  border-radius: var(--winni-radius-lg);
+  padding: 36px;
+  box-shadow: 0 12px 35px rgba(17, 20, 24, 0.04);
+}
+
+.privacy-node {
+  background: #ffffff;
+  border: 1.5px solid var(--winni-neutral-border);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  height: 100%;
+}
+
+.privacy-node.active-proxy {
+  background: var(--winni-black);
+  color: #ffffff;
+  border-color: var(--winni-black);
+}
+
+.privacy-node.active-proxy .node-subtitle {
+  color: #a4b5ba;
+}
+
+.privacy-node .node-icon {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+
+.privacy-node h4 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.privacy-node .node-subtitle {
+  font-size: 0.8rem;
+  color: var(--winni-text-muted);
+}
+
+/* --- Section 07: Location vs Surveillance --- */
+.location-contrast-box {
+  background: #ffffff;
+  border: 1px solid var(--winni-neutral-border);
+  border-radius: var(--winni-radius-lg);
+  overflow: hidden;
+}
+
+.contrast-col {
+  padding: 36px;
+}
+
+.contrast-col.rejected {
+  background: #fdfaf7;
+  border-right: 1px solid var(--winni-neutral-border);
+}
+
+.contrast-col.approved {
+  background: #ffffff;
+}
+
+.contrast-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 5px 12px;
+  border-radius: 30px;
+  margin-bottom: 16px;
+}
+
+.contrast-tag.danger {
+  background: #fdf0ec;
+  color: #b33924;
+}
+
+.contrast-tag.success {
+  background: var(--winni-emerald-soft);
+  color: var(--winni-emerald-dark);
+}
+
+/* --- Section 08: Physical Products Grid --- */
+.winni-physical-card {
+  background: #ffffff;
+  border: 1px solid var(--winni-neutral-border);
+  border-radius: var(--winni-radius-md);
+  overflow: hidden;
+  box-shadow: 0 6px 25px rgba(17, 20, 24, 0.05);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.winni-physical-card .card-img-wrap {
+  height: 270px;
+  overflow: hidden;
+  background: #111418;
+}
+
+.winni-physical-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 260ms ease;
+}
+
+.winni-physical-card:hover img {
+  transform: scale(1.03);
+}
+
+.winni-physical-card .card-body-content {
+  padding: 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.winni-spec-list {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 0;
+  font-size: 0.78rem;
+  color: var(--winni-text-muted);
+}
+
+.winni-spec-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.winni-spec-list li i {
+  color: var(--winni-emerald);
+  font-size: 0.85rem;
+}
+
+/* --- Section 09: System Architecture Matrix --- */
+.winni-matrix-wrap {
+  background: #ffffff;
+  border: 1px solid var(--winni-neutral-border);
+  border-radius: var(--winni-radius-lg);
+  overflow: hidden;
+}
+
+.winni-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.winni-matrix-table th {
+  background: var(--winni-black);
+  color: #ffffff;
+  padding: 16px 24px;
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: 0.06em;
+  font-size: 0.82rem;
+  border-bottom: 2px solid #283138;
+}
+
+.winni-matrix-table td {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--winni-neutral-border);
+  vertical-align: top;
+}
+
+.winni-matrix-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* --- Section 10: Visual Design System Board --- */
+.winni-token-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.winni-token-card {
+  border: 1px solid var(--winni-neutral-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.winni-token-swatch {
+  height: 60px;
+}
+
+.winni-token-info {
+  padding: 10px;
+  font-size: 0.72rem;
+}
+
+.winni-token-info strong {
+  display: block;
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--winni-black);
+}
+
+.winni-token-info span {
+  color: var(--winni-text-muted);
+}
+
+.winni-icons-showcase {
+  background: #ffffff;
+  border: 1px solid var(--winni-neutral-border);
+  border-radius: var(--winni-radius-md);
+  padding: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.winni-icon-item {
+  text-align: center;
+  padding: 10px;
+}
+
+.winni-icon-box {
+  width: 48px;
+  height: 48px;
+  border: 1.5px solid var(--winni-neutral-border);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 6px;
+  background: #fdfdfd;
+}
+
+.winni-icon-item span {
+  font-size: 0.68rem;
+  color: var(--winni-text-muted);
+  font-weight: 600;
+}
+
+/* --- Section 11: Motion Section --- */
+.motion-card {
+  background: #ffffff;
+  border: 1px solid var(--winni-neutral-border);
+  border-radius: var(--winni-radius-md);
+  padding: 24px;
+  text-align: center;
+  position: relative;
+  transition: all 260ms ease;
+  height: 100%;
+}
+
+.motion-preview-stage {
+  height: 140px;
+  background: #fafbf9;
+  border: 1px solid var(--winni-neutral-border);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.motion-timing-pill {
+  display: inline-block;
+  background: var(--winni-neutral-alt);
+  border: 1px solid var(--winni-neutral-border);
+  padding: 4px 10px;
+  border-radius: 30px;
+  font-size: 0.68rem;
+  font-family: 'Space Grotesk', monospace;
+  color: var(--winni-graphite);
+  margin-top: 8px;
+}
+
+/* Micro animations for demo */
+.scan-pulse-ring {
+  width: 56px;
+  height: 56px;
+  border: 2px solid var(--winni-emerald);
+  border-radius: 50%;
+  animation: winni-pulse 2.2s infinite ease-out;
+}
+
+@keyframes winni-pulse {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  60% { transform: scale(1.15); opacity: 0.1; }
+  100% { transform: scale(1.2); opacity: 0; }
+}
+
+.msg-sent-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--winni-emerald-soft);
+  color: var(--winni-emerald-dark);
+  border-radius: 40px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  animation: winni-fade-slide 2.6s infinite ease-in-out;
+}
+
+@keyframes winni-fade-slide {
+  0%, 100% { opacity: 0.6; transform: translateY(2px); }
+  50% { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Section 12: What I Designed Grid --- */
+.winni-roles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 991px) {
+  .winni-roles-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .winni-roles-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.winni-role-card {
+  background: #ffffff;
+  border: 1px solid var(--winni-neutral-border);
+  border-radius: var(--winni-radius-md);
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(17, 20, 24, 0.03);
+}
+
+.winni-role-card b {
+  display: block;
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--winni-emerald);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+
+.winni-role-card h4 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--winni-black);
+}
+
+.winni-role-card p {
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--winni-text-muted);
+  margin: 0;
+}
+
+/* --- Section 13: Editorial Quote Banner --- */
+.winni-editorial-quote {
+  background: #111418;
+  color: #ffffff;
+  padding: 85px 0;
+  text-align: center;
+}
+
+.winni-quote-mark {
+  font-family: 'Space Grotesk', serif;
+  font-size: 3rem;
+  color: var(--winni-emerald);
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.winni-quote-text {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(1.8rem, 3.8vw, 3.2rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.22;
+  max-width: 920px;
+  margin: 0 auto 28px;
+}
+
+.winni-quote-sub {
+  font-size: 1.12rem;
+  color: #9cb1b7;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+/* --- Section 14: Outcome Roadmap --- */
+.outcome-step-card {
+  background: #ffffff;
+  border: 1px solid var(--winni-neutral-border);
+  border-radius: 14px;
+  padding: 20px;
+  height: 100%;
+}
+
+.outcome-step-card .step-no {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--winni-black);
+  margin-bottom: 4px;
+}
+
+.outcome-step-card strong {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--winni-graphite);
+}
+
+.outcome-status-callout {
+  background: #ffffff;
+  border: 1.5px solid var(--winni-neutral-border);
+  border-radius: var(--winni-radius-md);
+  padding: 24px 30px;
+  margin-top: 36px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 6px 20px rgba(17, 20, 24, 0.04);
+}
+
+.outcome-status-callout .pulse-dot {
+  width: 12px;
+  height: 12px;
+  background: var(--winni-emerald);
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 4px rgba(8, 127, 102, 0.2);
+}
+
+/* --- Section 15: CTA Banner --- */
+.winni-cta-banner {
+  background: linear-gradient(135deg, #111418 0%, #1a2228 100%);
+  color: #ffffff;
+  border-radius: 24px;
+  padding: 70px 48px;
+  text-align: center;
+  margin: 40px 0;
+  box-shadow: 0 24px 60px rgba(17, 20, 24, 0.15);
+}
+
+.winni-cta-banner h2 {
+  font-size: clamp(2.2rem, 4.5vw, 3.6rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  margin-bottom: 16px;
+  color: #ffffff;
+}
+
+.winni-cta-banner p {
+  color: #a4b7be;
+  font-size: 1.15rem;
+  max-width: 620px;
+  margin: 0 auto 32px;
+}
+
+.winni-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  color: #111418;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 14px 32px;
+  border-radius: 50px;
+  transition: all 180ms ease;
+}
+
+.winni-cta-btn:hover {
+  background: var(--winni-emerald);
+  color: #ffffff;
+  transform: translateY(-2px);
+}

@@ -1,0 +1,1083 @@
+﻿<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="Assestini — AI-powered Operational Intelligence Platform. Product design case study by Naïm Bsili. From estimation to payment in one connected workflow.">
+  <title>Assestini — Case Study · Naïm Bsili</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@500;600;700&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    /* ==========================================================================
+       Assestini Case Study — Page-specific overrides
+       Uses portfolio design tokens from style.css. Minimal local additions only.
+       ========================================================================== */
+
+    /* Workflow pill row */
+    .workflow-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin: 28px 0;
+    }
+
+    .workflow-pill {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 50px;
+      padding: 8px 18px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.82rem;
+      color: var(--ink);
+    }
+
+    .workflow-pill.active {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: #fff;
+    }
+
+    .workflow-arrow {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    /* Section flow diagram */
+    .flow-diagram {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 32px;
+      overflow-x: auto;
+    }
+
+    /* AI input/output sequence */
+    .ai-sequence {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      gap: 0;
+      align-items: stretch;
+    }
+
+    .ai-seq-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .ai-seq-card.highlight {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: #fff;
+    }
+
+    .ai-seq-card.highlight .ai-seq-label,
+    .ai-seq-card.highlight p {
+      color: #a4b5ba;
+    }
+
+    .ai-seq-label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      color: var(--green);
+      margin-bottom: 8px;
+    }
+
+    .ai-seq-card.highlight .ai-seq-label {
+      color: #5dd4b1;
+    }
+
+    .ai-seq-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 12px;
+      color: var(--muted);
+      font-size: 1.25rem;
+    }
+
+    @media (max-width: 768px) {
+      .ai-sequence {
+        grid-template-columns: 1fr;
+      }
+
+      .ai-seq-arrow {
+        transform: rotate(90deg);
+        padding: 8px 0;
+      }
+    }
+
+    /* Screenshot mosaic */
+    .screenshot-mosaic {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr;
+      gap: 16px;
+    }
+
+    .screenshot-mosaic-sub {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .screenshot-mosaic {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Layer stack diagram */
+    .layer-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .layer-item {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      align-items: stretch;
+    }
+
+    .layer-label {
+      background: var(--ink);
+      color: #fff;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid #2a353b;
+    }
+
+    .layer-item:first-child .layer-label {
+      border-radius: 14px 0 0 0;
+    }
+
+    .layer-item:last-child .layer-label {
+      border-radius: 0 0 0 14px;
+      border-bottom: none;
+    }
+
+    .layer-content {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-left: none;
+      padding: 16px 22px;
+      border-bottom: none;
+      font-size: 0.84rem;
+      color: var(--ink-soft);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .layer-item:first-child .layer-content {
+      border-radius: 0 14px 0 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .layer-item:last-child .layer-content {
+      border-radius: 0 0 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .layer-tag {
+      background: var(--green-soft);
+      color: var(--green-dark, #065b49);
+      border-radius: 50px;
+      padding: 3px 10px;
+      font-size: 0.73rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 576px) {
+      .layer-item {
+        grid-template-columns: 1fr;
+      }
+
+      .layer-label {
+        border-radius: 0 !important;
+        border-bottom: none;
+        padding: 10px 16px;
+      }
+
+      .layer-content {
+        border-left: 1px solid var(--line) !important;
+        border-radius: 0 !important;
+      }
+    }
+
+    /* MCP Architecture diagram */
+    .mcp-arch {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .mcp-node {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px 24px;
+      text-align: center;
+    }
+
+    .mcp-node.dark {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: #fff;
+    }
+
+    .mcp-node.accent {
+      background: var(--green-soft);
+      border-color: #b5d9cf;
+    }
+
+    .mcp-connector {
+      display: flex;
+      justify-content: center;
+      color: var(--green);
+      font-size: 1.3rem;
+      margin: 8px 0;
+    }
+
+    .mcp-node-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .mcp-node-sub {
+      font-size: 0.76rem;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .mcp-node.dark .mcp-node-sub {
+      color: #7d9099;
+    }
+
+    /* Quote callout */
+    .case-callout {
+      background: var(--ink);
+      color: #fff;
+      border-radius: 20px;
+      padding: 52px 48px;
+    }
+
+    .case-callout h2 {
+      color: #fff;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      letter-spacing: -0.04em;
+      margin-bottom: 16px;
+    }
+
+    .case-callout p {
+      color: #9cb1b8;
+      font-size: 1.08rem;
+      max-width: 680px;
+    }
+
+    @media (max-width: 576px) {
+      .case-callout {
+        padding: 36px 24px;
+      }
+    }
+
+    /* Case highlight override for Assestini */
+    .case-highlight {
+      border-left: 3px solid var(--green);
+      padding-left: 28px;
+      max-width: 820px;
+    }
+
+    /* text-link */
+    .text-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.82rem;
+      color: var(--green);
+      font-weight: 700;
+      transition: opacity 0.15s;
+    }
+
+    .text-link:hover {
+      opacity: 0.72;
+    }
+  </style>
+  <!-- Microsoft Clarity -->
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "x0aaxsot0d");
+  </script></head>
+
+<body>
+  <!-- ── Navigation ── -->
+  <nav class="navbar navbar-expand-lg fixed-top site-nav">
+    <div class="container">
+      <a class="navbar-brand brand" href="../index.html">NAÏM BSILI <span class="beta-badge">Beta</span></a>
+      <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"
+        data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="bi bi-list fs-2"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav mx-auto gap-lg-2">
+          <li class="nav-item"><a class="nav-link active" href="../index.html#work">Work</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#copilot">Copilot</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#career">Career</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#lab">Lab</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#about">About</a></li>
+        </ul>
+        <a class="btn btn-dark rounded-pill px-4" href="../index.html#contact">Let's Talk <i
+            class="bi bi-arrow-up-right"></i></a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- ═══════════════════════════════════════════════════════
+         HERO
+    ═══════════════════════════════════════════════════════ -->
+    <section class="case-hero">
+      <div class="container">
+        <a class="text-link" href="../index.html#work"><i class="bi bi-arrow-left"></i> Back to selected work</a>
+
+        <div class="eyebrow mt-4"><span></span> PRODUCT DESIGN · AI PRODUCT · UX/UI · PRODUCT STRATEGY</div>
+        <h1>Assestini</h1>
+        <p class="case-hero-lead">
+          AI-powered Operational Intelligence Platform for freelancers, consultants and service businesses.<br>
+          <strong>From idea to payment — in one connected workflow.</strong>
+        </p>
+
+        <div class="case-meta">
+          <span>Own product / startup</span>
+          <span>Product Owner · UX/UI Designer · Builder</span>
+          <span>React · TypeScript · Supabase · Gemini</span>
+        </div>
+
+        <!-- Hero image: existing Assestini product screenshot -->
+        <figure class="case-hero-image">
+          <img src="../assets/home-assestini.png"
+            alt="Assestini operational dashboard showing Vision Opérationnelle with project delivery pipeline and business KPIs">
+        </figure>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════
+         THE CHALLENGE
+    ═══════════════════════════════════════════════════════ -->
+    <section class="case-section">
+      <div class="container case-grid">
+        <div>
+          <div class="eyebrow"><span></span> 01 · THE CHALLENGE</div>
+          <h2>Project work starts fragmented. It stays fragmented.</h2>
+          <p class="case-copy">
+            Project work often starts with an unstructured request and quickly becomes distributed across disconnected
+            tools: a spreadsheet for estimation, a PDF for quotation, a Trello board for tasks, a separate invoicing app
+            for billing.
+          </p>
+          <p class="case-copy mt-3">
+            The challenge was to design a product that could connect these moments into one coherent workflow — from
+            understanding the initial request through structured estimation, commercial quotation, project launch,
+            delivery monitoring, and operational control.
+          </p>
+
+          <!-- Workflow flow -->
+          <div class="workflow-row mt-4">
+            <span class="workflow-pill active">Estimate</span>
+            <span class="workflow-arrow">→</span>
+            <span class="workflow-pill">Define</span>
+            <span class="workflow-arrow">→</span>
+            <span class="workflow-pill">Quote</span>
+            <span class="workflow-arrow">→</span>
+            <span class="workflow-pill">Launch</span>
+            <span class="workflow-arrow">→</span>
+            <span class="workflow-pill">Deliver</span>
+            <span class="workflow-arrow">→</span>
+            <span class="workflow-pill">Monitor</span>
+          </div>
+        </div>
+
+        <aside class="case-role">
+          <small>MY ROLE</small>
+          <strong>Product Owner · UX/UI Designer · Builder</strong>
+          <small class="d-block mt-4">FOCUS</small>
+          <strong>Product Design · AI · UX/UI · Product Strategy · Operational Intelligence</strong>
+          <small class="d-block mt-4">TECHNOLOGY</small>
+          <strong>React · TypeScript · Supabase · Gemini</strong>
+          <small class="d-block mt-4">TYPE</small>
+          <strong>Own product / startup</strong>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Workflow visual diagram -->
+    <section class="case-section alt">
+      <div class="container">
+        <div class="eyebrow"><span></span> THE CONNECTED WORKFLOW</div>
+        <h2>One workflow instead of disconnected tools.</h2>
+        <p class="case-copy mb-4">
+          The product evolved from a conventional project-management concept toward an AI-powered Product / Operations
+          OS — connecting each stage of the expert services lifecycle into a single, traceable system of record.
+        </p>
+
+        <!-- Inline workflow diagram -->
+        <div class="flow-diagram">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 200" width="100%" height="auto" fill="none">
+            <!-- Background -->
+            <rect width="1100" height="200" fill="#f8f9f6" />
+
+            <!-- Step boxes -->
+            <!-- 01 Estimate -->
+            <g transform="translate(18, 44)">
+              <rect width="154" height="112" rx="12" fill="#111418" stroke="#111418" />
+              <text x="77" y="30" text-anchor="middle" font-family="'Space Grotesk',sans-serif" font-size="10"
+                font-weight="700" fill="#5dd4b1" letter-spacing="0.1em">01</text>
+              <text x="77" y="52" text-anchor="middle" font-family="'Space Grotesk',sans-serif" font-size="14"
+                font-weight="700" fill="#ffffff">Estimate</text>
+              <text x="77" y="71" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="10.5"
+                fill="#8fa6ac">AI Estimator Pro</text>
+              <text x="77" y="87" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="10"
+                fill="#6b8490">WBS · Effort · Budget</text>
+            </g>
+
+            <!-- Arrow 1 -->
+            <g transform="translate(180, 99)">
+              <line x1="0" y1="0" x2="22" y2="0" stroke="#087f66" stroke-width="1.5" stroke-linecap="round" />
+              <polyline points="17,-4 22,0 17,4" stroke="#087f66" stroke-width="1.5" fill="none"
+                stroke-linecap="round" />
+            </g>
+
+            <!-- 02 Define -->
+            <g transform="translate(210, 44)">
+              <rect width="154" height="112" rx="12" fill="#ffffff" stroke="#dfe5e1" stroke-width="1.25" />
+              <text x="77" y="30" text-anchor="middle" font-family="'Space Grotesk',sans-serif" font-size="10"
+                font-weight="700" fill="#087f66" letter-spacing="0.1em">02</text>
+              <text x="77" y="52" text-anchor="middle" font-family="'Space Grotesk',sans-serif" font-size="14"
+                font-weight="700" fill="#111418">Define</text>
+              <text x="77" y="71" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="10.5"
+                fill="#718187">Scope & Structure</text>
+              <text x="77" y="87" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="10"
+                fill="#99a7a2">Deliverables · TJM</text>
+            </g>
+
+            <!-- Arrow 2 -->
+            <g transform="translate(372, 99)">
+              <line x1="0" y1="0" x2="22" y2="0" stroke="#087f66" stroke-width="1.5" stroke-linecap="round" />
+              <polyline points="17,-4 22,0 17,4" stroke="#087f66" stroke-width="1.5" fill="none"
+                stroke-linecap="round" />
+            </g>
+
+            <!-- 03 Quote -->
+            <g transform="translate(402, 44)">
+              <rect width="154" height="112" rx="12" fill="#ffffff" stroke="#dfe5e1" stroke-width="1.25" />
+              <text x="77" y="30" text-anchor="middle" font-family="'Space Grotesk',sans-serif" font-size="10"
+                font-weight="700" fill="#087f66" letter-spacing="0.1em">03</text>
+              <text x="77" y="52" text-anchor="middle" font-family="'Space Grotesk',sans-serif" font-size="14"
+                font-weight="700" fill="#111418">Quote</text>
+              <text x="77" y="71" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="10.5"
+                fill="#718187">Commercial Proposal</text>
+              <text x="77" y="87" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="10"
+                fill="#99a7a2">Tax · Terms · Price</text>
+            </g>
+
+            <!-- Arrow 3 -->
+            <g transform="translate(564, 99)">
+              <line x1="0" y1="0" x2="22" y2="0" stroke="#087f66" stroke-width="1.5" stroke-linecap="round" />
+              <polyline points="17,-4 22,0 17,4" stroke="#087f66" stroke-width="1.5" fill="none"
+                stroke-linecap="round" />
+            </g>
+
+            <!-- 04 Launch -->
+            <g transform="translate(594, 44)">
+              <rect width="154" height="112" rx="12" fill="#ffffff" stroke="#dfe5e1" stroke-width="1.25" />
+              <text x="77" y="30" text-anchor="middle" font-family="'Space Grotesk',sans-serif" font-size="10"
+                font-weight="700" fill="#087f66" letter-spacing="0.1em">04</text>
+              <text x="77" y="52" text-anchor="middle" font-family="'Space Grotesk',sans-serif" font-size="14"
+                font-weight="700" fill="#111418">Launch</text>
+              <text x="77" y="71" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="10.5"
+                fill="#718187">Project from Quote</text>
+              <text x="77" y="87" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="10"
+                fill="#99a7a2">Tasks · Milestones</text>
+            </g>
+
+            <!-- Arrow 4 -->
+            <g transform="translate(756, 99)">
+              <line x1="0" y1="0" x2="22" y2="0" stroke="#087f66" stroke-width="1.5" stroke-linecap="round" />
+              <polyline points="17,-4 22,0 17,4" stroke="#087f66" stroke-width="1.5" fill="none"
+                stroke-linecap="round" />
+            </g>
+
+            <!-- 05 Deliver -->
+            <g transform="translate(786, 44)">
+              <rect width="154" height="112" rx="12" fill="#ffffff" stroke="#dfe5e1" stroke-width="1.25" />
+              <text x="77" y="30" text-anchor="middle" font-family="'Space Grotesk',sans-serif" font-size="10"
+                font-weight="700" fill="#087f66" letter-spacing="0.1em">05</text>
+              <text x="77" y="52" text-anchor="middle" font-family="'Space Grotesk',sans-serif" font-size="14"
+                font-weight="700" fill="#111418">Deliver</text>
+              <text x="77" y="71" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="10.5"
+                fill="#718187">Kanban · Gantt · Time</text>
+              <text x="77" y="87" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="10"
+                fill="#99a7a2">Progress · Health</text>
+            </g>
+
+            <!-- Arrow 5 -->
+            <g transform="translate(948, 99)">
+              <line x1="0" y1="0" x2="22" y2="0" stroke="#087f66" stroke-width="1.5" stroke-linecap="round" />
+              <polyline points="17,-4 22,0 17,4" stroke="#087f66" stroke-width="1.5" fill="none"
+                stroke-linecap="round" />
+            </g>
+
+            <!-- 06 Monitor -->
+            <g transform="translate(978, 44)">
+              <rect width="104" height="112" rx="12" fill="#e7f3ef" stroke="#b5d9cf" stroke-width="1.25" />
+              <text x="52" y="30" text-anchor="middle" font-family="'Space Grotesk',sans-serif" font-size="10"
+                font-weight="700" fill="#065b49" letter-spacing="0.1em">06</text>
+              <text x="52" y="52" text-anchor="middle" font-family="'Space Grotesk',sans-serif" font-size="14"
+                font-weight="700" fill="#0a3d2e">Monitor</text>
+              <text x="52" y="71" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="10.5"
+                fill="#087f66">Control Center</text>
+              <text x="52" y="87" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="10"
+                fill="#087f66">SPI · CPI · Margin</text>
+            </g>
+          </svg>
+        </div>
+
+        <!-- Two product screenshots side by side -->
+        <div class="row g-3 mt-3">
+          <div class="col-md-6">
+            <figure class="case-media">
+              <img src="../assets/Assestini-estimator.png"
+                alt="Assestini home dashboard showing Vision Opérationnelle and project delivery pipeline">
+            </figure>
+          </div>
+          <div class="col-md-6">
+            <figure class="case-media">
+              <img src="../assets/modeles-wbs.png"
+                alt="Assestini Business Control Center showing Business Health Score, delivery, finance and operations monitoring">
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════
+         AI ESTIMATION
+    ═══════════════════════════════════════════════════════ -->
+    <section class="case-section">
+      <div class="container">
+        <div class="eyebrow"><span></span> 03 · AI ESTIMATION</div>
+        <h2>From project information to an executable plan.</h2>
+        <p class="case-copy mb-5">
+          The AI Estimator Pro can work from documents, text input or URLs — transforming raw project information into
+          structured estimation outputs. The experience uses Gemini to make estimation part of the product workflow
+          rather than a separate AI experiment.
+        </p>
+
+        <!-- AI sequence: Input → AI → Structured Output -->
+        <div class="ai-sequence mb-4">
+          <!-- Input -->
+          <div class="ai-seq-card">
+            <div class="ai-seq-label">INPUT</div>
+            <strong
+              style="font-family:'Space Grotesk',sans-serif; font-size:1rem; display:block; margin-bottom:8px;">Project
+              Information</strong>
+            <p class="small text-muted mb-3">Text description, PDF document, or project URL.</p>
+            <div class="d-flex flex-column gap-2">
+              <div class="d-flex align-items-center gap-2 border rounded p-2 bg-light">
+                <i class="bi bi-file-earmark-text text-muted"></i>
+                <span class="small">Cahier des charges.pdf</span>
+              </div>
+              <div class="d-flex align-items-center gap-2 border rounded p-2 bg-light">
+                <i class="bi bi-link text-muted"></i>
+                <span class="small">Brief URL / description</span>
+              </div>
+              <div class="d-flex align-items-center gap-2 border rounded p-2"
+                style="background:#e7f3ef; border-color:#b5d9cf !important;">
+                <i class="bi bi-pencil text-success"></i>
+                <span class="small text-success fw-bold">Free-text request</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ai-seq-arrow"><i class="bi bi-arrow-right"></i></div>
+
+          <!-- AI Processing -->
+          <div class="ai-seq-card highlight">
+            <div class="ai-seq-label">AI PROCESSING · GEMINI</div>
+            <strong
+              style="font-family:'Space Grotesk',sans-serif; font-size:1rem; display:block; color:#fff; margin-bottom:8px;">Estimator
+              IA Pro</strong>
+            <p style="font-size:0.84rem;" class="mb-3">Analyzes scope, decomposes work, maps structure and calibrates
+              budget.</p>
+            <div class="d-flex flex-wrap gap-2">
+              <span
+                style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15); border-radius:50px; padding:3px 10px; font-size:0.7rem; color:#d0e8e4;">WBS
+                Generation</span>
+              <span
+                style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15); border-radius:50px; padding:3px 10px; font-size:0.7rem; color:#d0e8e4;">Effort
+                Calibration</span>
+              <span
+                style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15); border-radius:50px; padding:3px 10px; font-size:0.7rem; color:#d0e8e4;">Budget
+                Mapping</span>
+              <span
+                style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15); border-radius:50px; padding:3px 10px; font-size:0.7rem; color:#d0e8e4;">TJM
+                Estimation</span>
+            </div>
+          </div>
+
+          <div class="ai-seq-arrow"><i class="bi bi-arrow-right"></i></div>
+
+          <!-- Output -->
+          <div class="ai-seq-card">
+            <div class="ai-seq-label">STRUCTURED OUTPUT</div>
+            <strong
+              style="font-family:'Space Grotesk',sans-serif; font-size:1rem; display:block; margin-bottom:8px;">Executable
+              Plan</strong>
+            <p class="small text-muted mb-3">Ready to become a quotation, then a project.</p>
+            <ul class="list-unstyled mb-0">
+              <li class="d-flex align-items-center gap-2 mb-2"><i
+                  class="bi bi-check-circle-fill text-success small"></i> <span class="small">Work Breakdown
+                  Structure</span></li>
+              <li class="d-flex align-items-center gap-2 mb-2"><i
+                  class="bi bi-check-circle-fill text-success small"></i> <span class="small">Estimated effort per
+                  task</span></li>
+              <li class="d-flex align-items-center gap-2 mb-2"><i
+                  class="bi bi-check-circle-fill text-success small"></i> <span class="small">Project delivery
+                  structure</span></li>
+              <li class="d-flex align-items-center gap-2 mb-2"><i
+                  class="bi bi-check-circle-fill text-success small"></i> <span class="small">TJM budget
+                  calculation</span></li>
+              <li class="d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill text-success small"></i>
+                <span class="small">→ Ready for quotation</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="row g-3 mt-2">
+          <div class="col-12">
+            <div class="p-4 rounded-3 border bg-light d-flex flex-wrap align-items-center gap-3">
+              <i class="bi bi-lightbulb fs-4 text-dark"></i>
+              <div>
+                <strong class="d-block" style="font-family:'Space Grotesk',sans-serif;">Product principle: estimation is
+                  not a feature. It is the entry point.</strong>
+                <span class="small text-muted">The AI estimator was designed to reduce the cognitive load of scoping —
+                  not to replace expert judgment.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════
+         FROM QUOTATION TO DELIVERY
+    ═══════════════════════════════════════════════════════ -->
+    <section class="case-section alt">
+      <div class="container">
+        <div class="eyebrow"><span></span> 04 · COMMERCIAL WORKFLOW</div>
+        <h2>From quotation to delivery.</h2>
+        <p class="case-copy mb-5">
+          An accepted quotation becomes the commercial reference for the entire project. The <strong>Accepted Quote
+            Snapshot</strong> preserves the agreed client price, tax configuration, payment terms and scope — creating
+          an immutable source of truth between estimation and delivery.
+        </p>
+
+        <!-- Quote → Project sequence with process steps -->
+        <div class="case-process">
+          <div>
+            <b>01</b><strong>Quotation</strong>
+            <p>Client price, tax configuration, payment terms and scope captured in a structured commercial document.
+            </p>
+          </div>
+          <div>
+            <b>02</b><strong>Agreement</strong>
+            <p>Quote accepted and snapshotted. The agreed price becomes the immutable commercial reference for the
+              project.</p>
+          </div>
+          <div>
+            <b>03</b><strong>Project Launch</strong>
+            <p>Accepted quote automatically generates the project structure: tasks, milestones and WBS from the
+              estimation.</p>
+          </div>
+          <div>
+            <b>04</b><strong>Delivery Tracking</strong>
+            <p>Project health, margin, time tracking and operational data connected back to the original commercial
+              scope.</p>
+          </div>
+        </div>
+
+        <!-- Visual relationship callout -->
+        <div
+          class="mt-4 p-4 rounded-4 border bg-white d-flex flex-wrap align-items-center justify-content-center gap-3 text-center">
+          <div>
+            <div class="fw-bold" style="font-family:'Space Grotesk',sans-serif;">Quote</div>
+            <div class="small text-muted">Commercial proposal</div>
+          </div>
+          <i class="bi bi-arrow-right text-success fs-5"></i>
+          <div>
+            <div class="fw-bold" style="font-family:'Space Grotesk',sans-serif;">Agreement</div>
+            <div class="small text-muted">Accepted snapshot</div>
+          </div>
+          <i class="bi bi-arrow-right text-success fs-5"></i>
+          <div>
+            <div class="fw-bold" style="font-family:'Space Grotesk',sans-serif;">Project</div>
+            <div class="small text-muted">Auto-generated</div>
+          </div>
+          <i class="bi bi-arrow-right text-success fs-5"></i>
+          <div>
+            <div class="fw-bold" style="font-family:'Space Grotesk',sans-serif;">Delivery</div>
+            <div class="small text-muted">Monitored vs. agreed scope</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════
+         OPERATIONAL INTELLIGENCE
+    ═══════════════════════════════════════════════════════ -->
+    <section class="case-section">
+      <div class="container">
+        <div class="eyebrow"><span></span> 05 · OPERATIONAL INTELLIGENCE</div>
+        <h2>Beyond task management.</h2>
+        <p class="case-copy mb-2">
+          Once the project is launched, Assestini brings delivery and operational visibility into the same experience.
+        </p>
+
+        <!-- Feature tags -->
+        <div class="tech-row mb-5">
+          <span>Kanban</span><span>Gantt</span><span>Roadmap</span><span>Calendar</span>
+          <span>Time Tracking</span><span>Project Health</span><span>Margin Visibility</span>
+          <span>SPI</span><span>CPI</span><span>Business Control Center</span>
+        </div>
+
+        <!-- Large screenshot -->
+        <figure class="case-media mb-3">
+          <img src="../assets/brainstorming-kanban-project-life.png"
+            alt="Assestini Business Control Center — Business Health Score 69/100, delivery 100%, finance 45%, operations 55%">
+        </figure>
+
+        <!-- 2 smaller details in row -->
+        <div class="row g-3">
+          <div class="col-md-6">
+            <!-- Delivery detail extracted from the product context -->
+            <div class="case-media p-4">
+              <div class="eyebrow mb-2"><span></span> DELIVERY TRACKING</div>
+              <h3 class="fs-5 fw-bold mb-2">Project health per delivery</h3>
+              <p class="small text-muted mb-0">
+                Each project tracks live health status, milestone progress and scope-creep signals. The product surfaces
+                CPI / SPI indicators so experts can identify risk before it becomes a delay.
+              </p>
+              <div class="d-flex gap-2 mt-3 flex-wrap">
+                <span class="badge bg-success">Santé: 100%</span>
+                <span class="badge" style="background:#f59e0b;">Santé: 35%</span>
+                <span class="badge bg-dark">Livré</span>
+                <span class="badge bg-light text-dark border">En Cours</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="case-media p-4">
+              <div class="eyebrow mb-2"><span></span> FINANCIAL SIGNALS</div>
+              <h3 class="fs-5 fw-bold mb-2">Margin &amp; billing intelligence</h3>
+              <p class="small text-muted mb-0">
+                The platform continuously monitors unbilled work, overdue payments, and margin drift — and surfaces
+                AI-triggered billing actions before revenue is lost.
+              </p>
+              <div class="d-flex gap-2 mt-3 flex-wrap">
+                <span class="badge" style="background:#7c3aed; color:#fff;">Factures en retard: 11</span>
+                <span class="badge bg-success">329 384 TND pending</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Product thinking callout -->
+    <section class="case-section alt">
+      <div class="container">
+        <div class="case-highlight">
+          <div class="eyebrow"><span></span> PRODUCT THINKING</div>
+          <h2>The design shift: from "manage my projects" to "understand my business."</h2>
+          <p class="case-copy">
+            The interface is intentionally organized around visibility, signals, decisions and actions. The goal is to
+            make the product feel like an operational layer rather than another project-management workspace.
+          </p>
+          <p class="case-copy mt-3">
+            The four navigation layers reflect this: <strong>Voir (Visibilité)</strong> · <strong>Comprendre
+              (Signaux)</strong> · <strong>Décider (Arbitrages)</strong> · <strong>Agir (Missions IA)</strong>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════
+         AI AGENTS & MCP
+    ═══════════════════════════════════════════════════════ -->
+    <section class="case-section">
+      <div class="container">
+        <div class="row g-5 align-items-center">
+          <div class="col-lg-6">
+            <div class="eyebrow"><span></span> 06 · AI AGENTS &amp; MCP</div>
+            <h2>Making the product accessible to AI.</h2>
+            <p class="case-copy">
+              Assestini explores how AI can interact with the product itself — not just assist users within it. An MCP
+              (Model Context Protocol) layer provides controlled access to product capabilities and data, with
+              authorization and feature/plan controls.
+            </p>
+            <p class="case-copy mt-3">
+              This creates a foundation for AI Agents to perform operational tasks: summarizing project health, flagging
+              financial risk, triggering billing workflows, and managing approvals — within a controlled, permissioned
+              environment.
+            </p>
+            <ul class="case-list mt-3">
+              <li><strong>Tool-based AI interaction</strong> within authorized boundaries.</li>
+              <li><strong>MCP authorization layer</strong> controls access per plan and user role.</li>
+              <li><strong>Operational AI workflows</strong> triggered by business signals, not just user prompts.</li>
+            </ul>
+          </div>
+
+          <div class="col-lg-6">
+            <!-- MCP Architecture Diagram -->
+            <div class="mcp-arch">
+              <div class="mcp-node">
+                <div class="mcp-node-title"><i class="bi bi-person me-2"></i>User</div>
+                <div class="mcp-node-sub">Expert · Consultant · Agency</div>
+              </div>
+              <div class="mcp-connector"><i class="bi bi-arrow-down"></i></div>
+              <div class="mcp-node dark">
+                <div class="mcp-node-title"><i class="bi bi-stars me-2"></i>AI Agent</div>
+                <div class="mcp-node-sub">Gemini-powered · Context-aware</div>
+              </div>
+              <div class="mcp-connector"><i class="bi bi-arrow-down"></i></div>
+              <div class="mcp-node">
+                <div class="mcp-node-title" style="font-family:'Space Grotesk',sans-serif; font-weight:700;">MCP Layer
+                </div>
+                <div class="mcp-node-sub">Authorization · Plan Controls · Feature Gates</div>
+              </div>
+              <div class="mcp-connector"><i class="bi bi-arrow-down"></i></div>
+              <div class="mcp-node">
+                <div class="mcp-node-title"><i class="bi bi-tools me-2"></i>Authorized Tools</div>
+                <div class="mcp-node-sub">Read · Write · Trigger · Summarize</div>
+              </div>
+              <div class="mcp-connector"><i class="bi bi-arrow-down"></i></div>
+              <div class="mcp-node accent">
+                <div class="mcp-node-title" style="color:var(--green-dark, #065b49)"><i
+                    class="bi bi-database me-2"></i>Assestini Data &amp; Workflows</div>
+                <div class="mcp-node-sub" style="color:var(--green);">Projects · Quotes · Time · Finance · Decisions
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════
+         PRODUCT BUILDING — 5 LAYERS
+    ═══════════════════════════════════════════════════════ -->
+    <section class="case-section alt">
+      <div class="container">
+        <div class="eyebrow"><span></span> 07 · PRODUCT BUILDING</div>
+        <h2>Beyond the interface.</h2>
+        <p class="case-copy mb-5">
+          Assestini reflects how I work as a product designer and builder. I move between product strategy, UX, AI
+          architecture and implementation — designing not only what the user sees, but also the workflows and systems
+          behind the experience.
+        </p>
+
+        <div class="layer-stack">
+          <div class="layer-item">
+            <div class="layer-label">PRODUCT</div>
+            <div class="layer-content">
+              <span class="layer-tag">Vision</span>
+              <span class="layer-tag">Strategy</span>
+              <span class="layer-tag">Features</span>
+              <span class="text-muted small ms-2">Defining what the product needs to do and for whom — before designing
+                a single screen.</span>
+            </div>
+          </div>
+          <div class="layer-item">
+            <div class="layer-label">UX</div>
+            <div class="layer-content">
+              <span class="layer-tag">Information Architecture</span>
+              <span class="layer-tag">Workflows</span>
+              <span class="layer-tag">Operational UX</span>
+              <span class="text-muted small ms-2">Designing the end-to-end flow from estimation to payment as one
+                connected experience.</span>
+            </div>
+          </div>
+          <div class="layer-item">
+            <div class="layer-label">AI</div>
+            <div class="layer-content">
+              <span class="layer-tag">Estimation Engine</span>
+              <span class="layer-tag">Agents</span>
+              <span class="layer-tag">MCP</span>
+              <span class="text-muted small ms-2">Embedding Gemini as a structural product layer, not a chatbot
+                sidebar.</span>
+            </div>
+          </div>
+          <div class="layer-item">
+            <div class="layer-label">SYSTEMS</div>
+            <div class="layer-content">
+              <span class="layer-tag">Permissions</span>
+              <span class="layer-tag">Commercial Workflow</span>
+              <span class="layer-tag">Operational Data</span>
+              <span class="text-muted small ms-2">Designing the authorization model, plan controls, quote snapshots and
+                audit trail.</span>
+            </div>
+          </div>
+          <div class="layer-item">
+            <div class="layer-label">BUILD</div>
+            <div class="layer-content">
+              <span class="layer-tag">React</span>
+              <span class="layer-tag">TypeScript</span>
+              <span class="layer-tag">Supabase</span>
+              <span class="layer-tag">AI Integration</span>
+              <span class="text-muted small ms-2">Building the product directly — from design system to working
+                application.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════
+         EDITORIAL QUOTE
+    ═══════════════════════════════════════════════════════ -->
+    <section class="case-section">
+      <div class="container">
+        <div class="case-callout">
+          <div class="eyebrow light"><span></span> THE PRINCIPLE</div>
+          <h2>The work behind the product.</h2>
+          <p>
+            I don't only design interfaces. I design the system behind them.
+          </p>
+          <p class="mt-3">
+            Assestini is an ongoing product-building case exploring how AI, UX and operational workflows can come
+            together to create a more connected way of running project-based businesses.
+          </p>
+          <div class="d-flex flex-wrap gap-3 mt-4">
+            <span class="badge bg-white text-dark rounded-pill px-3 py-2" style="font-size:0.78rem;">I can design the
+              interface.</span>
+            <span class="badge bg-white text-dark rounded-pill px-3 py-2" style="font-size:0.78rem;">I can understand
+              the workflow.</span>
+            <span class="badge bg-white text-dark rounded-pill px-3 py-2" style="font-size:0.78rem;">I can shape the
+              product.</span>
+            <span class="badge bg-white text-dark rounded-pill px-3 py-2" style="font-size:0.78rem;">I can work with
+              AI.</span>
+            <span class="badge bg-white text-dark rounded-pill px-3 py-2" style="font-size:0.78rem;">I can build the
+              system behind it.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════
+         CLOSING VISUAL
+    ═══════════════════════════════════════════════════════ -->
+    <section class="case-section alt">
+      <div class="container">
+        <div class="eyebrow"><span></span> PRODUCT EVIDENCE</div>
+        <h2>Turning operational data into a decision surface.</h2>
+        <p class="case-copy mb-4">
+          The Business Control Center was designed as a single operational layer — replacing the fragmented dashboards,
+          spreadsheets and inboxes that most consultants rely on today.
+        </p>
+        <figure class="case-media">
+          <img src="../assets/décision-assistace-agent.png"
+            alt="Assestini Business Control Center — full operational intelligence view with health monitoring, delivery tracking and financial signals">
+        </figure>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════
+         TECHNOLOGY
+    ═══════════════════════════════════════════════════════ -->
+    <section class="case-section">
+      <div class="container">
+        <div class="eyebrow"><span></span> TECHNOLOGY &amp; PROCESS</div>
+        <h2>Tools and technologies</h2>
+        <div class="tech-row">
+          <span>Figma</span>
+          <span>UX/UI</span>
+          <span>React</span>
+          <span>TypeScript</span>
+          <span>Tailwind CSS</span>
+          <span>Supabase</span>
+          <span>Gemini</span>
+          <span>Google AI Studio</span>
+          <span>RAG</span>
+          <span>AI Agents</span>
+          <span>MCP</span>
+          <span>Design Systems</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════
+         CASE NAV
+    ═══════════════════════════════════════════════════════ -->
+    <section class="case-nav">
+      <div class="container d-flex justify-content-between">
+        <a href="../index.html#work"><i class="bi bi-arrow-left"></i> Back to selected work</a>
+        <a href="../index.html#contact">Let's talk <i class="bi bi-arrow-up-right"></i></a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Footer ── -->
+
+  <footer class="footer">
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+      <a class="brand" href="../index.html#top">NAÏM BSILI <span class="beta-badge">Beta</span></a>
+      <div class="footer-links">
+        <a href="../index.html#work">Work</a><a href="../index.html#case-studies">Case Studies</a>
+        <a href="../index.html#copilot">Copilot</a>
+        <a href="../index.html#career">Career</a>
+        <a href="../index.html#lab">Lab</a>
+        <a href="../index.html#about">About</a>
+      </div>
+      <div class="socials">
+        <a href="https://tn.linkedin.com/in/bsili-naiim" target="_blank" rel="noopener" aria-label="LinkedIn"><i
+            class="bi bi-linkedin"></i></a>
+        <a href="https://www.instagram.com/designer.tunisien/" target="_blank" rel="noopener" aria-label="Instagram"><i
+            class="bi bi-instagram"></i></a>
+        <a href="https://www.tiktok.com/@bsilinaiim" target="_blank" rel="noopener" aria-label="TikTok"><i
+            class="bi bi-tiktok"></i></a>
+        <a href="https://github.com/naiimbsili" target="_blank" rel="noopener" aria-label="GitHub"><i
+            class="bi bi-github"></i></a>
+        <a href="mailto:hi@naiimbsili.com" aria-label="Email"><i class="bi bi-envelope"></i></a>
+      </div>
+    </div>
+    <div class="container copyright">© 2026 Naïm Bsili. All rights reserved.</div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
