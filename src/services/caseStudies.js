@@ -205,30 +205,34 @@ export function mapLocalCaseStudyToCMS(slug, study) {
 
 /**
  * Fetch case study details by project slug for the public renderer.
+ * Strictly queries published content and visible sections/blocks.
  */
-export async function getCaseStudyBySlug(slug) {
+export async function getPublishedCaseStudyBySlug(slug) {
+  if (!slug) return { data: null, isCMS: false };
+
   if (!isSupabaseConfigured || !supabase) {
     const localMatch = localCaseStudies[slug] || null;
-    return { data: localMatch, error: null, source: 'local' };
+    return { data: localMatch, isCMS: false, source: 'local' };
   }
 
   try {
     const { data: project, error: projectError } = await supabase
       .from('projects')
-      .select('id, slug, status')
+      .select('*')
       .eq('slug', slug)
       .eq('status', 'published')
       .maybeSingle();
 
     if (projectError || !project) {
       const localMatch = localCaseStudies[slug] || null;
-      return { data: localMatch, error: projectError || null, source: 'local_fallback' };
+      return { data: localMatch, isCMS: false, source: 'local_fallback' };
     }
 
     const { data: caseStudy, error: csError } = await supabase
       .from('case_studies')
       .select(`
         *,
+        hero_media:media(*),
         sections:case_study_sections(
           *,
           blocks:section_blocks(*)
@@ -240,24 +244,47 @@ export async function getCaseStudyBySlug(slug) {
 
     if (csError || !caseStudy) {
       const localMatch = localCaseStudies[slug] || null;
-      return { data: localMatch, error: csError || null, source: 'local_fallback' };
+      return { data: localMatch, isCMS: false, source: 'local_fallback' };
     }
 
-    // Sort sections and blocks
-    if (caseStudy.sections) {
-      caseStudy.sections.sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
-      caseStudy.sections.forEach((s) => {
+    // Attach project and sort visible sections & visible blocks
+    const formatted = {
+      ...caseStudy,
+      slug: project.slug,
+      project,
+    };
+
+    if (formatted.sections) {
+      formatted.sections = formatted.sections
+        .filter((s) => s.is_visible !== false)
+        .sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
+
+      formatted.sections.forEach((s) => {
         if (s.blocks) {
-          s.blocks.sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
+          s.blocks = s.blocks
+            .filter((b) => b.is_visible !== false)
+            .sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
         }
       });
     }
 
-    return { data: caseStudy, error: null, source: 'supabase' };
+    // If CMS case study has no sections in DB yet, fall back to local data
+    if (!formatted.sections || formatted.sections.length === 0) {
+      const localMatch = localCaseStudies[slug] || null;
+      if (localMatch) {
+        return { data: localMatch, isCMS: false, source: 'local_fallback' };
+      }
+    }
+
+    return { data: formatted, isCMS: true, source: 'supabase' };
   } catch (err) {
     const localMatch = localCaseStudies[slug] || null;
-    return { data: localMatch, error: err, source: 'local_fallback' };
+    return { data: localMatch, isCMS: false, source: 'local_fallback' };
   }
+}
+
+export async function getCaseStudyBySlug(slug) {
+  return getPublishedCaseStudyBySlug(slug);
 }
 
 /**
