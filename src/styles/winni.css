@@ -560,11 +560,13 @@
   background: #ffffff;
   border: 1px solid var(--winni-neutral-border);
   border-radius: var(--winni-radius-lg);
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .winni-matrix-table {
   width: 100%;
+  min-width: 620px;
   border-collapse: collapse;
   font-size: 0.88rem;
 }
@@ -898,4 +900,18 @@
   background: var(--winni-emerald);
   color: #ffffff;
   transform: translateY(-2px);
+}
+
+/* --- Accessibility: Reduced Motion --- */
+@media (prefers-reduced-motion: reduce) {
+  .scan-pulse-ring,
+  .msg-sent-badge,
+  .outcome-status-callout .pulse-dot,
+  .winni-trait-pill,
+  .winni-cta-btn,
+  .winni-physical-card img {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
 }
