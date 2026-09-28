@@ -57,6 +57,7 @@ export default function AdminCaseStudies() {
                 <th>Title</th>
                 <th>Slug</th>
                 <th>Type</th>
+                <th>Sections</th>
                 <th>Status</th>
                 <th>Updated</th>
                 <th>Actions</th>
@@ -73,9 +74,12 @@ export default function AdminCaseStudies() {
                     <code>{cs.slug || cs.project?.slug}</code>
                   </td>
                   <td>
-                    <span className={`badge ${cs.type === 'custom' ? 'bg-primary' : 'bg-secondary'}`} style={{ fontSize: '0.72rem' }}>
-                      {cs.type === 'custom' ? 'Custom React' : 'Standard CMS'}
+                    <span className={`admin-badge ${cs.type === 'custom' ? 'draft' : 'published'}`} style={{ fontSize: '0.72rem' }}>
+                      {cs.type === 'custom' ? 'Custom React' : 'Standard / CMS'}
                     </span>
+                  </td>
+                  <td>
+                    <span className="fw-semibold">{cs.sectionsCount ?? (cs.sections ? cs.sections.length : 0)}</span>
                   </td>
                   <td>
                     <span className={`admin-badge ${cs.status || 'published'}`}>
@@ -86,13 +90,20 @@ export default function AdminCaseStudies() {
                   <td>
                     <div className="d-flex gap-2">
                       <Link
+                        to={`/admin/case-studies/${cs.id || cs.slug}`}
+                        className="admin-btn admin-btn-secondary py-1 px-2"
+                        title="Visual Case Study Editor"
+                      >
+                        <i className="bi bi-pencil-square"></i> Edit
+                      </Link>
+                      <Link
                         to={`/work/${cs.slug || cs.project?.slug}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="admin-btn admin-btn-secondary py-1 px-2 text-muted"
-                        title="View Live Page"
+                        title="Preview Public Page"
                       >
-                        <i className="bi bi-box-arrow-up-right"></i> View
+                        <i className="bi bi-box-arrow-up-right"></i>
                       </Link>
                     </div>
                   </td>

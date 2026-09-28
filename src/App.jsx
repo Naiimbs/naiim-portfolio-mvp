@@ -13,6 +13,7 @@ import AdminDashboard from './admin/pages/AdminDashboard';
 import AdminProjects from './admin/pages/AdminProjects';
 import AdminProjectEditor from './admin/pages/AdminProjectEditor';
 import AdminCaseStudies from './admin/pages/AdminCaseStudies';
+import AdminCaseStudyEditor from './admin/pages/AdminCaseStudyEditor';
 import AdminMedia from './admin/pages/AdminMedia';
 
 export default function App() {
@@ -41,6 +42,7 @@ export default function App() {
             <Route path="projects" element={<AdminProjects />} />
             <Route path="projects/:id" element={<AdminProjectEditor />} />
             <Route path="case-studies" element={<AdminCaseStudies />} />
+            <Route path="case-studies/:id" element={<AdminCaseStudyEditor />} />
             <Route path="media" element={<AdminMedia />} />
           </Route>
         </Route>

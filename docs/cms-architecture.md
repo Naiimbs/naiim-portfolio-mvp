@@ -55,7 +55,7 @@ Case study document metadata and SEO:
 Logical order and grouping of sections within a case study:
 * `id` (UUID, Primary Key)
 * `case_study_id` (UUID, Foreign Key -> `case_studies.id`)
-* `section_type` (TEXT, e.g. `hero`, `challenge`, `workflow`, `evidence`, `technology`)
+* `section_type` (TEXT, e.g. `hero`, `challenge`, `process`, `gallery`, `quote`, `metrics`, `technology`, `cta`)
 * `title`, `eyebrow` (TEXT)
 * `order_index` (INTEGER, Indexed)
 * `is_visible` (BOOLEAN)
@@ -65,7 +65,7 @@ Logical order and grouping of sections within a case study:
 Flexible modular payload per section:
 * `id` (UUID, Primary Key)
 * `section_id` (UUID, Foreign Key -> `case_study_sections.id`)
-* `block_type` (TEXT)
+* `block_type` (TEXT, e.g. `text`, `image`, `gallery`, `quote`, `metrics`, `process`, `tech_stack`, `cta`, `spacer`)
 * `content` (JSONB)
 * `order_index` (INTEGER)
 * `is_visible` (BOOLEAN)
@@ -103,7 +103,7 @@ Role-based access control for administrative users:
 * **Anonymous / Public User**:
   - `SELECT` only on rows where `status = 'published'` and `is_visible = true`.
   - Zero write permissions (`INSERT`, `UPDATE`, `DELETE` are denied).
-* **Admin User** (`is_admin()` helper based on `profiles.role = 'admin'`):
+* **Admin / Editor User** (`is_admin()` helper or `role IN ('admin', 'editor')`):
   - Full CRUD permissions on all tables and draft records.
 
 ---
@@ -112,23 +112,66 @@ Role-based access control for administrative users:
 To guarantee 100% build stability and zero downtime during local development or offline states:
 1. `src/lib/supabase.js` checks for `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
 2. If absent or network requests fail, `src/services/projects.js` and `src/services/caseStudies.js` automatically serve the local snapshot from `src/data/`.
+3. The fallback service seamlessly maps all existing static case studies (e.g. `cha9a9a`, `naim-copilot`, `career-os`, etc.) into structured sections and blocks so the Visual Editor is immediately populated with realistic content.
 
 ---
 
-## 6. Admin CMS Foundation (Phase 12)
-* **Protected Routes**:
-  - `/admin/login` — Supabase password-based authentication.
-  - `/admin` — High-level project, draft, case study & media stats dashboard.
-  - `/admin/projects` — Catalog table with status filters and edit links.
-  - `/admin/projects/:id` — Metadata editor form for projects.
-  - `/admin/case-studies` — Overview of custom React vs standard CMS case studies.
-  - `/admin/media` — Indexed storage media asset table.
-* **Authentication Flow**:
-  - `AuthProvider` monitors session state via `supabase.auth.onAuthStateChange()`.
-  - `AdminGuard` validates presence of authenticated session and checks `profiles.role IN ('admin', 'editor')`.
-  - Unauthenticated visits to `/admin/*` redirect immediately to `/admin/login`.
-* **Security Boundaries**:
-  - Frontend guard prevents UI exposure, while PostgreSQL RLS remains the authoritative security boundary.
-  - All admin routes inject `<meta name="robots" content="noindex, nofollow" />`.
-* **Deferred to Phase 13**:
-  - Drag-and-drop block builder, rich text editor, batch media file uploads, and blog management.
+## 6. Visual Case Study Editor (Phase 13A)
+
+### Overview
+Located at `/admin/case-studies/:id`, the Visual Case Study Editor provides a visual workspace for managing the real sections and content blocks of case studies.
+
+### Architecture
+- **Workspace View** (`AdminCaseStudyEditor.jsx`):
+  - Case study header: Title, Subtitle, Type badge, Dirty state indicator, `[Preview]`, `[Save Draft]`, `[Publish]`.
+  - Case Study Settings & SEO card (`title`, `subtitle`, `seo_title`, `seo_description`, `canonical_path`, `status`).
+  - Section Overview list (`SectionList.jsx`).
+  - `+ Add Section` modal (`AddSectionModal.jsx`).
+- **Section Drawer / Side Panel** (`SectionDrawer.jsx`):
+  - Slide-out panel to edit section metadata (`section_type`, `eyebrow`, `title`, `is_visible`).
+  - Reorderable list of content blocks with summaries and action controls.
+  - `+ Add Block` selector modal (`AddBlockModal.jsx`).
+  - Block field schema editor (`BlockEditorModal.jsx`).
+
+### Standard vs Custom Case Studies
+1. **Custom React Case Studies (`WINNI`, `Assestini`)**:
+   - Flagged with `type = 'custom'`.
+   - The editor renders a dedicated notice explaining that complex interactive visualizations and simulation states are maintained in code (`src/pages/custom-case-studies/`).
+   - Editors can update top-level title, subtitle, SEO metadata, canonical path, and publication status.
+2. **Standard Case Studies (`Cha9a9a`, `Naïm Copilot`, `Career OS`, `Saudi Government`, `Saudi Banking`, `Saudi Regulatory`, `DGA`)**:
+   - Flagged with `type = 'standard'`.
+   - Full section & block visual editing, reordering, creation, and deletion.
+
+### Supported Block Types & JSONB Schemas
+1. **`TextBlock`** (`block_type: 'text'`):
+   - `heading`: string
+   - `body`: multiline string / markdown
+2. **`ImageBlock`** (`block_type: 'image'`):
+   - `media_url` / `media_id`: string
+   - `alt`: string
+   - `caption`: string
+3. **`GalleryBlock`** (`block_type: 'gallery'`):
+   - `media`: array of image objects
+   - `caption`: string
+4. **`QuoteBlock`** (`block_type: 'quote'`):
+   - `quote`: string
+   - `author`: string
+   - `role`: string
+5. **`MetricsBlock`** (`block_type: 'metrics'`):
+   - `items`: array of `{ value, label, description }`
+6. **`ProcessBlock`** (`block_type: 'process'`):
+   - `steps`: array of `{ number, title, description }`
+7. **`TechStackBlock`** (`block_type: 'tech_stack'`):
+   - `items`: array of `{ name, category }`
+8. **`CTABlock`** (`block_type: 'cta'`):
+   - `title`, `description`, `label`, `url`
+9. **`SpacerBlock`** (`block_type: 'spacer'`):
+   - `size`: `'small'` | `'medium'` | `'large'`
+
+### Drag & Drop & Order Persistence
+- **Lightweight HTML5 Drag & Drop**: Implemented natively on sections and blocks with zero heavy third-party dependencies.
+- **Accessibility**: Every item includes explicit `Move Up` / `Move Down` buttons for full keyboard navigation and touch support.
+- **Controlled Save**: Reordering updates local state immediately; `order_index` is normalized (`1, 2, 3...`) and persisted to PostgreSQL sequentially when clicking `Save Draft` or `Publish`.
+
+### Current Limitations & Next Phase
+- **Media Uploads (Phase 13B)**: Currently, `ImageBlock` and `GalleryBlock` accept asset paths/URLs. Direct drag-and-drop file upload to the Supabase `portfolio-media` storage bucket will be implemented in Phase 13B.

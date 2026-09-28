@@ -476,6 +476,258 @@
 }
 
 /* ------------------------------------------------------------------------------
+   Visual Case Study Editor Styles
+   ------------------------------------------------------------------------------ */
+.admin-editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: var(--white, #ffffff);
+  border: 1px solid var(--line, #dfe7e4);
+  border-radius: 12px;
+  padding: 20px 24px;
+  box-shadow: 0 4px 16px rgba(16, 36, 42, 0.03);
+}
+
+.admin-section-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--white, #ffffff);
+  border: 1px solid var(--line, #dfe7e4);
+  border-radius: 12px;
+  padding: 16px 20px;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+}
+
+.admin-section-card:hover {
+  border-color: var(--ink-soft, #42545a);
+  box-shadow: 0 4px 12px rgba(16, 36, 42, 0.05);
+}
+
+.admin-drag-handle {
+  cursor: grab;
+  color: var(--muted, #718187);
+  font-size: 1.25rem;
+  padding: 4px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-drag-handle:active {
+  cursor: grabbing;
+}
+
+.admin-section-num {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--ink-soft, #42545a);
+  background: #f1f5f3;
+  border: 1px solid var(--line, #dfe7e4);
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.admin-section-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-section-eyebrow {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--muted, #718187);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-section-title {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink, #10242a);
+}
+
+.admin-badge-count {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-soft, #42545a);
+  background: #f3f6f5;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--line, #dfe7e4);
+}
+
+/* ------------------------------------------------------------------------------
+   Section Editor Drawer / Side Panel
+   ------------------------------------------------------------------------------ */
+.admin-drawer-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(16, 36, 42, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1050;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.admin-drawer {
+  width: 100%;
+  max-width: 640px;
+  height: 100vh;
+  background: var(--paper, #f8f9f6);
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  animation: slideInRight 0.2s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.admin-drawer-header {
+  padding: 20px 24px;
+  background: var(--white, #ffffff);
+  border-bottom: 1px solid var(--line, #dfe7e4);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-drawer-body {
+  padding: 24px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.admin-drawer-footer {
+  padding: 16px 24px;
+  background: var(--white, #ffffff);
+  border-top: 1px solid var(--line, #dfe7e4);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* Block Cards in Drawer */
+.admin-block-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--white, #ffffff);
+  border: 1px solid var(--line, #dfe7e4);
+  border-radius: 8px;
+  padding: 10px 14px;
+  transition: all 0.15s ease;
+}
+
+.admin-block-card:hover {
+  border-color: var(--ink-soft, #42545a);
+}
+
+.admin-block-summary {
+  font-size: 0.85rem;
+  color: var(--ink, #10242a);
+  font-weight: 500;
+  max-width: 240px;
+}
+
+/* ------------------------------------------------------------------------------
+   Modals
+   ------------------------------------------------------------------------------ */
+.admin-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(16, 36, 42, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1060;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.admin-modal-box {
+  background: var(--white, #ffffff);
+  border: 1px solid var(--line, #dfe7e4);
+  border-radius: 14px;
+  padding: 28px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 50px rgba(16, 36, 42, 0.15);
+  animation: modalFade 0.15s ease-out;
+}
+
+.admin-modal-lg {
+  max-width: 760px;
+}
+
+@keyframes modalFade {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.admin-type-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--paper, #f8f9f6);
+  border: 1px solid var(--line, #dfe7e4);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  height: 100%;
+}
+
+.admin-type-option:hover {
+  background: var(--white, #ffffff);
+  border-color: var(--green, #087f66);
+  box-shadow: 0 2px 8px rgba(8, 127, 102, 0.08);
+}
+
+.admin-type-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--green-soft, #e7f3ef);
+  color: var(--green-dark, #075b4b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+/* ------------------------------------------------------------------------------
    Responsive Behavior
    ------------------------------------------------------------------------------ */
 @media (max-width: 991px) {
@@ -511,4 +763,15 @@
   .admin-content {
     padding: 20px 16px;
   }
+
+  .admin-drawer {
+    max-width: 100%;
+  }
+
+  .admin-section-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
 }
+
