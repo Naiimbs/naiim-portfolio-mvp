@@ -1,10 +1,25 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import MainLayout from '../../layouts/MainLayout';
+import SEO from '../../components/common/SEO';
+import { getCaseStudySchema } from '../../lib/schema';
 
 export default function WinniCaseStudy() {
+  const schema = getCaseStudySchema({
+    title: 'WINNI — Physical + Digital Identity System',
+    description: 'WINNI is a physical + digital identity system that helps people reconnect with lost belongings through a simple QR/NFC interaction.',
+    slug: 'winni',
+  });
+
   return (
     <MainLayout>
+      <SEO
+        title="WINNI — Case Study"
+        description="WINNI is a physical + digital identity system that helps people reconnect with lost belongings through a simple QR/NFC interaction."
+        canonical="/work/winni"
+        schema={schema}
+      />
+
       <header className="case-hero">
         <div className="container">
           <Link className="text-link" to="/#work">

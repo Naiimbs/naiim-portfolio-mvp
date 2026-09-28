@@ -1,5 +1,6 @@
 import React from 'react';
 import MainLayout from '../layouts/MainLayout';
+import SEO from '../components/common/SEO';
 import HeroSection from '../components/hero/HeroSection';
 import SelectedWorkSection from '../components/work/SelectedWorkSection';
 import CaseStudiesStrip from '../components/work/CaseStudiesStrip';
@@ -8,10 +9,20 @@ import CareerCard from '../components/career/CareerCard';
 import LabSection from '../components/lab/LabSection';
 import AboutSection from '../components/about/AboutSection';
 import ContactSection from '../components/common/ContactSection';
+import { getPersonSchema, getWebSiteSchema } from '../lib/schema';
 
 export default function HomePage() {
+  const schemas = [getPersonSchema(), getWebSiteSchema()];
+
   return (
     <MainLayout>
+      <SEO
+        title="Naïm Bsili — Product Designer & AI Builder"
+        description="Senior UX/UI Designer & AI Product Builder. Turning ambiguous problems into usable digital products across product design, AI, low-code and automation."
+        canonical="/"
+        schema={schemas}
+      />
+
       <HeroSection />
       <SelectedWorkSection />
       <CaseStudiesStrip />

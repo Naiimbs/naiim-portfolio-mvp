@@ -1,10 +1,25 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import MainLayout from '../../layouts/MainLayout';
+import SEO from '../../components/common/SEO';
+import { getCaseStudySchema } from '../../lib/schema';
 
 export default function AssestiniCaseStudy() {
+  const schema = getCaseStudySchema({
+    title: 'Assestini — AI-powered Operational Intelligence Platform',
+    description: 'Designing an operational layer that connects estimation, delivery, margins, cash flow and AI-assisted decisions.',
+    slug: 'assestini',
+  });
+
   return (
     <MainLayout>
+      <SEO
+        title="Assestini — Case Study"
+        description="Designing an operational layer that connects estimation, delivery, margins, cash flow and AI-assisted decisions."
+        canonical="/work/assestini"
+        schema={schema}
+      />
+
       <header className="case-hero">
         <div className="container">
           <Link className="text-link" to="/#work">

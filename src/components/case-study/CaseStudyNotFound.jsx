@@ -1,10 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import MainLayout from '../../layouts/MainLayout';
+import SEO from '../common/SEO';
 
 export default function CaseStudyNotFound({ slug }) {
   return (
     <MainLayout>
+      <SEO
+        title="404 — Case Study Not Found"
+        description="The requested case study could not be found."
+        robots="noindex, nofollow"
+      />
       <section className="section-pad" style={{ minHeight: '60vh', display: 'flex', alignItems: 'center' }}>
         <div className="container text-center">
           <div className="eyebrow justify-content-center">

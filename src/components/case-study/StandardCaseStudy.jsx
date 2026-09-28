@@ -1,12 +1,29 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import MainLayout from '../../layouts/MainLayout';
+import SEO from '../common/SEO';
+import { getCaseStudySchema } from '../../lib/schema';
 
 export default function StandardCaseStudy({ data }) {
-  const { hero, challenge, contribution, evidence, technology } = data;
+  const { slug, hero, challenge, contribution, evidence, technology } = data;
+
+  const caseSchema = getCaseStudySchema({
+    title: hero.title,
+    description: hero.lead,
+    slug: slug,
+    image: hero.image,
+  });
 
   return (
     <MainLayout>
+      <SEO
+        title={hero.title}
+        description={hero.lead}
+        canonical={`/work/${slug}`}
+        image={hero.image}
+        schema={caseSchema}
+      />
+
       {/* 1. Hero */}
       <section className="case-hero">
         <div className="container">

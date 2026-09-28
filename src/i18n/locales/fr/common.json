@@ -1,0 +1,13 @@
+{
+  "nav": {
+    "work": "Projets",
+    "copilot": "Copilot",
+    "career": "Carrière",
+    "lab": "Lab",
+    "about": "À propos",
+    "talk": "Contact"
+  },
+  "footer": {
+    "rights": "© 2026 Naïm Bsili. Tous droits réservés."
+  }
+}

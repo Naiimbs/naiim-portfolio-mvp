@@ -1,0 +1,21 @@
+{
+  "name": "Naïm Bsili — Product Designer & AI Builder",
+  "short_name": "Naïm Bsili",
+  "description": "Product Designer & AI Builder. UX/UI, Product Design, AI, Low-Code and Product Operations.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8f9f6",
+  "theme_color": "#087f66",
+  "icons": [
+    {
+      "src": "/assets/naim-portrait.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "/assets/naim-portrait.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
