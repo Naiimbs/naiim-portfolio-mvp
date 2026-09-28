@@ -3,13 +3,136 @@ import { AGENT_SERVER_REGISTRY } from './agentRegistry.js';
 /**
  * Server-side MCP Gateway Service.
  *
- * Responsibilities:
- * 1. Safely resolve n8n MCP server URL and Bearer Access Token from process.env.
- * 2. Validate Agent slug, input constraints, and allowed tool allowlists.
- * 3. Enforce request timeouts (default 30s) and error containment.
- * 4. Communicate via standard JSON-RPC 2.0 protocol with the n8n MCP HTTP endpoint.
- * 5. Normalize results before returning to client.
+ * Implements MCP Protocol (JSON-RPC 2.0 over HTTP) with lifecycle management:
+ * 1. Safe secret resolution (server-side environment variables).
+ * 2. Pre-execution input validation, rate limiting & length checks.
+ * 3. Protocol handshake (initialize -> initialized notification -> tools/call).
+ * 4. Automatic tool schema resolution & argument mapping.
+ * 5. Structured result normalization without leaking server secrets.
  */
+
+// In-memory tool catalog cache to avoid calling tools/list on every single query
+const toolCacheMap = new Map();
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes TTL
+
+/**
+ * Helper to execute JSON-RPC request to MCP server
+ */
+async function callJsonRpc(url, token, payload, timeoutMs = 30000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  const headers = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json, text/event-stream',
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token.trim()}`;
+  }
+
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+    clearTimeout(timer);
+
+    if (!res.ok) {
+      const err = new Error(`HTTP ${res.status} ${res.statusText}`);
+      err.status = res.status;
+      throw err;
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    clearTimeout(timer);
+    throw err;
+  }
+}
+
+/**
+ * Ensures MCP server handshake and retrieves available tool schema
+ */
+async function getVerifiedToolSchema(serverUrl, token, toolName, timeoutMs = 10000) {
+  const cacheKey = `${serverUrl}::${toolName}`;
+  const cached = toolCacheMap.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+    return cached.schema;
+  }
+
+  try {
+    // 1. Initialize MCP Session
+    await callJsonRpc(
+      serverUrl,
+      token,
+      {
+        jsonrpc: '2.0',
+        id: `init_${Date.now()}`,
+        method: 'initialize',
+        params: {
+          protocolVersion: '2024-11-05',
+          capabilities: { roots: { listChanged: false } },
+          clientInfo: { name: 'naim-portfolio-gateway', version: '1.0.0' },
+        },
+      },
+      timeoutMs
+    );
+
+    // 2. Initialized Notification
+    try {
+      await callJsonRpc(
+        serverUrl,
+        token,
+        {
+          jsonrpc: '2.0',
+          method: 'notifications/initialized',
+        },
+        5000
+      );
+    } catch {
+      // Notification is non-blocking
+    }
+
+    // 3. Query Tools List
+    const toolsResp = await callJsonRpc(
+      serverUrl,
+      token,
+      {
+        jsonrpc: '2.0',
+        id: `tools_${Date.now()}`,
+        method: 'tools/list',
+        params: {},
+      },
+      timeoutMs
+    );
+
+    const tools = toolsResp.result?.tools || [];
+    const matchedTool = tools.find((t) => t.name === toolName);
+
+    if (matchedTool) {
+      toolCacheMap.set(cacheKey, {
+        schema: matchedTool,
+        timestamp: Date.now(),
+      });
+      return matchedTool;
+    }
+
+    // If tools exist but the requested one is not among them, return null
+    if (tools.length > 0) {
+      return null;
+    }
+
+    // If tools/list returned empty, return fallback permissive schema
+    return { name: toolName };
+  } catch (err) {
+    console.warn(`[MCP Gateway] Tool discovery skipped or failed: ${err.message}`);
+    return { name: toolName };
+  }
+}
 
 export async function runAgentDemo({ slug, input, toolName, context = {} }) {
   const startTime = Date.now();
@@ -45,7 +168,7 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
       status: 400,
       error: {
         code: 'INVALID_INPUT',
-        message: 'Input prompt is required and must be a non-empty string.',
+        message: 'Please enter a valid question or prompt.',
       },
     };
   }
@@ -57,12 +180,12 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
       status: 400,
       error: {
         code: 'INPUT_TOO_LARGE',
-        message: `Input exceeds maximum allowed length of ${config.maxInputLength} characters.`,
+        message: `Please enter a shorter question (maximum ${config.maxInputLength} characters).`,
       },
     };
   }
 
-  // 3. Resolve and Validate MCP Tool
+  // 3. Resolve and Validate Tool Allowlist
   const requestedTool = toolName || config.defaultTool;
   if (!config.allowedTools.includes(requestedTool)) {
     return {
@@ -70,7 +193,7 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
       status: 403,
       error: {
         code: 'TOOL_NOT_ALLOWED',
-        message: `Requested tool is not in the authorized allowlist for this agent.`,
+        message: 'The requested tool is not permitted for this agent.',
       },
     };
   }
@@ -79,7 +202,6 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
   const mcpServerUrl = process.env[config.mcpServerEnv];
   const mcpAccessToken = process.env[config.mcpTokenEnv];
 
-  // If MCP server endpoint is not configured in environment, return graceful unavailable response
   if (!mcpServerUrl) {
     console.warn(`[MCP Gateway] ${config.mcpServerEnv} not configured in server environment.`);
     return {
@@ -87,65 +209,66 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
       status: 503,
       error: {
         code: 'DEMO_UNAVAILABLE',
-        message: 'The live agent backend is temporarily offline for maintenance. Please check back shortly.',
+        message: 'Copilot is temporarily unavailable. Please try again later.',
       },
     };
   }
 
-  // 5. Construct JSON-RPC Payload for n8n MCP HTTP Server
+  // 5. Construct Arguments Based on Tool Schema
+  const verifiedSchema = await getVerifiedToolSchema(
+    mcpServerUrl,
+    mcpAccessToken,
+    requestedTool,
+    Math.min(config.timeoutMs, 8000)
+  );
+
+  let toolArgs = {
+    prompt: cleanInput,
+    query: cleanInput,
+    message: cleanInput,
+    input: cleanInput,
+    context: context || {},
+    agent: slug,
+  };
+
+  // If schema strictly defines properties, align keys
+  if (verifiedSchema?.inputSchema?.properties) {
+    const props = verifiedSchema.inputSchema.properties;
+    toolArgs = {};
+    if (props.prompt) toolArgs.prompt = cleanInput;
+    if (props.query) toolArgs.query = cleanInput;
+    if (props.message) toolArgs.message = cleanInput;
+    if (props.input) toolArgs.input = cleanInput;
+    if (props.text) toolArgs.text = cleanInput;
+    if (props.context) toolArgs.context = context || {};
+    // Ensure at least one argument holds the query
+    if (Object.keys(toolArgs).length === 0) {
+      const firstProp = Object.keys(props)[0];
+      if (firstProp) toolArgs[firstProp] = cleanInput;
+    }
+  }
+
+  // 6. Build tools/call JSON-RPC Payload
   const rpcPayload = {
     jsonrpc: '2.0',
     id: `req_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
     method: 'tools/call',
     params: {
       name: requestedTool,
-      arguments: {
-        prompt: cleanInput,
-        query: cleanInput,
-        context: context || {},
-        agent: slug,
-      },
+      arguments: toolArgs,
     },
   };
 
-  // 6. Execute Request with Timeout Protection
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), config.timeoutMs || 30000);
-
+  // 7. Execute Request with Timeout Protection
   try {
-    const headers = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    };
+    const responseData = await callJsonRpc(
+      mcpServerUrl,
+      mcpAccessToken,
+      rpcPayload,
+      config.timeoutMs || 30000
+    );
 
-    if (mcpAccessToken) {
-      headers['Authorization'] = `Bearer ${mcpAccessToken.trim()}`;
-    }
-
-    const response = await fetch(mcpServerUrl, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(rpcPayload),
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeout);
-
-    if (!response.ok) {
-      console.error(`[MCP Gateway] Upstream HTTP error ${response.status} from ${slug}`);
-      return {
-        success: false,
-        status: 502,
-        error: {
-          code: 'UPSTREAM_ERROR',
-          message: 'The AI agent backend encountered an error processing your query. Please try again.',
-        },
-      };
-    }
-
-    const responseData = await response.json();
-
-    // 7. Handle JSON-RPC Errors
+    // 8. Handle JSON-RPC Errors
     if (responseData.error) {
       console.error(`[MCP Gateway] JSON-RPC error from ${slug}:`, responseData.error.message);
       return {
@@ -158,7 +281,7 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
       };
     }
 
-    // 8. Normalize Response
+    // 9. Normalize Response
     const rawContent = responseData.result?.content || responseData.result || responseData;
     let normalizedAnswer = '';
 
@@ -167,7 +290,12 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
         .map((item) => (typeof item === 'string' ? item : item.text || JSON.stringify(item)))
         .join('\n\n');
     } else if (typeof rawContent === 'object') {
-      normalizedAnswer = rawContent.text || rawContent.output || rawContent.message || JSON.stringify(rawContent, null, 2);
+      normalizedAnswer =
+        rawContent.text ||
+        rawContent.output ||
+        rawContent.message ||
+        rawContent.response ||
+        JSON.stringify(rawContent, null, 2);
     } else {
       normalizedAnswer = String(rawContent);
     }
@@ -187,8 +315,6 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
       },
     };
   } catch (err) {
-    clearTimeout(timeout);
-
     if (err.name === 'AbortError') {
       console.error(`[MCP Gateway] Timeout exceeded (${config.timeoutMs}ms) for ${slug}`);
       return {
@@ -196,18 +322,30 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
         status: 504,
         error: {
           code: 'TIMEOUT',
-          message: 'The agent response timed out. The system took longer than expected to formulate an answer.',
+          message: 'The Copilot took too long to respond. Please try again.',
         },
       };
     }
 
-    console.error(`[MCP Gateway] Network or runtime exception for ${slug}:`, err.message);
+    if (err.status === 401 || err.status === 403) {
+      console.error(`[MCP Gateway] Authentication failed for ${slug} (HTTP ${err.status})`);
+      return {
+        success: false,
+        status: 503,
+        error: {
+          code: 'DEMO_UNAVAILABLE',
+          message: 'Copilot is temporarily unavailable. Please try again later.',
+        },
+      };
+    }
+
+    console.error(`[MCP Gateway] Upstream error for ${slug}:`, err.message);
     return {
       success: false,
       status: 503,
       error: {
         code: 'DEMO_UNAVAILABLE',
-        message: 'The demo gateway is temporarily unable to connect to the agent backend.',
+        message: 'Copilot is temporarily unavailable. Please try again later.',
       },
     };
   }

@@ -1,9 +1,9 @@
 # AI Agents & MCP Gateway Architecture
 
 ## 1. Overview
-The Naïm Bsili portfolio provides a dedicated showcase for autonomous AI Agents, n8n orchestration pipelines, and personal AI systems. 
+The Naïm Bsili portfolio provides a dedicated showcase for autonomous AI Agents, n8n orchestration pipelines, and personal AI systems.
 
-Phase 14.1 introduces the **Server-Side MCP Gateway**, allowing visitors to interact with live agent workflows without exposing any API keys, webhook URLs, or MCP access tokens to the browser.
+Phase 14.2 implements **Real MCP Connection & Live Agent Demo Protocol**, connecting the React UI to live n8n workflows over JSON-RPC 2.0 without exposing API credentials or server endpoints to the client.
 
 ```text
 Visitor (Browser)
@@ -16,32 +16,36 @@ POST /api/agents/:slug/run
       │
       ▼
 MCP Gateway (Server-Side Middleware / Node Service)
-      ├── Rate Limiting (IP windowing)
+      ├── Rate Limiting (IP sliding window: 20 req/min)
       ├── Input Validation & Max Payload Size
-      ├── Tool Allowlist Enforcement
+      ├── Tool Allowlist & Schema Resolution
       └── Timeout Protection (30s)
       │
       ▼
-n8n MCP HTTP Server (JSON-RPC 2.0 with Bearer Auth)
+Real n8n MCP HTTP Endpoint
+      ├── 1. initialize (Protocol handshake)
+      ├── 2. notifications/initialized
+      ├── 3. tools/list (cached with 5min TTL)
+      └── 4. tools/call (real arguments & execution)
       │
       ▼
-n8n Agent Workflow / Gemini Reasoning / PostgreSQL Memory
+Real n8n Agent Workflow (Gemini reasoning / PostgreSQL vector memory / APIs)
       │
       ▼
 Structured Response Normalization
       │
       ▼
-Browser (Clean Result / Duration / Structured Text)
+Browser (Real Answer / Duration / Verified Tool Metadata)
 ```
 
 ---
 
-## 2. Security Model & Secrets Handling
+## 2. Zero-Trust Security Model & Secrets Handling
 
-### The Zero-Trust Browser Principle
-1. **Never Expose Tokens to Client**: `N8N_MCP_ACCESS_TOKEN` and `N8N_MCP_SERVER_URL` exist **strictly** inside server-side environment variables (`process.env`). They are never prefixed with `VITE_`.
-2. **No Arbitrary Proxying**: The browser cannot choose arbitrary tool names, endpoints, or JSON-RPC methods. The server enforces a strict per-agent tool allowlist.
-3. **No Direct n8n Calls**: Client applications never call n8n endpoints directly.
+1. **Server-Side Only**: `N8N_MCP_ACCESS_TOKEN` and `N8N_MCP_SERVER_URL` exist **strictly** inside server-side environment variables (`process.env`). They are never prefixed with `VITE_`.
+2. **Never Bundled or Exposed**: Secrets never touch React components, HTML, Vite client builds, browser storage (`localStorage`/`sessionStorage`), network responses, or client console logs.
+3. **No Arbitrary Tool Execution**: The browser cannot specify custom endpoints, tool names, or raw JSON-RPC methods. The server enforces a strict per-agent tool allowlist defined in `server/agentRegistry.js`.
+4. **Credential Rotation**: Any MCP token previously exposed or pasted in public channels must be revoked and replaced with a newly generated credential in `.env`.
 
 ---
 
@@ -70,15 +74,61 @@ export const AGENT_SERVER_REGISTRY = {
   'career-os': {
     slug: 'career-os',
     name: 'Career OS · Job Search Agent',
-    enabled: false, // Scheduled background pipeline
-    ...
+    enabled: false, // Scheduled background pipeline (interactive demo disabled)
+    mcpServerEnv: 'N8N_MCP_SERVER_URL',
+    mcpTokenEnv: 'N8N_MCP_ACCESS_TOKEN',
+    allowedTools: ['fetch_job_digest', 'score_job_fit'],
+    defaultTool: 'fetch_job_digest',
+    timeoutMs: 30000,
+    maxInputLength: 500,
   },
 };
 ```
 
 ---
 
-## 4. API Contract
+## 4. MCP Diagnostic CLI (`npm run mcp:check`)
+
+A server-side diagnostic command is included to verify endpoint health, authentication, handshake, and tool discovery before testing the frontend:
+
+```bash
+npm run mcp:check
+```
+
+### Example Diagnostic Output (When Configured):
+```text
+====================================================
+  MCP DIAGNOSTIC CHECK (Phase 14.2)
+====================================================
+
+MCP server: CONFIGURED
+Endpoint host: n8n.example.com
+Endpoint path: /mcp-server/http
+Token provided: YES (masked)
+
+Step 1: Testing MCP initialization (`initialize`)...
+HTTP Status: 200 OK
+MCP initialization: SUCCESS
+Server Info: n8n-mcp-server (1.0.0)
+Protocol version: 2024-11-05
+
+Step 2: Discovering tools (`tools/list`)...
+Tools discovered: 4
+
+Available tools:
+- ask_copilot_assistant: Answers user queries about Naïm's portfolio and skills
+    Parameters: prompt, query
+- search_projects: Semantic search across portfolio case studies
+    Parameters: query
+- query_knowledge_base: Fetches deep background information
+    Parameters: topic
+- get_copilot_summary: Generates an executive bio summary
+    Parameters: focus
+```
+
+---
+
+## 5. API Contracts
 
 ### Request: `POST /api/agents/:slug/run`
 ```json
@@ -95,56 +145,39 @@ export const AGENT_SERVER_REGISTRY = {
   "data": {
     "agent": "naim-copilot",
     "tool": "ask_copilot_assistant",
-    "answer": "Naïm has built several AI and automation systems...",
-    "durationMs": 450,
-    "timestamp": "2026-09-29T00:15:00.000Z"
+    "answer": "Naïm has designed and engineered several autonomous AI and automation systems...",
+    "durationMs": 1420,
+    "timestamp": "2026-09-29T00:30:00.000Z"
   }
 }
 ```
 
-### Response Error (Controlled Codes):
+### Response Error (Normalized & Safe):
 ```json
 {
   "success": false,
   "status": 503,
   "error": {
     "code": "DEMO_UNAVAILABLE",
-    "message": "The demo gateway is temporarily unable to connect to the agent backend."
+    "message": "Copilot is temporarily unavailable. Please try again later."
   }
 }
 ```
 
 ---
 
-## 5. Rate Limiting & Input Protections
-- **Rate Limiter**: Sliding window allowing up to 20 requests per minute per IP. Returns `429 RATE_LIMITED` when exceeded.
-- **Payload Constraint**: Maximum input length enforced per agent (default 1,000 characters); maximum HTTP body size of 50KB.
-- **Timeout Safeguard**: 30-second hard execution abort prevents hung sockets.
+## 6. Production Deployment Requirements
 
----
+The MCP Gateway requires a server runtime (Node.js, Express, or Serverless API function) capable of reading private environment variables:
 
-## 6. Local Development & Deployment
-
-### Development Mode
-In local development, the MCP Gateway runs seamlessly inside the Vite dev server via the custom `api-gateway-middleware` plugin in `vite.config.js`.
-
-```bash
-npm run dev
-# Starts frontend and API gateway on http://localhost:5173
+```text
+Frontend (Vite React Build / Static CDN)
+      │
+      ▼
+Server / API Function (e.g. Node.js on VPS / Docker / Vercel API / Cloud Functions)
+      │  (Holds N8N_MCP_SERVER_URL and N8N_MCP_ACCESS_TOKEN in private environment)
+      ▼
+n8n MCP HTTP Endpoint
 ```
 
-### Standalone Server Mode
-For production or serverless container deployments, the standalone Node server can be executed:
-
-```bash
-npm run api
-# Starts dedicated API listener on http://localhost:3001
-```
-
----
-
-## 7. How to Add a New Agent Demo
-1. **CMS Record**: Create the agent in `/admin/agents/new` and set `demo_type` to `internal` with route `/agents/:slug/demo`.
-2. **Server Registry**: Add the agent entry in `server/agentRegistry.js` with its allowed MCP tools and environment mapping.
-3. **Workflow Integration**: Configure the corresponding tools in n8n HTTP MCP Server.
-4. **Publish**: Set status to `published` in the Admin CMS.
+*In local development, the gateway runs within Vite's development server (`vite.config.js`). In standalone production, run `npm run api` or mount `handleApiRequest` inside an Express/Fastify/Next.js/Cloud Function backend.*

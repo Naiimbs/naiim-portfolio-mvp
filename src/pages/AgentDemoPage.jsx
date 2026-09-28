@@ -68,50 +68,18 @@ export default function AgentDemoPage() {
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        // If server gateway returns demo unavailable / unconfigured, provide structured graceful response
-        if (data?.error?.code === 'DEMO_UNAVAILABLE' || !response.ok) {
-          // For naim-copilot, fallback gracefully to verified mock logic if backend MCP is unconfigured
-          if (slug === 'naim-copilot') {
-            const fallbackAnswer = answerFor(textToRun);
-            setResult({
-              agent: slug,
-              answer: fallbackAnswer,
-              durationMs: 320,
-              timestamp: new Date().toISOString(),
-              isSimulated: true,
-            });
-            setStatus('success');
-          } else {
-            setError(data?.error || { message: 'Demo is currently in maintenance mode.' });
-            setStatus('error');
-          }
-        } else {
-          setError(data.error);
-          setStatus('error');
-        }
+        setError(data?.error || { message: 'Copilot is temporarily unavailable. Please try again later.' });
+        setStatus('error');
       } else {
         setResult(data.data);
         setStatus('success');
       }
     } catch (err) {
-      // Local network error fallback
-      if (slug === 'naim-copilot') {
-        const fallbackAnswer = answerFor(textToRun);
-        setResult({
-          agent: slug,
-          answer: fallbackAnswer,
-          durationMs: 300,
-          timestamp: new Date().toISOString(),
-          isSimulated: true,
-        });
-        setStatus('success');
-      } else {
-        setError({
-          code: 'NETWORK_ERROR',
-          message: 'Unable to connect to the agent gateway. Please check your internet connection.',
-        });
-        setStatus('error');
-      }
+      setError({
+        code: 'NETWORK_ERROR',
+        message: 'Unable to connect to the agent gateway. Please check your internet connection.',
+      });
+      setStatus('error');
     } finally {
       setLoading(false);
     }
