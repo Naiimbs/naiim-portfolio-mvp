@@ -2,6 +2,8 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import PlaceholderPage from './pages/PlaceholderPage';
+import AgentsPage from './pages/AgentsPage';
+import AgentCaseStudyPage from './pages/AgentCaseStudyPage';
 import CaseStudyRenderer from './components/case-study/CaseStudyRenderer';
 
 // Admin CMS
@@ -14,6 +16,8 @@ import AdminProjects from './admin/pages/AdminProjects';
 import AdminProjectEditor from './admin/pages/AdminProjectEditor';
 import AdminCaseStudies from './admin/pages/AdminCaseStudies';
 import AdminCaseStudyEditor from './admin/pages/AdminCaseStudyEditor';
+import AdminAgents from './admin/pages/AdminAgents';
+import AdminAgentEditor from './admin/pages/AdminAgentEditor';
 import AdminMedia from './admin/pages/AdminMedia';
 
 export default function App() {
@@ -24,8 +28,8 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/work" element={<PlaceholderPage title="Selected Work" description="Case studies & digital products directory." />} />
         <Route path="/work/:slug" element={<CaseStudyRenderer />} />
-        <Route path="/agents" element={<PlaceholderPage title="AI Agents" description="Intelligent agents & automation systems." />} />
-        <Route path="/agents/:slug" element={<PlaceholderPage title="AI Agent" description="Dedicated agent showcase." />} />
+        <Route path="/agents" element={<AgentsPage />} />
+        <Route path="/agents/:slug" element={<AgentCaseStudyPage />} />
         <Route path="/plugins" element={<PlaceholderPage title="Figma Plugins" description="Tools and utilities built for design systems." />} />
         <Route path="/blog" element={<PlaceholderPage title="Blog & Articles" description="Writing about design, AI and technology." />} />
         <Route path="/blog/:slug" element={<PlaceholderPage title="Article" description="Post details." />} />
@@ -43,6 +47,9 @@ export default function App() {
             <Route path="projects/:id" element={<AdminProjectEditor />} />
             <Route path="case-studies" element={<AdminCaseStudies />} />
             <Route path="case-studies/:id" element={<AdminCaseStudyEditor />} />
+            <Route path="agents" element={<AdminAgents />} />
+            <Route path="agents/new" element={<AdminAgentEditor />} />
+            <Route path="agents/:id" element={<AdminAgentEditor />} />
             <Route path="media" element={<AdminMedia />} />
           </Route>
         </Route>

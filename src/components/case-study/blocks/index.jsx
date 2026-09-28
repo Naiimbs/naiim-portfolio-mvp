@@ -8,6 +8,8 @@ import ProcessBlock from './ProcessBlock';
 import TechStackBlock from './TechStackBlock';
 import CTABlock from './CTABlock';
 import SpacerBlock from './SpacerBlock';
+import WorkflowBlock from './WorkflowBlock';
+import DemoBlock from './DemoBlock';
 
 function UnsupportedBlock({ block }) {
   return (
@@ -31,6 +33,8 @@ export const blockRegistry = {
   technology_tags: TechStackBlock,
   cta: CTABlock,
   spacer: SpacerBlock,
+  workflow: WorkflowBlock,
+  demo: DemoBlock,
   custom: UnsupportedBlock,
   custom_case_study_block: UnsupportedBlock,
 };
@@ -51,5 +55,7 @@ export {
   TechStackBlock,
   CTABlock,
   SpacerBlock,
+  WorkflowBlock,
+  DemoBlock,
   UnsupportedBlock,
 };

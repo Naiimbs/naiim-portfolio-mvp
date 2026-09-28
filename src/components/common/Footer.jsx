@@ -16,6 +16,7 @@ export default function Footer() {
             <>
               <a href="#work">Work</a>
               <a href="#case-studies">Case Studies</a>
+              <Link to="/agents">Agents</Link>
               <a href="#copilot">Copilot</a>
               <a href="#career">Career</a>
               <a href="#lab">Lab</a>
@@ -25,6 +26,7 @@ export default function Footer() {
             <>
               <Link to="/work">Work</Link>
               <Link to="/work">Case Studies</Link>
+              <Link to="/agents">Agents</Link>
               <Link to="/copilot">Copilot</Link>
               <Link to="/#career">Career</Link>
               <Link to="/#lab">Lab</Link>

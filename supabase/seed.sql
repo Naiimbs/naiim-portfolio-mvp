@@ -249,4 +249,21 @@ BEGIN
             (sec_tech, 'technology_tags', '{"tags": ["Figma", "OutSystems", "UX/UI", "Responsive Design", "Design Systems"]}'::jsonb, 1, true);
     END IF;
 
+    -- 10. SEED AI AGENTS & AGENT CASE STUDIES
+    INSERT INTO public.agents (id, slug, name, short_description, description, category, status, year, role, tools, workflow_platform, demo_type, demo_url, github_url, is_featured, sort_order, seo_title, seo_description, canonical_path)
+    VALUES
+        ('10000000-0000-0000-0000-000000000001', 'naim-copilot', 'Naïm Copilot', 'A personal AI agent that connects memory, knowledge, projects and actions so work can be queried and updated through conversational interfaces.', 'A personal AI agent built with n8n, PostgreSQL and Google Gemini.', 'Conversational Agent', 'published', 2026, 'AI Product Designer · Automation Architect', ARRAY['n8n', 'Google Gemini', 'PostgreSQL', 'Telegram', 'RAG', 'MCP'], 'n8n', 'internal', '/copilot', 'https://github.com/naiimbsili', true, 1, 'Naïm Copilot — Personal AI System & Workflow Automation', 'A personal AI agent connecting memory, knowledge and actions.', '/agents/naim-copilot'),
+        ('10000000-0000-0000-0000-000000000002', 'career-os', 'Career OS · Job Search Agent', 'An automated workflow agent that aggregates job opportunities, eliminates duplicates, scores fit using AI, and delivers a curated daily digest.', 'An intelligent pipeline designed to remove the repetitive chore of manual career searching.', 'Automation & Scoring Agent', 'published', 2026, 'Product Designer · AI Workflow Builder', ARRAY['n8n', 'Google Gemini', 'PostgreSQL', 'Job APIs', 'Telegram', 'Email'], 'n8n', 'none', null, 'https://github.com/naiimbsili', true, 2, 'Career OS · Daily Job Search Agent — Naïm Bsili', 'An automated career search workflow that collects, scores, and delivers daily job opportunities.', '/agents/career-os')
+    ON CONFLICT (slug) DO UPDATE SET
+        name = EXCLUDED.name,
+        short_description = EXCLUDED.short_description,
+        status = EXCLUDED.status;
+
+    -- Seed Agent Case Study for Naïm Copilot
+    INSERT INTO public.agent_case_studies (agent_id, subtitle, seo_title, seo_description, canonical_path, status)
+    VALUES
+        ('10000000-0000-0000-0000-000000000001', 'A personal AI agent that connects memory, knowledge, projects and actions.', 'Naïm Copilot — AI Agent Case Study', 'A personal AI agent connecting memory, knowledge and actions.', '/agents/naim-copilot', 'published'),
+        ('10000000-0000-0000-0000-000000000002', 'An automated career search workflow that collects and scores job opportunities.', 'Career OS — AI Agent Case Study', 'An automated career search pipeline built with n8n and Gemini.', '/agents/career-os', 'published')
+    ON CONFLICT (agent_id) DO NOTHING;
+
 END $$;

@@ -35,6 +35,11 @@ export default function AdminSidebar() {
           <span>Case Studies</span>
         </NavLink>
 
+        <NavLink to="/admin/agents" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
+          <i className="bi bi-robot"></i>
+          <span>AI Agents</span>
+        </NavLink>
+
         <NavLink to="/admin/media" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
           <i className="bi bi-images"></i>
           <span>Media</span>

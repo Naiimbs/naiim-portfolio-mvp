@@ -193,3 +193,25 @@ Phase 13C provides an explicit migration pipeline:
   - Full CRUD permissions via `profiles.role IN ('admin', 'editor')`.
   - Can draft, preview, reorder, edit, and publish content.
 
+---
+
+## 10. AI Agents CMS Architecture (Phase 14)
+
+### 1. Data Model
+Dedicated tables manage autonomous agents and their associated case study breakdowns:
+- `public.agents`: Stores metadata, category, workflow platform (`n8n`), demo configuration (`none`, `internal`, `external`, `embedded`), and source repository URLs.
+- `public.agent_case_studies`: 1-to-1 extension storing SEO, hero media, and canonical paths.
+- `public.agent_case_study_sections`: Ordered, togglable semantic sections (`hero`, `challenge`, `workflow`, `demo`, `technology`).
+- `public.agent_section_blocks`: Generic JSONB block entities (`text`, `image`, `process`, `tech_stack`, `workflow`, `demo`).
+
+### 2. Specialized Agent Blocks
+- `WorkflowBlock`: Renders structured visual decision flow diagrams (`Trigger → AI Agent → Memory → Action → Response`).
+- `DemoBlock`: Renders interactive live demo cards for launching internal prototypes (`/copilot`) or trusted external demos.
+
+### 3. Public & Admin Routing
+- `/agents`: Public directory showcasing active AI agents with live demo indicators.
+- `/agents/:slug`: Comprehensive case study detailing problem context, workflow architecture, tools, and live testing.
+- `/admin/agents`: Admin directory for managing, previewing, and drafting agents.
+- `/admin/agents/:id`: Visual Agent editor for metadata, demo URLs, and section/block graphs.
+
+

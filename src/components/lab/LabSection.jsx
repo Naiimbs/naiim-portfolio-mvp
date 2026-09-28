@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import LabCard from './LabCard';
 import PluginCard from './PluginCard';
 import { plugins } from '../../data/plugins';
@@ -24,9 +25,9 @@ export default function LabSection() {
             <h2>Naïm Lab</h2>
             <p>Tools, experiments and ideas at the intersection of design, AI and technology.</p>
           </div>
-          <span className="text-link d-none d-md-inline">
-            More experiments <i className="bi bi-arrow-right"></i>
-          </span>
+          <Link to="/agents" className="text-link d-none d-md-inline">
+            Explore AI Agents <i className="bi bi-arrow-right"></i>
+          </Link>
         </div>
 
         <div className="row g-3">

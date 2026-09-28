@@ -47,6 +47,9 @@ export default function Navbar() {
               )}
             </li>
             <li className="nav-item">
+              <Link className="nav-link" to="/agents" onClick={closeNav}>Agents</Link>
+            </li>
+            <li className="nav-item">
               {isHome ? (
                 <a className="nav-link" href="#copilot" onClick={closeNav}>Copilot</a>
               ) : (

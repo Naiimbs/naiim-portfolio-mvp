@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getAdminProjects } from '../../services/projects';
 import { getAdminCaseStudies } from '../../services/caseStudies';
+import { getAdminAgents } from '../../services/agents';
 import { getAdminMedia } from '../../services/media';
 import { isSupabaseConfigured } from '../../lib/supabase';
 
@@ -11,6 +12,7 @@ export default function AdminDashboard() {
     publishedCount: 0,
     draftsCount: 0,
     caseStudiesCount: 0,
+    agentsCount: 0,
     mediaCount: 0,
   });
   const [loading, setLoading] = useState(true);
@@ -18,9 +20,10 @@ export default function AdminDashboard() {
   useEffect(() => {
     async function loadData() {
       setLoading(true);
-      const [projRes, csRes, mediaRes] = await Promise.all([
+      const [projRes, csRes, agentRes, mediaRes] = await Promise.all([
         getAdminProjects(),
         getAdminCaseStudies(),
+        getAdminAgents(),
         getAdminMedia(),
       ]);
 
@@ -33,6 +36,7 @@ export default function AdminDashboard() {
         publishedCount: published,
         draftsCount: drafts,
         caseStudiesCount: csRes.data?.length || 0,
+        agentsCount: agentRes.data?.length || 0,
         mediaCount: mediaRes.data?.length || 0,
       });
       setLoading(false);
@@ -73,6 +77,11 @@ export default function AdminDashboard() {
         </div>
 
         <div className="admin-stat-card">
+          <div className="admin-stat-label">AI Agents</div>
+          <div className="admin-stat-value text-success">{loading ? '—' : stats.agentsCount}</div>
+        </div>
+
+        <div className="admin-stat-card">
           <div className="admin-stat-label">Media Assets</div>
           <div className="admin-stat-value">{loading ? '—' : stats.mediaCount}</div>
         </div>
@@ -81,7 +90,7 @@ export default function AdminDashboard() {
       <div className="admin-card">
         <h3 className="fs-5 fw-bold mb-2" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Quick Navigation</h3>
         <p className="text-muted small mb-4">
-          Manage your portfolio content, case studies and media assets.
+          Manage your portfolio content, case studies, intelligent agents and media assets.
         </p>
 
         <div className="d-flex flex-wrap gap-3">
@@ -90,6 +99,9 @@ export default function AdminDashboard() {
           </Link>
           <Link to="/admin/case-studies" className="admin-btn admin-btn-secondary">
             <i className="bi bi-journal-richtext"></i> Manage Case Studies
+          </Link>
+          <Link to="/admin/agents" className="admin-btn admin-btn-secondary">
+            <i className="bi bi-robot"></i> Manage AI Agents
           </Link>
           <Link to="/admin/media" className="admin-btn admin-btn-secondary">
             <i className="bi bi-images"></i> Media Library
