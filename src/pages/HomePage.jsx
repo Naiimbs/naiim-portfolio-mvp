@@ -5,6 +5,9 @@ import SelectedWorkSection from '../components/work/SelectedWorkSection';
 import CaseStudiesStrip from '../components/work/CaseStudiesStrip';
 import CopilotWidget from '../components/copilot/CopilotWidget';
 import CareerCard from '../components/career/CareerCard';
+import LabSection from '../components/lab/LabSection';
+import AboutSection from '../components/about/AboutSection';
+import ContactSection from '../components/common/ContactSection';
 
 export default function HomePage() {
   return (
@@ -26,6 +29,10 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <LabSection />
+      <AboutSection />
+      <ContactSection />
     </MainLayout>
   );
 }
