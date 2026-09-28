@@ -26,7 +26,7 @@ export default function AdminProjects() {
     <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h2 className="fs-4 text-white mb-1">Projects Directory</h2>
+          <h2 className="fs-4 fw-bold mb-1" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Projects Directory</h2>
           <p className="text-muted small mb-0">Manage all portfolio projects and metadata.</p>
         </div>
         <Link to="/admin/projects/new" className="admin-btn admin-btn-primary">
@@ -75,7 +75,7 @@ export default function AdminProjects() {
               {projects.map((p) => (
                 <tr key={p.id || p.slug}>
                   <td>
-                    <strong className="text-white">{p.title}</strong>
+                    <strong>{p.title}</strong>
                     {p.kicker && <div className="text-muted small" style={{ fontSize: '0.75rem' }}>{p.kicker}</div>}
                   </td>
                   <td>

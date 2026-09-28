@@ -27,7 +27,7 @@ export default function AdminGuard() {
       <div className="admin-login-wrap">
         <div className="admin-login-box text-center">
           <i className="bi bi-shield-lock-fill text-danger fs-1 mb-3"></i>
-          <h3 className="text-white">Access Denied</h3>
+          <h3 className="fw-bold fs-4" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Access Denied</h3>
           <p className="text-muted small mt-2">
             Your account (<code>{user.email}</code>) has role <strong>{profile?.role || 'viewer'}</strong>, which is not authorized to access the CMS editor.
           </p>

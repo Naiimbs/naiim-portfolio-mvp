@@ -116,7 +116,7 @@ export default function AdminProjectEditor() {
           <Link to="/admin/projects" className="text-muted small text-decoration-none">
             ← Back to projects
           </Link>
-          <h2 className="fs-4 text-white mt-1 mb-0">
+          <h2 className="fs-4 fw-bold mt-1 mb-0" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
             {id === 'new' ? 'Create Project' : `Edit: ${formData.title || id}`}
           </h2>
         </div>
@@ -312,7 +312,7 @@ export default function AdminProjectEditor() {
                 checked={formData.is_featured}
                 onChange={handleChange}
               />
-              <label className="form-check-label text-white ms-2" htmlFor="is_featured">
+              <label className="form-check-label fw-semibold ms-2" htmlFor="is_featured">
                 Featured on Homepage
               </label>
             </div>

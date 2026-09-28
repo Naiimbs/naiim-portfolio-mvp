@@ -26,7 +26,7 @@ export default function AdminCaseStudies() {
     <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h2 className="fs-4 text-white mb-1">Case Studies Directory</h2>
+          <h2 className="fs-4 fw-bold mb-1" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Case Studies Directory</h2>
           <p className="text-muted small mb-0">Overview of standard and bespoke flagship case studies.</p>
         </div>
       </div>
@@ -66,7 +66,7 @@ export default function AdminCaseStudies() {
               {caseStudies.map((cs) => (
                 <tr key={cs.id || cs.slug}>
                   <td>
-                    <strong className="text-white">{cs.title || cs.slug}</strong>
+                    <strong>{cs.title || cs.slug}</strong>
                     {cs.subtitle && <div className="text-muted small" style={{ fontSize: '0.75rem' }}>{cs.subtitle}</div>}
                   </td>
                   <td>

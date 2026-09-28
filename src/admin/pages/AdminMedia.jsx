@@ -21,7 +21,7 @@ export default function AdminMedia() {
     <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h2 className="fs-4 text-white mb-1">Media Library</h2>
+          <h2 className="fs-4 fw-bold mb-1" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Media Library</h2>
           <p className="text-muted small mb-0">Assets stored in Supabase Storage (<code>portfolio-media</code>).</p>
         </div>
       </div>
@@ -69,7 +69,7 @@ export default function AdminMedia() {
                     />
                   </td>
                   <td>
-                    <strong className="text-white">{m.filename}</strong>
+                    <strong>{m.filename}</strong>
                     {m.storage_path && (
                       <div className="text-muted small" style={{ fontSize: '0.75rem' }}>
                         {m.storage_path}

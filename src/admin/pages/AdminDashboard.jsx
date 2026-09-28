@@ -79,7 +79,7 @@ export default function AdminDashboard() {
       </div>
 
       <div className="admin-card">
-        <h3 className="fs-5 text-white mb-3">Quick Navigation</h3>
+        <h3 className="fs-5 fw-bold mb-2" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Quick Navigation</h3>
         <p className="text-muted small mb-4">
           Manage your portfolio content, case studies and media assets.
         </p>
