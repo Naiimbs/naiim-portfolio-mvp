@@ -9,7 +9,7 @@ export default function AdminMCPConnections() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [testingKey, setTestingKey] = useState(null);
-  const [testResult, setTestResult] = useState(null);
+  const [testResults, setTestResults] = useState({});
 
   useEffect(() => {
     loadConnections();
@@ -41,21 +41,29 @@ export default function AdminMCPConnections() {
 
   const handleTestConnection = async (connKey) => {
     setTestingKey(connKey);
-    setTestResult(null);
 
     try {
       const res = await fetch(`/api/admin/mcp-connections/${connKey}/test`, {
         method: 'POST',
       });
       const data = await res.json();
-      setTestResult({ key: connKey, ...data });
+      setTestResults((prev) => ({
+        ...prev,
+        [connKey]: {
+          ...data,
+          lastChecked: new Date().toLocaleTimeString(),
+        },
+      }));
     } catch (err) {
-      setTestResult({
-        key: connKey,
-        success: false,
-        status: 'error',
-        error: { message: err.message || 'Network error during connection test' },
-      });
+      setTestResults((prev) => ({
+        ...prev,
+        [connKey]: {
+          success: false,
+          status: 'error',
+          error: { message: err.message || 'Network error during connection test' },
+          lastChecked: new Date().toLocaleTimeString(),
+        },
+      }));
     } finally {
       setTestingKey(null);
     }
@@ -88,59 +96,6 @@ export default function AdminMCPConnections() {
         </div>
       )}
 
-      {testResult && (
-        <div
-          className={`admin-alert ${
-            testResult.status === 'connected'
-              ? 'admin-alert-success'
-              : testResult.status === 'not_configured'
-              ? 'admin-alert-warning'
-              : 'admin-alert-error'
-          } mb-4`}
-        >
-          <div className="d-flex justify-content-between align-items-start w-100">
-            <div>
-              <div className="fw-bold mb-1">
-                {testResult.status === 'connected' && '✓ MCP Connection Active & Verified'}
-                {testResult.status === 'not_configured' && '⚠ Server Secret Not Configured in .env'}
-                {testResult.status === 'unavailable' && '✕ MCP Connection Unavailable'}
-                {testResult.status === 'error' && '✕ Connection Test Failed'}
-              </div>
-              <div className="small mb-2">
-                Connection Key: <code>{testResult.key}</code>
-                {testResult.info?.host && ` · Host: ${testResult.info.host}`}
-              </div>
-
-              {testResult.tools && (
-                <div>
-                  <div className="fw-bold small text-dark mb-1">
-                    Discovered Tools ({testResult.toolsCount}):
-                  </div>
-                  <div className="d-flex flex-wrap gap-1">
-                    {testResult.tools.map((t) => (
-                      <span key={t.name} className="badge bg-light text-dark border small font-monospace">
-                        {t.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {testResult.error && (
-                <div className="small text-danger mt-1">{testResult.error.message}</div>
-              )}
-            </div>
-            <button
-              type="button"
-              className="btn btn-sm btn-link text-muted p-0"
-              onClick={() => setTestResult(null)}
-            >
-              <i className="bi bi-x-lg"></i>
-            </button>
-          </div>
-        </div>
-      )}
-
       {loading ? (
         <div className="admin-card text-center py-5 text-muted">
           <div className="spinner-border text-success mb-3" role="status"></div>
@@ -155,69 +110,125 @@ export default function AdminMCPConnections() {
           actionTo="/admin/mcp-connections/new"
         />
       ) : (
-        <div className="admin-table-wrap">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Connection Name</th>
-                <th>Provider</th>
-                <th>Connection Key</th>
-                <th>Server URL Hint</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {connections.map((conn) => (
-                <tr key={conn.id || conn.slug}>
-                  <td>
-                    <strong>{conn.name}</strong>
+        <div className="row g-4">
+          {connections.map((conn) => {
+            const result = testResults[conn.connection_key];
+            const isTesting = testingKey === conn.connection_key;
+
+            return (
+              <div key={conn.id || conn.slug} className="col-lg-6">
+                <div className="admin-card h-100 d-flex flex-column justify-content-between">
+                  <div>
+                    {/* Card Header */}
+                    <div className="d-flex justify-content-between align-items-start mb-3">
+                      <div>
+                        <div className="d-flex align-items-center gap-2 mb-1">
+                          <h3 className="fs-5 fw-bold mb-0 text-dark">{conn.name}</h3>
+                          <span className="badge bg-light text-dark border small font-monospace">
+                            {conn.provider || 'n8n'}
+                          </span>
+                        </div>
+                        <div className="text-muted small font-monospace">
+                          Key: <code>{conn.connection_key}</code>
+                        </div>
+                      </div>
+
+                      <span className={`admin-badge ${conn.is_active ? 'published' : 'draft'}`}>
+                        {conn.is_active ? 'Active' : 'Inactive'}
+                      </span>
+                    </div>
+
                     {conn.description && (
-                      <div className="text-muted small text-truncate" style={{ maxWidth: '280px', fontSize: '0.75rem' }}>
-                        {conn.description}
+                      <p className="text-muted small mb-3">{conn.description}</p>
+                    )}
+
+                    {/* Server URL Hint & Credential Status */}
+                    <div className="p-2 rounded bg-light border small mb-3 font-monospace">
+                      <div className="d-flex justify-content-between text-muted mb-1">
+                        <span>Host Hint:</span>
+                        <strong className="text-dark">{conn.server_url_hint || 'N/A'}</strong>
+                      </div>
+                      <div className="d-flex justify-content-between text-muted">
+                        <span>Credential:</span>
+                        <span className="text-success fw-bold">● Configured (Server-Side)</span>
+                      </div>
+                    </div>
+
+                    {/* Test Results Output */}
+                    {result && (
+                      <div
+                        className={`p-2 rounded border small mb-3 ${
+                          result.status === 'connected'
+                            ? 'bg-success-subtle border-success'
+                            : result.status === 'not_configured'
+                            ? 'bg-warning-subtle border-warning'
+                            : 'bg-danger-subtle border-danger'
+                        }`}
+                      >
+                        <div className="d-flex justify-content-between align-items-center mb-1">
+                          <strong>
+                            {result.status === 'connected' && '🟢 Connected & Verified'}
+                            {result.status === 'not_configured' && '🟡 Secret Missing in .env'}
+                            {result.status === 'unavailable' && '🔴 Server Unavailable'}
+                            {result.status === 'error' && '✕ Test Failed'}
+                          </strong>
+                          <span className="text-muted" style={{ fontSize: '0.7rem' }}>
+                            Checked: {result.lastChecked}
+                          </span>
+                        </div>
+
+                        {result.tools && (
+                          <div className="mt-1">
+                            <span className="text-muted">Tools ({result.toolsCount}):</span>{' '}
+                            <span className="font-monospace text-dark">
+                              {result.tools.map((t) => t.name).join(', ')}
+                            </span>
+                          </div>
+                        )}
+
+                        {result.error && (
+                          <div className="text-danger small mt-1">{result.error.message}</div>
+                        )}
                       </div>
                     )}
-                  </td>
-                  <td>
-                    <span className="badge bg-light text-dark border px-2 py-1" style={{ fontSize: '0.72rem' }}>
-                      {conn.provider || 'n8n'}
-                    </span>
-                  </td>
-                  <td>
-                    <code className="text-dark font-monospace">{conn.connection_key}</code>
-                  </td>
-                  <td>
-                    <span className="text-muted small font-monospace">
-                      {conn.server_url_hint || '—'}
-                    </span>
-                  </td>
-                  <td>
-                    <span className={`admin-badge ${conn.is_active ? 'published' : 'draft'}`}>
-                      {conn.is_active ? 'Active' : 'Inactive'}
-                    </span>
-                  </td>
-                  <td>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="d-flex justify-content-between align-items-center pt-3 border-top gap-2">
                     <div className="d-flex gap-2">
                       <button
                         type="button"
                         onClick={() => handleTestConnection(conn.connection_key)}
-                        disabled={testingKey === conn.connection_key}
-                        className="admin-btn admin-btn-secondary py-1 px-2"
-                        title="Test Live Handshake & Discover Tools"
+                        disabled={isTesting}
+                        className="admin-btn admin-btn-secondary py-1 px-3"
+                        title="Test Connection & Handshake"
                       >
-                        {testingKey === conn.connection_key ? (
-                          <span className="spinner-border spinner-border-sm" role="status"></span>
+                        {isTesting ? (
+                          <>
+                            <span className="spinner-border spinner-border-sm me-1" role="status"></span> Testing...
+                          </>
                         ) : (
                           <>
-                            <i className="bi bi-broadcast"></i> Test
+                            <i className="bi bi-broadcast me-1"></i> Test Connection
                           </>
                         )}
                       </button>
 
+                      <button
+                        type="button"
+                        onClick={() => handleTestConnection(conn.connection_key)}
+                        disabled={isTesting}
+                        className="btn btn-sm btn-outline-dark py-1 px-2"
+                        title="Discover Exposed Tools"
+                      >
+                        <i className="bi bi-tools me-1"></i> Discover Tools
+                      </button>
+                    </div>
+
+                    <div className="d-flex gap-2">
                       <Link
                         to={`/admin/mcp-connections/${conn.id || conn.slug}`}
                         className="admin-btn admin-btn-secondary py-1 px-2"
-                        title="Edit Connection"
                       >
                         <i className="bi bi-pencil-square"></i> Edit
                       </Link>
@@ -226,16 +237,15 @@ export default function AdminMCPConnections() {
                         type="button"
                         onClick={() => handleDelete(conn.id, conn.name)}
                         className="admin-btn admin-btn-secondary text-danger py-1 px-2"
-                        title="Delete Connection"
                       >
                         <i className="bi bi-trash"></i>
                       </button>
                     </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

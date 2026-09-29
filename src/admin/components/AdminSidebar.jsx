@@ -45,6 +45,11 @@ export default function AdminSidebar() {
           <span>MCP Connections</span>
         </NavLink>
 
+        <NavLink to="/admin/runtime-console" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
+          <i className="bi bi-terminal"></i>
+          <span>Runtime Console</span>
+        </NavLink>
+
         <NavLink to="/admin/media" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
           <i className="bi bi-images"></i>
           <span>Media</span>

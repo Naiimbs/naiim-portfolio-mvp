@@ -1,12 +1,13 @@
 import http from 'node:http';
 import { runAgentDemo, discoverMcpTools } from './mcpGateway.js';
 import { resolveMCPConnection, getSafeConnectionInfo } from './mcpConnections.js';
+import { FALLBACK_AGENT_REGISTRY } from './agentRegistry.js';
 
 const PORT = process.env.PORT || process.env.API_PORT || 3001;
 
 // Simple In-Memory Rate Limiter (Sliding Window per IP)
 const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
-const MAX_REQUESTS_PER_WINDOW = 20; // 20 requests/min
+const MAX_REQUESTS_PER_WINDOW = 30; // 30 requests/min
 const ipRequestMap = new Map();
 
 function isRateLimited(ip) {
@@ -46,6 +47,204 @@ function sendJson(res, statusCode, payload) {
   res.end(JSON.stringify(payload));
 }
 
+/**
+ * Executes a controlled runtime console command.
+ */
+async function executeConsoleCommand(rawCmd) {
+  const trimmed = (rawCmd || '').trim();
+  if (!trimmed) {
+    return { output: 'Please enter a command. Type "help" to see available commands.' };
+  }
+
+  const parts = trimmed.split(/\s+/);
+  const main = parts[0].toLowerCase();
+  const sub = parts[1] ? parts[1].toLowerCase() : null;
+  const target = parts[2] ? parts[2].toLowerCase() : null;
+
+  // 1. HELP
+  if (main === 'help') {
+    return {
+      output: [
+        'Available Runtime Commands:',
+        '  help                 Show this help overview',
+        '  status               Show portfolio & runtime health',
+        '  mcp status           Inspect active MCP connection status',
+        '  mcp tools            Discover available tools from active MCP server',
+        '  mcp test             Execute handshake & health check on active MCP connection',
+        '  agent list           List all registered AI Agents and demo status',
+        '  agent inspect <slug> View runtime configuration for a specific agent',
+        '  agent tools <slug>   List authorized tools for an agent',
+        '  agent test <slug>    Execute a live diagnostic query through the agent runtime',
+        '  clear                Clear the console screen',
+      ].join('\n'),
+    };
+  }
+
+  // 2. STATUS
+  if (main === 'status') {
+    const connInfo = getSafeConnectionInfo('n8n-main');
+    return {
+      output: [
+        'Runtime System Status:',
+        '  Environment: Node.js API Gateway',
+        `  Primary MCP Key: n8n-main`,
+        `  MCP Secret: ${connInfo.isConfigured ? 'Configured (Server-Side)' : 'Not Configured (Missing in .env)'}`,
+        `  MCP Host: ${connInfo.host || 'N/A'}`,
+        `  Gateway Status: Active (Port ${PORT})`,
+        `  Timestamp: ${new Date().toISOString()}`,
+      ].join('\n'),
+    };
+  }
+
+  // 3. MCP COMMANDS (mcp status | mcp tools | mcp test)
+  if (main === 'mcp') {
+    const connKey = target || sub === 'status' || sub === 'tools' || sub === 'test' ? 'n8n-main' : sub || 'n8n-main';
+    const resolved = resolveMCPConnection(connKey);
+    const connInfo = getSafeConnectionInfo(connKey);
+
+    if (sub === 'status') {
+      return {
+        output: [
+          `MCP Connection [${connKey}]:`,
+          `  Status: ${resolved.isConfigured ? 'Configured' : 'Not Configured'}`,
+          `  Host: ${connInfo.host || 'None (configure N8N_MCP_SERVER_URL in .env)'}`,
+          `  Token: ${connInfo.hasToken ? 'Masked / Server-Side' : 'Missing'}`,
+        ].join('\n'),
+      };
+    }
+
+    if (sub === 'tools') {
+      if (!resolved.isConfigured || !resolved.serverUrl) {
+        return {
+          output: `MCP server is not configured.\nConfigure N8N_MCP_SERVER_URL and N8N_MCP_ACCESS_TOKEN in server .env first.`,
+        };
+      }
+      try {
+        const tools = await discoverMcpTools(resolved.serverUrl, resolved.accessToken, 10000);
+        if (tools.length === 0) {
+          return { output: `Connected to MCP server, but 0 tools were returned by tools/list.` };
+        }
+        const lines = [`Discovered Tools (${tools.length}):`];
+        tools.forEach((t) => {
+          lines.push(`  ✓ ${t.name}${t.description ? ` — ${t.description}` : ''}`);
+        });
+        return { output: lines.join('\n') };
+      } catch (err) {
+        return { output: `MCP tool discovery failed: ${err.message}` };
+      }
+    }
+
+    if (sub === 'test') {
+      if (!resolved.isConfigured || !resolved.serverUrl) {
+        return {
+          output: `MCP connection test failed: Server-side credentials not found in .env.`,
+        };
+      }
+      try {
+        const tools = await discoverMcpTools(resolved.serverUrl, resolved.accessToken, 10000);
+        return {
+          output: [
+            `✓ MCP Connection [${connKey}] verified:`,
+            `  HTTP Handshake: Success (initialize -> initialized)`,
+            `  Host: ${connInfo.host}`,
+            `  Tools Discovered: ${tools.length}`,
+            `  Status: 🟢 Connected & Healthy`,
+          ].join('\n'),
+        };
+      } catch (err) {
+        return { output: `✕ MCP Connection test failed: ${err.message}` };
+      }
+    }
+
+    return { output: `Unknown MCP subcommand "${sub}". Type "help" for syntax.` };
+  }
+
+  // 4. AGENT COMMANDS (agent list | agent inspect <slug> | agent tools <slug> | agent test <slug>)
+  if (main === 'agent') {
+    if (sub === 'list') {
+      const slugs = Object.keys(FALLBACK_AGENT_REGISTRY);
+      const lines = ['Registered Agents:'];
+      slugs.forEach((slug) => {
+        const ag = FALLBACK_AGENT_REGISTRY[slug];
+        lines.push(`  • ${ag.name} (${slug})`);
+        lines.push(`    Runtime: ${ag.runtimeType} | Enabled: ${ag.enabled ? 'YES' : 'NO'} | Default Tool: ${ag.defaultTool || 'none'}`);
+      });
+      return { output: lines.join('\n') };
+    }
+
+    const agentSlug = parts[2] || (sub !== 'list' && sub !== 'help' ? sub : null);
+    if (!agentSlug) {
+      return { output: 'Please specify an agent slug. Example: `agent inspect naim-copilot`' };
+    }
+
+    if (sub === 'inspect') {
+      const ag = FALLBACK_AGENT_REGISTRY[agentSlug];
+      if (!ag) return { output: `Agent "${agentSlug}" not found in registry.` };
+      return {
+        output: [
+          `Agent: ${ag.name} [${ag.slug}]`,
+          `  Runtime: ${ag.runtimeType}`,
+          `  Connection Key: ${ag.connectionKey || 'None'}`,
+          `  Default Tool: ${ag.defaultTool || 'None'}`,
+          `  Allowed Tools (${ag.allowedTools.length}): ${ag.allowedTools.join(', ') || 'None'}`,
+          `  Timeout: ${ag.timeoutMs}ms`,
+          `  Max Input: ${ag.maxInputLength} chars`,
+          `  Execution Enabled: ${ag.enabled ? 'YES' : 'NO'}`,
+        ].join('\n'),
+      };
+    }
+
+    if (sub === 'tools') {
+      const ag = FALLBACK_AGENT_REGISTRY[agentSlug];
+      if (!ag) return { output: `Agent "${agentSlug}" not found.` };
+      if (ag.allowedTools.length === 0) {
+        return { output: `Agent "${ag.name}" has 0 allowed tools configured.` };
+      }
+      return {
+        output: [
+          `Allowed Tools for "${ag.name}":`,
+          ...ag.allowedTools.map((t) => `  ✓ ${t}${t === ag.defaultTool ? ' (DEFAULT)' : ''}`),
+        ].join('\n'),
+      };
+    }
+
+    if (sub === 'test') {
+      const testPrompt = 'Give me a short summary of what this agent can do.';
+      const trace = [
+        `[${new Date().toLocaleTimeString()}] Initiating test for agent: ${agentSlug}`,
+        `[${new Date().toLocaleTimeString()}] Resolving runtime configuration...`,
+      ];
+
+      const result = await runAgentDemo({
+        slug: agentSlug,
+        input: testPrompt,
+      });
+
+      if (!result.success) {
+        trace.push(`[${new Date().toLocaleTimeString()}] ✕ Execution failed: ${result.error?.message || 'Unknown error'}`);
+        trace.push(`[${new Date().toLocaleTimeString()}] Status: ${result.status || 500} (${result.error?.code || 'ERROR'})`);
+        return { output: trace.join('\n') };
+      }
+
+      trace.push(`[${new Date().toLocaleTimeString()}] ✓ Tool executed: ${result.data?.tool}`);
+      trace.push(`[${new Date().toLocaleTimeString()}] ✓ Response duration: ${result.data?.durationMs}ms`);
+      trace.push(`\nResponse:\n${result.data?.answer}`);
+      return { output: trace.join('\n') };
+    }
+
+    return { output: `Unknown agent subcommand "${sub}". Type "help" for syntax.` };
+  }
+
+  // 5. CLEAR (Handled on client side, but return clean message)
+  if (main === 'clear') {
+    return { output: '', clear: true };
+  }
+
+  return {
+    output: `Unknown command "${trimmed}".\nType "help" to see all available commands.`,
+  };
+}
+
 export function handleApiRequest(req, res) {
   const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const pathname = parsedUrl.pathname;
@@ -77,7 +276,6 @@ export function handleApiRequest(req, res) {
       });
     }
 
-    // Attempt live handshake and tool discovery
     (async () => {
       try {
         const tools = await discoverMcpTools(resolved.serverUrl, resolved.accessToken, 10000);
@@ -104,13 +302,33 @@ export function handleApiRequest(req, res) {
     return true;
   }
 
-  // 3. Agent Execution: POST /api/agents/:slug/run
+  // 3. Admin Runtime Console: POST /api/admin/runtime-console
+  if (method === 'POST' && pathname === '/api/admin/runtime-console') {
+    let bodyRaw = '';
+    req.on('data', (chunk) => {
+      bodyRaw += chunk;
+      if (bodyRaw.length > 10 * 1024) req.destroy();
+    });
+
+    req.on('end', async () => {
+      try {
+        const body = bodyRaw ? JSON.parse(bodyRaw) : {};
+        const cmd = body.command || '';
+        const resData = await executeConsoleCommand(cmd);
+        sendJson(res, 200, { success: true, ...resData });
+      } catch (err) {
+        sendJson(res, 400, { success: false, output: `Error: ${err.message}` });
+      }
+    });
+    return true;
+  }
+
+  // 4. Agent Execution: POST /api/agents/:slug/run
   const runMatch = pathname.match(/^\/api\/agents\/([a-zA-Z0-9_-]+)\/run$/);
   if (method === 'POST' && runMatch) {
     const slug = runMatch[1];
     const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
 
-    // Apply Rate Limiting
     if (isRateLimited(clientIp)) {
       return sendJson(res, 429, {
         success: false,

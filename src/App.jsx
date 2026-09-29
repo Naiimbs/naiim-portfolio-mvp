@@ -21,6 +21,7 @@ import AdminAgents from './admin/pages/AdminAgents';
 import AdminAgentEditor from './admin/pages/AdminAgentEditor';
 import AdminMCPConnections from './admin/pages/AdminMCPConnections';
 import AdminMCPConnectionEditor from './admin/pages/AdminMCPConnectionEditor';
+import AdminRuntimeConsole from './admin/pages/AdminRuntimeConsole';
 import AdminMedia from './admin/pages/AdminMedia';
 
 export default function App() {
@@ -57,6 +58,7 @@ export default function App() {
             <Route path="mcp-connections" element={<AdminMCPConnections />} />
             <Route path="mcp-connections/new" element={<AdminMCPConnectionEditor />} />
             <Route path="mcp-connections/:id" element={<AdminMCPConnectionEditor />} />
+            <Route path="runtime-console" element={<AdminRuntimeConsole />} />
             <Route path="media" element={<AdminMedia />} />
           </Route>
         </Route>

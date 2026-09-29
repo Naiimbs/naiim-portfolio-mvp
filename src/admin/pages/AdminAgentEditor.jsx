@@ -53,6 +53,7 @@ export default function AdminAgentEditor() {
 
   // MCP Connections & Runtime State
   const [mcpConnections, setMcpConnections] = useState([]);
+  const [discoveredTools, setDiscoveredTools] = useState([]);
   const [runtimeConfig, setRuntimeConfig] = useState({
     runtime_type: 'none',
     mcp_connection_id: '',
@@ -62,15 +63,18 @@ export default function AdminAgentEditor() {
     max_input_length: 1000,
     is_enabled: false,
   });
-  const [allowedToolsInput, setAllowedToolsInput] = useState('ask_copilot_assistant, search_projects, query_knowledge_base, get_copilot_summary');
-  const [testingRuntime, setTestingRuntime] = useState(false);
-  const [runtimeTestResult, setRuntimeTestResult] = useState(null);
+
+  // Connection & Agent Testing States
+  const [connectionStatus, setConnectionStatus] = useState('untested'); // 'untested' | 'connected' | 'not_configured' | 'unavailable'
+  const [testingConnection, setTestingConnection] = useState(false);
+  const [testingAgent, setTestingAgent] = useState(false);
+  const [agentTestResult, setAgentTestResult] = useState(null);
 
   // Drawer / Modals
   const [isAddSectionOpen, setIsAddSectionOpen] = useState(false);
   const [activeSection, setActiveSection] = useState(null);
   const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
-  const [mediaTarget, setMediaTarget] = useState(null); // 'thumbnail' | 'hero'
+  const [mediaTarget, setMediaTarget] = useState(null);
 
   useEffect(() => {
     loadConnections();
@@ -131,7 +135,6 @@ export default function AdminAgentEditor() {
             max_input_length: r.max_input_length || 1000,
             is_enabled: Boolean(r.is_enabled),
           });
-          setAllowedToolsInput((r.allowed_tools || []).join(', '));
         }
       }
     } else {
@@ -158,34 +161,82 @@ export default function AdminAgentEditor() {
     setIsDirty(true);
   };
 
-  const handleAllowedToolsChange = (e) => {
-    setAllowedToolsInput(e.target.value);
-    const parsed = e.target.value.split(',').map((t) => t.trim()).filter(Boolean);
-    setRuntimeConfig((prev) => ({ ...prev, allowed_tools: parsed }));
+  // Tool Selection Toggle
+  const handleToggleTool = (toolName) => {
+    setRuntimeConfig((prev) => {
+      const exists = prev.allowed_tools.includes(toolName);
+      const updated = exists
+        ? prev.allowed_tools.filter((t) => t !== toolName)
+        : [...prev.allowed_tools, toolName];
+
+      // If removed default tool, pick first available
+      let defTool = prev.default_tool;
+      if (exists && defTool === toolName) {
+        defTool = updated.length > 0 ? updated[0] : '';
+      }
+
+      return {
+        ...prev,
+        allowed_tools: updated,
+        default_tool: defTool,
+      };
+    });
     setIsDirty(true);
   };
 
-  const handleTestAgentRuntime = async () => {
+  // Live Test Connection Handshake & Tool Discovery
+  const handleTestConnection = async () => {
     const matchedConn = mcpConnections.find((c) => c.id === runtimeConfig.mcp_connection_id);
     const connKey = matchedConn?.connection_key || 'n8n-main';
 
-    setTestingRuntime(true);
-    setRuntimeTestResult(null);
+    setTestingConnection(true);
 
     try {
       const res = await fetch(`/api/admin/mcp-connections/${connKey}/test`, {
         method: 'POST',
       });
       const data = await res.json();
-      setRuntimeTestResult(data);
+      setConnectionStatus(data.status || 'unavailable');
+      if (data.tools && data.tools.length > 0) {
+        setDiscoveredTools(data.tools);
+      }
+    } catch {
+      setConnectionStatus('unavailable');
+    } finally {
+      setTestingConnection(false);
+    }
+  };
+
+  // Live Test Agent Execution
+  const handleTestAgent = async () => {
+    const targetSlug = formData.slug || 'naim-copilot';
+    setTestingAgent(true);
+    setAgentTestResult(null);
+
+    try {
+      const res = await fetch(`/api/agents/${targetSlug}/run`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          input: 'Give me a short summary of what this agent can do.',
+          tool: runtimeConfig.default_tool,
+        }),
+      });
+
+      const data = await res.json();
+      setAgentTestResult({
+        success: data.success,
+        data: data.data,
+        error: data.error,
+        tool: runtimeConfig.default_tool,
+      });
     } catch (err) {
-      setRuntimeTestResult({
+      setAgentTestResult({
         success: false,
-        status: 'error',
-        error: { message: err.message || 'Failed to execute test' },
+        error: { message: err.message || 'Network exception during test' },
       });
     } finally {
-      setTestingRuntime(false);
+      setTestingAgent(false);
     }
   };
 
@@ -227,8 +278,20 @@ export default function AdminAgentEditor() {
 
   const handleSave = async (e) => {
     if (e) e.preventDefault();
+
+    // Validation: Default tool must be included in allowed_tools if MCP is active
+    if (
+      runtimeConfig.runtime_type === 'mcp' &&
+      runtimeConfig.default_tool &&
+      !runtimeConfig.allowed_tools.includes(runtimeConfig.default_tool)
+    ) {
+      setError(`Validation Error: Default tool "${runtimeConfig.default_tool}" must be enabled in Allowed Tools.`);
+      return;
+    }
+
     setSaving(true);
     setSaveStatus('saving');
+    setError(null);
 
     const payload = {
       ...formData,
@@ -244,7 +307,6 @@ export default function AdminAgentEditor() {
     } else {
       const savedAgentId = res.data?.id || targetId;
 
-      // Save Runtime Configuration
       if (savedAgentId) {
         await saveAgentRuntimeConfig(savedAgentId, runtimeConfig);
       }
@@ -258,6 +320,17 @@ export default function AdminAgentEditor() {
     }
     setSaving(false);
   };
+
+  // Available Tools Pool (Discovered tools + default fallback list)
+  const defaultKnownTools = [
+    { name: 'ask_copilot_assistant', description: 'Answers portfolio, skills, and background questions.' },
+    { name: 'search_projects', description: 'Performs semantic vector search across portfolio case studies.' },
+    { name: 'query_knowledge_base', description: 'Queries deep background information and architecture notes.' },
+    { name: 'get_copilot_summary', description: 'Generates structured executive summaries.' },
+  ];
+
+  const effectiveToolsPool = discoveredTools.length > 0 ? discoveredTools : defaultKnownTools;
+  const activeConnection = mcpConnections.find((c) => c.id === runtimeConfig.mcp_connection_id);
 
   if (loading) {
     return (
@@ -319,7 +392,7 @@ export default function AdminAgentEditor() {
       {saveStatus === 'saved' && (
         <div className="admin-alert admin-alert-success mb-4">
           <i className="bi bi-check-circle-fill"></i>
-          <div>Agent and case study sections saved successfully.</div>
+          <div>Agent and runtime configuration saved successfully.</div>
         </div>
       )}
 
@@ -332,8 +405,9 @@ export default function AdminAgentEditor() {
 
       {/* Main Grid: Settings & Case Study Sections */}
       <div className="row g-4">
-        {/* Left Column: Core Agent Settings */}
+        {/* Left Column: Core Settings & 3-Step Runtime Builder */}
         <div className="col-lg-5">
+          {/* Metadata Card */}
           <div className="admin-card mb-4">
             <h3 className="fs-5 fw-bold mb-3" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Core Metadata</h3>
 
@@ -452,9 +526,9 @@ export default function AdminAgentEditor() {
             </div>
           </div>
 
-          {/* Demo & Repository Card */}
+          {/* Demo & Presentation Card */}
           <div className="admin-card mb-4">
-            <h3 className="fs-5 fw-bold mb-3" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Demo & Repository</h3>
+            <h3 className="fs-5 fw-bold mb-3" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Demo & Presentation</h3>
 
             <div className="mb-3">
               <label className="form-label small fw-bold">Demo Type</label>
@@ -465,7 +539,7 @@ export default function AdminAgentEditor() {
                 className="form-select admin-input"
               >
                 <option value="none">None (Case Study Only)</option>
-                <option value="internal">Internal Route (e.g. /copilot)</option>
+                <option value="internal">Internal Route (e.g. /agents/:slug/demo)</option>
                 <option value="external">External Link</option>
                 <option value="embedded">Embedded Safe Widget</option>
               </select>
@@ -480,7 +554,7 @@ export default function AdminAgentEditor() {
                   value={formData.demo_url}
                   onChange={handleFieldChange}
                   className="form-control admin-input font-monospace"
-                  placeholder="/copilot or https://..."
+                  placeholder="/agents/naim-copilot/demo"
                 />
               </div>
             )}
@@ -498,165 +572,310 @@ export default function AdminAgentEditor() {
             </div>
           </div>
 
-          {/* Runtime & MCP Configuration Card */}
-          <div className="admin-card mb-4">
+          {/* ========================================================================= */}
+          {/* VISUAL AGENT RUNTIME BUILDER (Phase 14.3.1) */}
+          {/* ========================================================================= */}
+          <div className="admin-card mb-4 border-2 border-success-subtle">
+            {/* Runtime Header & Live Summary Card */}
             <div className="d-flex justify-content-between align-items-center mb-3">
-              <h3 className="fs-5 fw-bold mb-0" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-                Runtime & MCP Connection
+              <h3 className="fs-5 fw-bold mb-0 text-dark" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                <i className="bi bi-cpu-fill text-success me-2"></i> Agent Runtime Builder
               </h3>
-              <button
-                type="button"
-                onClick={handleTestAgentRuntime}
-                disabled={testingRuntime || runtimeConfig.runtime_type !== 'mcp'}
-                className="admin-btn admin-btn-secondary py-1 px-2 small"
-                title="Test Bound MCP Connection"
-              >
-                {testingRuntime ? (
-                  <span className="spinner-border spinner-border-sm" role="status"></span>
-                ) : (
-                  <>
-                    <i className="bi bi-broadcast"></i> Test MCP
-                  </>
-                )}
-              </button>
+              <span className={`badge ${runtimeConfig.is_enabled ? 'bg-success' : 'bg-secondary'}`}>
+                {runtimeConfig.is_enabled ? 'Runtime Active' : 'Runtime Inactive'}
+              </span>
             </div>
 
-            {runtimeTestResult && (
-              <div
-                className={`admin-alert ${
-                  runtimeTestResult.status === 'connected'
-                    ? 'admin-alert-success'
-                    : runtimeTestResult.status === 'not_configured'
-                    ? 'admin-alert-warning'
-                    : 'admin-alert-error'
-                } mb-3`}
-              >
-                <div className="small w-100">
-                  <div className="fw-bold mb-1">
-                    {runtimeTestResult.status === 'connected' && '✓ MCP Server Active & Reachable'}
-                    {runtimeTestResult.status === 'not_configured' && '⚠ Connection Key Not Configured on Server'}
-                    {runtimeTestResult.status === 'unavailable' && '✕ Upstream MCP Server Unreachable'}
-                    {runtimeTestResult.status === 'error' && '✕ Test Failed'}
-                  </div>
-                  {runtimeTestResult.tools && (
-                    <div className="mt-1">
-                      Tools: <code>{runtimeTestResult.tools.map((t) => t.name).join(', ')}</code>
-                    </div>
-                  )}
-                  {runtimeTestResult.error && (
-                    <div className="text-danger mt-1">{runtimeTestResult.error.message}</div>
-                  )}
+            {/* Runtime Summary Box */}
+            <div className="p-3 mb-4 rounded bg-light border">
+              <div className="fw-bold small text-dark mb-2 text-uppercase tracking-wider">
+                <i className="bi bi-info-circle me-1"></i> Runtime Summary
+              </div>
+              <div className="row g-2 small">
+                <div className="col-6">
+                  <span className="text-muted">Runtime:</span>{' '}
+                  <strong className="text-dark">{runtimeConfig.runtime_type === 'mcp' ? 'MCP' : 'None'}</strong>
+                </div>
+                <div className="col-6">
+                  <span className="text-muted">Connection:</span>{' '}
+                  <strong className="text-dark font-monospace">{activeConnection?.connection_key || 'None'}</strong>
+                </div>
+                <div className="col-6">
+                  <span className="text-muted">Tools:</span>{' '}
+                  <strong className="text-dark">{runtimeConfig.allowed_tools.length} enabled</strong>
+                </div>
+                <div className="col-6">
+                  <span className="text-muted">Default Tool:</span>{' '}
+                  <strong className="text-dark font-monospace text-truncate d-inline-block" style={{ maxWidth: '120px' }}>
+                    {runtimeConfig.default_tool || 'None'}
+                  </strong>
+                </div>
+                <div className="col-6">
+                  <span className="text-muted">Live Demo:</span>{' '}
+                  <strong className="text-dark">{runtimeConfig.is_enabled ? 'Enabled' : 'Disabled'}</strong>
+                </div>
+                <div className="col-6">
+                  <span className="text-muted">Status:</span>{' '}
+                  <span className="badge bg-light text-dark border">
+                    {connectionStatus === 'connected' ? '🟢 Connected' : connectionStatus === 'not_configured' ? '🟡 Missing Secret' : '⚪ Ready'}
+                  </span>
                 </div>
               </div>
-            )}
+            </div>
 
-            <div className="mb-3">
-              <label className="form-label small fw-bold">Runtime Type</label>
-              <select
-                name="runtime_type"
-                value={runtimeConfig.runtime_type}
-                onChange={handleRuntimeChange}
-                className="form-select admin-input"
-              >
-                <option value="none">None / Scheduled Cron Pipeline</option>
-                <option value="mcp">Model Context Protocol (MCP)</option>
-              </select>
+            {/* STEP 01: Runtime Selection */}
+            <div className="mb-4 pb-3 border-bottom">
+              <div className="d-flex align-items-center gap-2 mb-2">
+                <span className="badge bg-dark rounded-pill">STEP 01</span>
+                <span className="fw-bold small">Runtime Engine</span>
+              </div>
+
+              <div className="btn-group w-100 mb-2" role="group">
+                <button
+                  type="button"
+                  onClick={() => setRuntimeConfig((prev) => ({ ...prev, runtime_type: 'none', is_enabled: false }))}
+                  className={`btn btn-sm ${runtimeConfig.runtime_type === 'none' ? 'btn-dark' : 'btn-outline-secondary'}`}
+                >
+                  None (Static / Background)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRuntimeConfig((prev) => ({ ...prev, runtime_type: 'mcp' }))}
+                  className={`btn btn-sm ${runtimeConfig.runtime_type === 'mcp' ? 'btn-success' : 'btn-outline-secondary'}`}
+                >
+                  <i className="bi bi-hdd-network me-1"></i> Model Context Protocol (MCP)
+                </button>
+              </div>
+              <div className="small text-muted">
+                {runtimeConfig.runtime_type === 'mcp'
+                  ? '✓ MCP Runtime enabled. Connects to n8n HTTP MCP server to query vector tools.'
+                  : 'This agent operates as a background workflow or documented case study without live interactive execution.'}
+              </div>
             </div>
 
             {runtimeConfig.runtime_type === 'mcp' && (
               <>
-                <div className="mb-3">
-                  <label className="form-label small fw-bold">MCP Connection</label>
+                {/* STEP 02: Connection Selection */}
+                <div className="mb-4 pb-3 border-bottom">
+                  <div className="d-flex align-items-center justify-content-between mb-2">
+                    <div className="d-flex align-items-center gap-2">
+                      <span className="badge bg-dark rounded-pill">STEP 02</span>
+                      <span className="fw-bold small">MCP Connection</span>
+                    </div>
+                    <Link to="/admin/mcp-connections" className="small text-decoration-none">
+                      Manage Connections <i className="bi bi-box-arrow-up-right"></i>
+                    </Link>
+                  </div>
+
                   <select
                     name="mcp_connection_id"
                     value={runtimeConfig.mcp_connection_id || ''}
                     onChange={handleRuntimeChange}
-                    className="form-select admin-input"
+                    className="form-select admin-input mb-2"
                   >
-                    <option value="">-- Select Connection --</option>
+                    <option value="">-- Select Registered MCP Connection --</option>
                     {mcpConnections.map((conn) => (
                       <option key={conn.id} value={conn.id}>
                         {conn.name} ({conn.connection_key})
                       </option>
                     ))}
                   </select>
-                  {mcpConnections.length === 0 && (
-                    <div className="form-text small text-muted">
-                      No MCP connections found. <Link to="/admin/mcp-connections/new">Add a connection</Link>.
+
+                  {/* Connection Status Indicator & Test Button */}
+                  <div className="d-flex justify-content-between align-items-center p-2 rounded bg-light border small">
+                    <div>
+                      <span className="text-muted me-1">Status:</span>
+                      {connectionStatus === 'connected' && <span className="text-success fw-bold">🟢 Connected</span>}
+                      {connectionStatus === 'untested' && <span className="text-secondary fw-bold">🟡 Not Tested</span>}
+                      {connectionStatus === 'not_configured' && <span className="text-warning fw-bold">⚪ Not Configured (.env)</span>}
+                      {connectionStatus === 'unavailable' && <span className="text-danger fw-bold">🔴 Unavailable</span>}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={handleTestConnection}
+                      disabled={testingConnection || !runtimeConfig.mcp_connection_id}
+                      className="btn btn-sm btn-outline-dark py-0 px-2 small"
+                    >
+                      {testingConnection ? (
+                        <span className="spinner-border spinner-border-sm" role="status"></span>
+                      ) : (
+                        <>
+                          <i className="bi bi-broadcast me-1"></i> Test Connection
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* STEP 03: Tools Selection & Discovery */}
+                <div className="mb-4 pb-3 border-bottom">
+                  <div className="d-flex align-items-center justify-content-between mb-2">
+                    <div className="d-flex align-items-center gap-2">
+                      <span className="badge bg-dark rounded-pill">STEP 03</span>
+                      <span className="fw-bold small">Available Tools</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleTestConnection}
+                      disabled={testingConnection}
+                      className="btn btn-sm btn-link text-decoration-none p-0 small"
+                    >
+                      <i className="bi bi-arrow-repeat me-1"></i> Refresh Tools
+                    </button>
+                  </div>
+
+                  <div className="d-flex flex-column gap-2 mb-3">
+                    {effectiveToolsPool.map((tool) => {
+                      const isAllowed = runtimeConfig.allowed_tools.includes(tool.name);
+                      return (
+                        <div
+                          key={tool.name}
+                          onClick={() => handleToggleTool(tool.name)}
+                          className={`p-2 rounded border cursor-pointer d-flex align-items-start gap-2 ${
+                            isAllowed ? 'bg-success-subtle border-success' : 'bg-light border-light-subtle'
+                          }`}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isAllowed}
+                            onChange={() => {}}
+                            className="form-check-input mt-1"
+                          />
+                          <div className="flex-grow-1">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <span className="fw-bold font-monospace small">{tool.name}</span>
+                              {tool.name === runtimeConfig.default_tool && (
+                                <span className="badge bg-success text-white small" style={{ fontSize: '0.65rem' }}>
+                                  DEFAULT
+                                </span>
+                              )}
+                            </div>
+                            {tool.description && <div className="text-muted small" style={{ fontSize: '0.75rem' }}>{tool.description}</div>}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Default Tool Selector */}
+                  <div className="mb-3">
+                    <label className="form-label small fw-bold">Default Tool</label>
+                    <select
+                      name="default_tool"
+                      value={runtimeConfig.default_tool || ''}
+                      onChange={handleRuntimeChange}
+                      className="form-select admin-input font-monospace"
+                    >
+                      <option value="">-- Choose Default Tool --</option>
+                      {runtimeConfig.allowed_tools.map((t) => (
+                        <option key={t} value={t}>
+                          {t}
+                        </option>
+                      ))}
+                    </select>
+                    {runtimeConfig.default_tool && !runtimeConfig.allowed_tools.includes(runtimeConfig.default_tool) && (
+                      <div className="text-danger small mt-1">Default tool must be enabled in Allowed Tools.</div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Execution Settings */}
+                <div className="mb-3">
+                  <div className="fw-bold small mb-2 text-uppercase tracking-wider">Execution Controls</div>
+                  <div className="row g-2 mb-3">
+                    <div className="col-6">
+                      <label className="form-label small">Timeout (5–60s)</label>
+                      <input
+                        type="number"
+                        name="timeout_ms"
+                        value={runtimeConfig.timeout_ms / 1000}
+                        onChange={(e) =>
+                          setRuntimeConfig((prev) => ({
+                            ...prev,
+                            timeout_ms: Math.max(5000, Math.min(60000, Number(e.target.value) * 1000)),
+                          }))
+                        }
+                        className="form-control admin-input font-monospace"
+                        min="5"
+                        max="60"
+                      />
+                    </div>
+                    <div className="col-6">
+                      <label className="form-label small">Max Input (100–5000)</label>
+                      <input
+                        type="number"
+                        name="max_input_length"
+                        value={runtimeConfig.max_input_length}
+                        onChange={handleRuntimeChange}
+                        className="form-control admin-input font-monospace"
+                        min="100"
+                        max="5000"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-check form-switch mb-3">
+                    <input
+                      type="checkbox"
+                      id="is_enabled"
+                      name="is_enabled"
+                      checked={runtimeConfig.is_enabled}
+                      onChange={handleRuntimeChange}
+                      className="form-check-input"
+                    />
+                    <label htmlFor="is_enabled" className="form-check-label small fw-bold">
+                      Live Demo Execution Enabled
+                    </label>
+                  </div>
+                </div>
+
+                {/* Test Agent Action */}
+                <div className="pt-2 border-top">
+                  <button
+                    type="button"
+                    onClick={handleTestAgent}
+                    disabled={testingAgent || !runtimeConfig.is_enabled}
+                    className="btn btn-sm btn-dark w-100 py-2 fw-bold"
+                  >
+                    {testingAgent ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-1" role="status"></span> Executing Live Agent Test...
+                      </>
+                    ) : (
+                      <>
+                        <i className="bi bi-play-circle-fill me-1"></i> Test Agent (Query Live Copilot)
+                      </>
+                    )}
+                  </button>
+
+                  {agentTestResult && (
+                    <div className="mt-3 p-3 rounded bg-white border small">
+                      <div className="d-flex justify-content-between align-items-center mb-1">
+                        <strong className="text-dark">Agent Test Result</strong>
+                        <span className={`badge ${agentTestResult.success ? 'bg-success' : 'bg-danger'}`}>
+                          {agentTestResult.success ? 'Success' : 'Failed'}
+                        </span>
+                      </div>
+                      <div className="text-muted font-monospace mb-2" style={{ fontSize: '0.72rem' }}>
+                        Tool: {agentTestResult.tool} · Duration: {agentTestResult.data?.durationMs || 0}ms
+                      </div>
+                      <div
+                        className="p-2 rounded bg-light border font-monospace text-dark"
+                        style={{ whiteSpace: 'pre-wrap', maxHeight: '180px', overflowY: 'auto' }}
+                      >
+                        {agentTestResult.data?.answer || agentTestResult.error?.message || 'No response returned.'}
+                      </div>
                     </div>
                   )}
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label small fw-bold">Default Tool Name</label>
-                  <input
-                    type="text"
-                    name="default_tool"
-                    value={runtimeConfig.default_tool || ''}
-                    onChange={handleRuntimeChange}
-                    className="form-control admin-input font-monospace"
-                    placeholder="e.g. ask_copilot_assistant"
-                  />
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label small fw-bold">Allowed Tools (comma-separated)</label>
-                  <input
-                    type="text"
-                    value={allowedToolsInput}
-                    onChange={handleAllowedToolsChange}
-                    className="form-control admin-input font-monospace"
-                    placeholder="ask_copilot_assistant, search_projects, query_knowledge_base"
-                  />
-                  <div className="form-text small text-muted">
-                    Only tools listed here can be invoked by the public gateway.
-                  </div>
-                </div>
-
-                <div className="row g-3 mb-3">
-                  <div className="col-6">
-                    <label className="form-label small fw-bold">Timeout (ms)</label>
-                    <input
-                      type="number"
-                      name="timeout_ms"
-                      value={runtimeConfig.timeout_ms}
-                      onChange={handleRuntimeChange}
-                      className="form-control admin-input font-monospace"
-                      placeholder="30000"
-                    />
-                  </div>
-                  <div className="col-6">
-                    <label className="form-label small fw-bold">Max Input (chars)</label>
-                    <input
-                      type="number"
-                      name="max_input_length"
-                      value={runtimeConfig.max_input_length}
-                      onChange={handleRuntimeChange}
-                      className="form-control admin-input font-monospace"
-                      placeholder="1000"
-                    />
-                  </div>
-                </div>
-
-                <div className="form-check form-switch mb-3">
-                  <input
-                    type="checkbox"
-                    id="is_enabled"
-                    name="is_enabled"
-                    checked={runtimeConfig.is_enabled}
-                    onChange={handleRuntimeChange}
-                    className="form-check-input"
-                  />
-                  <label htmlFor="is_enabled" className="form-check-label small fw-bold">
-                    Enable Live Interactive Execution
-                  </label>
                 </div>
               </>
             )}
           </div>
         </div>
 
-        {/* Right Column: Visual Case Study Sections & Blocks */}
+        {/* Right Column: Case Study Sections */}
         <div className="col-lg-7">
           <div className="admin-card mb-4">
             <div className="d-flex justify-content-between align-items-center mb-3">
@@ -688,7 +907,7 @@ export default function AdminAgentEditor() {
         </div>
       </div>
 
-      {/* Section Drawer for editing blocks inside selected section */}
+      {/* Section Drawer */}
       {activeSection && (
         <SectionDrawer
           section={activeSection}
