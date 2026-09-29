@@ -1,3 +1,6 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
 /**
  * Server-side Secret Resolver for MCP Connections.
  *
@@ -7,6 +10,34 @@
  * 3. Never return or expose tokens to client applications.
  * 4. Extensible to Vault, AWS Secrets Manager, or Docker secrets in the future.
  */
+
+// Helper to ensure .env variables are loaded in server runtime
+function ensureEnvLoaded() {
+  try {
+    const envPath = path.resolve(process.cwd(), '.env');
+    if (fs.existsSync(envPath)) {
+      const content = fs.readFileSync(envPath, 'utf-8');
+      const lines = content.split('\n');
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith('#')) continue;
+        const equalsIdx = trimmed.indexOf('=');
+        if (equalsIdx > 0) {
+          const key = trimmed.slice(0, equalsIdx).trim();
+          let val = trimmed.slice(equalsIdx + 1).trim();
+          if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+            val = val.slice(1, -1);
+          }
+          if (!process.env[key]) {
+            process.env[key] = val;
+          }
+        }
+      }
+    }
+  } catch (e) {
+    // Ignore error in environments without filesystem access
+  }
+}
 
 // Connection key to server environment variable mappings
 const CONNECTION_ENV_MAP = {
@@ -31,6 +62,7 @@ const CONNECTION_ENV_MAP = {
  * @returns {{ serverUrl: string|null, accessToken: string|null, isConfigured: boolean }}
  */
 export function resolveMCPConnection(connectionKey = 'n8n-main') {
+  ensureEnvLoaded();
   const envMapping = CONNECTION_ENV_MAP[connectionKey] || {
     serverUrlEnv: `${connectionKey.toUpperCase().replace(/[^A-Z0-9]/g, '_')}_SERVER_URL`,
     tokenEnv: `${connectionKey.toUpperCase().replace(/[^A-Z0-9]/g, '_')}_ACCESS_TOKEN`,

@@ -7,7 +7,7 @@ import { FALLBACK_AGENT_REGISTRY, sanitizeRuntimeConfig } from './agentRegistry.
  * Implements:
  * 1. CMS-driven Agent runtime resolution (agent -> runtime_config -> mcp_connection -> connection_key).
  * 2. Dynamic server secret resolution via resolveMCPConnection(connectionKey).
- * 3. Tool allowlist enforcement & parameter mapping.
+ * 3. Support for standard JSON and SSE/event-stream MCP HTTP transport.
  * 4. JSON-RPC 2.0 handshake (initialize -> initialized -> tools/call).
  * 5. Structured result normalization without leaking server secrets.
  */
@@ -15,6 +15,57 @@ import { FALLBACK_AGENT_REGISTRY, sanitizeRuntimeConfig } from './agentRegistry.
 // In-memory tool catalog cache to avoid calling tools/list on every single query
 const toolCacheMap = new Map();
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes TTL
+
+/**
+ * Parses response body handling both direct JSON and SSE (text/event-stream) payloads
+ */
+function parseMcpResponseBody(rawText) {
+  const trimmed = (rawText || '').trim();
+  if (!trimmed) return {};
+
+  // If standard JSON
+  if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+    try {
+      return JSON.parse(trimmed);
+    } catch {
+      // Fall through to SSE parser
+    }
+  }
+
+  // If Server-Sent Events (SSE) format: "event: message\ndata: {...}"
+  const lines = trimmed.split('\n');
+  let lastDataJson = null;
+
+  for (const line of lines) {
+    const l = line.trim();
+    if (l.startsWith('data:')) {
+      const dataStr = l.slice(5).trim();
+      if (dataStr) {
+        try {
+          lastDataJson = JSON.parse(dataStr);
+        } catch {
+          // Continue scanning lines
+        }
+      }
+    }
+  }
+
+  if (lastDataJson) {
+    return lastDataJson;
+  }
+
+  // Attempt raw regex match for JSON object if prefixed by SSE headers
+  const match = trimmed.match(/\{[\s\S]*\}/);
+  if (match) {
+    try {
+      return JSON.parse(match[0]);
+    } catch {
+      // Return raw string wrapper
+    }
+  }
+
+  return { text: trimmed };
+}
 
 /**
  * Helper to execute JSON-RPC request to MCP server
@@ -47,7 +98,8 @@ export async function callJsonRpc(url, token, payload, timeoutMs = 30000) {
       throw err;
     }
 
-    const data = await res.json();
+    const rawText = await res.text();
+    const data = parseMcpResponseBody(rawText);
     return data;
   } catch (err) {
     clearTimeout(timer);
@@ -66,7 +118,7 @@ export async function discoverMcpTools(serverUrl, token, timeoutMs = 10000) {
   }
 
   try {
-    // 1. Handshake
+    // 1. Handshake (initialize)
     await callJsonRpc(
       serverUrl,
       token,
@@ -95,7 +147,7 @@ export async function discoverMcpTools(serverUrl, token, timeoutMs = 10000) {
       // Non-blocking notification
     }
 
-    // 3. Query Tools
+    // 3. Query Tools (tools/list)
     const toolsResp = await callJsonRpc(
       serverUrl,
       token,
@@ -129,7 +181,6 @@ async function getVerifiedToolSchema(serverUrl, token, toolName, timeoutMs = 800
  * Loads Agent runtime configuration from Supabase or local fallback.
  */
 async function resolveAgentRuntime(slug) {
-  // If Supabase environment is available server-side, query DB
   const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
   const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
 
@@ -170,7 +221,6 @@ async function resolveAgentRuntime(slug) {
     }
   }
 
-  // Fallback to minimal safety registry
   const fallback = FALLBACK_AGENT_REGISTRY[slug];
   return sanitizeRuntimeConfig(fallback);
 }

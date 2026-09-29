@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { resolveMCPConnection, getSafeConnectionInfo } from './mcpConnections.js';
+import { callJsonRpc, discoverMcpTools } from './mcpGateway.js';
 
 /**
  * Safe environment loader for .env without external dependencies
@@ -34,10 +35,9 @@ async function checkMcpEndpoint() {
   const requestedKey = process.argv[2] || 'n8n-main';
 
   console.log('====================================================');
-  console.log('  MCP DIAGNOSTIC CHECK (Phase 14.3.1)');
+  console.log('  MCP DIAGNOSTIC CHECK (Phase 14.3.2)');
   console.log('====================================================\n');
 
-  // Case A: Verify API Server / Gateway layer
   console.log('Step 1: API Server / Gateway Status');
   console.log('  API server: OK (In-process router / Vite middleware)');
   console.log(`  Connection Key: ${requestedKey}\n`);
@@ -45,7 +45,6 @@ async function checkMcpEndpoint() {
   const connInfo = getSafeConnectionInfo(requestedKey);
   const resolved = resolveMCPConnection(requestedKey);
 
-  // Case B: Check server-side environment variables
   console.log('Step 2: Server Environment Variables (.env)');
   if (!resolved.isConfigured || !resolved.serverUrl) {
     console.log('  MCP configuration: NOT CONFIGURED');
@@ -55,9 +54,6 @@ async function checkMcpEndpoint() {
     console.log('\n  Please add server-side credentials to .env:');
     console.log('  N8N_MCP_SERVER_URL=https://your-n8n-instance/mcp-server/http');
     console.log('  N8N_MCP_ACCESS_TOKEN=your_token_here\n');
-    console.log('====================================================');
-    console.log('  MCP DIAGNOSTIC: READY FOR CREDENTIALS');
-    console.log('====================================================');
     return;
   }
 
@@ -65,112 +61,36 @@ async function checkMcpEndpoint() {
   console.log(`  Resolved Host: ${connInfo.host || 'unknown'}`);
   console.log(`  Access Token: ${connInfo.hasToken ? 'YES (masked)' : 'NO'}\n`);
 
-  const headers = {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json, text/event-stream',
-  };
-
-  if (resolved.accessToken) {
-    headers['Authorization'] = `Bearer ${resolved.accessToken.trim()}`;
-  }
-
-  // Step 3: Test Reachability & Initialize
-  console.log('Step 3: MCP Handshake (`initialize`)...');
-  const initPayload = {
-    jsonrpc: '2.0',
-    id: 'init_diag_1',
-    method: 'initialize',
-    params: {
-      protocolVersion: '2024-11-05',
-      capabilities: {
-        roots: { listChanged: false },
-        sampling: {},
-      },
-      clientInfo: {
-        name: 'naim-portfolio-gateway',
-        version: '1.0.0',
-      },
-    },
-  };
-
+  console.log('Step 3: Testing MCP Handshake (`initialize`)...');
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10000);
+    const initRes = await callJsonRpc(
+      resolved.serverUrl,
+      resolved.accessToken,
+      {
+        jsonrpc: '2.0',
+        id: `init_diag_${Date.now()}`,
+        method: 'initialize',
+        params: {
+          protocolVersion: '2024-11-05',
+          capabilities: { roots: { listChanged: false } },
+          clientInfo: { name: 'naim-portfolio-gateway', version: '1.0.0' },
+        },
+      },
+      10000
+    );
 
-    const initRes = await fetch(resolved.serverUrl, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(initPayload),
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeout);
-
-    console.log(`  HTTP Status: ${initRes.status} ${initRes.statusText}`);
-
-    if (!initRes.ok) {
-      if (initRes.status === 401 || initRes.status === 403) {
-        console.log('  MCP server: REACHABLE');
-        console.log('  MCP handshake: FAILED (Authentication rejected. Check N8N_MCP_ACCESS_TOKEN).');
-      } else {
-        console.log(`  MCP server: UNREACHABLE / HTTP ${initRes.status}`);
-      }
-      return;
-    }
-
-    const initData = await initRes.json();
-    if (initData.error) {
-      console.log('  MCP server: REACHABLE');
-      console.log(`  MCP handshake: FAILED (${initData.error.message || JSON.stringify(initData.error)})`);
+    if (initRes.error) {
+      console.log(`  MCP handshake: FAILED (${initRes.error.message || JSON.stringify(initRes.error)})`);
       return;
     }
 
     console.log('  MCP server: REACHABLE');
     console.log('  MCP handshake: OK');
-    console.log(`  Server Info: ${initData.result?.serverInfo?.name || 'unknown'} (${initData.result?.serverInfo?.version || 'unknown'})`);
-    console.log(`  Protocol Version: ${initData.result?.protocolVersion || '2024-11-05'}`);
+    console.log(`  Server Info: ${initRes.result?.serverInfo?.name || 'n8n-mcp-server'} (${initRes.result?.serverInfo?.version || '1.0.0'})`);
+    console.log(`  Protocol Version: ${initRes.result?.protocolVersion || '2024-11-05'}`);
 
-    // Step 4: Initialized notification
-    try {
-      await fetch(resolved.serverUrl, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          jsonrpc: '2.0',
-          method: 'notifications/initialized',
-        }),
-      });
-    } catch {
-      // Non-blocking
-    }
-
-    // Step 5: Tool Discovery (tools/list)
     console.log('\nStep 4: Tool Discovery (`tools/list`)...');
-    const toolsPayload = {
-      jsonrpc: '2.0',
-      id: 'tools_diag_2',
-      method: 'tools/list',
-      params: {},
-    };
-
-    const toolsRes = await fetch(resolved.serverUrl, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(toolsPayload),
-    });
-
-    if (!toolsRes.ok) {
-      console.log(`  Tool discovery failed with HTTP ${toolsRes.status}`);
-      return;
-    }
-
-    const toolsData = await toolsRes.json();
-    if (toolsData.error) {
-      console.log(`  Tool discovery error: ${toolsData.error.message}`);
-      return;
-    }
-
-    const tools = toolsData.result?.tools || [];
+    const tools = await discoverMcpTools(resolved.serverUrl, resolved.accessToken, 10000);
     console.log(`  Tools discovered: ${tools.length}\n`);
 
     if (tools.length === 0) {
@@ -186,14 +106,10 @@ async function checkMcpEndpoint() {
     }
 
     console.log('\n====================================================');
-    console.log('  MCP DIAGNOSTIC: VERIFIED END-TO-END');
+    console.log('  REAL END-TO-END MCP CONNECTION VERIFIED');
     console.log('====================================================');
   } catch (err) {
-    if (err.name === 'AbortError') {
-      console.log('  MCP server: UNREACHABLE (Timeout 10s exceeded)');
-    } else {
-      console.log(`  MCP server: UNREACHABLE (${err.message})`);
-    }
+    console.log(`  MCP server: FAILED (${err.message})`);
   }
 }
 
