@@ -1,13 +1,14 @@
-import { AGENT_SERVER_REGISTRY } from './agentRegistry.js';
+import { resolveMCPConnection } from './mcpConnections.js';
+import { FALLBACK_AGENT_REGISTRY, sanitizeRuntimeConfig } from './agentRegistry.js';
 
 /**
- * Server-side MCP Gateway Service.
+ * Server-side MCP Gateway Service (Phase 14.3).
  *
- * Implements MCP Protocol (JSON-RPC 2.0 over HTTP) with lifecycle management:
- * 1. Safe secret resolution (server-side environment variables).
- * 2. Pre-execution input validation, rate limiting & length checks.
- * 3. Protocol handshake (initialize -> initialized notification -> tools/call).
- * 4. Automatic tool schema resolution & argument mapping.
+ * Implements:
+ * 1. CMS-driven Agent runtime resolution (agent -> runtime_config -> mcp_connection -> connection_key).
+ * 2. Dynamic server secret resolution via resolveMCPConnection(connectionKey).
+ * 3. Tool allowlist enforcement & parameter mapping.
+ * 4. JSON-RPC 2.0 handshake (initialize -> initialized -> tools/call).
  * 5. Structured result normalization without leaking server secrets.
  */
 
@@ -18,7 +19,7 @@ const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes TTL
 /**
  * Helper to execute JSON-RPC request to MCP server
  */
-async function callJsonRpc(url, token, payload, timeoutMs = 30000) {
+export async function callJsonRpc(url, token, payload, timeoutMs = 30000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -55,17 +56,17 @@ async function callJsonRpc(url, token, payload, timeoutMs = 30000) {
 }
 
 /**
- * Ensures MCP server handshake and retrieves available tool schema
+ * Performs MCP handshake and queries tools/list (cached)
  */
-async function getVerifiedToolSchema(serverUrl, token, toolName, timeoutMs = 10000) {
-  const cacheKey = `${serverUrl}::${toolName}`;
+export async function discoverMcpTools(serverUrl, token, timeoutMs = 10000) {
+  const cacheKey = serverUrl;
   const cached = toolCacheMap.get(cacheKey);
   if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
-    return cached.schema;
+    return cached.tools;
   }
 
   try {
-    // 1. Initialize MCP Session
+    // 1. Handshake
     await callJsonRpc(
       serverUrl,
       token,
@@ -87,59 +88,103 @@ async function getVerifiedToolSchema(serverUrl, token, toolName, timeoutMs = 100
       await callJsonRpc(
         serverUrl,
         token,
-        {
-          jsonrpc: '2.0',
-          method: 'notifications/initialized',
-        },
+        { jsonrpc: '2.0', method: 'notifications/initialized' },
         5000
       );
     } catch {
-      // Notification is non-blocking
+      // Non-blocking notification
     }
 
-    // 3. Query Tools List
+    // 3. Query Tools
     const toolsResp = await callJsonRpc(
       serverUrl,
       token,
-      {
-        jsonrpc: '2.0',
-        id: `tools_${Date.now()}`,
-        method: 'tools/list',
-        params: {},
-      },
+      { jsonrpc: '2.0', id: `tools_${Date.now()}`, method: 'tools/list', params: {} },
       timeoutMs
     );
 
     const tools = toolsResp.result?.tools || [];
-    const matchedTool = tools.find((t) => t.name === toolName);
-
-    if (matchedTool) {
-      toolCacheMap.set(cacheKey, {
-        schema: matchedTool,
-        timestamp: Date.now(),
-      });
-      return matchedTool;
-    }
-
-    // If tools exist but the requested one is not among them, return null
-    if (tools.length > 0) {
-      return null;
-    }
-
-    // If tools/list returned empty, return fallback permissive schema
-    return { name: toolName };
+    toolCacheMap.set(cacheKey, { tools, timestamp: Date.now() });
+    return tools;
   } catch (err) {
-    console.warn(`[MCP Gateway] Tool discovery skipped or failed: ${err.message}`);
+    console.warn(`[MCP Gateway] Tool discovery error: ${err.message}`);
+    throw err;
+  }
+}
+
+/**
+ * Resolves verified tool schema for a given tool name
+ */
+async function getVerifiedToolSchema(serverUrl, token, toolName, timeoutMs = 8000) {
+  try {
+    const tools = await discoverMcpTools(serverUrl, token, timeoutMs);
+    const matched = tools.find((t) => t.name === toolName);
+    return matched || { name: toolName };
+  } catch {
     return { name: toolName };
   }
 }
 
+/**
+ * Loads Agent runtime configuration from Supabase or local fallback.
+ */
+async function resolveAgentRuntime(slug) {
+  // If Supabase environment is available server-side, query DB
+  const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+  const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
+
+  if (supabaseUrl && supabaseKey) {
+    try {
+      const endpoint = `${supabaseUrl.replace(/\/$/, '')}/rest/v1/agents?slug=eq.${encodeURIComponent(slug)}&select=id,slug,name,status,agent_runtime_configs(*,mcp_connections(*))`;
+      const res = await fetch(endpoint, {
+        headers: {
+          apikey: supabaseKey,
+          Authorization: `Bearer ${supabaseKey}`,
+        },
+      });
+
+      if (res.ok) {
+        const rows = await res.json();
+        if (rows && rows.length > 0) {
+          const agentRow = rows[0];
+          const runtimeRow = agentRow.agent_runtime_configs?.[0] || agentRow.agent_runtime_configs;
+          const connRow = runtimeRow?.mcp_connections;
+
+          if (runtimeRow) {
+            return sanitizeRuntimeConfig({
+              slug: agentRow.slug,
+              name: agentRow.name,
+              runtime_type: runtimeRow.runtime_type,
+              connection_key: connRow?.connection_key || 'n8n-main',
+              allowed_tools: runtimeRow.allowed_tools,
+              default_tool: runtimeRow.default_tool,
+              timeout_ms: runtimeRow.timeout_ms,
+              max_input_length: runtimeRow.max_input_length,
+              is_enabled: runtimeRow.is_enabled && agentRow.status === 'published',
+            });
+          }
+        }
+      }
+    } catch (err) {
+      console.warn(`[MCP Gateway] Supabase runtime query failed (${err.message}). Using fallback.`);
+    }
+  }
+
+  // Fallback to minimal safety registry
+  const fallback = FALLBACK_AGENT_REGISTRY[slug];
+  return sanitizeRuntimeConfig(fallback);
+}
+
+/**
+ * Executes an AI Agent demo query via CMS runtime & MCP Gateway.
+ */
 export async function runAgentDemo({ slug, input, toolName, context = {} }) {
   const startTime = Date.now();
-  const config = AGENT_SERVER_REGISTRY[slug];
 
-  // 1. Validate Agent Existence & Status
-  if (!config) {
+  // 1. Resolve Agent Runtime from CMS
+  const runtimeConfig = await resolveAgentRuntime(slug);
+
+  if (!runtimeConfig) {
     return {
       success: false,
       status: 404,
@@ -150,18 +195,29 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
     };
   }
 
-  if (!config.enabled) {
+  if (!runtimeConfig.enabled) {
     return {
       success: false,
       status: 403,
       error: {
         code: 'DEMO_DISABLED',
-        message: `The live demo for "${config.name}" is currently not active. Please refer to the Case Study.`,
+        message: `The live demo for "${runtimeConfig.name}" is currently not active. Please refer to the Case Study.`,
       },
     };
   }
 
-  // 2. Validate Input
+  if (runtimeConfig.runtimeType !== 'mcp') {
+    return {
+      success: false,
+      status: 400,
+      error: {
+        code: 'UNSUPPORTED_RUNTIME',
+        message: `Interactive demo is not supported for runtime type "${runtimeConfig.runtimeType}".`,
+      },
+    };
+  }
+
+  // 2. Validate User Input
   if (!input || typeof input !== 'string' || input.trim().length === 0) {
     return {
       success: false,
@@ -174,20 +230,20 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
   }
 
   const cleanInput = input.trim();
-  if (cleanInput.length > config.maxInputLength) {
+  if (cleanInput.length > runtimeConfig.maxInputLength) {
     return {
       success: false,
       status: 400,
       error: {
         code: 'INPUT_TOO_LARGE',
-        message: `Please enter a shorter question (maximum ${config.maxInputLength} characters).`,
+        message: `Please enter a shorter question (maximum ${runtimeConfig.maxInputLength} characters).`,
       },
     };
   }
 
-  // 3. Resolve and Validate Tool Allowlist
-  const requestedTool = toolName || config.defaultTool;
-  if (!config.allowedTools.includes(requestedTool)) {
+  // 3. Validate Tool Allowlist
+  const requestedTool = toolName || runtimeConfig.defaultTool;
+  if (!runtimeConfig.allowedTools.includes(requestedTool)) {
     return {
       success: false,
       status: 403,
@@ -198,12 +254,11 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
     };
   }
 
-  // 4. Retrieve Server-Side Secrets
-  const mcpServerUrl = process.env[config.mcpServerEnv];
-  const mcpAccessToken = process.env[config.mcpTokenEnv];
+  // 4. Resolve Server-Side Secrets for Connection Key
+  const connection = resolveMCPConnection(runtimeConfig.connectionKey);
 
-  if (!mcpServerUrl) {
-    console.warn(`[MCP Gateway] ${config.mcpServerEnv} not configured in server environment.`);
+  if (!connection.isConfigured || !connection.serverUrl) {
+    console.warn(`[MCP Gateway] Connection "${runtimeConfig.connectionKey}" is not configured on server.`);
     return {
       success: false,
       status: 503,
@@ -216,10 +271,10 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
 
   // 5. Construct Arguments Based on Tool Schema
   const verifiedSchema = await getVerifiedToolSchema(
-    mcpServerUrl,
-    mcpAccessToken,
+    connection.serverUrl,
+    connection.accessToken,
     requestedTool,
-    Math.min(config.timeoutMs, 8000)
+    Math.min(runtimeConfig.timeoutMs, 8000)
   );
 
   let toolArgs = {
@@ -231,7 +286,6 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
     agent: slug,
   };
 
-  // If schema strictly defines properties, align keys
   if (verifiedSchema?.inputSchema?.properties) {
     const props = verifiedSchema.inputSchema.properties;
     toolArgs = {};
@@ -241,14 +295,13 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
     if (props.input) toolArgs.input = cleanInput;
     if (props.text) toolArgs.text = cleanInput;
     if (props.context) toolArgs.context = context || {};
-    // Ensure at least one argument holds the query
     if (Object.keys(toolArgs).length === 0) {
       const firstProp = Object.keys(props)[0];
       if (firstProp) toolArgs[firstProp] = cleanInput;
     }
   }
 
-  // 6. Build tools/call JSON-RPC Payload
+  // 6. Execute JSON-RPC tools/call
   const rpcPayload = {
     jsonrpc: '2.0',
     id: `req_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
@@ -259,18 +312,16 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
     },
   };
 
-  // 7. Execute Request with Timeout Protection
   try {
     const responseData = await callJsonRpc(
-      mcpServerUrl,
-      mcpAccessToken,
+      connection.serverUrl,
+      connection.accessToken,
       rpcPayload,
-      config.timeoutMs || 30000
+      runtimeConfig.timeoutMs
     );
 
-    // 8. Handle JSON-RPC Errors
     if (responseData.error) {
-      console.error(`[MCP Gateway] JSON-RPC error from ${slug}:`, responseData.error.message);
+      console.error(`[MCP Gateway] JSON-RPC error for ${slug}:`, responseData.error.message);
       return {
         success: false,
         status: 502,
@@ -281,7 +332,6 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
       };
     }
 
-    // 9. Normalize Response
     const rawContent = responseData.result?.content || responseData.result || responseData;
     let normalizedAnswer = '';
 
@@ -301,7 +351,7 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
     }
 
     const durationMs = Date.now() - startTime;
-    console.log(`[MCP Gateway] Success: ${slug} tool=${requestedTool} duration=${durationMs}ms`);
+    console.log(`[MCP Gateway] Success: ${slug} tool=${requestedTool} conn=${runtimeConfig.connectionKey} duration=${durationMs}ms`);
 
     return {
       success: true,
@@ -316,7 +366,7 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
     };
   } catch (err) {
     if (err.name === 'AbortError') {
-      console.error(`[MCP Gateway] Timeout exceeded (${config.timeoutMs}ms) for ${slug}`);
+      console.error(`[MCP Gateway] Timeout exceeded (${runtimeConfig.timeoutMs}ms) for ${slug}`);
       return {
         success: false,
         status: 504,
@@ -328,7 +378,7 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
     }
 
     if (err.status === 401 || err.status === 403) {
-      console.error(`[MCP Gateway] Authentication failed for ${slug} (HTTP ${err.status})`);
+      console.error(`[MCP Gateway] Authentication rejected for ${slug} (HTTP ${err.status})`);
       return {
         success: false,
         status: 503,
@@ -339,7 +389,7 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
       };
     }
 
-    console.error(`[MCP Gateway] Upstream error for ${slug}:`, err.message);
+    console.error(`[MCP Gateway] Upstream exception for ${slug}:`, err.message);
     return {
       success: false,
       status: 503,

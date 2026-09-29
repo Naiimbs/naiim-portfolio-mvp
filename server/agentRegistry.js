@@ -1,19 +1,29 @@
 /**
- * Server-side AI Agent & MCP Integrations Registry.
+ * Server-side AI Agent & MCP Safety Constraints Registry.
  *
- * IMPORTANT SECURITY RULES:
- * - This file and its configs MUST ONLY run in server environments (Node.js/serverless).
- * - Never bundle or expose this file to client-side Vite bundles.
- * - Raw credentials and tokens are retrieved dynamically from process.env.
+ * NOTE (Phase 14.3):
+ * Agent runtime configuration is now CMS-driven via public.agent_runtime_configs
+ * and public.mcp_connections in Supabase.
+ *
+ * This file serves as the minimal server-side safety floor:
+ * - Hard ceiling constraints (max allowable limits)
+ * - Supported runtime types
+ * - Fallback configuration when Supabase is offline
  */
 
-export const AGENT_SERVER_REGISTRY = {
+export const HARD_LIMITS = {
+  MAX_INPUT_LENGTH: 4000,
+  MAX_TIMEOUT_MS: 60000,
+  DEFAULT_TIMEOUT_MS: 30000,
+};
+
+// Fallback runtime configs when Supabase is offline / unreachable
+export const FALLBACK_AGENT_REGISTRY = {
   'naim-copilot': {
     slug: 'naim-copilot',
     name: 'Naïm Copilot',
-    enabled: true,
-    mcpServerEnv: 'N8N_MCP_SERVER_URL',
-    mcpTokenEnv: 'N8N_MCP_ACCESS_TOKEN',
+    runtimeType: 'mcp',
+    connectionKey: 'n8n-main',
     allowedTools: [
       'query_knowledge_base',
       'search_projects',
@@ -23,35 +33,44 @@ export const AGENT_SERVER_REGISTRY = {
     defaultTool: 'ask_copilot_assistant',
     timeoutMs: 30000,
     maxInputLength: 1000,
-    systemPrompt: 'You are Naïm Copilot, an AI product assistant answering questions about Naïm Bsili’s design, engineering, and automation background.',
+    enabled: true,
   },
   'career-os': {
     slug: 'career-os',
     name: 'Career OS · Job Search Agent',
-    enabled: false, // Live pipeline runs on scheduled cron; interactive demo not enabled
-    mcpServerEnv: 'N8N_MCP_SERVER_URL',
-    mcpTokenEnv: 'N8N_MCP_ACCESS_TOKEN',
-    allowedTools: ['fetch_job_digest', 'score_job_fit'],
-    defaultTool: 'fetch_job_digest',
+    runtimeType: 'none',
+    connectionKey: null,
+    allowedTools: [],
+    defaultTool: null,
     timeoutMs: 30000,
     maxInputLength: 500,
+    enabled: false,
   },
 };
 
 /**
- * Returns safe metadata for an agent without exposing secrets.
+ * Returns sanitized agent runtime configuration with hard safety constraints enforced.
  */
-export function getAgentServerConfig(slug) {
-  const config = AGENT_SERVER_REGISTRY[slug];
+export function sanitizeRuntimeConfig(config) {
   if (!config) return null;
 
   return {
     slug: config.slug,
-    name: config.name,
-    enabled: config.enabled,
-    allowedTools: config.allowedTools,
-    timeoutMs: config.timeoutMs,
-    maxInputLength: config.maxInputLength,
-    isConfigured: Boolean(process.env[config.mcpServerEnv]),
+    name: config.name || config.slug,
+    runtimeType: config.runtime_type || config.runtimeType || 'none',
+    connectionKey: config.connection_key || config.connectionKey || 'n8n-main',
+    allowedTools: Array.isArray(config.allowed_tools || config.allowedTools)
+      ? (config.allowed_tools || config.allowedTools)
+      : [],
+    defaultTool: config.default_tool || config.defaultTool || null,
+    timeoutMs: Math.min(
+      Number(config.timeout_ms || config.timeoutMs) || HARD_LIMITS.DEFAULT_TIMEOUT_MS,
+      HARD_LIMITS.MAX_TIMEOUT_MS
+    ),
+    maxInputLength: Math.min(
+      Number(config.max_input_length || config.maxInputLength) || 1000,
+      HARD_LIMITS.MAX_INPUT_LENGTH
+    ),
+    enabled: Boolean(config.is_enabled !== undefined ? config.is_enabled : config.enabled),
   };
 }

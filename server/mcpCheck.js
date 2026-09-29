@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { resolveMCPConnection, getSafeConnectionInfo } from './mcpConnections.js';
 
 /**
  * Safe environment loader for .env without external dependencies
@@ -30,34 +31,37 @@ function loadEnv() {
 loadEnv();
 
 async function checkMcpEndpoint() {
+  const requestedKey = process.argv[2] || 'n8n-main';
+
   console.log('====================================================');
-  console.log('  MCP DIAGNOSTIC CHECK (Phase 14.2)');
+  console.log('  MCP DIAGNOSTIC CHECK (Phase 14.3)');
   console.log('====================================================\n');
 
-  const serverUrl = process.env.N8N_MCP_SERVER_URL;
-  const token = process.env.N8N_MCP_ACCESS_TOKEN;
+  console.log(`Connection Key: ${requestedKey}`);
+  const connInfo = getSafeConnectionInfo(requestedKey);
+  const resolved = resolveMCPConnection(requestedKey);
 
-  if (!serverUrl) {
+  if (!resolved.isConfigured || !resolved.serverUrl) {
     console.log('MCP server: NOT CONFIGURED');
-    console.log('Reason: N8N_MCP_SERVER_URL is missing in environment (.env)');
+    console.log(`Reason: Server secrets for connection key "${requestedKey}" are missing in .env`);
     console.log('\nPlease add the following server-side environment variables to .env:');
-    console.log('N8N_MCP_SERVER_URL=https://your-n8n-instance/mcp-server/http');
-    console.log('N8N_MCP_ACCESS_TOKEN=your_token_here');
+    console.log(`N8N_MCP_SERVER_URL=https://your-n8n-instance/mcp-server/http`);
+    console.log(`N8N_MCP_ACCESS_TOKEN=your_token_here\n`);
     return;
   }
 
   console.log('MCP server: CONFIGURED');
-  console.log(`Endpoint host: ${new URL(serverUrl).host}`);
-  console.log(`Endpoint path: ${new URL(serverUrl).pathname}`);
-  console.log(`Token provided: ${token ? 'YES (masked)' : 'NO'}\n`);
+  console.log(`Endpoint host: ${connInfo.host || 'unknown'}`);
+  console.log(`Endpoint path: ${connInfo.path || 'unknown'}`);
+  console.log(`Token provided: ${connInfo.hasToken ? 'YES (masked)' : 'NO'}\n`);
 
   const headers = {
     'Content-Type': 'application/json',
     'Accept': 'application/json, text/event-stream',
   };
 
-  if (token) {
-    headers['Authorization'] = `Bearer ${token.trim()}`;
+  if (resolved.accessToken) {
+    headers['Authorization'] = `Bearer ${resolved.accessToken.trim()}`;
   }
 
   // 1. Test Reachability & Initialize
@@ -83,7 +87,7 @@ async function checkMcpEndpoint() {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10000);
 
-    const initRes = await fetch(serverUrl, {
+    const initRes = await fetch(resolved.serverUrl, {
       method: 'POST',
       headers,
       body: JSON.stringify(initPayload),
@@ -106,16 +110,16 @@ async function checkMcpEndpoint() {
 
     const initData = await initRes.json();
     if (initData.error) {
-      console.log(`MCP initialization rejected with JSON-RPC error: ${initData.error.message || JSON.stringify(initData.error)}`);
+      console.log(`MCP initialization rejected: ${initData.error.message || JSON.stringify(initData.error)}`);
     } else {
       console.log('MCP initialization: SUCCESS');
       console.log(`Server Info: ${initData.result?.serverInfo?.name || 'unknown'} (${initData.result?.serverInfo?.version || 'unknown'})`);
       console.log(`Protocol version: ${initData.result?.protocolVersion || 'verified'}`);
     }
 
-    // Step 2: Send initialized notification if needed
+    // Step 2: Send initialized notification
     try {
-      await fetch(serverUrl, {
+      await fetch(resolved.serverUrl, {
         method: 'POST',
         headers,
         body: JSON.stringify({
@@ -136,7 +140,7 @@ async function checkMcpEndpoint() {
       params: {},
     };
 
-    const toolsRes = await fetch(serverUrl, {
+    const toolsRes = await fetch(resolved.serverUrl, {
       method: 'POST',
       headers,
       body: JSON.stringify(toolsPayload),

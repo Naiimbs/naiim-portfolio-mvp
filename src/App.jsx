@@ -19,6 +19,8 @@ import AdminCaseStudies from './admin/pages/AdminCaseStudies';
 import AdminCaseStudyEditor from './admin/pages/AdminCaseStudyEditor';
 import AdminAgents from './admin/pages/AdminAgents';
 import AdminAgentEditor from './admin/pages/AdminAgentEditor';
+import AdminMCPConnections from './admin/pages/AdminMCPConnections';
+import AdminMCPConnectionEditor from './admin/pages/AdminMCPConnectionEditor';
 import AdminMedia from './admin/pages/AdminMedia';
 
 export default function App() {
@@ -52,6 +54,9 @@ export default function App() {
             <Route path="agents" element={<AdminAgents />} />
             <Route path="agents/new" element={<AdminAgentEditor />} />
             <Route path="agents/:id" element={<AdminAgentEditor />} />
+            <Route path="mcp-connections" element={<AdminMCPConnections />} />
+            <Route path="mcp-connections/new" element={<AdminMCPConnectionEditor />} />
+            <Route path="mcp-connections/:id" element={<AdminMCPConnectionEditor />} />
             <Route path="media" element={<AdminMedia />} />
           </Route>
         </Route>

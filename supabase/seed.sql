@@ -266,4 +266,46 @@ BEGIN
         ('10000000-0000-0000-0000-000000000002', 'An automated career search workflow that collects and scores job opportunities.', 'Career OS — AI Agent Case Study', 'An automated career search pipeline built with n8n and Gemini.', '/agents/career-os', 'published')
     ON CONFLICT (agent_id) DO NOTHING;
 
+    -- 11. SEED MCP CONNECTIONS & AGENT RUNTIME CONFIGS
+    INSERT INTO public.mcp_connections (id, name, slug, provider, connection_key, server_url_hint, description, status, is_active)
+    VALUES
+        ('20000000-0000-0000-0000-000000000001', 'n8n Main Instance', 'n8n-main', 'n8n', 'n8n-main', 'https://n8n.naiimbsili.com', 'Primary production n8n server hosting Copilot agent workflow and vector tools.', 'active', true)
+    ON CONFLICT (slug) DO UPDATE SET
+        name = EXCLUDED.name,
+        connection_key = EXCLUDED.connection_key,
+        server_url_hint = EXCLUDED.server_url_hint,
+        description = EXCLUDED.description,
+        is_active = EXCLUDED.is_active;
+
+    INSERT INTO public.agent_runtime_configs (agent_id, runtime_type, mcp_connection_id, default_tool, allowed_tools, timeout_ms, max_input_length, is_enabled)
+    VALUES
+        (
+            '10000000-0000-0000-0000-000000000001',
+            'mcp',
+            '20000000-0000-0000-0000-000000000001',
+            'ask_copilot_assistant',
+            '["ask_copilot_assistant", "search_projects", "query_knowledge_base", "get_copilot_summary"]'::jsonb,
+            30000,
+            1000,
+            true
+        ),
+        (
+            '10000000-0000-0000-0000-000000000002',
+            'none',
+            null,
+            null,
+            '[]'::jsonb,
+            30000,
+            500,
+            false
+        )
+    ON CONFLICT (agent_id) DO UPDATE SET
+        runtime_type = EXCLUDED.runtime_type,
+        mcp_connection_id = EXCLUDED.mcp_connection_id,
+        default_tool = EXCLUDED.default_tool,
+        allowed_tools = EXCLUDED.allowed_tools,
+        timeout_ms = EXCLUDED.timeout_ms,
+        max_input_length = EXCLUDED.max_input_length,
+        is_enabled = EXCLUDED.is_enabled;
+
 END $$;

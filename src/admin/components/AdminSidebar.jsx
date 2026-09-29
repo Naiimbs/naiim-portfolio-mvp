@@ -40,6 +40,11 @@ export default function AdminSidebar() {
           <span>AI Agents</span>
         </NavLink>
 
+        <NavLink to="/admin/mcp-connections" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
+          <i className="bi bi-hdd-network"></i>
+          <span>MCP Connections</span>
+        </NavLink>
+
         <NavLink to="/admin/media" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
           <i className="bi bi-images"></i>
           <span>Media</span>
