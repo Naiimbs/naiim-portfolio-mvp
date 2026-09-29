@@ -57,8 +57,16 @@ export default function AdminAgentEditor() {
   const [runtimeConfig, setRuntimeConfig] = useState({
     runtime_type: 'none',
     mcp_connection_id: '',
-    default_tool: 'ask_copilot_assistant',
-    allowed_tools: ['ask_copilot_assistant', 'search_projects', 'query_knowledge_base', 'get_copilot_summary'],
+    default_tool: 'search_projects',
+    allowed_tools: [
+      'search_projects',
+      'search_workflows',
+      'search_nodes',
+      'get_workflow_best_practices',
+      'ask_copilot_assistant',
+      'query_knowledge_base',
+      'get_copilot_summary',
+    ],
     timeout_ms: 30000,
     max_input_length: 1000,
     is_enabled: false,
@@ -129,7 +137,7 @@ export default function AdminAgentEditor() {
           setRuntimeConfig({
             runtime_type: r.runtime_type || 'none',
             mcp_connection_id: r.mcp_connection_id || '',
-            default_tool: r.default_tool || 'ask_copilot_assistant',
+            default_tool: r.default_tool || 'search_projects',
             allowed_tools: Array.isArray(r.allowed_tools) ? r.allowed_tools : [],
             timeout_ms: r.timeout_ms || 30000,
             max_input_length: r.max_input_length || 1000,
