@@ -48,6 +48,30 @@ function sendJson(res, statusCode, payload) {
 }
 
 /**
+ * Helper to safely read request body as JSON
+ */
+function parseRequestBody(req, maxBytes = 50 * 1024) {
+  return new Promise((resolve, reject) => {
+    let raw = '';
+    req.on('data', (chunk) => {
+      raw += chunk;
+      if (raw.length > maxBytes) {
+        req.destroy();
+        reject(new Error('PAYLOAD_TOO_LARGE'));
+      }
+    });
+    req.on('end', () => {
+      try {
+        resolve(raw ? JSON.parse(raw) : {});
+      } catch (err) {
+        reject(new Error('INVALID_JSON'));
+      }
+    });
+    req.on('error', reject);
+  });
+}
+
+/**
  * Executes a controlled runtime console command.
  */
 async function executeConsoleCommand(rawCmd) {
@@ -85,12 +109,12 @@ async function executeConsoleCommand(rawCmd) {
     const connInfo = getSafeConnectionInfo('n8n-main');
     return {
       output: [
-        'Runtime System Status:',
-        '  Environment: Node.js API Gateway',
+        'Portfolio API',
+        '  ✓ Service: portfolio-api',
+        '  ✓ Status: Online',
         `  Primary MCP Key: n8n-main`,
         `  MCP Secret: ${connInfo.isConfigured ? 'Configured (Server-Side)' : 'Not Configured (Missing in .env)'}`,
         `  MCP Host: ${connInfo.host || 'N/A'}`,
-        `  Gateway Status: Active (Port ${PORT})`,
         `  Timestamp: ${new Date().toISOString()}`,
       ].join('\n'),
     };
@@ -98,7 +122,7 @@ async function executeConsoleCommand(rawCmd) {
 
   // 3. MCP COMMANDS (mcp status | mcp tools | mcp test)
   if (main === 'mcp') {
-    const connKey = target || sub === 'status' || sub === 'tools' || sub === 'test' ? 'n8n-main' : sub || 'n8n-main';
+    const connKey = target || (sub === 'status' || sub === 'tools' || sub === 'test' ? 'n8n-main' : sub || 'n8n-main');
     const resolved = resolveMCPConnection(connKey);
     const connInfo = getSafeConnectionInfo(connKey);
 
@@ -235,7 +259,7 @@ async function executeConsoleCommand(rawCmd) {
     return { output: `Unknown agent subcommand "${sub}". Type "help" for syntax.` };
   }
 
-  // 5. CLEAR (Handled on client side, but return clean message)
+  // 5. CLEAR (Handled on client side)
   if (main === 'clear') {
     return { output: '', clear: true };
   }
@@ -245,21 +269,28 @@ async function executeConsoleCommand(rawCmd) {
   };
 }
 
-export function handleApiRequest(req, res) {
+/**
+ * Main API Request Dispatcher.
+ * Async handler supporting both Node standalone server and Vite middleware.
+ */
+export async function handleApiRequest(req, res) {
   const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const pathname = parsedUrl.pathname;
   const method = req.method.toUpperCase();
 
-  // 1. Health check
+  // 1. Health check: GET /api/health
   if (method === 'GET' && pathname === '/api/health') {
-    return sendJson(res, 200, {
-      status: 'ok',
-      mcpConfigured: resolveMCPConnection('n8n-main').isConfigured,
+    const isMcpConfigured = resolveMCPConnection('n8n-main').isConfigured;
+    sendJson(res, 200, {
+      ok: true,
+      service: 'portfolio-api',
+      mcpConfigured: isMcpConfigured,
       time: new Date().toISOString(),
     });
+    return true;
   }
 
-  // 2. Admin Diagnostic: Test MCP Connection & Discover Tools
+  // 2. Admin Diagnostic: Test MCP Connection
   // POST /api/admin/mcp-connections/:key/test
   const testMatch = pathname.match(/^\/api\/admin\/mcp-connections\/([a-zA-Z0-9_-]+)\/test$/);
   if (method === 'POST' && testMatch) {
@@ -268,120 +299,164 @@ export function handleApiRequest(req, res) {
     const resolved = resolveMCPConnection(connKey);
 
     if (!resolved.isConfigured || !resolved.serverUrl) {
-      return sendJson(res, 200, {
+      sendJson(res, 200, {
+        ok: false,
         success: false,
         status: 'not_configured',
         info: connInfo,
-        error: { code: 'NO_SECRET', message: `Server-side secrets for connection "${connKey}" are not configured in environment.` },
+        error: {
+          code: 'MCP_NOT_CONFIGURED',
+          message: `Server-side credentials for connection "${connKey}" are not configured in environment (.env).`,
+        },
       });
+      return true;
     }
 
-    (async () => {
-      try {
-        const tools = await discoverMcpTools(resolved.serverUrl, resolved.accessToken, 10000);
-        return sendJson(res, 200, {
-          success: true,
-          status: 'connected',
-          info: connInfo,
-          toolsCount: tools.length,
-          tools: tools.map((t) => ({
-            name: t.name,
-            description: t.description || '',
-            parameters: t.inputSchema?.properties ? Object.keys(t.inputSchema.properties) : [],
-          })),
-        });
-      } catch (err) {
-        return sendJson(res, 200, {
-          success: false,
-          status: 'unavailable',
-          info: connInfo,
-          error: { code: 'CONNECTION_FAILED', message: err.message },
-        });
-      }
-    })();
+    try {
+      const tools = await discoverMcpTools(resolved.serverUrl, resolved.accessToken, 10000);
+      sendJson(res, 200, {
+        ok: true,
+        success: true,
+        connection: connKey,
+        status: 'connected',
+        info: connInfo,
+        toolsCount: tools.length,
+        tools: tools.map((t) => ({
+          name: t.name,
+          description: t.description || '',
+          parameters: t.inputSchema?.properties ? Object.keys(t.inputSchema.properties) : [],
+        })),
+      });
+    } catch (err) {
+      sendJson(res, 200, {
+        ok: false,
+        success: false,
+        status: 'unavailable',
+        info: connInfo,
+        error: {
+          code: 'MCP_CONNECTION_FAILED',
+          message: err.message || 'The MCP server could not be reached.',
+        },
+      });
+    }
     return true;
   }
 
-  // 3. Admin Runtime Console: POST /api/admin/runtime-console
+  // 3. Admin Tool Discovery: POST /api/admin/mcp-connections/:key/discover
+  const discoverMatch = pathname.match(/^\/api\/admin\/mcp-connections\/([a-zA-Z0-9_-]+)\/discover$/);
+  if (method === 'POST' && discoverMatch) {
+    const connKey = discoverMatch[1];
+    const connInfo = getSafeConnectionInfo(connKey);
+    const resolved = resolveMCPConnection(connKey);
+
+    if (!resolved.isConfigured || !resolved.serverUrl) {
+      sendJson(res, 200, {
+        ok: false,
+        success: false,
+        status: 'not_configured',
+        error: {
+          code: 'MCP_NOT_CONFIGURED',
+          message: `MCP server credentials for connection "${connKey}" are not configured on the server.`,
+        },
+      });
+      return true;
+    }
+
+    try {
+      const tools = await discoverMcpTools(resolved.serverUrl, resolved.accessToken, 10000);
+      sendJson(res, 200, {
+        ok: true,
+        success: true,
+        connection: connKey,
+        status: 'connected',
+        toolsCount: tools.length,
+        tools: tools.map((t) => ({
+          name: t.name,
+          description: t.description || '',
+          parameters: t.inputSchema?.properties ? Object.keys(t.inputSchema.properties) : [],
+          inputSchema: t.inputSchema || {},
+        })),
+      });
+    } catch (err) {
+      sendJson(res, 200, {
+        ok: false,
+        success: false,
+        status: 'unavailable',
+        error: {
+          code: 'MCP_CONNECTION_FAILED',
+          message: err.message || 'The MCP server could not be reached.',
+        },
+      });
+    }
+    return true;
+  }
+
+  // 4. Admin Runtime Console: POST /api/admin/runtime-console
   if (method === 'POST' && pathname === '/api/admin/runtime-console') {
-    let bodyRaw = '';
-    req.on('data', (chunk) => {
-      bodyRaw += chunk;
-      if (bodyRaw.length > 10 * 1024) req.destroy();
-    });
-
-    req.on('end', async () => {
-      try {
-        const body = bodyRaw ? JSON.parse(bodyRaw) : {};
-        const cmd = body.command || '';
-        const resData = await executeConsoleCommand(cmd);
-        sendJson(res, 200, { success: true, ...resData });
-      } catch (err) {
-        sendJson(res, 400, { success: false, output: `Error: ${err.message}` });
-      }
-    });
+    try {
+      const body = await parseRequestBody(req, 10 * 1024);
+      const cmd = body.command || '';
+      const resData = await executeConsoleCommand(cmd);
+      sendJson(res, 200, { ok: true, success: true, ...resData });
+    } catch (err) {
+      sendJson(res, 400, {
+        ok: false,
+        success: false,
+        error: { code: 'INVALID_COMMAND', message: err.message },
+      });
+    }
     return true;
   }
 
-  // 4. Agent Execution: POST /api/agents/:slug/run
+  // 5. Agent Execution: POST /api/agents/:slug/run
   const runMatch = pathname.match(/^\/api\/agents\/([a-zA-Z0-9_-]+)\/run$/);
   if (method === 'POST' && runMatch) {
     const slug = runMatch[1];
     const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
 
     if (isRateLimited(clientIp)) {
-      return sendJson(res, 429, {
+      sendJson(res, 429, {
+        ok: false,
         success: false,
         error: {
           code: 'RATE_LIMITED',
           message: 'Too many requests. Please wait a minute before running the agent again.',
         },
       });
+      return true;
     }
 
-    let bodyRaw = '';
-    const MAX_PAYLOAD_BYTES = 50 * 1024; // 50KB
+    try {
+      const body = await parseRequestBody(req, 50 * 1024);
+      const input = body.input || body.prompt || body.message;
+      const toolName = body.tool || body.toolName;
+      const context = body.context || {};
 
-    req.on('data', (chunk) => {
-      bodyRaw += chunk;
-      if (bodyRaw.length > MAX_PAYLOAD_BYTES) {
-        req.destroy();
-        sendJson(res, 413, {
-          success: false,
-          error: { code: 'PAYLOAD_TOO_LARGE', message: 'Payload size limit exceeded.' },
-        });
-      }
-    });
+      const result = await runAgentDemo({
+        slug,
+        input,
+        toolName,
+        context,
+      });
 
-    req.on('end', async () => {
-      try {
-        const body = bodyRaw ? JSON.parse(bodyRaw) : {};
-        const input = body.input || body.prompt || body.message;
-        const toolName = body.tool || body.toolName;
-        const context = body.context || {};
-
-        const result = await runAgentDemo({
-          slug,
-          input,
-          toolName,
-          context,
-        });
-
-        sendJson(res, result.status || (result.success ? 200 : 500), result);
-      } catch (parseErr) {
-        sendJson(res, 400, {
-          success: false,
-          error: { code: 'INVALID_JSON', message: 'Malformed JSON payload.' },
-        });
-      }
-    });
-
+      sendJson(res, result.status || (result.success ? 200 : 500), {
+        ok: result.success,
+        ...result,
+      });
+    } catch (parseErr) {
+      sendJson(res, 400, {
+        ok: false,
+        success: false,
+        error: { code: 'INVALID_JSON', message: 'Malformed JSON payload.' },
+      });
+    }
     return true;
   }
 
-  // Default 404 for unhandled /api/ routes
+  // 6. Default 404 for unhandled /api/ routes
   if (pathname.startsWith('/api/')) {
     sendJson(res, 404, {
+      ok: false,
       success: false,
       error: { code: 'ROUTE_NOT_FOUND', message: 'API route not found.' },
     });
@@ -393,8 +468,8 @@ export function handleApiRequest(req, res) {
 
 // Standalone Server runner (if executed via `node server/apiServer.js`)
 if (process.argv[1] && process.argv[1].endsWith('apiServer.js')) {
-  const server = http.createServer((req, res) => {
-    const handled = handleApiRequest(req, res);
+  const server = http.createServer(async (req, res) => {
+    const handled = await handleApiRequest(req, res);
     if (!handled) {
       res.writeHead(404, { 'Content-Type': 'text/plain' });
       res.end('Not Found');

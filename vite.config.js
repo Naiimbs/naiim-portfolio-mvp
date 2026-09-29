@@ -11,7 +11,7 @@ export default defineConfig({
         server.middlewares.use(async (req, res, next) => {
           if (req.url && req.url.startsWith('/api/')) {
             const { handleApiRequest } = await import('./server/apiServer.js');
-            const handled = handleApiRequest(req, res);
+            const handled = await handleApiRequest(req, res);
             if (handled !== false) return;
           }
           next();
