@@ -96,16 +96,16 @@ export async function getAdminPages() {
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (error) return { data: localPagesStore, error, source: 'local_fallback' };
+    if (error) return { data: [], error, source: 'supabase_error' };
     return { data: data || [], error: null, source: 'supabase' };
   } catch (err) {
-    return { data: localPagesStore, error: err, source: 'local_fallback' };
+    return { data: [], error: err, source: 'error' };
   }
 }
 
 export async function getPageBySlug(slug) {
   if (!isSupabaseConfigured || !supabase) {
-    const page = localPagesStore.find((p) => p.slug === slug);
+    const page = localPagesStore.find((p) => p.slug === slug && p.status === 'published');
     return { data: page || null, error: page ? null : new Error('Page not found'), source: 'local' };
   }
   try {
@@ -113,15 +113,16 @@ export async function getPageBySlug(slug) {
       .from('pages')
       .select('*')
       .eq('slug', slug)
+      .eq('status', 'published')
       .maybeSingle();
 
     if (error) {
-      const fallback = localPagesStore.find((p) => p.slug === slug);
+      const fallback = localPagesStore.find((p) => p.slug === slug && p.status === 'published');
       return { data: fallback || null, error, source: 'local_fallback' };
     }
     return { data: data || null, error: null, source: 'supabase' };
   } catch (err) {
-    const fallback = localPagesStore.find((p) => p.slug === slug);
+    const fallback = localPagesStore.find((p) => p.slug === slug && p.status === 'published');
     return { data: fallback || null, error: err, source: 'local_fallback' };
   }
 }

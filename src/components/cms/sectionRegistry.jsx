@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { getAdminProjects } from '../../services/projects';
+import { getAdminAgents } from '../../services/agents';
 
 /**
  * Section Component Registry for Site-Wide CMS.
@@ -25,18 +27,45 @@ import React from 'react';
 
 // 1. Hero Section
 function HeroSection({ config = {} }) {
-  const { title, subtitle, kicker, ctaText, ctaHref } = config;
+  const eyebrow = config.eyebrow || config.kicker || '';
+  const title = config.title || '';
+  const description = config.description || config.subtitle || '';
+  const imageUrl = config.imageUrl || config.src || '';
+  const imageAlt = config.imageAlt || config.alt || title || 'Hero';
+  const primaryCta = config.primaryCta || (config.ctaText ? { label: config.ctaText, href: config.ctaHref } : null);
+  const secondaryCta = config.secondaryCta || null;
+  const layout = config.layout || 'split';
+
+  const isSplit = layout === 'split' && imageUrl;
+  const isCentered = layout === 'centered';
+
   return (
-    <section className="cms-section cms-section-hero py-5 text-center">
+    <section className={`cms-section cms-section-hero py-5 ${isCentered ? 'text-center' : 'text-start'}`}>
       <div className="container">
-        {kicker && <div className="cms-hero-kicker text-uppercase tracking-wider text-muted mb-2">{kicker}</div>}
-        {title && <h1 className="cms-hero-title display-4 fw-bold mb-3">{title}</h1>}
-        {subtitle && <p className="cms-hero-subtitle lead text-secondary max-w-2xl mx-auto mb-4">{subtitle}</p>}
-        {ctaText && ctaHref && (
-          <a href={ctaHref} className="btn btn-primary btn-lg rounded-pill px-4">
-            {ctaText}
-          </a>
-        )}
+        <div className={`row align-items-center g-4 ${isSplit ? 'flex-column-reverse flex-lg-row' : ''}`}>
+          <div className={isSplit ? 'col-12 col-lg-6' : 'col-12'}>
+            {eyebrow && <div className="cms-hero-kicker text-uppercase tracking-wider text-primary fw-semibold mb-2">{eyebrow}</div>}
+            {title && <h1 className="cms-hero-title display-4 fw-bold mb-3">{title}</h1>}
+            {description && <p className="cms-hero-subtitle lead text-secondary mb-4">{description}</p>}
+            <div className={`d-flex gap-3 ${isCentered ? 'justify-content-center' : 'justify-content-start'}`}>
+              {primaryCta?.label && primaryCta?.href && (
+                <a href={primaryCta.href} className="btn btn-primary btn-lg rounded-pill px-4 fw-semibold">
+                  {primaryCta.label}
+                </a>
+              )}
+              {secondaryCta?.label && secondaryCta?.href && (
+                <a href={secondaryCta.href} className="btn btn-outline-dark btn-lg rounded-pill px-4 fw-semibold">
+                  {secondaryCta.label}
+                </a>
+              )}
+            </div>
+          </div>
+          {imageUrl && (
+            <div className={isSplit ? 'col-12 col-lg-6 text-center' : 'col-12 text-center mt-4'}>
+              <img src={imageUrl} alt={imageAlt} className="img-fluid rounded-4 shadow-sm max-h-400" style={{ maxHeight: '420px', objectFit: 'cover' }} />
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );
@@ -44,12 +73,17 @@ function HeroSection({ config = {} }) {
 
 // 2. Text / Rich Text Section
 function TextSection({ config = {} }) {
-  const { title, content, alignment = 'left' } = config;
+  const eyebrow = config.eyebrow || '';
+  const title = config.title || '';
+  const body = config.body || config.content || '';
+  const alignment = config.alignment || 'left';
+
   return (
-    <section className={`cms-section cms-section-text py-4 text-${alignment}`}>
+    <section className={`cms-section cms-section-text py-5 text-${alignment}`}>
       <div className="container">
-        {title && <h2 className="cms-section-heading mb-3">{title}</h2>}
-        {content && <div className="cms-text-content lead text-secondary">{content}</div>}
+        {eyebrow && <div className="text-uppercase tracking-wider text-primary fw-semibold small mb-2">{eyebrow}</div>}
+        {title && <h2 className="cms-section-heading fw-bold mb-3">{title}</h2>}
+        {body && <div className="cms-text-content lead text-secondary max-w-3xl mx-auto">{body}</div>}
       </div>
     </section>
   );
@@ -57,23 +91,58 @@ function TextSection({ config = {} }) {
 
 // 3. Project Grid Section
 function ProjectGridSection({ config = {} }) {
-  const { title, subtitle, projects = [] } = config;
+  const eyebrow = config.eyebrow || '';
+  const title = config.title || '';
+  const description = config.description || config.subtitle || '';
+  const projectIds = config.projectIds || [];
+  const cols = config.columns || 3;
+  const showExcerpt = config.show_excerpt !== false;
+
+  const [resolvedProjects, setResolvedProjects] = useState(config.projects || []);
+
+  useEffect(() => {
+    async function loadTargetProjects() {
+      if (Array.isArray(projectIds) && projectIds.length > 0) {
+        const res = await getAdminProjects();
+        const all = res.data || [];
+        const filtered = projectIds.map((id) => all.find((p) => String(p.id) === String(id))).filter(Boolean);
+        setResolvedProjects(filtered);
+      } else if (config.projects) {
+        setResolvedProjects(config.projects);
+      } else {
+        const res = await getAdminProjects();
+        setResolvedProjects((res.data || []).slice(0, 6));
+      }
+    }
+    loadTargetProjects();
+  }, [JSON.stringify(projectIds)]);
+
+  const colClass = cols === 2 ? 'col-md-6' : cols === 4 ? 'col-md-6 col-lg-3' : 'col-md-6 col-lg-4';
+
   return (
     <section className="cms-section cms-section-project-grid py-5">
       <div className="container">
+        {eyebrow && <div className="text-uppercase tracking-wider text-primary fw-semibold small mb-2">{eyebrow}</div>}
         {title && <h2 className="mb-2 fw-bold">{title}</h2>}
-        {subtitle && <p className="text-muted mb-4">{subtitle}</p>}
+        {description && <p className="text-muted mb-4">{description}</p>}
         <div className="row g-4">
-          {projects.length > 0 ? (
-            projects.map((proj, idx) => (
-              <div key={proj.id || idx} className="col-12 col-md-6 col-lg-4">
+          {resolvedProjects.length > 0 ? (
+            resolvedProjects.map((proj, idx) => (
+              <div key={proj.id || idx} className={`col-12 ${colClass}`}>
                 <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
-                  {proj.image && <img src={proj.image} className="card-img-top" alt={proj.title} />}
-                  <div className="card-body p-4">
-                    <h5 className="card-title fw-semibold">{proj.title}</h5>
-                    <p className="card-text text-muted">{proj.description}</p>
+                  {proj.image || proj.thumbnail_media?.public_url ? (
+                    <img src={proj.image || proj.thumbnail_media?.public_url} className="card-img-top" alt={proj.title} style={{ height: '200px', objectFit: 'cover' }} />
+                  ) : (
+                    <div className="bg-light p-4 text-center text-muted border-bottom">
+                      <i className="bi bi-folder2 display-6"></i>
+                    </div>
+                  )}
+                  <div className="card-body p-4 d-flex flex-column">
+                    <span className="badge bg-secondary bg-opacity-10 text-secondary border align-self-start mb-2">{proj.category || 'Case Study'}</span>
+                    <h5 className="card-title fw-semibold mb-2">{proj.title}</h5>
+                    {showExcerpt && <p className="card-text text-muted small mb-3 flex-grow-1">{proj.short_description || proj.description || ''}</p>}
                     {proj.slug && (
-                      <a href={`/work/${proj.slug}`} className="btn btn-outline-dark btn-sm rounded-pill mt-2">
+                      <a href={`/work/${proj.slug}`} className="btn btn-outline-dark btn-sm rounded-pill mt-auto align-self-start">
                         View Project
                       </a>
                     )}
@@ -82,7 +151,7 @@ function ProjectGridSection({ config = {} }) {
               </div>
             ))
           ) : (
-            <div className="col-12 text-muted fst-italic">No projects configured for this section.</div>
+            <div className="col-12 text-muted fst-italic py-3">No projects selected for this grid.</div>
           )}
         </div>
       </div>
@@ -115,33 +184,66 @@ function ProjectListSection({ config = {} }) {
 
 // 5. Agent Grid Section
 function AgentGridSection({ config = {} }) {
-  const { title, agents = [] } = config;
+  const eyebrow = config.eyebrow || '';
+  const title = config.title || '';
+  const description = config.description || '';
+  const agentIds = config.agentIds || [];
+  const cols = config.columns || 3;
+  const showDescription = config.show_description !== false;
+
+  const [resolvedAgents, setResolvedAgents] = useState(config.agents || []);
+
+  useEffect(() => {
+    async function loadTargetAgents() {
+      if (Array.isArray(agentIds) && agentIds.length > 0) {
+        const res = await getAdminAgents();
+        const all = res.data || [];
+        const filtered = agentIds.map((id) => all.find((a) => String(a.id) === String(id))).filter(Boolean);
+        setResolvedAgents(filtered);
+      } else if (config.agents) {
+        setResolvedAgents(config.agents);
+      } else {
+        const res = await getAdminAgents();
+        setResolvedAgents((res.data || []).slice(0, 6));
+      }
+    }
+    loadTargetAgents();
+  }, [JSON.stringify(agentIds)]);
+
+  const colClass = cols === 2 ? 'col-md-6' : cols === 4 ? 'col-md-6 col-lg-3' : 'col-md-6 col-lg-4';
+
   return (
     <section className="cms-section cms-section-agent-grid py-5">
       <div className="container">
-        {title && <h2 className="mb-4 fw-bold">{title}</h2>}
+        {eyebrow && <div className="text-uppercase tracking-wider text-primary fw-semibold small mb-2">{eyebrow}</div>}
+        {title && <h2 className="mb-2 fw-bold">{title}</h2>}
+        {description && <p className="text-muted mb-4">{description}</p>}
         <div className="row g-4">
-          {agents.map((ag, idx) => (
-            <div key={ag.id || idx} className="col-12 col-md-6 col-lg-4">
-              <div className="card h-100 border-0 bg-light rounded-4 p-4">
-                <div className="d-flex align-items-center mb-3">
-                  <div className="p-3 bg-white rounded-3 me-3 text-primary">
-                    <i className="bi bi-robot fs-3"></i>
+          {resolvedAgents.length > 0 ? (
+            resolvedAgents.map((ag, idx) => (
+              <div key={ag.id || idx} className={`col-12 ${colClass}`}>
+                <div className="card h-100 border-0 bg-light rounded-4 p-4 d-flex flex-column">
+                  <div className="d-flex align-items-center mb-3">
+                    <div className="p-3 bg-white rounded-3 me-3 text-primary shadow-sm">
+                      <i className="bi bi-robot fs-3"></i>
+                    </div>
+                    <div>
+                      <h5 className="mb-0 fw-bold">{ag.name}</h5>
+                      <small className="text-muted">{ag.role || 'AI Agent'}</small>
+                    </div>
                   </div>
-                  <div>
-                    <h5 className="mb-0 fw-bold">{ag.name}</h5>
-                    <small className="text-muted">{ag.role || 'AI Agent'}</small>
-                  </div>
+                  {showDescription && <p className="card-text text-secondary small flex-grow-1">{ag.description}</p>}
+                  {ag.slug && (
+                    <a href={`/agents/${ag.slug}`} className="btn btn-sm btn-dark rounded-pill mt-3 align-self-start">
+                      Inspect Agent
+                    </a>
+                  )}
                 </div>
-                <p className="card-text text-secondary small">{ag.description}</p>
-                {ag.slug && (
-                  <a href={`/agents/${ag.slug}`} className="btn btn-sm btn-dark rounded-pill mt-auto">
-                    Inspect Agent
-                  </a>
-                )}
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <div className="col-12 text-muted fst-italic py-3">No AI agents selected for this grid.</div>
+          )}
         </div>
       </div>
     </section>
@@ -295,15 +397,22 @@ function ArchitectureSection({ config = {} }) {
 
 // 14. CTA Section
 function CtaSection({ config = {} }) {
-  const { title, text, buttonText, buttonHref } = config;
+  const eyebrow = config.eyebrow || '';
+  const title = config.title || '';
+  const description = config.description || config.text || '';
+  const buttonLabel = config.buttonLabel || config.buttonText || '';
+  const buttonHref = config.buttonHref || '';
+  const alignment = config.alignment || 'centered';
+
   return (
-    <section className="cms-section cms-section-cta py-5 bg-dark text-white rounded-4 my-5">
-      <div className="container text-center py-4">
+    <section className={`cms-section cms-section-cta py-5 bg-dark text-white rounded-4 my-5 text-${alignment}`}>
+      <div className="container py-4">
+        {eyebrow && <div className="text-uppercase tracking-wider text-info fw-semibold small mb-2">{eyebrow}</div>}
         {title && <h2 className="display-6 fw-bold mb-3">{title}</h2>}
-        {text && <p className="lead text-light opacity-75 max-w-xl mx-auto mb-4">{text}</p>}
-        {buttonText && buttonHref && (
+        {description && <p className="lead text-light opacity-75 max-w-xl mx-auto mb-4">{description}</p>}
+        {buttonLabel && buttonHref && (
           <a href={buttonHref} className="btn btn-light btn-lg rounded-pill px-4 fw-semibold">
-            {buttonText}
+            {buttonLabel}
           </a>
         )}
       </div>
