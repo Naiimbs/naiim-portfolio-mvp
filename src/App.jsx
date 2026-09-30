@@ -7,6 +7,8 @@ import AgentCaseStudyPage from './pages/AgentCaseStudyPage';
 import AgentDemoPage from './pages/AgentDemoPage';
 import CaseStudyRenderer from './components/case-study/CaseStudyRenderer';
 
+import CmsDynamicPage from './pages/CmsDynamicPage';
+
 // Admin CMS
 import { AuthProvider } from './admin/context/AuthContext';
 import AdminGuard from './admin/components/AdminGuard';
@@ -23,6 +25,9 @@ import AdminMCPConnections from './admin/pages/AdminMCPConnections';
 import AdminMCPConnectionEditor from './admin/pages/AdminMCPConnectionEditor';
 import AdminRuntimeConsole from './admin/pages/AdminRuntimeConsole';
 import AdminMedia from './admin/pages/AdminMedia';
+import AdminPages from './admin/pages/AdminPages';
+import AdminPageEditor from './admin/pages/AdminPageEditor';
+import AdminNavigation from './admin/pages/AdminNavigation';
 
 export default function App() {
   return (
@@ -40,6 +45,7 @@ export default function App() {
         <Route path="/blog/:slug" element={<PlaceholderPage title="Article" description="Post details." />} />
         <Route path="/about" element={<PlaceholderPage title="About Me" description="Career journey, experience and skills." />} />
         <Route path="/copilot" element={<PlaceholderPage title="Naïm Copilot" description="Interactive AI Assistant." />} />
+        <Route path="/p/:slug" element={<CmsDynamicPage />} />
 
         {/* Admin Login Route */}
         <Route path="/admin/login" element={<AdminLogin />} />
@@ -60,6 +66,9 @@ export default function App() {
             <Route path="mcp-connections/:id" element={<AdminMCPConnectionEditor />} />
             <Route path="runtime-console" element={<AdminRuntimeConsole />} />
             <Route path="media" element={<AdminMedia />} />
+            <Route path="pages" element={<AdminPages />} />
+            <Route path="pages/:id" element={<AdminPageEditor />} />
+            <Route path="navigation" element={<AdminNavigation />} />
           </Route>
         </Route>
 

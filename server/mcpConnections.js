@@ -527,7 +527,7 @@ export function listMCPConnections() {
 
   // Check if gmail-main is configured via environment variables but not yet in records
   const hasGmail = records.some((r) => r.slug === 'gmail-main' || r.connection_key === 'gmail-main');
-  if (!hasGmail && process.env.GMAIL_MAIN_CLIENT_ID) {
+  if (!hasGmail && (process.env.GMAIL_MAIN_SERVER_URL || process.env.GMAIL_MAIN_ACCESS_TOKEN || process.env.GMAIL_MAIN_CLIENT_ID)) {
     records.push({
       id: '20000000-0000-0000-0000-000000000002',
       name: 'Gmail MCP Client',
@@ -535,19 +535,13 @@ export function listMCPConnections() {
       connection_key: 'gmail-main',
       provider: 'gmail',
       transport: 'http',
-      auth_type: 'oauth2',
-      server_url: process.env.GMAIL_MAIN_SERVER_URL || '',
-      server_url_hint: process.env.GMAIL_MAIN_SERVER_URL || '',
-      description: 'Gmail MCP integration authorized via Google Cloud OAuth 2.0.',
-      status: process.env.GMAIL_MAIN_ACCESS_TOKEN ? 'connected' : 'not_connected',
+      auth_type: process.env.GMAIL_MAIN_AUTH_TYPE || 'bearer',
+      server_url: process.env.GMAIL_MAIN_SERVER_URL || 'http://localhost:3100/mcp',
+      server_url_hint: process.env.GMAIL_MAIN_SERVER_URL || 'http://localhost:3100/mcp',
+      description: 'Gmail MCP integration via local proxy server.',
+      status: 'active',
       is_active: true,
-      metadata: {
-        client_id: process.env.GMAIL_MAIN_CLIENT_ID || '',
-        authorization_url: process.env.GMAIL_MAIN_AUTH_URL || 'https://accounts.google.com/o/oauth2/auth',
-        token_url: process.env.GMAIL_MAIN_TOKEN_URL || 'https://oauth2.googleapis.com/token',
-        scopes: process.env.GMAIL_MAIN_SCOPES || 'https://www.googleapis.com/auth/gmail.readonly',
-        redirect_uri: process.env.GMAIL_MAIN_REDIRECT_URI || 'http://localhost:5173/api/oauth/callback',
-      },
+      metadata: {},
       created_at: '2026-09-30T00:00:00.000Z',
       updated_at: new Date().toISOString(),
     });

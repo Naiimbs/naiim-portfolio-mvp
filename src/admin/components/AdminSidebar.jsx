@@ -50,6 +50,16 @@ export default function AdminSidebar() {
           <span>Runtime Console</span>
         </NavLink>
 
+        <NavLink to="/admin/pages" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
+          <i className="bi bi-file-earmark-richtext"></i>
+          <span>Pages</span>
+        </NavLink>
+
+        <NavLink to="/admin/navigation" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
+          <i className="bi bi-compass"></i>
+          <span>Navigation</span>
+        </NavLink>
+
         <NavLink to="/admin/media" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
           <i className="bi bi-images"></i>
           <span>Media</span>

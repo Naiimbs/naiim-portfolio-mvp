@@ -58,6 +58,9 @@ export function ensureEnvLoaded() {
         const raw = fs.readFileSync(filePath, 'utf-8');
         const parsed = parseEnvContent(raw);
 
+        if (!process.env.GMAIL_MCP_ACCESS_TOKEN && (parsed.GMAIL_MCP_ACCESS_TOKEN || parsed.GMAIL_MAIN_ACCESS_TOKEN)) {
+          process.env.GMAIL_MCP_ACCESS_TOKEN = parsed.GMAIL_MCP_ACCESS_TOKEN || parsed.GMAIL_MAIN_ACCESS_TOKEN;
+        }
         if (!process.env.GMAIL_CLIENT_ID && (parsed.GMAIL_CLIENT_ID || parsed.GMAIL_MAIN_CLIENT_ID)) {
           process.env.GMAIL_CLIENT_ID = parsed.GMAIL_CLIENT_ID || parsed.GMAIL_MAIN_CLIENT_ID;
         }

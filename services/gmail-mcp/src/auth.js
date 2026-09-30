@@ -10,7 +10,7 @@ import crypto from 'node:crypto';
  * - Never logs or exposes token values
  */
 export function validateMcpAuth(req) {
-  const expectedToken = (process.env.GMAIL_MCP_ACCESS_TOKEN || '').trim();
+  const expectedToken = (process.env.GMAIL_MCP_ACCESS_TOKEN || process.env.GMAIL_MAIN_ACCESS_TOKEN || '').trim();
 
   if (!expectedToken) {
     return {
