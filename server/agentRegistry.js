@@ -25,15 +25,15 @@ export const FALLBACK_AGENT_REGISTRY = {
     runtimeType: 'mcp',
     connectionKey: 'n8n-main',
     allowedTools: [
+      'query_knowledge_base',
+      'ask_copilot_assistant',
+      'get_copilot_summary',
       'search_projects',
       'search_workflows',
       'search_nodes',
       'get_workflow_best_practices',
-      'ask_copilot_assistant',
-      'query_knowledge_base',
-      'get_copilot_summary',
     ],
-    defaultTool: 'search_projects',
+    defaultTool: 'query_knowledge_base',
     timeoutMs: 30000,
     maxInputLength: 1000,
     enabled: true,
@@ -57,15 +57,29 @@ export const FALLBACK_AGENT_REGISTRY = {
 export function sanitizeRuntimeConfig(config) {
   if (!config) return null;
 
+  let defaultTool = config.default_tool || config.defaultTool || null;
+  // If naim-copilot was previously set to search_projects, redirect to portfolio knowledge tool
+  if (config.slug === 'naim-copilot' && (defaultTool === 'search_projects' || !defaultTool)) {
+    defaultTool = 'query_knowledge_base';
+  }
+
+  let allowedTools = Array.isArray(config.allowed_tools || config.allowedTools)
+    ? [...(config.allowed_tools || config.allowedTools)]
+    : [];
+
+  if (config.slug === 'naim-copilot') {
+    if (!allowedTools.includes('query_knowledge_base')) allowedTools.unshift('query_knowledge_base');
+    if (!allowedTools.includes('ask_copilot_assistant')) allowedTools.push('ask_copilot_assistant');
+    if (!allowedTools.includes('search_projects')) allowedTools.push('search_projects');
+  }
+
   return {
     slug: config.slug,
     name: config.name || config.slug,
     runtimeType: config.runtime_type || config.runtimeType || 'none',
     connectionKey: config.connection_key || config.connectionKey || 'n8n-main',
-    allowedTools: Array.isArray(config.allowed_tools || config.allowedTools)
-      ? (config.allowed_tools || config.allowedTools)
-      : [],
-    defaultTool: config.default_tool || config.defaultTool || null,
+    allowedTools,
+    defaultTool,
     timeoutMs: Math.min(
       Number(config.timeout_ms || config.timeoutMs) || HARD_LIMITS.DEFAULT_TIMEOUT_MS,
       HARD_LIMITS.MAX_TIMEOUT_MS

@@ -1,5 +1,6 @@
 import { resolveMCPConnection } from './mcpConnections.js';
 import { FALLBACK_AGENT_REGISTRY, sanitizeRuntimeConfig } from './agentRegistry.js';
+import { queryPortfolioKnowledge } from './portfolioKnowledge.js';
 
 /**
  * Server-side MCP Gateway Service (Phase 14.3).
@@ -291,9 +292,9 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
     };
   }
 
-  // 3. Validate Tool Allowlist
-  const requestedTool = toolName || runtimeConfig.defaultTool;
-  if (!runtimeConfig.allowedTools.includes(requestedTool)) {
+  // 3. Validate Tool Allowlist & Determine Routing
+  const requestedTool = toolName || runtimeConfig.defaultTool || 'query_knowledge_base';
+  if (!runtimeConfig.allowedTools.includes(requestedTool) && requestedTool !== 'query_knowledge_base') {
     return {
       success: false,
       status: 403,
@@ -304,8 +305,37 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
     };
   }
 
-  // 4. Resolve Server-Side Secrets for Connection Key
-  const connection = resolveMCPConnection(runtimeConfig.connectionKey);
+  // 4. PORTFOLIO KNOWLEDGE ROUTING:
+  // If the agent query targets portfolio knowledge or uses portfolio knowledge tools:
+  const isKnowledgeTool =
+    ['query_knowledge_base', 'ask_copilot_assistant', 'get_copilot_summary'].includes(requestedTool) ||
+    (slug === 'naim-copilot' && requestedTool === 'search_projects');
+
+  if (isKnowledgeTool) {
+    const knowledgeResult = await queryPortfolioKnowledge({
+      input: cleanInput,
+      tool: requestedTool,
+      slug,
+    });
+
+    const durationMs = Date.now() - startTime;
+    console.log(`[Copilot Knowledge] Success: ${slug} tool=${requestedTool} topic=${knowledgeResult.topic || 'none'} duration=${durationMs}ms`);
+
+    return {
+      success: true,
+      status: 200,
+      data: {
+        agent: slug,
+        tool: requestedTool,
+        answer: knowledgeResult.answer,
+        durationMs,
+        timestamp: new Date().toISOString(),
+      },
+    };
+  }
+
+  // 5. EXTERNAL MCP TOOLS ROUTING (Real n8n MCP server execution)
+  const connection = await resolveMCPConnection(runtimeConfig.connectionKey);
 
   if (!connection.isConfigured || !connection.serverUrl) {
     console.warn(`[MCP Gateway] Connection "${runtimeConfig.connectionKey}" is not configured on server.`);
@@ -319,7 +349,7 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
     };
   }
 
-  // 5. Construct Arguments Based on Tool Schema
+  // Construct Arguments Based on Tool Schema
   const verifiedSchema = await getVerifiedToolSchema(
     connection.serverUrl,
     connection.accessToken,
@@ -351,7 +381,7 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
     }
   }
 
-  // 6. Execute JSON-RPC tools/call
+  // 6. Execute JSON-RPC tools/call on real MCP server
   const rpcPayload = {
     jsonrpc: '2.0',
     id: `req_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
@@ -390,12 +420,17 @@ export async function runAgentDemo({ slug, input, toolName, context = {} }) {
         .map((item) => (typeof item === 'string' ? item : item.text || JSON.stringify(item)))
         .join('\n\n');
     } else if (typeof rawContent === 'object') {
-      normalizedAnswer =
-        rawContent.text ||
-        rawContent.output ||
-        rawContent.message ||
-        rawContent.response ||
-        JSON.stringify(rawContent, null, 2);
+      // If structured empty data is returned (e.g. from an administrative tool), provide a friendly natural-language answer
+      if (Array.isArray(rawContent.data) && rawContent.data.length === 0) {
+        normalizedAnswer = "I couldn't find enough information in my portfolio knowledge base to answer that confidently.";
+      } else {
+        normalizedAnswer =
+          rawContent.text ||
+          rawContent.output ||
+          rawContent.message ||
+          rawContent.response ||
+          JSON.stringify(rawContent, null, 2);
+      }
     } else {
       normalizedAnswer = String(rawContent);
     }

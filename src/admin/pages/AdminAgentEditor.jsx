@@ -202,6 +202,7 @@ export default function AdminAgentEditor() {
     try {
       const res = await fetch(`/api/admin/mcp-connections/${connKey}/test`, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
       });
       const data = await res.json();
       setConnectionStatus(data.status || 'unavailable');
@@ -214,6 +215,7 @@ export default function AdminAgentEditor() {
       setTestingConnection(false);
     }
   };
+
 
   // Live Test Agent Execution
   const handleTestAgent = async () => {

@@ -42,8 +42,8 @@ async function checkMcpEndpoint() {
   console.log('  API server: OK (In-process router / Vite middleware)');
   console.log(`  Connection Key: ${requestedKey}\n`);
 
-  const connInfo = getSafeConnectionInfo(requestedKey);
-  const resolved = resolveMCPConnection(requestedKey);
+  const connInfo = await getSafeConnectionInfo(requestedKey);
+  const resolved = await resolveMCPConnection(requestedKey);
 
   console.log('Step 2: Server Environment Variables (.env)');
   if (!resolved.isConfigured || !resolved.serverUrl) {

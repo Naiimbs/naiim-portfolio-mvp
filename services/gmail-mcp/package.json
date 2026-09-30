@@ -1,0 +1,18 @@
+{
+  "name": "gmail-mcp",
+  "version": "0.1.0",
+  "description": "First-party Gmail Model Context Protocol (MCP) server for naiimOS",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test tests/mcpProtocol.test.js"
+  },
+  "dependencies": {
+    "googleapis": "^182.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "private": true
+}
