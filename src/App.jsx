@@ -28,6 +28,7 @@ import AdminMedia from './admin/pages/AdminMedia';
 import AdminPages from './admin/pages/AdminPages';
 import AdminPageEditor from './admin/pages/AdminPageEditor';
 import AdminNavigation from './admin/pages/AdminNavigation';
+import AdminSettings from './admin/pages/AdminSettings';
 
 export default function App() {
   return (
@@ -69,6 +70,7 @@ export default function App() {
             <Route path="pages" element={<AdminPages />} />
             <Route path="pages/:id" element={<AdminPageEditor />} />
             <Route path="navigation" element={<AdminNavigation />} />
+            <Route path="settings" element={<AdminSettings />} />
           </Route>
         </Route>
 

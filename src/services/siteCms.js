@@ -440,49 +440,81 @@ export async function deleteNavigationItem(id) {
    4. SITE SETTINGS SERVICE
    ============================================================================== */
 
+export const DEFAULT_SITE_SETTINGS = {
+  site_name: 'Naïm Bsili',
+  tagline: 'Senior UX/UI Designer · AI Product Builder',
+  logo_url: '',
+  contact_email: 'hi@naiimbsili.com',
+  contact_cta_label: "Let's Talk",
+  contact_cta_href: '#contact',
+  linkedin: 'https://tn.linkedin.com/in/bsili-naiim',
+  github: 'https://github.com/naiimbsili',
+  instagram: 'https://www.instagram.com/designer.tunisien/',
+  behance: '',
+  dribbble: '',
+  footer_text: 'Building intelligent digital products & AI systems.',
+  copyright_text: '© 2026 Naïm Bsili. All rights reserved.',
+  default_seo_title: 'Naïm Bsili — Product Designer & AI Builder',
+  default_seo_description: 'Naïm Bsili — Product Designer & AI Builder. UX/UI, Product Design, AI, Low-Code and Product Operations.',
+  default_og_image: '/assets/images/naim-portrait.jpg',
+};
+
+const parseSettingValue = (val) => {
+  if (val === null || val === undefined) return '';
+  if (typeof val === 'string') return val;
+  if (typeof val === 'object') {
+    if (val.value !== undefined) return val.value;
+    if (val.val !== undefined) return val.val;
+  }
+  return val;
+};
+
 export async function getPublicSiteSettings() {
+  const fallback = { ...DEFAULT_SITE_SETTINGS, ...localSettingsStore };
   if (!isSupabaseConfigured || !supabase) {
-    return { data: localSettingsStore, error: null, source: 'local' };
+    return { data: fallback, error: null, source: 'local' };
   }
   try {
     const { data, error } = await supabase.from('site_settings').select('*').eq('is_public', true);
-    if (error) return { data: localSettingsStore, error, source: 'local_fallback' };
-    const map = {};
+    if (error) return { data: fallback, error, source: 'local_fallback' };
+    const map = { ...DEFAULT_SITE_SETTINGS };
     (data || []).forEach((row) => {
-      map[row.key] = row.value;
+      map[row.key] = parseSettingValue(row.value);
     });
     return { data: map, error: null, source: 'supabase' };
   } catch (err) {
-    return { data: localSettingsStore, error: err, source: 'local_fallback' };
+    return { data: fallback, error: err, source: 'local_fallback' };
   }
 }
 
 export async function getAdminSiteSettings() {
+  const fallback = { ...DEFAULT_SITE_SETTINGS, ...localSettingsStore };
   if (!isSupabaseConfigured || !supabase) {
-    return { data: localSettingsStore, error: null, source: 'local' };
+    return { data: fallback, error: null, source: 'local' };
   }
   try {
     const { data, error } = await supabase.from('site_settings').select('*');
-    if (error) return { data: localSettingsStore, error, source: 'local_fallback' };
-    const map = {};
+    if (error) return { data: fallback, error, source: 'local_fallback' };
+    const map = { ...DEFAULT_SITE_SETTINGS };
     (data || []).forEach((row) => {
-      map[row.key] = row.value;
+      map[row.key] = parseSettingValue(row.value);
     });
     return { data: map, error: null, source: 'supabase' };
   } catch (err) {
-    return { data: localSettingsStore, error: err, source: 'local_fallback' };
+    return { data: fallback, error: err, source: 'local_fallback' };
   }
 }
 
-export async function updateSiteSetting(key, value) {
+export async function updateSiteSetting(key, value, isPublic = true) {
   if (!isSupabaseConfigured || !supabase) {
     localSettingsStore[key] = value;
     return { data: { key, value }, error: null };
   }
   try {
+    const jsonValue = typeof value === 'string' ? value : value;
     const { data, error } = await supabase
       .from('site_settings')
-      .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' })
+      .upsert({ key, value: jsonValue, is_public: isPublic, updated_at: new Date().toISOString() }, { onConflict: 'key' })
       .select()
       .single();
 
@@ -491,4 +523,14 @@ export async function updateSiteSetting(key, value) {
   } catch (err) {
     return { data: null, error: err };
   }
+}
+
+export async function updateMultipleSiteSettings(settingsObj, isPublic = true) {
+  const keys = Object.keys(settingsObj);
+  for (const key of keys) {
+    const val = settingsObj[key];
+    const res = await updateSiteSetting(key, val, isPublic);
+    if (res.error) return { error: res.error };
+  }
+  return { error: null };
 }

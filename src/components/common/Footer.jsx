@@ -1,29 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { getFooterNavigation } from '../../services/siteCms';
+import { getFooterNavigation, getPublicSiteSettings } from '../../services/siteCms';
 
 export default function Footer() {
   const [navItems, setNavItems] = useState(null);
+  const [siteSettings, setSiteSettings] = useState(null);
   const location = useLocation();
   const isHome = location.pathname === '/';
 
   useEffect(() => {
     let isMounted = true;
-    async function fetchNav() {
-      const res = await getFooterNavigation();
+    async function fetchNavAndSettings() {
+      const [navRes, settingsRes] = await Promise.all([
+        getFooterNavigation(),
+        getPublicSiteSettings(),
+      ]);
       if (isMounted) {
-        if (res.data && res.data.length > 0) {
-          setNavItems(res.data);
+        if (navRes.data && navRes.data.length > 0) {
+          setNavItems(navRes.data);
         } else {
           setNavItems([]);
         }
+        if (settingsRes.data) {
+          setSiteSettings(settingsRes.data);
+        }
       }
     }
-    fetchNav();
+    fetchNavAndSettings();
     return () => {
       isMounted = false;
     };
   }, []);
+
+  const brandName = siteSettings?.site_name || 'NAÏM BSILI';
+  const copyrightText = siteSettings?.copyright_text || '© 2026 Naïm Bsili. All rights reserved.';
+  const emailAddr = siteSettings?.contact_email ? `mailto:${siteSettings.contact_email}` : 'mailto:hi@naiimbsili.com';
+  const linkedinUrl = siteSettings?.linkedin || 'https://tn.linkedin.com/in/bsili-naiim';
+  const githubUrl = siteSettings?.github || 'https://github.com/naiimbsili';
+  const instagramUrl = siteSettings?.instagram || 'https://www.instagram.com/designer.tunisien/';
+  const behanceUrl = siteSettings?.behance || '';
+  const dribbbleUrl = siteSettings?.dribbble || '';
 
   const hasCmsNav = Boolean(navItems && navItems.length > 0);
 
@@ -57,7 +73,7 @@ export default function Footer() {
     <footer className="footer">
       <div className="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
         <Link className="brand" to="/">
-          NAÏM BSILI <span className="beta-badge">Beta</span>
+          {brandName} <span className="beta-badge">Beta</span>
         </Link>
         <div className="footer-links">
           {hasCmsNav ? (
@@ -85,44 +101,42 @@ export default function Footer() {
           )}
         </div>
         <div className="socials">
-          <a
-            href="https://tn.linkedin.com/in/bsili-naiim"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="LinkedIn"
-          >
-            <i className="bi bi-linkedin"></i>
-          </a>
-          <a
-            href="https://www.instagram.com/designer.tunisien/"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Instagram"
-          >
-            <i className="bi bi-instagram"></i>
-          </a>
-          <a
-            href="https://www.tiktok.com/@bsilinaiim"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="TikTok"
-          >
+          {linkedinUrl && (
+            <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+              <i className="bi bi-linkedin"></i>
+            </a>
+          )}
+          {githubUrl && (
+            <a href={githubUrl} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+              <i className="bi bi-github"></i>
+            </a>
+          )}
+          {instagramUrl && (
+            <a href={instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <i className="bi bi-instagram"></i>
+            </a>
+          )}
+          {behanceUrl && (
+            <a href={behanceUrl} target="_blank" rel="noopener noreferrer" aria-label="Behance">
+              <i className="bi bi-behance"></i>
+            </a>
+          )}
+          {dribbbleUrl && (
+            <a href={dribbbleUrl} target="_blank" rel="noopener noreferrer" aria-label="Dribbble">
+              <i className="bi bi-dribbble"></i>
+            </a>
+          )}
+          <a href="https://www.tiktok.com/@bsilinaiim" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
             <i className="bi bi-tiktok"></i>
           </a>
-          <a
-            href="https://github.com/naiimbsili"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="GitHub"
-          >
-            <i className="bi bi-github"></i>
-          </a>
-          <a href="mailto:hi@naiimbsili.com" aria-label="Email">
-            <i className="bi bi-envelope"></i>
-          </a>
+          {emailAddr && (
+            <a href={emailAddr} aria-label="Email">
+              <i className="bi bi-envelope"></i>
+            </a>
+          )}
         </div>
       </div>
-      <div className="container copyright">© 2026 Naïm Bsili. All rights reserved.</div>
+      <div className="container copyright">{copyrightText}</div>
     </footer>
   );
 }

@@ -64,6 +64,11 @@ export default function AdminSidebar() {
           <i className="bi bi-images"></i>
           <span>Media</span>
         </NavLink>
+
+        <NavLink to="/admin/settings" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
+          <i className="bi bi-gear"></i>
+          <span>Settings</span>
+        </NavLink>
       </nav>
 
       <div className="admin-sidebar-footer">

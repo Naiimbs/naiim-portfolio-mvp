@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { siteConfig } from '../../config/site';
+import { getPublicSiteSettings } from '../../services/siteCms';
 
 export default function SEO({
   title,
@@ -11,15 +12,35 @@ export default function SEO({
   robots = 'index, follow',
   schema,
 }) {
-  const fullTitle = title ? `${title} · ${siteConfig.name}` : siteConfig.title;
-  const metaDescription = description || siteConfig.description;
+  const [cmsSettings, setCmsSettings] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    getPublicSiteSettings().then((res) => {
+      if (isMounted && res.data) {
+        setCmsSettings(res.data);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const siteName = cmsSettings?.site_name || siteConfig.name;
+  const defaultTitle = cmsSettings?.default_seo_title || siteConfig.title;
+  const fullTitle = title ? `${title} · ${siteName}` : defaultTitle;
+
+  const metaDescription = description || cmsSettings?.default_seo_description || siteConfig.description;
+
   const canonicalUrl = canonical
     ? `${siteConfig.url}${canonical.startsWith('/') ? canonical : `/${canonical}`}`
     : siteConfig.url;
-  const ogImage = image
-    ? image.startsWith('http')
-      ? image
-      : `${siteConfig.url}${image}`
+
+  const rawImage = image || cmsSettings?.default_og_image;
+  const ogImage = rawImage
+    ? rawImage.startsWith('http')
+      ? rawImage
+      : `${siteConfig.url}${rawImage.startsWith('/') ? rawImage : `/${rawImage}`}`
     : `${siteConfig.url}/assets/images/naim-portrait.jpg`;
 
   return (
@@ -30,7 +51,7 @@ export default function SEO({
       <link rel="canonical" href={canonicalUrl} />
 
       {/* Open Graph */}
-      <meta property="og:site_name" content={siteConfig.name} />
+      <meta property="og:site_name" content={siteName} />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={metaDescription} />
       <meta property="og:type" content={type} />

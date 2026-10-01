@@ -1,26 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { getHeaderNavigation } from '../../services/siteCms';
+import { getHeaderNavigation, getPublicSiteSettings } from '../../services/siteCms';
 
 export default function Navbar() {
   const [navItems, setNavItems] = useState(null);
+  const [siteSettings, setSiteSettings] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isNavOpen, setIsNavOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
     let isMounted = true;
-    async function fetchNav() {
-      const res = await getHeaderNavigation();
+    async function fetchNavAndSettings() {
+      const [navRes, settingsRes] = await Promise.all([
+        getHeaderNavigation(),
+        getPublicSiteSettings(),
+      ]);
       if (isMounted) {
-        if (res.data && res.data.length > 0) {
-          setNavItems(res.data);
+        if (navRes.data && navRes.data.length > 0) {
+          setNavItems(navRes.data);
         } else {
           setNavItems([]);
         }
+        if (settingsRes.data) {
+          setSiteSettings(settingsRes.data);
+        }
       }
     }
-    fetchNav();
+    fetchNavAndSettings();
     return () => {
       isMounted = false;
     };
@@ -38,6 +45,10 @@ export default function Navbar() {
   const closeNav = () => setIsNavOpen(false);
 
   const isHome = location.pathname === '/';
+
+  const brandName = siteSettings?.site_name || 'NAÏM BSILI';
+  const ctaLabel = siteSettings?.contact_cta_label || "Let's Talk";
+  const ctaHref = siteSettings?.contact_cta_href || '#contact';
 
   const renderNavLink = (item) => {
     const isExternal = Boolean(item.open_in_new_tab) || item.href.startsWith('http://') || item.href.startsWith('https://');
@@ -85,7 +96,10 @@ export default function Navbar() {
     <nav className={`navbar navbar-expand-lg fixed-top site-nav ${isScrolled ? 'scrolled' : ''}`} id="siteNav">
       <div className="container">
         <Link className="navbar-brand brand" to="/" onClick={closeNav}>
-          NAÏM BSILI <span className="beta-badge">Beta</span>
+          {siteSettings?.logo_url ? (
+            <img src={siteSettings.logo_url} alt={brandName} height="28" className="me-2 rounded" />
+          ) : null}
+          {brandName} <span className="beta-badge">Beta</span>
         </Link>
 
         <button
@@ -150,8 +164,8 @@ export default function Navbar() {
               </>
             )}
           </ul>
-          <a className="btn btn-dark rounded-pill px-4" href="#contact" onClick={closeNav}>
-            Let's Talk <i className="bi bi-arrow-up-right"></i>
+          <a className="btn btn-dark rounded-pill px-4" href={ctaHref} onClick={closeNav}>
+            {ctaLabel} <i className="bi bi-arrow-up-right ms-1"></i>
           </a>
         </div>
       </div>
