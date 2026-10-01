@@ -12,6 +12,8 @@ export default function AdminLayout() {
     if (path === '/admin') return 'Dashboard';
     if (path.startsWith('/admin/projects')) return 'Projects';
     if (path.startsWith('/admin/case-studies')) return 'Case Studies';
+    if (path.startsWith('/admin/pages')) return 'Pages';
+    if (path.startsWith('/admin/navigation')) return 'Navigation Management';
     if (path.startsWith('/admin/media')) return 'Media Library';
     return 'Admin CMS';
   };

@@ -1,10 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { getHeaderNavigation } from '../../services/siteCms';
 
 export default function Navbar() {
+  const [navItems, setNavItems] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isNavOpen, setIsNavOpen] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchNav() {
+      const res = await getHeaderNavigation();
+      if (isMounted) {
+        if (res.data && res.data.length > 0) {
+          setNavItems(res.data);
+        } else {
+          setNavItems([]);
+        }
+      }
+    }
+    fetchNav();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,6 +38,48 @@ export default function Navbar() {
   const closeNav = () => setIsNavOpen(false);
 
   const isHome = location.pathname === '/';
+
+  const renderNavLink = (item) => {
+    const isExternal = Boolean(item.open_in_new_tab) || item.href.startsWith('http://') || item.href.startsWith('https://');
+
+    if (isExternal) {
+      return (
+        <a
+          key={item.id}
+          className="nav-link"
+          href={item.href}
+          target={item.open_in_new_tab ? '_blank' : undefined}
+          rel={item.open_in_new_tab ? 'noopener noreferrer' : undefined}
+          onClick={closeNav}
+        >
+          {item.label}
+        </a>
+      );
+    }
+
+    if (item.href.startsWith('#')) {
+      if (isHome) {
+        return (
+          <a key={item.id} className="nav-link" href={item.href} onClick={closeNav}>
+            {item.label}
+          </a>
+        );
+      }
+      return (
+        <Link key={item.id} className="nav-link" to={`/${item.href}`} onClick={closeNav}>
+          {item.label}
+        </Link>
+      );
+    }
+
+    return (
+      <Link key={item.id} className="nav-link" to={item.href} onClick={closeNav}>
+        {item.label}
+      </Link>
+    );
+  };
+
+  const hasCmsNav = Boolean(navItems && navItems.length > 0);
 
   return (
     <nav className={`navbar navbar-expand-lg fixed-top site-nav ${isScrolled ? 'scrolled' : ''}`} id="siteNav">
@@ -39,44 +101,54 @@ export default function Navbar() {
 
         <div className={`collapse navbar-collapse ${isNavOpen ? 'show' : ''}`} id="mainNav">
           <ul className="navbar-nav mx-auto gap-lg-2">
-            <li className="nav-item">
-              {isHome ? (
-                <a className="nav-link" href="#work" onClick={closeNav}>Work</a>
-              ) : (
-                <Link className="nav-link" to="/work" onClick={closeNav}>Work</Link>
-              )}
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/agents" onClick={closeNav}>Agents</Link>
-            </li>
-            <li className="nav-item">
-              {isHome ? (
-                <a className="nav-link" href="#copilot" onClick={closeNav}>Copilot</a>
-              ) : (
-                <Link className="nav-link" to="/copilot" onClick={closeNav}>Copilot</Link>
-              )}
-            </li>
-            <li className="nav-item">
-              {isHome ? (
-                <a className="nav-link" href="#career" onClick={closeNav}>Career</a>
-              ) : (
-                <Link className="nav-link" to="/#career" onClick={closeNav}>Career</Link>
-              )}
-            </li>
-            <li className="nav-item">
-              {isHome ? (
-                <a className="nav-link" href="#lab" onClick={closeNav}>Lab</a>
-              ) : (
-                <Link className="nav-link" to="/#lab" onClick={closeNav}>Lab</Link>
-              )}
-            </li>
-            <li className="nav-item">
-              {isHome ? (
-                <a className="nav-link" href="#about" onClick={closeNav}>About</a>
-              ) : (
-                <Link className="nav-link" to="/about" onClick={closeNav}>About</Link>
-              )}
-            </li>
+            {hasCmsNav ? (
+              navItems.map((item) => (
+                <li key={item.id} className="nav-item">
+                  {renderNavLink(item)}
+                </li>
+              ))
+            ) : (
+              <>
+                <li className="nav-item">
+                  {isHome ? (
+                    <a className="nav-link" href="#work" onClick={closeNav}>Work</a>
+                  ) : (
+                    <Link className="nav-link" to="/work" onClick={closeNav}>Work</Link>
+                  )}
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/agents" onClick={closeNav}>Agents</Link>
+                </li>
+                <li className="nav-item">
+                  {isHome ? (
+                    <a className="nav-link" href="#copilot" onClick={closeNav}>Copilot</a>
+                  ) : (
+                    <Link className="nav-link" to="/copilot" onClick={closeNav}>Copilot</Link>
+                  )}
+                </li>
+                <li className="nav-item">
+                  {isHome ? (
+                    <a className="nav-link" href="#career" onClick={closeNav}>Career</a>
+                  ) : (
+                    <Link className="nav-link" to="/#career" onClick={closeNav}>Career</Link>
+                  )}
+                </li>
+                <li className="nav-item">
+                  {isHome ? (
+                    <a className="nav-link" href="#lab" onClick={closeNav}>Lab</a>
+                  ) : (
+                    <Link className="nav-link" to="/#lab" onClick={closeNav}>Lab</Link>
+                  )}
+                </li>
+                <li className="nav-item">
+                  {isHome ? (
+                    <a className="nav-link" href="#about" onClick={closeNav}>About</a>
+                  ) : (
+                    <Link className="nav-link" to="/about" onClick={closeNav}>About</Link>
+                  )}
+                </li>
+              </>
+            )}
           </ul>
           <a className="btn btn-dark rounded-pill px-4" href="#contact" onClick={closeNav}>
             Let's Talk <i className="bi bi-arrow-up-right"></i>

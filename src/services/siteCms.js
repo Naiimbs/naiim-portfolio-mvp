@@ -340,6 +340,14 @@ export async function getNavigationItems(location = 'header') {
   }
 }
 
+export async function getHeaderNavigation() {
+  return getNavigationItems('header');
+}
+
+export async function getFooterNavigation() {
+  return getNavigationItems('footer');
+}
+
 export async function getAdminNavigationItems() {
   if (!isSupabaseConfigured || !supabase) {
     return { data: localNavStore, error: null, source: 'local' };
