@@ -75,6 +75,46 @@ export default function SectionPropertyEditor({ section, onChange, onSave, onCan
           />
         </div>
 
+        {/* Layout & CSS Customization Panel */}
+        <div className="card border-0 bg-light rounded-3 p-3 mb-3">
+          <div className="fw-bold small text-uppercase tracking-wider text-muted mb-2 d-flex align-items-center">
+            <i className="bi bi-sliders me-2 text-primary"></i> Layout & CSS Styling
+          </div>
+
+          <div className="mb-2">
+            <label className="form-label small fw-semibold">Column Layout Split</label>
+            <select
+              className="form-select form-select-sm rounded-3"
+              value={config.columnLayout || '12'}
+              onChange={(e) => handleConfigChange({ ...config, columnLayout: e.target.value })}
+            >
+              <option value="12">12 (Full Width - 100%)</option>
+              <option value="6:6">6 : 6 (50% / 50% Split)</option>
+              <option value="4:8">4 : 8 (1/3 & 2/3 Split)</option>
+              <option value="8:4">8 : 4 (2/3 & 1/3 Split)</option>
+              <option value="4:4:4">4 : 4 : 4 (3 Equal Columns)</option>
+              <option value="3:3:3:3">3 : 3 : 3 : 3 (4 Equal Columns)</option>
+            </select>
+            <small className="text-muted" style={{ fontSize: '0.7rem' }}>
+              Applies responsive grid column wrapping for section content blocks.
+            </small>
+          </div>
+
+          <div>
+            <label className="form-label small fw-semibold">Custom CSS Class Name(s)</label>
+            <input
+              type="text"
+              className="form-control form-control-sm rounded-3 font-monospace"
+              placeholder="e.g. my-custom-section py-5 bg-dark text-white rounded-4"
+              value={config.customClassName || ''}
+              onChange={(e) => handleConfigChange({ ...config, customClassName: e.target.value })}
+            />
+            <small className="text-muted" style={{ fontSize: '0.7rem' }}>
+              Add custom class names. Define CSS rules in Admin Settings → Custom CSS.
+            </small>
+          </div>
+        </div>
+
         {renderEditorContent()}
       </div>
 

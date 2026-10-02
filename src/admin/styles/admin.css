@@ -22,11 +22,25 @@
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  transition: all 0.2s ease;
+  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.admin-sidebar.collapsed {
+  width: 68px;
+}
+
+.admin-sidebar.collapsed .admin-sidebar-header {
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.admin-sidebar.collapsed .admin-brand {
+  display: none;
 }
 
 .admin-sidebar-header {
-  padding: 24px 20px;
+  padding: 20px 14px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
@@ -43,6 +57,13 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.admin-sidebar.collapsed .brand-text,
+.admin-sidebar.collapsed .cms-badge {
+  display: none;
 }
 
 .admin-brand .cms-badge {
@@ -57,11 +78,31 @@
   letter-spacing: 0.05em;
 }
 
+.admin-sidebar-toggle-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s ease;
+}
+
+.admin-sidebar-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
 .admin-nav {
-  padding: 20px 12px;
+  padding: 16px 10px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   flex: 1;
 }
 
@@ -69,18 +110,26 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 14px;
+  padding: 10px 12px;
   color: rgba(255, 255, 255, 0.65);
   text-decoration: none;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 500;
   font-family: "DM Sans", sans-serif;
   transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.admin-sidebar.collapsed .admin-nav-item {
+  justify-content: center;
+  padding: 10px 0;
 }
 
 .admin-nav-item i {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
+  min-width: 20px;
+  text-align: center;
 }
 
 .admin-nav-item:hover {
@@ -95,11 +144,16 @@
 }
 
 .admin-sidebar-footer {
-  padding: 16px 20px;
+  padding: 14px 14px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.admin-sidebar.collapsed .admin-sidebar-footer {
+  justify-content: center;
+  padding: 14px 0;
 }
 
 .admin-user-info {
@@ -902,4 +956,99 @@
     gap: 12px;
   }
 }
+
+/* ------------------------------------------------------------------------------
+   Visual Page Builder Workspace & Drawer Overlays
+   ------------------------------------------------------------------------------ */
+.admin-content.builder-mode,
+.admin-content:has(.admin-visual-builder) {
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 64px);
+  overflow: hidden;
+}
+
+.admin-main:has(.admin-visual-builder) {
+  overflow: hidden;
+}
+
+/* Interactive Canvas Section Outline */
+.cms-canvas-selectable {
+  transition: outline 0.15s ease;
+  position: relative;
+}
+
+.cms-canvas-selectable:hover {
+  outline: 2px dashed rgba(8, 127, 102, 0.45);
+  outline-offset: -2px;
+}
+
+.cms-canvas-selected {
+  outline: 2px solid #087f66 !important;
+  outline-offset: -2px;
+}
+
+@media (max-width: 991px) {
+  .admin-sidebar {
+    width: 100% !important;
+  }
+
+  .admin-sidebar.collapsed {
+    width: 100% !important;
+  }
+
+  .admin-sidebar-toggle-btn {
+    display: none !important;
+  }
+
+  .admin-sidebar.collapsed .brand-text,
+  .admin-sidebar.collapsed .cms-badge {
+    display: inline-block !important;
+  }
+
+  .admin-sidebar.collapsed .admin-brand {
+    display: flex !important;
+  }
+
+  .admin-sidebar.collapsed .admin-sidebar-header {
+    justify-content: space-between !important;
+    padding: 16px 20px !important;
+  }
+
+  .admin-sidebar.collapsed .admin-nav-item {
+    justify-content: flex-start !important;
+    padding: 10px 12px !important;
+  }
+
+  .admin-sidebar.collapsed .admin-nav-item span {
+    display: inline !important;
+  }
+
+  .admin-content.builder-mode,
+  .admin-content:has(.admin-visual-builder) {
+    height: auto;
+    min-height: calc(100vh - 120px);
+  }
+
+  .builder-col-left,
+  .builder-col-right {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    max-width: 85vw;
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.25);
+    z-index: 100;
+  }
+
+  .builder-col-left {
+    left: 0;
+  }
+
+  .builder-col-right {
+    right: 0;
+  }
+}
+
 

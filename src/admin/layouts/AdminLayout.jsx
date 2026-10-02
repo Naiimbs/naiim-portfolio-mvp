@@ -20,6 +20,7 @@ export default function AdminLayout() {
   };
 
   const title = getPageTitle(location.pathname);
+  const isPageEditor = location.pathname.startsWith('/admin/pages/') && location.pathname !== '/admin/pages';
 
   return (
     <div className="admin-layout">
@@ -29,9 +30,9 @@ export default function AdminLayout() {
       </Helmet>
 
       <AdminSidebar />
-      <div className="admin-main">
+      <div className={`admin-main ${isPageEditor ? 'overflow-hidden' : ''}`}>
         <AdminHeader title={title} />
-        <main className="admin-content">
+        <main className={`admin-content ${isPageEditor ? 'builder-mode' : ''}`}>
           <Outlet />
         </main>
       </div>

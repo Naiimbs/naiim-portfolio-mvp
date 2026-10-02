@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -6,77 +6,103 @@ export default function AdminSidebar() {
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
 
+  const [collapsed, setCollapsed] = useState(() => {
+    return localStorage.getItem('admin_sidebar_collapsed') === 'true';
+  });
+
+  const toggleCollapse = () => {
+    const nextState = !collapsed;
+    setCollapsed(nextState);
+    localStorage.setItem('admin_sidebar_collapsed', String(nextState));
+  };
+
   const handleLogout = async () => {
     await signOut();
     navigate('/admin/login');
   };
 
+  const navFamilies = [
+    {
+      title: 'OVERVIEW',
+      items: [
+        { to: '/admin', label: 'Dashboard', icon: 'bi-speedometer2', end: true },
+      ],
+    },
+    {
+      title: 'CONTENT',
+      items: [
+        { to: '/admin/projects', label: 'Projects', icon: 'bi-folder2-open' },
+        { to: '/admin/case-studies', label: 'Case Studies', icon: 'bi-journal-richtext' },
+        { to: '/admin/agents', label: 'AI Agents', icon: 'bi-robot' },
+        { to: '/admin/pages', label: 'Pages', icon: 'bi-file-earmark-richtext' },
+      ],
+    },
+    {
+      title: 'SITE',
+      items: [
+        { to: '/admin/navigation', label: 'Navigation', icon: 'bi-compass' },
+        { to: '/admin/media', label: 'Media', icon: 'bi-images' },
+        { to: '/admin/settings', label: 'Settings', icon: 'bi-gear' },
+      ],
+    },
+    {
+      title: 'AI / RUNTIME',
+      items: [
+        { to: '/admin/mcp-connections', label: 'MCP Connections', icon: 'bi-hdd-network' },
+        { to: '/admin/runtime-console', label: 'Runtime Console', icon: 'bi-terminal' },
+      ],
+    },
+  ];
+
   return (
-    <aside className="admin-sidebar">
+    <aside className={`admin-sidebar ${collapsed ? 'collapsed' : ''}`}>
       <div className="admin-sidebar-header">
-        <Link to="/admin" className="admin-brand">
-          NAÏM BSILI <span className="cms-badge">CMS</span>
+        <Link to="/admin" className="admin-brand" title="NAÏM BSILI CMS">
+          <span className="brand-text">NAÏM BSILI</span> <span className="cms-badge">CMS</span>
         </Link>
+        <button
+          type="button"
+          className="admin-sidebar-toggle-btn"
+          onClick={toggleCollapse}
+          title={collapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+          aria-label="Toggle Sidebar"
+        >
+          <i className={`bi ${collapsed ? 'bi-chevron-right' : 'bi-chevron-left'}`}></i>
+        </button>
       </div>
 
-      <nav className="admin-nav">
-        <NavLink to="/admin" end className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
-          <i className="bi bi-speedometer2"></i>
-          <span>Dashboard</span>
-        </NavLink>
-
-        <NavLink to="/admin/projects" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
-          <i className="bi bi-folder2-open"></i>
-          <span>Projects</span>
-        </NavLink>
-
-        <NavLink to="/admin/case-studies" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
-          <i className="bi bi-journal-richtext"></i>
-          <span>Case Studies</span>
-        </NavLink>
-
-        <NavLink to="/admin/agents" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
-          <i className="bi bi-robot"></i>
-          <span>AI Agents</span>
-        </NavLink>
-
-        <NavLink to="/admin/mcp-connections" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
-          <i className="bi bi-hdd-network"></i>
-          <span>MCP Connections</span>
-        </NavLink>
-
-        <NavLink to="/admin/runtime-console" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
-          <i className="bi bi-terminal"></i>
-          <span>Runtime Console</span>
-        </NavLink>
-
-        <NavLink to="/admin/pages" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
-          <i className="bi bi-file-earmark-richtext"></i>
-          <span>Pages</span>
-        </NavLink>
-
-        <NavLink to="/admin/navigation" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
-          <i className="bi bi-compass"></i>
-          <span>Navigation</span>
-        </NavLink>
-
-        <NavLink to="/admin/media" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
-          <i className="bi bi-images"></i>
-          <span>Media</span>
-        </NavLink>
-
-        <NavLink to="/admin/settings" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
-          <i className="bi bi-gear"></i>
-          <span>Settings</span>
-        </NavLink>
+      <nav className="admin-nav overflow-auto">
+        {navFamilies.map((family) => (
+          <div key={family.title} className="nav-family-group mb-3">
+            {!collapsed && (
+              <div className="nav-family-title text-uppercase tracking-wider text-muted fw-bold px-3 mb-1" style={{ fontSize: '0.68rem', opacity: 0.7 }}>
+                {family.title}
+              </div>
+            )}
+            {family.items.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.end || false}
+                className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}
+                title={collapsed ? item.label : undefined}
+              >
+                <i className={`bi ${item.icon}`}></i>
+                {!collapsed && <span>{item.label}</span>}
+              </NavLink>
+            ))}
+          </div>
+        ))}
       </nav>
 
       <div className="admin-sidebar-footer">
-        <div className="admin-user-info">
-          <span className="admin-user-email" title={user?.email}>{user?.email || 'admin'}</span>
-          <span className="admin-user-role">{profile?.role || 'admin'}</span>
-        </div>
-        <button className="admin-logout-btn" onClick={handleLogout} title="Sign Out">
+        {!collapsed && (
+          <div className="admin-user-info">
+            <span className="admin-user-email" title={user?.email}>{user?.email || 'admin'}</span>
+            <span className="admin-user-role">{profile?.role || 'admin'}</span>
+          </div>
+        )}
+        <button className="admin-logout-btn" onClick={handleLogout} title="Sign Out" aria-label="Sign Out">
           <i className="bi bi-box-arrow-right"></i>
         </button>
       </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getAdminPages, createPage, deletePage } from '../../services/siteCms';
 
 export default function AdminPages() {
@@ -22,6 +22,8 @@ export default function AdminPages() {
     setPages(data || []);
     setLoading(false);
   }
+
+  const navigate = useNavigate();
 
   const handleCreatePage = async (e) => {
     e.preventDefault();
@@ -47,7 +49,12 @@ export default function AdminPages() {
     setShowCreateModal(false);
     setNewTitle('');
     setNewSlug('');
-    loadPages();
+
+    if (res.data?.id) {
+      navigate(`/admin/pages/${res.data.id}`);
+    } else {
+      loadPages();
+    }
   };
 
   const handleDeletePage = async (id, title) => {
@@ -107,7 +114,16 @@ export default function AdminPages() {
                     <td className="text-muted small">{p.template || 'default'}</td>
                     <td className="text-muted small">{new Date(p.updated_at || p.created_at).toLocaleDateString()}</td>
                     <td className="text-end pe-4">
-                      <Link to={`/admin/pages/${p.id}`} className="btn btn-sm btn-outline-secondary rounded-pill me-2">
+                      <a
+                        href={`/p/${p.slug}?preview=true`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="btn btn-sm btn-outline-secondary rounded-pill me-2"
+                        title="Preview Page"
+                      >
+                        <i className="bi bi-box-arrow-up-right me-1"></i> View
+                      </a>
+                      <Link to={`/admin/pages/${p.id}`} className="btn btn-sm btn-outline-primary rounded-pill me-2">
                         <i className="bi bi-pencil me-1"></i> Edit
                       </Link>
                       <button className="btn btn-sm btn-outline-danger rounded-pill" onClick={() => handleDeletePage(p.id, p.title)}>

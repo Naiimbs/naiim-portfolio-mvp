@@ -379,6 +379,32 @@ export default function AdminSettings() {
             </div>
           </div>
 
+          {/* 6. GLOBAL CUSTOM CSS CODE EDITOR */}
+          <div className="card border-0 shadow-sm rounded-4 mb-4">
+            <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
+              <h5 className="card-title fw-bold mb-1">
+                <i className="bi bi-code-slash me-2 text-danger"></i> Global Custom CSS Editor
+              </h5>
+              <p className="text-muted small mb-0">Write custom CSS rules injected globally across public CMS pages and section class overrides.</p>
+            </div>
+            <div className="card-body p-4">
+              <div className="mb-2">
+                <label className="form-label fw-semibold">Custom CSS Code</label>
+                <textarea
+                  rows={8}
+                  className="form-control font-monospace rounded-3 bg-dark text-light p-3"
+                  placeholder={`/* Example custom CSS classes */\n.my-custom-section {\n  background: rgba(255, 255, 255, 0.05);\n  backdrop-filter: blur(12px);\n  border-radius: 1rem;\n}\n\n.hero-badge-glow {\n  box-shadow: 0 0 20px rgba(13, 110, 253, 0.4);\n}`}
+                  value={settings.custom_css || ''}
+                  onChange={(e) => handleChange('custom_css', e.target.value)}
+                  style={{ fontSize: '0.85rem', lineHeight: '1.4' }}
+                />
+              </div>
+              <small className="text-muted">
+                <i className="bi bi-info-circle me-1"></i> Custom CSS is dynamically injected into the <code>&lt;head&gt;</code> of all public pages.
+              </small>
+            </div>
+          </div>
+
           <div className="text-end mb-5">
             <button type="submit" className="btn btn-primary rounded-pill px-5 py-2 fw-semibold" disabled={saving}>
               {saving ? 'Saving...' : 'Save All Settings'}

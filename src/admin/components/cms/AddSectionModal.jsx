@@ -35,8 +35,25 @@ const CATEGORIZED_SECTIONS = [
 export default function AddSectionModal({ show, onClose, onAddSection }) {
   const [selectedType, setSelectedType] = useState('hero');
   const [label, setLabel] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   if (!show) return null;
+
+  const filteredCategories = CATEGORIZED_SECTIONS.map((cat) => {
+    const matchingItems = cat.items.filter((item) => {
+      const q = searchQuery.toLowerCase().trim();
+      if (!q) return true;
+      return (
+        item.name.toLowerCase().includes(q) ||
+        item.type.toLowerCase().includes(q) ||
+        item.description.toLowerCase().includes(q) ||
+        cat.category.toLowerCase().includes(q)
+      );
+    });
+    return { ...cat, items: matchingItems };
+  }).filter((cat) => cat.items.length > 0);
+
+  const totalFilteredItems = filteredCategories.reduce((acc, cat) => acc + cat.items.length, 0);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -44,6 +61,7 @@ export default function AddSectionModal({ show, onClose, onAddSection }) {
     const defaultLabel = label.trim() || item?.name || `${selectedType.toUpperCase()} Section`;
     onAddSection(selectedType, defaultLabel);
     setLabel('');
+    setSearchQuery('');
     onClose();
   };
 
@@ -61,56 +79,98 @@ export default function AddSectionModal({ show, onClose, onAddSection }) {
 
           <form onSubmit={handleSubmit}>
             <div className="modal-body py-4">
-              <div className="mb-4">
-                <label className="form-label fw-semibold">Section Label (Internal)</label>
-                <input
-                  type="text"
-                  className="form-control rounded-3"
-                  placeholder="e.g. Main Hero Banner"
-                  value={label}
-                  onChange={(e) => setLabel(e.target.value)}
-                />
-              </div>
-
-              <label className="form-label fw-semibold mb-3">Choose Component Type</label>
-
-              {CATEGORIZED_SECTIONS.map((cat) => (
-                <div key={cat.category} className="mb-4">
-                  <div className="text-uppercase tracking-wider text-muted fw-bold small mb-2 d-flex align-items-center">
-                    <i className={`bi ${cat.icon} me-2 text-primary`}></i> {cat.category}
-                  </div>
-                  <div className="row g-3">
-                    {cat.items.map((item) => {
-                      const isSelected = item.type === selectedType;
-                      return (
-                        <div key={item.type} className="col-12 col-md-6">
-                          <div
-                            className={`card h-100 border-2 rounded-4 p-3 cursor-pointer transition-all ${
-                              isSelected ? 'border-primary bg-primary bg-opacity-10 shadow-sm' : 'border-light bg-light'
-                            }`}
-                            style={{ cursor: 'pointer' }}
-                            onClick={() => setSelectedType(item.type)}
-                          >
-                            <div className="d-flex justify-content-between align-items-start mb-1">
-                              <h6 className="fw-bold mb-0">{item.name}</h6>
-                              {item.editable ? (
-                                <span className="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill" style={{ fontSize: '0.65rem' }}>
-                                  Full Property Editor
-                                </span>
-                              ) : (
-                                <span className="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill" style={{ fontSize: '0.65rem' }}>
-                                  Default Layout
-                                </span>
-                              )}
-                            </div>
-                            <p className="card-text text-muted small mb-0">{item.description}</p>
-                          </div>
-                        </div>
-                      );
-                    })}
+              <div className="row g-3 mb-4">
+                <div className="col-12 col-md-6">
+                  <label className="form-label fw-semibold">Section Label (Internal)</label>
+                  <input
+                    type="text"
+                    className="form-control rounded-3"
+                    placeholder="e.g. Main Hero Banner"
+                    value={label}
+                    onChange={(e) => setLabel(e.target.value)}
+                  />
+                </div>
+                <div className="col-12 col-md-6">
+                  <label className="form-label fw-semibold">Search Component Type</label>
+                  <div className="input-group">
+                    <span className="input-group-text bg-white border-end-0">
+                      <i className="bi bi-search text-muted"></i>
+                    </span>
+                    <input
+                      type="text"
+                      className="form-control border-start-0 rounded-end-3"
+                      placeholder="Filter by name, type, or keyword..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    {searchQuery && (
+                      <button
+                        type="button"
+                        className="btn btn-outline-secondary border-start-0"
+                        onClick={() => setSearchQuery('')}
+                      >
+                        <i className="bi bi-x"></i>
+                      </button>
+                    )}
                   </div>
                 </div>
-              ))}
+              </div>
+
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <label className="form-label fw-semibold mb-0">Choose Component Type</label>
+                <span className="badge bg-secondary bg-opacity-10 text-secondary border">
+                  {totalFilteredItems} available
+                </span>
+              </div>
+
+              {filteredCategories.length > 0 ? (
+                filteredCategories.map((cat) => (
+                  <div key={cat.category} className="mb-4">
+                    <div className="text-uppercase tracking-wider text-muted fw-bold small mb-2 d-flex align-items-center">
+                      <i className={`bi ${cat.icon} me-2 text-primary`}></i> {cat.category}
+                    </div>
+                    <div className="row g-3">
+                      {cat.items.map((item) => {
+                        const isSelected = item.type === selectedType;
+                        return (
+                          <div key={item.type} className="col-12 col-md-6">
+                            <div
+                              className={`card h-100 border-2 rounded-4 p-3 transition-all ${
+                                isSelected ? 'border-primary bg-primary bg-opacity-10 shadow-sm' : 'border-light bg-light'
+                              }`}
+                              style={{ cursor: 'pointer' }}
+                              onClick={() => setSelectedType(item.type)}
+                            >
+                              <div className="d-flex justify-content-between align-items-start mb-1">
+                                <h6 className="fw-bold mb-0">{item.name}</h6>
+                                {item.editable ? (
+                                  <span className="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill" style={{ fontSize: '0.65rem' }}>
+                                    Full Property Editor
+                                  </span>
+                                ) : (
+                                  <span className="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill" style={{ fontSize: '0.65rem' }}>
+                                    Default Layout
+                                  </span>
+                                )}
+                              </div>
+                              <p className="card-text text-muted small mb-0">{item.description}</p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-5 bg-light rounded-4 my-3">
+                  <i className="bi bi-search display-6 text-muted mb-2"></i>
+                  <h6>No section types match "{searchQuery}"</h6>
+                  <p className="text-muted small mb-3">Try searching for "hero", "grid", "text", "cta", or "timeline".</p>
+                  <button type="button" className="btn btn-sm btn-outline-secondary rounded-pill" onClick={() => setSearchQuery('')}>
+                    Clear Search Filter
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="modal-footer border-0 pt-0">

@@ -13,7 +13,14 @@ import { getSectionComponent } from './sectionRegistry';
  * - Fail gracefully for unknown section types (never crash page)
  * - Prevent arbitrary HTML/JS injection
  */
-export default function PageRenderer({ page, sections = [], loading = false, error = null }) {
+export default function PageRenderer({
+  page,
+  sections = [],
+  loading = false,
+  error = null,
+  activeSectionId = null,
+  onSelectSection = null,
+}) {
   if (loading) {
     return (
       <div className="container py-5 text-center">
@@ -61,10 +68,37 @@ export default function PageRenderer({ page, sections = [], loading = false, err
                 </div>
               );
             }
+            const customClass = sec.config?.customClassName ? String(sec.config.customClassName).trim() : '';
+            const isSelected = activeSectionId && String(sec.id) === String(activeSectionId);
+            const selectableClass = onSelectSection ? 'cms-canvas-selectable' : '';
+            const selectedClass = isSelected ? 'cms-canvas-selected' : '';
+            const combinedClass = [customClass, selectableClass, selectedClass].filter(Boolean).join(' ');
+
             return (
-              <React.Fragment key={sec.id || idx}>
+              <div
+                key={sec.id || idx}
+                className={combinedClass || undefined}
+                onClick={
+                  onSelectSection
+                    ? (e) => {
+                        e.stopPropagation();
+                        onSelectSection(sec.id);
+                      }
+                    : undefined
+                }
+                style={onSelectSection ? { cursor: 'pointer', position: 'relative' } : undefined}
+              >
+                {onSelectSection && isSelected && (
+                  <div
+                    className="position-absolute top-0 end-0 bg-primary text-white px-2 py-0 small rounded-bottom-start shadow-sm z-3"
+                    style={{ fontSize: '0.68rem', pointerEvents: 'none' }}
+                  >
+                    <i className="bi bi-pencil me-1"></i>
+                    {sec.label || sec.section_type}
+                  </div>
+                )}
                 <SectionComp config={sec.config || {}} section={sec} />
-              </React.Fragment>
+              </div>
             );
           })
         ) : (

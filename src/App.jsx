@@ -7,6 +7,8 @@ import AgentCaseStudyPage from './pages/AgentCaseStudyPage';
 import AgentDemoPage from './pages/AgentDemoPage';
 import CaseStudyRenderer from './components/case-study/CaseStudyRenderer';
 
+import AboutPage from './pages/AboutPage';
+
 import CmsDynamicPage from './pages/CmsDynamicPage';
 
 // Admin CMS
@@ -44,7 +46,7 @@ export default function App() {
         <Route path="/plugins" element={<PlaceholderPage title="Figma Plugins" description="Tools and utilities built for design systems." />} />
         <Route path="/blog" element={<PlaceholderPage title="Blog & Articles" description="Writing about design, AI and technology." />} />
         <Route path="/blog/:slug" element={<PlaceholderPage title="Article" description="Post details." />} />
-        <Route path="/about" element={<PlaceholderPage title="About Me" description="Career journey, experience and skills." />} />
+        <Route path="/about" element={<AboutPage />} />
         <Route path="/copilot" element={<PlaceholderPage title="Naïm Copilot" description="Interactive AI Assistant." />} />
         <Route path="/p/:slug" element={<CmsDynamicPage />} />
 
