@@ -52,6 +52,21 @@ export default function AdminSidebar() {
         { to: '/admin/runtime-console', label: 'Runtime Console', icon: 'bi-terminal' },
       ],
     },
+    {
+      title: 'DOCUMENTATION',
+      items: [
+        { to: '/admin/docs', label: 'Docs Overview', icon: 'bi-book', end: true },
+        { to: '/admin/docs/deployment', label: 'Deployment Guide', icon: 'bi-rocket-takeoff' },
+        { to: '/admin/docs/git', label: 'Git Workflow', icon: 'bi-git' },
+        { to: '/admin/docs/docker', label: 'Docker Guide', icon: 'bi-box-seam' },
+        { to: '/admin/docs/vps', label: 'VPS Guide', icon: 'bi-server' },
+        { to: '/admin/docs/caddy', label: 'Caddy & HTTPS', icon: 'bi-shield-check' },
+        { to: '/admin/docs/supabase', label: 'Supabase & CMS', icon: 'bi-database' },
+        { to: '/admin/docs/troubleshooting', label: 'Troubleshooting', icon: 'bi-bug' },
+        { to: '/admin/docs/rollback', label: 'Rollback', icon: 'bi-arrow-counterclockwise' },
+        { to: '/admin/docs/new-project', label: 'New Project', icon: 'bi-plus-square' },
+      ],
+    },
   ];
 
   return (

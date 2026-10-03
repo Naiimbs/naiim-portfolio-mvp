@@ -33,6 +33,18 @@ import AdminPageEditor from './admin/pages/AdminPageEditor';
 import AdminNavigation from './admin/pages/AdminNavigation';
 import AdminSettings from './admin/pages/AdminSettings';
 
+// Admin Documentation
+import AdminDocs from './admin/pages/AdminDocs';
+import AdminDocsDeployment from './admin/pages/AdminDocsDeployment';
+import AdminDocsGit from './admin/pages/AdminDocsGit';
+import AdminDocsDocker from './admin/pages/AdminDocsDocker';
+import AdminDocsVPS from './admin/pages/AdminDocsVPS';
+import AdminDocsCaddy from './admin/pages/AdminDocsCaddy';
+import AdminDocsSupabase from './admin/pages/AdminDocsSupabase';
+import AdminDocsTroubleshooting from './admin/pages/AdminDocsTroubleshooting';
+import AdminDocsRollback from './admin/pages/AdminDocsRollback';
+import AdminDocsNewProject from './admin/pages/AdminDocsNewProject';
+
 export default function App() {
   return (
     <AuthProvider>
@@ -79,6 +91,18 @@ export default function App() {
             <Route path="pages/:id" element={<AdminPageEditor />} />
             <Route path="navigation" element={<AdminNavigation />} />
             <Route path="settings" element={<AdminSettings />} />
+
+            {/* Documentation Routes */}
+            <Route path="docs" element={<AdminDocs />} />
+            <Route path="docs/deployment" element={<AdminDocsDeployment />} />
+            <Route path="docs/git" element={<AdminDocsGit />} />
+            <Route path="docs/docker" element={<AdminDocsDocker />} />
+            <Route path="docs/vps" element={<AdminDocsVPS />} />
+            <Route path="docs/caddy" element={<AdminDocsCaddy />} />
+            <Route path="docs/supabase" element={<AdminDocsSupabase />} />
+            <Route path="docs/troubleshooting" element={<AdminDocsTroubleshooting />} />
+            <Route path="docs/rollback" element={<AdminDocsRollback />} />
+            <Route path="docs/new-project" element={<AdminDocsNewProject />} />
           </Route>
         </Route>
 

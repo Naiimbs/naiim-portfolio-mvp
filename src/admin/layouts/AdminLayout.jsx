@@ -16,6 +16,17 @@ export default function AdminLayout() {
     if (path.startsWith('/admin/navigation')) return 'Navigation Management';
     if (path.startsWith('/admin/settings')) return 'Global Site Settings';
     if (path.startsWith('/admin/media')) return 'Media Library';
+    if (path === '/admin/docs') return 'Documentation Center';
+    if (path === '/admin/docs/deployment') return 'Deployment Guide';
+    if (path === '/admin/docs/git') return 'Git Workflow';
+    if (path === '/admin/docs/docker') return 'Docker Guide';
+    if (path === '/admin/docs/vps') return 'VPS Guide';
+    if (path === '/admin/docs/caddy') return 'Caddy & HTTPS';
+    if (path === '/admin/docs/supabase') return 'Supabase & CMS';
+    if (path === '/admin/docs/troubleshooting') return 'Troubleshooting';
+    if (path === '/admin/docs/rollback') return 'Rollback Procedure';
+    if (path === '/admin/docs/new-project') return 'New Project Deployment';
+    if (path.startsWith('/admin/docs')) return 'Documentation';
     return 'Admin CMS';
   };
 
