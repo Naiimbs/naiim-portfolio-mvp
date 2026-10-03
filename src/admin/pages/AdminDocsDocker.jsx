@@ -94,7 +94,7 @@ export default function AdminDocsDocker() {
   -t naiimbsili-portfolio:latest ."
           risk="safe"
           arabicExplanation="هذا الكوموند يبني الـ Image متع الدوكر. نعطيوه الـ URL و الـ Key متع Supabase باش Vite يدمجهم في كود الجافاسكربت وقت الـ build."
-          prerequisites="Be inside /srv/projects/naiimbsili/app with latest git pull."
+          prerequisites={['Be inside /srv/projects/naiimbsili/app with latest git pull.']}
           expectedOutput="Successfully built ... Successfully tagged naiimbsili-portfolio:latest"
           verificationCommand="docker images | grep naiimbsili-portfolio"
         />
@@ -118,7 +118,7 @@ export default function AdminDocsDocker() {
   naiimbsili-portfolio:latest"
           risk="caution"
           arabicExplanation="يشغل الكونتينر في الخلفية (-d) ويربطو بشبكة proxy باش Caddy ينجم يوصلو ويبعثلو الزوار. الـ restart unless-stopped تخليه يعاود يخدم أوتوماتيكيا إذا السيرفر طاح وعاود قام."
-          prerequisites="Make sure previous container is stopped and removed, or use a test container name."
+          prerequisites={['Make sure previous container is stopped and removed, or use a test container name.']}
           warningText="If a container named naiimbsili-portfolio is already running, this command will error with 'Conflict: container name already in use'."
           expectedOutput="A 64-character container ID (e.g. 9d4f2e8b...)"
           verificationCommand="docker ps --filter 'name=naiimbsili-portfolio'"
