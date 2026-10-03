@@ -164,9 +164,15 @@ export default function Navbar() {
               </>
             )}
           </ul>
-          <a className="btn btn-dark rounded-pill px-4" href={ctaHref} onClick={closeNav}>
-            {ctaLabel} <i className="bi bi-arrow-up-right ms-1"></i>
-          </a>
+          {ctaHref.startsWith('#') && !isHome ? (
+            <Link className="btn btn-dark rounded-pill px-4" to={`/${ctaHref}`} onClick={closeNav}>
+              {ctaLabel} <i className="bi bi-arrow-up-right ms-1"></i>
+            </Link>
+          ) : (
+            <a className="btn btn-dark rounded-pill px-4" href={ctaHref} onClick={closeNav}>
+              {ctaLabel} <i className="bi bi-arrow-up-right ms-1"></i>
+            </a>
+          )}
         </div>
       </div>
     </nav>

@@ -1,6 +1,9 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /p/*?preview=*
+Disallow: /*?preview=*
 
-# Sitemaps
+# Sitemap
 Sitemap: https://naiimbsili.com/sitemap.xml

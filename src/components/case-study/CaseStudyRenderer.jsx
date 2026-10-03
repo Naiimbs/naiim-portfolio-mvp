@@ -9,6 +9,7 @@ import AssestiniCaseStudy from '../../pages/custom-case-studies/AssestiniCaseStu
 
 export default function CaseStudyRenderer() {
   const { slug } = useParams();
+  const cleanSlug = (slug || '').replace(/\.html$/i, '');
   const [studyData, setStudyData] = useState(null);
   const [isCMS, setIsCMS] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -17,27 +18,27 @@ export default function CaseStudyRenderer() {
     window.scrollTo(0, 0);
 
     // Custom flagship routes stay code-driven in React
-    if (slug === 'winni' || slug === 'assestini') {
+    if (cleanSlug === 'winni' || cleanSlug === 'assestini') {
       setLoading(false);
       return;
     }
 
     async function loadStudy() {
       setLoading(true);
-      const res = await getPublishedCaseStudyBySlug(slug);
+      const res = await getPublishedCaseStudyBySlug(cleanSlug);
       setStudyData(res.data);
       setIsCMS(Boolean(res.isCMS));
       setLoading(false);
     }
 
     loadStudy();
-  }, [slug]);
+  }, [cleanSlug]);
 
   // 1. Custom Flagship React Case Studies
-  if (slug === 'winni') {
+  if (cleanSlug === 'winni') {
     return <WinniCaseStudy />;
   }
-  if (slug === 'assestini') {
+  if (cleanSlug === 'assestini') {
     return <AssestiniCaseStudy />;
   }
 

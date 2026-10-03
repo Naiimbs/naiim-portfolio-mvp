@@ -1,0 +1,402 @@
+/* ==========================================================================
+   WINNI / NAÏM BSILI MOTION SYSTEM V2 (CINEMATIC 24s MANIFESTO)
+   Design -> Build -> AI -> Automation -> Systems Loop
+   ========================================================================== */
+
+:root {
+  --motion-bg: #071216;
+  --motion-bg-card: rgba(14, 34, 40, 0.85);
+  --motion-bg-card-active: rgba(18, 44, 52, 0.95);
+  --motion-ink: #f8f9f6;
+  --motion-muted: #7e9197;
+  --motion-line: rgba(223, 231, 228, 0.12);
+  --motion-line-active: rgba(8, 127, 102, 0.4);
+  --motion-green: #087f66;
+  --motion-green-glow: rgba(8, 127, 102, 0.5);
+  --motion-green-soft: rgba(8, 127, 102, 0.15);
+  --motion-yellow: #eab52e;
+  --motion-yellow-glow: rgba(234, 181, 46, 0.45);
+  --motion-yellow-soft: rgba(234, 181, 46, 0.15);
+  --motion-font-heading: 'Space Grotesk', -apple-system, sans-serif;
+  --motion-font-body: 'DM Sans', -apple-system, sans-serif;
+  --motion-font-mono: 'SF Mono', Menlo, Monaco, Consolas, monospace;
+}
+
+/* Master Player Shell */
+.motion-player-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--motion-bg);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.45), 0 0 0 1px var(--motion-line);
+  color: var(--motion-ink);
+  font-family: var(--motion-font-body);
+}
+
+.motion-player-viewport {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 380px;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 38%, #10272f 0%, #071216 88%);
+  user-select: none;
+  perspective: 1200px;
+}
+
+/* Scene Master Container */
+.motion-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2.5rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.5s ease;
+  will-change: opacity, transform;
+}
+
+.motion-scene.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Architectural Grid & Alignment Rulers */
+.motion-grid-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, var(--motion-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--motion-line) 1px, transparent 1px);
+  mask-image: radial-gradient(circle at 50% 45%, black 40%, transparent 92%);
+  -webkit-mask-image: radial-gradient(circle at 50% 45%, black 40%, transparent 92%);
+  opacity: 0.6;
+}
+
+.motion-ruler-tag {
+  position: absolute;
+  font-family: var(--motion-font-mono);
+  font-size: 0.65rem;
+  color: var(--motion-green);
+  background: rgba(7, 18, 22, 0.85);
+  border: 1px solid var(--motion-line-active);
+  padding: 1px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+/* Kinetic Cursor */
+.motion-cursor {
+  position: absolute;
+  pointer-events: none;
+  z-index: 50;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.motion-cursor-pointer {
+  width: 14px;
+  height: 14px;
+  fill: var(--motion-yellow);
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
+}
+
+.motion-cursor-badge {
+  display: inline-block;
+  margin-left: 8px;
+  margin-top: 4px;
+  padding: 2px 8px;
+  background: var(--motion-yellow);
+  color: #071216;
+  font-family: var(--motion-font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: 4px;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Kinetic Manifesto Typography */
+.motion-title-area {
+  position: absolute;
+  bottom: 1.8rem;
+  left: 2.2rem;
+  z-index: 30;
+  text-align: left;
+  pointer-events: none;
+}
+
+.motion-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--motion-font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--motion-green);
+  margin-bottom: 0.3rem;
+}
+
+.motion-eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--motion-green);
+  box-shadow: 0 0 8px var(--motion-green-glow);
+}
+
+.motion-heading {
+  font-family: var(--motion-font-heading);
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--motion-ink);
+  margin: 0;
+}
+
+.motion-heading em {
+  font-style: normal;
+  color: var(--motion-yellow);
+}
+
+.motion-subtext {
+  font-size: 0.88rem;
+  color: var(--motion-muted);
+  margin-top: 0.35rem;
+  font-weight: 400;
+  max-width: 440px;
+  line-height: 1.4;
+}
+
+/* Frameless Central Hero Artifact */
+.motion-artifact-stage {
+  position: relative;
+  width: 90%;
+  max-width: 780px;
+  height: 64%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-10px);
+}
+
+/* Isometric 3D Layer Stack (Scene 02) */
+.motion-isometric-stack {
+  position: relative;
+  width: 380px;
+  height: 220px;
+  transform-style: preserve-3d;
+  transform: rotateX(54deg) rotateZ(-38deg);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.motion-iso-layer {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  border: 1px solid var(--motion-line);
+  background: var(--motion-bg-card);
+  padding: 1.2rem;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px);
+}
+
+.motion-iso-layer.layer-data {
+  transform: translateZ(-50px);
+  border-color: rgba(234, 181, 46, 0.3);
+}
+
+.motion-iso-layer.layer-logic {
+  transform: translateZ(0px);
+  border-color: rgba(8, 127, 102, 0.4);
+}
+
+.motion-iso-layer.layer-ui {
+  transform: translateZ(50px);
+  border-color: var(--motion-green);
+  box-shadow: 0 20px 45px rgba(8, 127, 102, 0.2);
+}
+
+.motion-iso-layer-tag {
+  font-family: var(--motion-font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Sleek Circuit Telemetry Node (Scene 04) */
+.motion-circuit-node {
+  background: rgba(14, 34, 40, 0.95);
+  border: 1px solid var(--motion-line);
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.35s ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.motion-circuit-node.active {
+  border-color: var(--motion-green);
+  box-shadow: 0 0 20px var(--motion-green-glow);
+  transform: scale(1.04);
+}
+
+.motion-circuit-node.highlight-gold {
+  border-color: var(--motion-yellow);
+  box-shadow: 0 0 20px var(--motion-yellow-glow);
+  transform: scale(1.04);
+}
+
+/* Control Bar */
+.motion-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  background: #050d10;
+  border-top: 1px solid var(--motion-line);
+  gap: 1rem;
+}
+
+.motion-btn-play {
+  background: var(--motion-green);
+  border: none;
+  color: #fff;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.2s ease;
+}
+
+.motion-btn-play:hover {
+  transform: scale(1.06);
+  background: #099477;
+}
+
+.motion-timeline-track {
+  flex: 1;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.motion-timeline-progress {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--motion-green) 0%, var(--motion-yellow) 100%);
+  border-radius: 999px;
+  transition: width 0.08s linear;
+}
+
+.motion-time-display {
+  font-family: var(--motion-font-mono);
+  font-size: 0.72rem;
+  color: var(--motion-muted);
+  min-width: 75px;
+  text-align: right;
+}
+
+.motion-scene-nav {
+  display: flex;
+  gap: 5px;
+}
+
+.motion-scene-pill {
+  background: transparent;
+  border: 1px solid var(--motion-line);
+  color: var(--motion-muted);
+  font-size: 0.68rem;
+  font-family: var(--motion-font-mono);
+  padding: 3px 9px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.motion-scene-pill:hover,
+.motion-scene-pill.active {
+  color: var(--motion-ink);
+  background: rgba(8, 127, 102, 0.2);
+  border-color: var(--motion-green);
+}
+
+/* Animations */
+@keyframes motionPulseWire {
+  0% {
+    stroke-dashoffset: 200;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes loopRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* Reduced Motion Mode */
+@media (prefers-reduced-motion: reduce) {
+  .motion-scene,
+  .motion-cursor,
+  .motion-isometric-stack,
+  .motion-circuit-node {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .motion-heading {
+    font-size: 1.5rem;
+  }
+  .motion-title-area {
+    bottom: 1rem;
+    left: 1rem;
+  }
+  .motion-scene-nav {
+    display: none;
+  }
+}

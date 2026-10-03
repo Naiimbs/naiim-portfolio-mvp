@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
+import MainLayout from '../layouts/MainLayout';
 import PageRenderer from '../components/cms/PageRenderer';
 import {
   getPageBySlug,
@@ -68,13 +69,13 @@ export default function CmsDynamicPage() {
   }, [slug, canPreviewDraft, authLoading]);
 
   return (
-    <div>
+    <MainLayout>
       {canPreviewDraft && (
         <div className="bg-warning text-dark text-center py-2 px-3 fw-semibold small shadow-sm position-sticky top-0 z-3">
           <i className="bi bi-eye-fill me-2"></i> PREVIEW MODE — This is an unpublished preview of page "<code>{slug}</code>".
         </div>
       )}
       <PageRenderer page={page} sections={sections} loading={loading} error={error} />
-    </div>
+    </MainLayout>
   );
 }

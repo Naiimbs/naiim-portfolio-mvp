@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import VoicePlayer from './VoicePlayer';
+import MotionHero from '../../motion/MotionHero';
 import portraitCutout from '../../assets/images/naim-portrait.png';
 
 export default function HeroSection() {
+  const [heroMode, setHeroMode] = useState('motion'); // 'motion' | 'portrait'
   return (
     <section className="hero section-pad">
       <div className="container">
@@ -48,46 +50,77 @@ export default function HeroSection() {
           </div>
 
           <div className="col-lg-6">
-            <div className="hero-visual">
-              <div className="hero-photo-wrap">
-                <img src={portraitCutout} alt="Naïm Bsili" className="hero-photo" />
-              </div>
-              <div className="hero-note">
-                Design<br />
-                Technology<br />
-                <strong>Impact</strong>
-              </div>
-
-              <VoicePlayer />
-
-              <div className="listen-note" aria-label="Listen to Naïm introduction">
-                <svg
-                  viewBox="0 0 190 100"
-                  role="img"
-                  aria-label="Curved hand-drawn arrow pointing to the audio player"
-                >
-                  <path
-                    d="M10 72 C62 95, 96 90, 122 63 C141 43, 151 25, 166 20"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M155 17 L168 20 L160 31"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                <span>Listen to me</span>
-              </div>
-
-              <div className="shape shape-one"></div>
-              <div className="shape shape-two"></div>
+            <div className="d-flex justify-content-end mb-3 gap-2">
+              <button
+                type="button"
+                className={`btn btn-sm rounded-pill px-3 ${
+                  heroMode === 'motion'
+                    ? 'btn-primary-custom'
+                    : 'btn-outline-secondary text-dark'
+                }`}
+                style={{ fontSize: '0.75rem', fontWeight: 600 }}
+                onClick={() => setHeroMode('motion')}
+              >
+                <i className="bi bi-play-circle-fill me-1"></i> Motion Sequence (24s)
+              </button>
+              <button
+                type="button"
+                className={`btn btn-sm rounded-pill px-3 ${
+                  heroMode === 'portrait'
+                    ? 'btn-primary-custom'
+                    : 'btn-outline-secondary text-dark'
+                }`}
+                style={{ fontSize: '0.75rem', fontWeight: 600 }}
+                onClick={() => setHeroMode('portrait')}
+              >
+                <i className="bi bi-person-fill me-1"></i> Portrait & Audio
+              </button>
             </div>
+
+            {heroMode === 'motion' ? (
+              <MotionHero />
+            ) : (
+              <div className="hero-visual">
+                <div className="hero-photo-wrap">
+                  <img src={portraitCutout} alt="Naïm Bsili" className="hero-photo" />
+                </div>
+                <div className="hero-note">
+                  Design<br />
+                  Technology<br />
+                  <strong>Impact</strong>
+                </div>
+
+                <VoicePlayer />
+
+                <div className="listen-note" aria-label="Listen to Naïm introduction">
+                  <svg
+                    viewBox="0 0 190 100"
+                    role="img"
+                    aria-label="Curved hand-drawn arrow pointing to the audio player"
+                  >
+                    <path
+                      d="M10 72 C62 95, 96 90, 122 63 C141 43, 151 25, 166 20"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M155 17 L168 20 L160 31"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  <span>Listen to me</span>
+                </div>
+
+                <div className="shape shape-one"></div>
+                <div className="shape shape-two"></div>
+              </div>
+            )}
           </div>
         </div>
       </div>

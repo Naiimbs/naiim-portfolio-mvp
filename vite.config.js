@@ -17,36 +17,22 @@ export default defineConfig({
           next();
         });
 
-        // 2. HTML rewrite for client-side routing
+        // 2. Fallback rewrite for legacy paths in dev (e.g., /case-studies/*.html -> /index.html)
         server.middlewares.use((req, res, next) => {
           const url = req.url ? req.url.split('?')[0] : '';
-          const isHtmlRequest =
-            req.headers.accept?.includes('text/html') ||
-            url === '/' ||
-            url.startsWith('/admin') ||
-            url.startsWith('/work') ||
-            url.startsWith('/agents');
-
-          const isFileWithExtension = /\.[a-zA-Z0-9]+$/.test(url);
-
-          if (isHtmlRequest && (!isFileWithExtension || url === '/index.html')) {
-            req.url = '/react.html';
+          if (url.startsWith('/case-studies') || url === '/index.html') {
+            req.url = '/index.html';
           }
           next();
         });
       },
     },
   ],
-  build: {
-    rollupOptions: {
-      input: 'react.html',
-    },
-  },
   server: {
     port: 5173,
     open: true,
     watch: {
-      ignored: ['**/server/.secrets.env**', '**/scratch/**', '**/.git/**'],
+      ignored: ['**/server/.secrets.env**', '**/scratch/**', '**/.git/**', '**/legacy/**'],
     },
   },
 });

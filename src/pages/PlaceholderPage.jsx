@@ -5,19 +5,21 @@ import SEO from '../components/common/SEO';
 
 export default function PlaceholderPage({ title, description }) {
   const { slug } = useParams();
+  const is404 = title && title.toLowerCase().includes('404');
   const pageTitle = title ? `${title} ${slug ? `· ${slug}` : ''}` : 'Portfolio';
+  const eyebrowText = is404 ? '404 ERROR' : 'COMING SOON';
 
   return (
     <MainLayout>
       <SEO
         title={pageTitle}
         description={description}
-        robots="noindex, follow"
+        robots={is404 ? 'noindex, nofollow' : 'noindex, follow'}
       />
       <section className="section-pad" style={{ minHeight: '60vh', display: 'flex', alignItems: 'center' }}>
         <div className="container text-center">
           <div className="eyebrow justify-content-center">
-            <span></span> COMING SOON
+            <span></span> {eyebrowText}
           </div>
           <h2>{title} {slug ? `· ${slug}` : ''}</h2>
           <p className="hero-lead mx-auto" style={{ maxWidth: '540px' }}>

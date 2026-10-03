@@ -25,46 +25,84 @@ import { getAdminAgents } from '../../services/agents';
  * - spacer
  */
 
+import MotionHero from '../../motion/MotionHero';
+
 // 1. Hero Section
 function HeroSection({ config = {} }) {
-  const eyebrow = config.eyebrow || config.kicker || '';
-  const title = config.title || '';
-  const description = config.description || config.subtitle || '';
+  const [heroMode, setHeroMode] = useState('motion'); // 'motion' | 'portrait'
+  const eyebrow = config.eyebrow || config.kicker || 'SENIOR UX/UI DESIGNER · AI PRODUCT BUILDER';
+  const title = config.title || 'I DESIGN. I BUILD. I EXPERIMENT.';
+  const description = config.description || config.subtitle || 'I turn ambiguous problems into usable digital products at the intersection of product design, AI, low-code and automation.';
   const imageUrl = config.imageUrl || config.src || '';
   const imageAlt = config.imageAlt || config.alt || title || 'Hero';
-  const primaryCta = config.primaryCta || (config.ctaText ? { label: config.ctaText, href: config.ctaHref } : null);
-  const secondaryCta = config.secondaryCta || null;
-  const layout = config.layout || 'split';
-
-  const isSplit = layout === 'split' && imageUrl;
-  const isCentered = layout === 'centered';
+  const primaryCta = config.primaryCta || (config.ctaText ? { label: config.ctaText, href: config.ctaHref } : { label: 'Explore my work', href: '#work' });
+  const secondaryCta = config.secondaryCta || { label: 'Talk to Naïm Copilot', href: '#copilot' };
 
   return (
-    <section className={`cms-section cms-section-hero py-5 ${isCentered ? 'text-center' : 'text-start'}`}>
+    <section className="hero section-pad">
       <div className="container">
-        <div className={`row align-items-center g-4 ${isSplit ? 'flex-column-reverse flex-lg-row' : ''}`}>
-          <div className={isSplit ? 'col-12 col-lg-6' : 'col-12'}>
-            {eyebrow && <div className="cms-hero-kicker text-uppercase tracking-wider text-primary fw-semibold mb-2">{eyebrow}</div>}
-            {title && <h1 className="cms-hero-title display-4 fw-bold mb-3">{title}</h1>}
-            {description && <p className="cms-hero-subtitle lead text-secondary mb-4">{description}</p>}
-            <div className={`d-flex gap-3 ${isCentered ? 'justify-content-center' : 'justify-content-start'}`}>
-              {primaryCta?.label && primaryCta?.href && (
-                <a href={primaryCta.href} className="btn btn-primary btn-lg rounded-pill px-4 fw-semibold">
-                  {primaryCta.label}
+        <div className="row align-items-center g-5">
+          <div className="col-lg-6 hero-copy">
+            {eyebrow && <div className="eyebrow"><span></span> {eyebrow}</div>}
+            <h1 className="cms-hero-title">
+              I DESIGN.<br />
+              I BUILD.<br />
+              <em>I EXPERIMENT.</em>
+            </h1>
+            {description && <p className="hero-lead">{description}</p>}
+            <div className="d-flex flex-wrap gap-3 mb-4">
+              {primaryCta?.label && (
+                <a href={primaryCta.href || '#work'} className="btn btn-primary-custom btn-lg rounded-pill px-4">
+                  {primaryCta.label} <i className="bi bi-arrow-right"></i>
                 </a>
               )}
-              {secondaryCta?.label && secondaryCta?.href && (
-                <a href={secondaryCta.href} className="btn btn-outline-dark btn-lg rounded-pill px-4 fw-semibold">
-                  {secondaryCta.label}
+              {secondaryCta?.label && (
+                <a href={secondaryCta.href || '#copilot'} className="btn btn-outline-custom btn-lg rounded-pill px-4">
+                  <i className="bi bi-stars"></i> {secondaryCta.label}
                 </a>
               )}
+            </div>
+
+            <div className="building-label">CURRENTLY BUILDING</div>
+            <div className="building-list">
+              <a href="#work"><span className="mini-icon winni">W</span> WINNI</a>
+              <a href="#copilot"><span className="mini-icon copilot">✦</span> Naïm Copilot</a>
+              <a href="#work"><span className="mini-icon assestini">A</span> Assestini <small>Product / Operations OS</small></a>
             </div>
           </div>
-          {imageUrl && (
-            <div className={isSplit ? 'col-12 col-lg-6 text-center' : 'col-12 text-center mt-4'}>
-              <img src={imageUrl} alt={imageAlt} className="img-fluid rounded-4 shadow-sm max-h-400" style={{ maxHeight: '420px', objectFit: 'cover' }} />
+
+          <div className="col-lg-6">
+            <div className="d-flex justify-content-end mb-3 gap-2">
+              <button
+                type="button"
+                className={`btn btn-sm rounded-pill px-3 ${
+                  heroMode === 'motion' ? 'btn-primary-custom' : 'btn-outline-secondary text-dark'
+                }`}
+                style={{ fontSize: '0.75rem', fontWeight: 600 }}
+                onClick={() => setHeroMode('motion')}
+              >
+                <i className="bi bi-play-circle-fill me-1"></i> Motion Sequence (24s)
+              </button>
+              <button
+                type="button"
+                className={`btn btn-sm rounded-pill px-3 ${
+                  heroMode === 'portrait' ? 'btn-primary-custom' : 'btn-outline-secondary text-dark'
+                }`}
+                style={{ fontSize: '0.75rem', fontWeight: 600 }}
+                onClick={() => setHeroMode('portrait')}
+              >
+                <i className="bi bi-person-fill me-1"></i> Portrait & Audio
+              </button>
             </div>
-          )}
+
+            {heroMode === 'motion' ? (
+              <MotionHero />
+            ) : imageUrl ? (
+              <div className="hero-visual text-center">
+                <img src={imageUrl} alt={imageAlt} className="hero-photo" />
+              </div>
+            ) : null}
+          </div>
         </div>
       </div>
     </section>

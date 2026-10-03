@@ -1,0 +1,27 @@
+# Naïm Bsili — Portfolio & Case Studies
+> Senior UX/UI Designer & AI Product Builder
+
+## Overview
+Naïm Bsili is a Senior UX/UI Designer and AI Product Builder specializing in turning ambiguous problems into usable, production-ready digital products across product design, AI systems, low-code platforms, and workflow automation.
+
+## Flagship Products & Case Studies
+- WINNI (/work/winni): Physical + digital identity system connecting physical objects with digital recovery through QR/NFC without requiring finder account creation.
+- Assestini (/work/assestini): AI-powered operational intelligence platform connecting estimation, delivery, margin tracking, and financial workflows for experts and agencies.
+- Cha9a9a (/work/cha9a9a): Frontend engineering and responsive UI integration from Figma for a community platform.
+- Naïm Copilot (/work/naim-copilot, /agents/naim-copilot): Personal AI operating layer connecting chat memory, structured knowledge, and action tools via n8n and Google Gemini.
+- Career OS (/work/career-os, /agents/career-os): Automated career search pipeline aggregating listings, eliminating duplicates, and scoring profile match.
+- Enterprise Digital Services (/work/saudi-government, /work/saudi-banking, /work/saudi-regulatory, /work/dga): UX/UI design systems, Mendix, and OutSystems interface implementations for banking, regulatory, and digital government platforms.
+
+## Core Sections & Links
+- Home: https://naiimbsili.com/
+- Selected Work: https://naiimbsili.com/work
+- AI Agents: https://naiimbsili.com/agents
+- About & Career: https://naiimbsili.com/about
+- Figma Plugins: https://naiimbsili.com/plugins
+- Blog & Articles: https://naiimbsili.com/blog
+- Naïm Copilot: https://naiimbsili.com/copilot
+
+## Contact
+- Email: hi@naiimbsili.com
+- LinkedIn: https://tn.linkedin.com/in/bsili-naiim
+- GitHub: https://github.com/naiimbsili

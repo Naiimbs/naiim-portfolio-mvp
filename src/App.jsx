@@ -1,11 +1,12 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import PlaceholderPage from './pages/PlaceholderPage';
 import AgentsPage from './pages/AgentsPage';
 import AgentCaseStudyPage from './pages/AgentCaseStudyPage';
 import AgentDemoPage from './pages/AgentDemoPage';
 import CaseStudyRenderer from './components/case-study/CaseStudyRenderer';
+import LegacyCaseStudyRedirect from './components/common/LegacyCaseStudyRedirect';
 
 import AboutPage from './pages/AboutPage';
 
@@ -49,6 +50,11 @@ export default function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/copilot" element={<PlaceholderPage title="Naïm Copilot" description="Interactive AI Assistant." />} />
         <Route path="/p/:slug" element={<CmsDynamicPage />} />
+
+        {/* Legacy redirects for old static URLs */}
+        <Route path="/case-studies" element={<Navigate to="/work" replace />} />
+        <Route path="/case-studies/:slug" element={<LegacyCaseStudyRedirect />} />
+        <Route path="/index.html" element={<Navigate to="/" replace />} />
 
         {/* Admin Login Route */}
         <Route path="/admin/login" element={<AdminLogin />} />

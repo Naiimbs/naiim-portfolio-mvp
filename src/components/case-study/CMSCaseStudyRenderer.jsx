@@ -110,7 +110,7 @@ export default function CMSCaseStudyRenderer({ caseStudy }) {
           <Link to="/#work" className="text-link">
             <i className="bi bi-arrow-left"></i> Back to selected work
           </Link>
-          <a href="#contact" className="text-link">
+          <a href="/#contact" className="text-link">
             Let&apos;s talk <i className="bi bi-arrow-up-right"></i>
           </a>
         </div>

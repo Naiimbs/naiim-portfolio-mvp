@@ -132,7 +132,7 @@ export default function StandardCaseStudy({ data }) {
           <Link to="/#work">
             <i className="bi bi-arrow-left"></i> Back to selected work
           </Link>
-          <a href="#contact">
+          <a href="/#contact">
             Let's talk <i className="bi bi-arrow-up-right"></i>
           </a>
         </div>
