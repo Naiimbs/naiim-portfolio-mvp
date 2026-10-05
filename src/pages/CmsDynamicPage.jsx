@@ -11,6 +11,8 @@ import {
 
 import { useAuth } from '../admin/context/AuthContext';
 import { isSupabaseConfigured } from '../lib/supabase';
+import { getPublishedPublicContentBySlug } from '../services/contentRegistry';
+import { isPagePubliclyAccessible } from '../utils/registryHealth';
 
 /**
  * Dynamic CMS Page Route Component.
@@ -35,6 +37,7 @@ export default function CmsDynamicPage() {
       setLoading(true);
       setError(null);
 
+      // Authenticated draft preview mode
       if (canPreviewDraft) {
         const adminPagesRes = await getAdminPages();
         const found = (adminPagesRes.data || []).find((p) => p.slug === slug);
@@ -48,10 +51,30 @@ export default function CmsDynamicPage() {
         }
       }
 
-      // Default public fetch (published only, enforced by Supabase RLS)
+      // ── Step 1: Content Registry Publication Gate (Single Authority) ──────
+      const registryRes = await getPublishedPublicContentBySlug(slug);
+
+      if (isSupabaseConfigured && (registryRes.notFound || !registryRes.data)) {
+        setError(new Error('Page not found or not published.'));
+        setPage(null);
+        setSections([]);
+        setLoading(false);
+        return;
+      }
+
+      // ── Step 2: Page Builder Data Fetch ───────────────────────────────────
       const pageRes = await getPageBySlug(slug);
       if (pageRes.error || !pageRes.data) {
         setError(pageRes.error || new Error('Page not found'));
+        setPage(null);
+        setSections([]);
+        setLoading(false);
+        return;
+      }
+
+      // ── Step 3: Consistency Gate Check ────────────────────────────────────
+      if (registryRes.data && !isPagePubliclyAccessible(pageRes.data, registryRes.data)) {
+        setError(new Error('Page is not publicly accessible.'));
         setPage(null);
         setSections([]);
         setLoading(false);

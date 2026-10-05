@@ -24,6 +24,7 @@ export default function AdminSettings() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const [errors, setErrors] = useState({});
 
@@ -34,17 +35,31 @@ export default function AdminSettings() {
     loadSettings();
   }, []);
 
+  // Protect against navigating away with unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isDirty]);
+
   async function loadSettings() {
     setLoading(true);
     const res = await getAdminSiteSettings();
     if (res.data) {
       setSettings((prev) => ({ ...prev, ...res.data }));
     }
+    setIsDirty(false);
     setLoading(false);
   }
 
   const handleChange = (key, val) => {
     setSettings((prev) => ({ ...prev, [key]: val }));
+    setIsDirty(true);
     if (errors[key]) {
       setErrors((prev) => ({ ...prev, [key]: null }));
     }
@@ -92,6 +107,7 @@ export default function AdminSettings() {
     if (res.error) {
       setFeedback({ type: 'danger', message: res.error.message || 'Failed to save site settings.' });
     } else {
+      setIsDirty(false);
       setFeedback({ type: 'success', message: 'Site settings saved successfully!' });
       setTimeout(() => setFeedback(null), 4000);
     }
@@ -99,14 +115,32 @@ export default function AdminSettings() {
 
   return (
     <div className="admin-settings-container p-4">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
         <div>
-          <h1 className="h3 mb-1 fw-bold">Global Site Settings</h1>
+          <h1 className="h3 mb-1 fw-bold" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Global Site Settings</h1>
           <p className="text-muted small mb-0">Configure site identity, contact, social links, footer, and default SEO.</p>
         </div>
-        <button className="btn btn-primary rounded-pill px-4" onClick={handleSave} disabled={saving || loading}>
-          {saving ? 'Saving...' : 'Save All Settings'}
-        </button>
+        <div className="d-flex align-items-center gap-3">
+          {saving ? (
+            <span className="badge bg-secondary-subtle text-secondary border px-3 py-2 rounded-pill d-inline-flex align-items-center">
+              <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+              Saving...
+            </span>
+          ) : isDirty ? (
+            <span className="badge bg-warning-subtle text-warning-emphasis border border-warning px-3 py-2 rounded-pill d-inline-flex align-items-center">
+              <i className="bi bi-circle-fill me-2 text-warning" style={{ fontSize: '0.5rem' }}></i>
+              Unsaved changes
+            </span>
+          ) : (
+            <span className="badge bg-success-subtle text-success border border-success px-3 py-2 rounded-pill d-inline-flex align-items-center">
+              <i className="bi bi-check2 me-1"></i>
+              Saved
+            </span>
+          )}
+          <button className="btn btn-primary rounded-pill px-4 shadow-sm" onClick={handleSave} disabled={saving || loading}>
+            {saving ? 'Saving...' : 'Save All Settings'}
+          </button>
+        </div>
       </div>
 
       {feedback && (

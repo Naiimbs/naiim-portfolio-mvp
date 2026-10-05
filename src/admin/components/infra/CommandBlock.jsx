@@ -56,6 +56,12 @@ export default function CommandBlock({
 
   const hasDetails = expectedOutput || verificationCommand || notes;
 
+  const normalizedPrerequisites = Array.isArray(prerequisites)
+    ? prerequisites
+    : prerequisites
+      ? [prerequisites]
+      : [];
+
   return (
     <div
       className="mb-3"
@@ -174,7 +180,7 @@ export default function CommandBlock({
         </div>
 
         {/* Prerequisites */}
-        {prerequisites && prerequisites.length > 0 && (
+        {normalizedPrerequisites.length > 0 && (
           <div className="mt-2">
             <span
               style={{
@@ -188,7 +194,7 @@ export default function CommandBlock({
               Prerequisites:
             </span>
             <ul style={{ margin: '4px 0 0 0', paddingLeft: '18px' }}>
-              {prerequisites.map((prereq, i) => (
+              {normalizedPrerequisites.map((prereq, i) => (
                 <li key={i} style={{ fontSize: '0.8rem', color: '#42545a', marginBottom: '2px' }}>
                   {prereq}
                 </li>

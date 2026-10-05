@@ -59,11 +59,13 @@ export default function Footer() {
       );
     }
 
-    if (item.href.startsWith('#')) {
+    const isAnchor = item.href.startsWith('#') || item.href.startsWith('/#');
+    if (isAnchor) {
+      const anchorHash = item.href.startsWith('/#') ? item.href.substring(1) : item.href;
       if (isHome) {
-        return <a key={item.id} href={item.href}>{item.label}</a>;
+        return <a key={item.id} href={anchorHash}>{item.label}</a>;
       }
-      return <Link key={item.id} to={`/${item.href}`}>{item.label}</Link>;
+      return <Link key={item.id} to={`/${anchorHash}`}>{item.label}</Link>;
     }
 
     return <Link key={item.id} to={item.href}>{item.label}</Link>;

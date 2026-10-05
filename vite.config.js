@@ -32,7 +32,7 @@ export default defineConfig({
     port: 5173,
     open: true,
     watch: {
-      ignored: ['**/server/.secrets.env**', '**/scratch/**', '**/.git/**', '**/legacy/**'],
+      ignored: ['**/server/.secrets.env**', '**/.git/**', '**/legacy/**'],
     },
   },
 });

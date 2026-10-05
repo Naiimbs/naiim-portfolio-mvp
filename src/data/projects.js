@@ -1,255 +1,166 @@
 import winniStickerImg from '../assets/images/winni-sticker-real.png';
 import assestiniControlCenterImg from '../assets/images/assestini-control-center.png';
 import cha9a9aLogoImg from '../assets/images/cha9a9a-logo.png';
+import copilotCoverImg from '../assets/images/cover-copilot-naim.png';
+import dailyJobsearchCoverImg from '../assets/images/daily-jobsearch-os-cover.png';
+import dgaGovHeroImg from '../assets/images/dga_government_services_case_hero_skeleton.png';
+import dgaBankingHeroImg from '../assets/images/dga_antifraud_case_hero_skeleton_v2.png';
+import dgaDigitalHeroImg from '../assets/images/dga_digital_government_case_hero_skeleton.png';
+import dgaRegHeroImg from '../assets/images/dga_regulatory_healthcare_case_hero_skeleton.png';
 
+/**
+ * projects.js — PRESENTATION ASSET LOOKUP LAYER ONLY (Phase 6 Architecture).
+ *
+ * NOTE: The Content Registry (Supabase `content_registry`) is the authoritative source
+ * for catalog membership, title, kicker, description, subtitle, tags, badge, sort_order,
+ * status, and visibility.
+ *
+ * This file provides ONLY local asset references (heroImage, heroImageAlt, logoMark)
+ * resolved by matching `entry.slug`.
+ */
 export const projects = [
   {
     id: 'winni',
     slug: 'winni',
-    title: 'WINNI',
-    kicker: 'PRODUCT · QR · LOST & FOUND',
-    shortDescription:
-      'A QR-powered recovery experience designed around one principle: the finder should not have to become a user.',
-    category: 'Product Design',
-    year: 2026,
-    status: 'ongoing',
-    role: ['Product Designer', 'UX/UI', 'AI'],
-    tools: ['Figma', 'React', 'QR/NFC'],
     heroImage: winniStickerImg,
     heroImageAlt: 'WINNI QR identification sticker attached to a personal object',
-    featured: true,
-    order: 1,
+    logoMark: {
+      letter: 'W',
+      className: 'winni',
+    },
     card: {
-      badge: '01',
-      title: 'WINNI',
-      kicker: 'PRODUCT · QR · LOST & FOUND',
-      description:
-        'A QR-powered recovery experience designed around one principle: the finder should not have to become a user.',
-      tags: ['Product Design', 'UX/UI', 'AI'],
       logoMark: {
         letter: 'W',
         className: 'winni',
       },
     },
-    caseStudy: {
-      type: 'custom',
-      route: '/work/winni',
-    },
   },
   {
     id: 'assestini',
     slug: 'assestini',
-    title: 'Assestini',
-    kicker: 'PRODUCT · OPERATIONAL INTELLIGENCE',
-    shortDescription:
-      'Designing an operational layer that connects estimation, delivery, margins, cash flow and AI-assisted decisions.',
-    category: 'Product Design',
-    year: 2026,
-    status: 'ongoing',
-    role: ['Product Designer', 'AI', 'RAG'],
-    tools: ['Figma', 'RAG', 'AI'],
     heroImage: assestiniControlCenterImg,
     heroImageAlt: 'Assestini Business Control Center interface for operational intelligence',
-    featured: true,
-    order: 2,
+    logoMark: {
+      letter: 'A',
+      className: 'assestini',
+    },
     card: {
-      badge: '02',
-      title: 'Assestini',
-      kicker: 'PRODUCT · OPERATIONAL INTELLIGENCE',
-      description:
-        'Designing an operational layer that connects estimation, delivery, margins, cash flow and AI-assisted decisions.',
-      tags: ['Product Design', 'AI', 'RAG'],
       logoMark: {
         letter: 'A',
         className: 'assestini',
       },
     },
-    caseStudy: {
-      type: 'custom',
-      route: '/work/assestini',
-    },
   },
   {
     id: 'cha9a9a',
     slug: 'cha9a9a',
-    title: 'Cha9a9a',
-    kicker: 'WEB · FIGMA → CODE',
-    shortDescription:
-      'Translating a Figma interface into responsive HTML, CSS, Bootstrap and JavaScript for a community platform.',
-    category: 'Front-End',
-    year: 2026,
-    status: 'completed',
-    role: ['Front-End', 'Bootstrap', 'Figma'],
-    tools: ['HTML', 'CSS', 'Bootstrap', 'JavaScript', 'Figma'],
     heroImage: cha9a9aLogoImg,
     heroImageAlt: 'Cha9a9a homepage screenshot showing Figma-to-HTML front-end implementation target',
-    featured: true,
-    order: 3,
+    logoMark: {
+      letter: 'C',
+      className: 'cha9a9a',
+    },
     card: {
-      badge: '03',
-      title: 'Cha9a9a',
-      kicker: 'WEB · FIGMA → CODE',
-      description:
-        'Translating a Figma interface into responsive HTML, CSS, Bootstrap and JavaScript for a community platform.',
-      tags: ['Front-End', 'Bootstrap', 'Figma'],
       logoMark: {
         letter: 'C',
         className: 'cha9a9a',
       },
     },
-    caseStudy: {
-      type: 'standard',
-      route: '/work/cha9a9a',
-    },
   },
   {
     id: 'naim-copilot',
     slug: 'naim-copilot',
-    title: 'Naïm Copilot',
-    kicker: 'AI AGENT',
-    shortDescription: 'AI Agent · n8n · Memory · Actions',
-    category: 'AI Agent',
-    year: 2026,
-    status: 'ongoing',
-    role: ['AI Workflow Builder', 'Product Designer'],
-    tools: ['n8n', 'OpenAI', 'RAG'],
-    heroImage: null,
-    heroImageAlt: null,
-    featured: false,
-    order: 4,
-    card: {
-      badge: '04',
-      title: 'Naïm Copilot',
-      subtitle: 'AI Agent · n8n · Memory · Actions',
+    heroImage: copilotCoverImg,
+    heroImageAlt: 'Naïm Copilot AI Agent interface and n8n workflow',
+    logoMark: {
+      letter: 'N',
+      className: 'copilot',
     },
-    caseStudy: {
-      type: 'standard',
-      route: '/work/naim-copilot',
+    card: {
+      logoMark: {
+        letter: 'N',
+        className: 'copilot',
+      },
     },
   },
   {
     id: 'career-os',
     slug: 'career-os',
-    title: 'Career OS',
-    kicker: 'AI AUTOMATION',
-    shortDescription: 'Daily Job Search · AI scoring',
-    category: 'AI Automation',
-    year: 2026,
-    status: 'completed',
-    role: ['Product Designer', 'AI Workflow Builder'],
-    tools: ['n8n', 'Gemini', 'Telegram'],
-    heroImage: null,
-    heroImageAlt: null,
-    featured: false,
-    order: 5,
-    card: {
-      badge: '05',
-      title: 'Career OS',
-      subtitle: 'Daily Job Search · AI scoring',
+    heroImage: dailyJobsearchCoverImg,
+    heroImageAlt: 'Career OS n8n workflow and job scoring automation',
+    logoMark: {
+      letter: 'C',
+      className: 'copilot',
     },
-    caseStudy: {
-      type: 'standard',
-      route: '/work/career-os',
+    card: {
+      logoMark: {
+        letter: 'C',
+        className: 'copilot',
+      },
     },
   },
   {
     id: 'saudi-government',
     slug: 'saudi-government',
-    title: 'Saudi · Government',
-    kicker: 'DIGITAL SERVICES',
-    shortDescription: 'Digital services · UX/UI · OutSystems',
-    category: 'Digital Services',
-    year: 2025,
-    status: 'completed',
-    role: ['Senior UX/UI Designer'],
-    tools: ['OutSystems', 'Figma'],
-    heroImage: null,
-    heroImageAlt: null,
-    featured: false,
-    order: 6,
-    card: {
-      badge: '06',
-      title: 'Saudi · Government',
-      subtitle: 'Digital services · UX/UI · OutSystems',
+    heroImage: dgaGovHeroImg,
+    heroImageAlt: 'Saudi government digital service interface screenshot',
+    logoMark: {
+      letter: 'S',
+      className: 'saudi',
     },
-    caseStudy: {
-      type: 'standard',
-      route: '/work/saudi-government',
+    card: {
+      logoMark: {
+        letter: 'S',
+        className: 'saudi',
+      },
     },
   },
   {
     id: 'saudi-banking',
     slug: 'saudi-banking',
-    title: 'Saudi · Banking',
-    kicker: 'FINANCIAL SERVICES',
-    shortDescription: 'Financial services · UX/UI · Mendix',
-    category: 'Financial Services',
-    year: 2025,
-    status: 'completed',
-    role: ['Senior UX/UI Designer'],
-    tools: ['Mendix', 'Figma'],
-    heroImage: null,
-    heroImageAlt: null,
-    featured: false,
-    order: 7,
-    card: {
-      badge: '07',
-      title: 'Saudi · Banking',
-      subtitle: 'Financial services · UX/UI · Mendix',
+    heroImage: dgaBankingHeroImg,
+    heroImageAlt: 'Saudi banking and antifraud interface skeleton',
+    logoMark: {
+      letter: 'S',
+      className: 'saudi',
     },
-    caseStudy: {
-      type: 'standard',
-      route: '/work/saudi-banking',
+    card: {
+      logoMark: {
+        letter: 'S',
+        className: 'saudi',
+      },
     },
   },
   {
     id: 'dga',
     slug: 'dga',
-    title: 'DGA Experience',
-    kicker: 'GOVERNMENT DESIGN SYSTEM',
-    shortDescription: 'Government design system · UI · OutSystems',
-    category: 'Design Systems',
-    year: 2025,
-    status: 'completed',
-    role: ['Design Systems Lead', 'UI Designer'],
-    tools: ['OutSystems', 'Figma'],
-    heroImage: null,
-    heroImageAlt: null,
-    featured: false,
-    order: 8,
-    card: {
-      badge: '08',
-      title: 'DGA Experience',
-      subtitle: 'Government design system · UI · OutSystems',
+    heroImage: dgaDigitalHeroImg,
+    heroImageAlt: 'DGA digital government experience and design system',
+    logoMark: {
+      letter: 'D',
+      className: 'saudi',
     },
-    caseStudy: {
-      type: 'standard',
-      route: '/work/dga',
+    card: {
+      logoMark: {
+        letter: 'D',
+        className: 'saudi',
+      },
     },
   },
   {
     id: 'saudi-regulatory',
     slug: 'saudi-regulatory',
-    title: 'Saudi · Regulatory',
-    kicker: 'REGULATED DIGITAL SERVICES',
-    shortDescription: 'Regulated digital services · UX/UI · OutSystems',
-    category: 'Regulated Services',
-    year: 2025,
-    status: 'completed',
-    role: ['Senior UX/UI Designer'],
-    tools: ['OutSystems', 'Figma'],
-    heroImage: null,
-    heroImageAlt: null,
-    featured: false,
-    order: 9,
-    card: {
-      badge: '09',
-      title: 'Saudi · Regulatory',
-      subtitle: 'Regulated digital services · UX/UI · OutSystems',
+    heroImage: dgaRegHeroImg,
+    heroImageAlt: 'Saudi regulatory and healthcare digital service interface',
+    logoMark: {
+      letter: 'S',
+      className: 'saudi',
     },
-    caseStudy: {
-      type: 'standard',
-      route: '/work/saudi-regulatory',
+    card: {
+      logoMark: {
+        letter: 'S',
+        className: 'saudi',
+      },
     },
   },
 ];

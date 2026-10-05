@@ -1,3 +1,18 @@
+/**
+ * ============================================================================
+ * LEGACY / REFERENCE ONLY — DO NOT IMPORT IN PUBLIC RUNTIME CODE
+ * ============================================================================
+ *
+ * All case study content has been migrated to the authoritative Supabase
+ * Content Registry (`content_registry.metadata.caseStudy`, version 1).
+ *
+ * This file is retained temporarily as an archival reference.
+ * It MUST NOT participate in public runtime rendering.
+ *
+ * @deprecated Use Supabase Content Registry and normalizeRegistryEntry() instead.
+ * ============================================================================
+ */
+
 import dailyJobsearchCoverImg from '../assets/images/daily-jobsearch-os-cover.png';
 import cha9a9aReferenceImg from '../assets/images/cha9a9a-homepage-reference.png';
 import copilotCoverImg from '../assets/images/cover-copilot-naim.png';

@@ -2,7 +2,9 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import PlaceholderPage from './pages/PlaceholderPage';
+import WorkPage from './pages/WorkPage';
 import AgentsPage from './pages/AgentsPage';
+
 import AgentCaseStudyPage from './pages/AgentCaseStudyPage';
 import AgentDemoPage from './pages/AgentDemoPage';
 import CaseStudyRenderer from './components/case-study/CaseStudyRenderer';
@@ -32,6 +34,8 @@ import AdminPages from './admin/pages/AdminPages';
 import AdminPageEditor from './admin/pages/AdminPageEditor';
 import AdminNavigation from './admin/pages/AdminNavigation';
 import AdminSettings from './admin/pages/AdminSettings';
+import AdminRegistry from './admin/pages/AdminRegistry';
+import AdminRegistryEntry from './admin/pages/AdminRegistryEntry';
 
 // Admin Documentation
 import AdminDocs from './admin/pages/AdminDocs';
@@ -51,7 +55,7 @@ export default function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<HomePage />} />
-        <Route path="/work" element={<PlaceholderPage title="Selected Work" description="Case studies & digital products directory." />} />
+        <Route path="/work" element={<WorkPage />} />
         <Route path="/work/:slug" element={<CaseStudyRenderer />} />
         <Route path="/agents" element={<AgentsPage />} />
         <Route path="/agents/:slug" element={<AgentCaseStudyPage />} />
@@ -75,6 +79,8 @@ export default function App() {
         <Route element={<AdminGuard />}>
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
+            <Route path="registry" element={<AdminRegistry />} />
+            <Route path="registry/:id" element={<AdminRegistryEntry />} />
             <Route path="projects" element={<AdminProjects />} />
             <Route path="projects/:id" element={<AdminProjectEditor />} />
             <Route path="case-studies" element={<AdminCaseStudies />} />

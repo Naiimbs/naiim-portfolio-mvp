@@ -1,3 +1,13 @@
+/**
+ * services/caseStudies.js
+ *
+ * LEGACY / ADMIN ONLY SERVICE
+ *
+ * Public runtime case studies now read authoritatively from
+ * Supabase Content Registry (metadata.caseStudy).
+ * This service is retained for Admin CMS compatibility only.
+ */
+
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { caseStudies as localCaseStudies } from '../data/caseStudies';
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { getAdminCaseStudyById, saveFullCaseStudy } from '../../services/caseStudies';
+import { getAdminContentRegistry } from '../../services/contentRegistry';
 import { isSupabaseConfigured } from '../../lib/supabase';
 import SectionList from '../components/case-study-editor/SectionList';
 import SectionDrawer from '../components/case-study-editor/SectionDrawer';
@@ -33,11 +34,29 @@ export default function AdminCaseStudyEditor() {
   const [isAddSectionOpen, setIsAddSectionOpen] = useState(false);
   const [activeSection, setActiveSection] = useState(null);
 
+  const [registryId, setRegistryId] = useState(null);
+
   // Load initial data
   useEffect(() => {
     async function loadData() {
       setLoading(true);
       setError(null);
+
+      // Check authoritative Content Registry first
+      try {
+        const regRes = await getAdminContentRegistry({ contentType: 'case-study' });
+        if (regRes.data) {
+          const match = regRes.data.find(
+            (r) => String(r.id) === String(id) || r.slug === id
+          );
+          if (match) {
+            setRegistryId(match.id);
+          }
+        }
+      } catch (e) {
+        console.warn('Could not query content registry in legacy editor:', e);
+      }
+
       const res = await getAdminCaseStudyById(id);
       if (res.data) {
         const cs = res.data;
@@ -253,6 +272,20 @@ export default function AdminCaseStudyEditor() {
           </button>
         </div>
       </div>
+
+      {registryId && (
+        <div className="admin-alert mb-4" style={{ background: '#fffbeb', border: '1px solid #fde68a', color: '#92400e' }}>
+          <i className="bi bi-exclamation-triangle-fill text-warning fs-5 flex-shrink-0" />
+          <div className="d-flex justify-content-between align-items-center w-100 flex-wrap gap-2">
+            <div>
+              <strong>Legacy Editor Notice:</strong> This case study is authoritatively managed in the <strong>Content Registry</strong>. Changes made in this legacy editor will NOT be reflected on the public <code>/work/:slug</code> route.
+            </div>
+            <Link to={`/admin/registry/${registryId}`} className="admin-btn admin-btn-primary btn-sm py-1 px-3 text-nowrap">
+              <i className="bi bi-box-arrow-up-right me-1" /> Open Authoritative CMS Editor
+            </Link>
+          </div>
+        </div>
+      )}
 
       {!isSupabaseConfigured && (
         <div className="admin-alert admin-alert-warning mb-4">

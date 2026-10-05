@@ -4,12 +4,14 @@ import {
   createNavigationItem,
   updateNavigationItem,
   deleteNavigationItem,
+  seedDefaultNavigation,
 } from '../../services/siteCms';
 
 export default function AdminNavigation() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedLocation, setSelectedLocation] = useState('header');
+  const [selectedLocation, setSelectedLocation] = useState('header'); // 'header' | 'footer' | 'all'
+  const [feedback, setFeedback] = useState(null);
 
   // Form state
   const [showModal, setShowModal] = useState(false);
@@ -36,8 +38,9 @@ export default function AdminNavigation() {
     setEditingItem(null);
     setLabel('');
     setHref('');
-    setLocation(selectedLocation);
-    setSortOrder((filteredItems.length + 1) * 10);
+    setLocation(selectedLocation === 'all' ? 'header' : selectedLocation);
+    const relevantItems = items.filter((i) => i.location === (selectedLocation === 'all' ? 'header' : selectedLocation));
+    setSortOrder((relevantItems.length + 1) * 10);
     setOpenInNewTab(false);
     setShowModal(true);
   };
@@ -56,6 +59,7 @@ export default function AdminNavigation() {
     e.preventDefault();
     if (!label.trim()) return;
     setSubmitting(true);
+    setFeedback(null);
 
     const payload = {
       label: label.trim(),
@@ -65,10 +69,18 @@ export default function AdminNavigation() {
       open_in_new_tab: openInNewTab,
     };
 
+    let res;
     if (editingItem) {
-      await updateNavigationItem(editingItem.id, payload);
+      res = await updateNavigationItem(editingItem.id, payload);
     } else {
-      await createNavigationItem(payload);
+      res = await createNavigationItem(payload);
+    }
+
+    if (res.error) {
+      setFeedback({ type: 'danger', message: res.error.message || 'Failed to save navigation item.' });
+    } else {
+      setFeedback({ type: 'success', message: `Navigation item "${payload.label}" saved.` });
+      setTimeout(() => setFeedback(null), 3500);
     }
 
     setSubmitting(false);
@@ -77,31 +89,100 @@ export default function AdminNavigation() {
   };
 
   const handleToggleVisibility = async (item) => {
-    await updateNavigationItem(item.id, { is_visible: !item.is_visible });
+    const updated = !item.is_visible;
+    await updateNavigationItem(item.id, { is_visible: updated });
+    setFeedback({ type: 'info', message: `Link "${item.label}" set to ${updated ? 'Visible' : 'Hidden'}.` });
+    setTimeout(() => setFeedback(null), 3000);
     loadItems();
   };
 
   const handleDelete = async (item) => {
     if (!window.confirm(`Delete navigation item "${item.label}"?`)) return;
     await deleteNavigationItem(item.id);
+    setFeedback({ type: 'info', message: `Link "${item.label}" deleted.` });
+    setTimeout(() => setFeedback(null), 3000);
     loadItems();
   };
 
+  const handleMoveItem = async (item, direction) => {
+    const list = items
+      .filter((i) => i.location === item.location)
+      .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+
+    const index = list.findIndex((i) => i.id === item.id);
+    const targetIndex = index + direction;
+    if (index === -1 || targetIndex < 0 || targetIndex >= list.length) return;
+
+    const adjacent = list[targetIndex];
+    const itemOrder = adjacent.sort_order;
+    const adjacentOrder = item.sort_order === adjacent.sort_order ? adjacent.sort_order + 10 : item.sort_order;
+
+    await Promise.all([
+      updateNavigationItem(item.id, { sort_order: itemOrder }),
+      updateNavigationItem(adjacent.id, { sort_order: adjacentOrder }),
+    ]);
+
+    loadItems();
+  };
+
+  const handleSeedDefaults = async () => {
+    if (items.length > 0 && !window.confirm('Reset/seed navigation with canonical defaults? Existing items will be preserved.')) {
+      return;
+    }
+    setLoading(true);
+    const res = await seedDefaultNavigation();
+    if (res.error) {
+      setFeedback({ type: 'danger', message: 'Failed to seed default navigation.' });
+    } else {
+      setFeedback({ type: 'success', message: 'Canonical navigation defaults successfully initialized!' });
+      setTimeout(() => setFeedback(null), 4000);
+      setItems(res.data || []);
+    }
+    setLoading(false);
+  };
+
+  const getTargetBadge = (targetHref) => {
+    const trimmed = (targetHref || '').trim();
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      return <span className="badge bg-info-subtle text-info border border-info-subtle">External URL</span>;
+    }
+    if (trimmed.startsWith('#')) {
+      return <span className="badge bg-secondary-subtle text-secondary border">Page Anchor</span>;
+    }
+    return <span className="badge bg-primary-subtle text-primary border border-primary-subtle">Internal Route</span>;
+  };
+
   const filteredItems = items
-    .filter((i) => i.location === selectedLocation)
-    .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+    .filter((i) => (selectedLocation === 'all' ? true : i.location === selectedLocation))
+    .sort((a, b) => {
+      if (a.location !== b.location) return a.location.localeCompare(b.location);
+      return (a.sort_order || 0) - (b.sort_order || 0);
+    });
 
   return (
     <div className="admin-navigation-container p-4">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
         <div>
           <h1 className="h3 mb-1 fw-bold">Navigation Management</h1>
-          <p className="text-muted small mb-0">Configure header and footer links for site navigation.</p>
+          <p className="text-muted small mb-0">Authoritative control of public site Header and Footer links.</p>
         </div>
-        <button className="btn btn-primary rounded-pill px-4" onClick={handleOpenAddModal}>
-          <i className="bi bi-plus-lg me-2"></i> Add Link
-        </button>
+        <div className="d-flex align-items-center gap-2">
+          <button className="btn btn-outline-secondary rounded-pill px-3" onClick={handleSeedDefaults} title="Seed Canonical Defaults">
+            <i className="bi bi-arrow-repeat me-1"></i> Seed Defaults
+          </button>
+          <button className="btn btn-primary rounded-pill px-4" onClick={handleOpenAddModal}>
+            <i className="bi bi-plus-lg me-2"></i> Add Link
+          </button>
+        </div>
       </div>
+
+      {feedback && (
+        <div className={`alert alert-${feedback.type} alert-dismissible fade show rounded-3 mb-4`} role="alert">
+          <i className={`bi bi-${feedback.type === 'success' ? 'check-circle' : 'info-circle'} me-2`}></i>
+          {feedback.message}
+          <button type="button" className="btn-close" onClick={() => setFeedback(null)}></button>
+        </div>
+      )}
 
       {/* Location Filter Tabs */}
       <ul className="nav nav-pills mb-4">
@@ -110,15 +191,23 @@ export default function AdminNavigation() {
             className={`nav-item-btn btn me-2 rounded-pill px-4 ${selectedLocation === 'header' ? 'btn-dark' : 'btn-outline-secondary'}`}
             onClick={() => setSelectedLocation('header')}
           >
-            <i className="bi bi-layout-text-window-reverse me-2"></i> Header Navigation
+            <i className="bi bi-layout-text-window-reverse me-2"></i> Header Navigation ({items.filter((i) => i.location === 'header').length})
           </button>
         </li>
         <li className="nav-item">
           <button
-            className={`nav-item-btn btn rounded-pill px-4 ${selectedLocation === 'footer' ? 'btn-dark' : 'btn-outline-secondary'}`}
+            className={`nav-item-btn btn me-2 rounded-pill px-4 ${selectedLocation === 'footer' ? 'btn-dark' : 'btn-outline-secondary'}`}
             onClick={() => setSelectedLocation('footer')}
           >
-            <i className="bi bi-layout-south me-2"></i> Footer Links
+            <i className="bi bi-layout-south me-2"></i> Footer Links ({items.filter((i) => i.location === 'footer').length})
+          </button>
+        </li>
+        <li className="nav-item">
+          <button
+            className={`nav-item-btn btn rounded-pill px-3 ${selectedLocation === 'all' ? 'btn-dark' : 'btn-outline-secondary'}`}
+            onClick={() => setSelectedLocation('all')}
+          >
+            All Links ({items.length})
           </button>
         </li>
       </ul>
@@ -135,45 +224,82 @@ export default function AdminNavigation() {
             <table className="table table-hover align-middle mb-0">
               <thead className="bg-light">
                 <tr>
-                  <th className="ps-4" style={{ width: '80px' }}>Order</th>
+                  <th className="ps-4" style={{ width: '110px' }}>Order</th>
                   <th>Label</th>
                   <th>URL / Destination</th>
-                  <th>Target</th>
+                  <th>Target Type</th>
+                  <th>Window</th>
+                  <th>Location</th>
                   <th>Status</th>
                   <th className="text-end pe-4">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredItems.map((item) => (
-                  <tr key={item.id} className={!item.is_visible ? 'bg-light text-muted' : ''}>
-                    <td className="ps-4">
-                      <span className="badge bg-secondary">{item.sort_order}</span>
-                    </td>
-                    <td className="fw-semibold">{item.label}</td>
-                    <td>
-                      <code className="text-muted">{item.href}</code>
-                    </td>
-                    <td>
-                      <span className="small text-muted">{item.open_in_new_tab ? 'New Tab (_blank)' : 'Same Window'}</span>
-                    </td>
-                    <td>
-                      <button
-                        className={`btn btn-sm btn-outline-${item.is_visible ? 'success' : 'secondary'} rounded-pill`}
-                        onClick={() => handleToggleVisibility(item)}
-                      >
-                        {item.is_visible ? 'Visible' : 'Hidden'}
-                      </button>
-                    </td>
-                    <td className="text-end pe-4">
-                      <button className="btn btn-sm btn-outline-secondary rounded-pill me-2" onClick={() => handleOpenEditModal(item)}>
-                        <i className="bi bi-pencil me-1"></i> Edit
-                      </button>
-                      <button className="btn btn-sm btn-outline-danger rounded-pill" onClick={() => handleDelete(item)}>
-                        <i className="bi bi-trash"></i>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {filteredItems.map((item, idx) => {
+                  const locationList = filteredItems.filter((i) => i.location === item.location);
+                  const isFirst = locationList[0]?.id === item.id;
+                  const isLast = locationList[locationList.length - 1]?.id === item.id;
+
+                  return (
+                    <tr key={item.id} className={!item.is_visible ? 'bg-light text-muted' : ''}>
+                      <td className="ps-4">
+                        <div className="d-flex align-items-center gap-1">
+                          <span className="badge bg-secondary" style={{ fontSize: '0.7rem' }}>{item.sort_order}</span>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-link text-dark p-0"
+                            disabled={isFirst}
+                            onClick={() => handleMoveItem(item, -1)}
+                            title="Move Up"
+                          >
+                            <i className="bi bi-chevron-up"></i>
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-link text-dark p-0"
+                            disabled={isLast}
+                            onClick={() => handleMoveItem(item, 1)}
+                            title="Move Down"
+                          >
+                            <i className="bi bi-chevron-down"></i>
+                          </button>
+                        </div>
+                      </td>
+                      <td className="fw-semibold">{item.label}</td>
+                      <td>
+                        <code className="text-muted">{item.href}</code>
+                      </td>
+                      <td>{getTargetBadge(item.href)}</td>
+                      <td>
+                        <span className="small text-muted">{item.open_in_new_tab ? 'New Tab (_blank)' : 'Same Tab'}</span>
+                      </td>
+                      <td>
+                        <span className="badge bg-light text-dark border text-uppercase" style={{ fontSize: '0.65rem' }}>
+                          {item.location}
+                        </span>
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          className={`btn btn-sm py-0 px-2 rounded-pill ${item.is_visible ? 'btn-outline-success' : 'btn-outline-secondary'}`}
+                          style={{ fontSize: '0.72rem' }}
+                          onClick={() => handleToggleVisibility(item)}
+                          title="Click to Toggle Visibility"
+                        >
+                          {item.is_visible ? '✓ Visible' : 'Hidden'}
+                        </button>
+                      </td>
+                      <td className="text-end pe-4">
+                        <button className="btn btn-sm btn-outline-secondary rounded-pill me-2" onClick={() => handleOpenEditModal(item)} title="Edit Link">
+                          <i className="bi bi-pencil me-1"></i> Edit
+                        </button>
+                        <button className="btn btn-sm btn-outline-danger rounded-pill" onClick={() => handleDelete(item)} title="Delete Link">
+                          <i className="bi bi-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -181,11 +307,16 @@ export default function AdminNavigation() {
       ) : (
         <div className="card border-0 shadow-sm rounded-4 p-5 text-center">
           <i className="bi bi-compass display-4 text-muted mb-3"></i>
-          <h4 className="fw-bold">No Links in {selectedLocation.toUpperCase()}</h4>
-          <p className="text-muted mb-4">Click "Add Link" to add navigation links for the {selectedLocation}.</p>
-          <div>
+          <h4 className="fw-bold">No Links Configured</h4>
+          <p className="text-muted mb-4">
+            Initialize canonical defaults for Header and Footer or create custom links.
+          </p>
+          <div className="d-flex justify-content-center gap-3">
+            <button className="btn btn-outline-secondary rounded-pill px-4" onClick={handleSeedDefaults}>
+              <i className="bi bi-arrow-repeat me-1"></i> Initialize Defaults
+            </button>
             <button className="btn btn-primary rounded-pill px-4" onClick={handleOpenAddModal}>
-              Add Link
+              <i className="bi bi-plus-lg me-1"></i> Add Custom Link
             </button>
           </div>
         </div>
@@ -218,11 +349,14 @@ export default function AdminNavigation() {
                     <input
                       type="text"
                       className="form-control rounded-3"
-                      placeholder="e.g. /work or https://..."
+                      placeholder="e.g. /work or #contact or https://..."
                       value={href}
                       onChange={(e) => setHref(e.target.value)}
                       required
                     />
+                    <div className="form-text small" style={{ fontSize: '0.72rem' }}>
+                      {getTargetBadge(href)} Use <code>/route</code> for internal pages, <code>#anchor</code> for home sections, or <code>https://...</code> for external links.
+                    </div>
                   </div>
                   <div className="row g-2 mb-3">
                     <div className="col-6">
@@ -242,21 +376,21 @@ export default function AdminNavigation() {
                       />
                     </div>
                   </div>
-                  <div className="form-check">
+                  <div className="form-check form-switch mb-2">
                     <input
                       className="form-check-input"
                       type="checkbox"
-                      id="openInNewTab"
+                      id="newTabSwitch"
                       checked={openInNewTab}
                       onChange={(e) => setOpenInNewTab(e.target.checked)}
                     />
-                    <label className="form-check-label small" htmlFor="openInNewTab">
-                      Open link in new browser tab
+                    <label className="form-check-label small fw-semibold" htmlFor="newTabSwitch">
+                      Open in new browser tab (target="_blank")
                     </label>
                   </div>
                 </div>
                 <div className="modal-footer border-0 pt-0">
-                  <button type="button" className="btn btn-light rounded-pill" onClick={() => setShowModal(false)}>
+                  <button type="button" className="btn btn-outline-secondary rounded-pill px-4" onClick={() => setShowModal(false)}>
                     Cancel
                   </button>
                   <button type="submit" className="btn btn-primary rounded-pill px-4" disabled={submitting}>

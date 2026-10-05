@@ -6,7 +6,7 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
  */
 
 // Local fallback data for pages
-const FALLBACK_PAGES = [
+export const FALLBACK_PAGES = [
   {
     id: 'page-home',
     slug: 'home',
@@ -37,30 +37,144 @@ const FALLBACK_PAGES = [
     id: 'page-about',
     slug: 'about',
     title: 'About',
-    status: 'draft',
+    status: 'published',
     template: 'default',
     seo_title: 'About — Naïm Bsili',
     seo_description: 'Career journey, experience and skills.',
     canonical_url: '/about',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
+    published_at: new Date().toISOString(),
+  },
+  {
+    id: 'page-blog',
+    slug: 'blog',
+    title: 'Blog',
+    status: 'draft',
+    template: 'default',
+    seo_title: 'Blog & Writing — Naïm Bsili',
+    seo_description: 'Thoughts and notes on design systems, AI engineering, and product craft.',
+    canonical_url: '/p/blog',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
     published_at: null,
   },
 ];
 
-// Local fallback navigation items
-const FALLBACK_NAVIGATION = [
-  { id: 'nav-1', location: 'header', label: 'Work', href: '/work', item_type: 'link', parent_id: null, sort_order: 1, is_visible: true, open_in_new_tab: false },
-  { id: 'nav-2', location: 'header', label: 'Agents', href: '/agents', item_type: 'link', parent_id: null, sort_order: 2, is_visible: true, open_in_new_tab: false },
-  { id: 'nav-3', location: 'header', label: 'Plugins', href: '/plugins', item_type: 'link', parent_id: null, sort_order: 3, is_visible: true, open_in_new_tab: false },
-  { id: 'nav-4', location: 'header', label: 'Blog', href: '/blog', item_type: 'link', parent_id: null, sort_order: 4, is_visible: true, open_in_new_tab: false },
-  { id: 'nav-5', location: 'header', label: 'About', href: '/about', item_type: 'link', parent_id: null, sort_order: 5, is_visible: true, open_in_new_tab: false },
-  { id: 'nav-6', location: 'footer', label: 'Privacy Policy', href: '/privacy', item_type: 'link', parent_id: null, sort_order: 1, is_visible: true, open_in_new_tab: false },
+// Canonical default navigation items
+export const DEFAULT_HEADER_NAV = [
+  { id: 'nav-header-1', location: 'header', label: 'Work', href: '/work', item_type: 'link', parent_id: null, sort_order: 10, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-header-2', location: 'header', label: 'Agents', href: '/agents', item_type: 'link', parent_id: null, sort_order: 20, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-header-3', location: 'header', label: 'Copilot', href: '/copilot', item_type: 'link', parent_id: null, sort_order: 30, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-header-4', location: 'header', label: 'Career', href: '#career', item_type: 'link', parent_id: null, sort_order: 40, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-header-5', location: 'header', label: 'Lab', href: '#lab', item_type: 'link', parent_id: null, sort_order: 50, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-header-6', location: 'header', label: 'About', href: '/about', item_type: 'link', parent_id: null, sort_order: 60, is_visible: true, open_in_new_tab: false },
+];
+
+export const DEFAULT_FOOTER_NAV = [
+  { id: 'nav-footer-1', location: 'footer', label: 'Work', href: '/work', item_type: 'link', parent_id: null, sort_order: 10, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-footer-2', location: 'footer', label: 'Case Studies', href: '/work', item_type: 'link', parent_id: null, sort_order: 20, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-footer-3', location: 'footer', label: 'Agents', href: '/agents', item_type: 'link', parent_id: null, sort_order: 30, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-footer-4', location: 'footer', label: 'Copilot', href: '/copilot', item_type: 'link', parent_id: null, sort_order: 40, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-footer-5', location: 'footer', label: 'Career', href: '#career', item_type: 'link', parent_id: null, sort_order: 50, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-footer-6', location: 'footer', label: 'Lab', href: '#lab', item_type: 'link', parent_id: null, sort_order: 60, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-footer-7', location: 'footer', label: 'About', href: '/about', item_type: 'link', parent_id: null, sort_order: 70, is_visible: true, open_in_new_tab: false },
+];
+
+export const FALLBACK_NAVIGATION = [...DEFAULT_HEADER_NAV, ...DEFAULT_FOOTER_NAV];
+
+export const FALLBACK_SECTIONS = [
+  {
+    id: 'sec-about-1',
+    page_id: 'page-about',
+    section_type: 'hero',
+    label: 'Hero Banner',
+    sort_order: 10,
+    is_visible: true,
+    config: {
+      title: 'I DESIGN. I BUILD. I EXPERIMENT.',
+      description: 'I turn ambiguous problems into usable digital products at the intersection of product design, AI, low-code and automation.',
+      primaryCta: { label: 'Explore my work', href: '/work' },
+      secondaryCta: { label: 'Get in Touch', href: 'mailto:contact@naiimbsili.com' },
+    },
+  },
+  {
+    id: 'sec-about-2',
+    page_id: 'page-about',
+    section_type: 'rich_text',
+    label: 'Philosophy & Narrative',
+    sort_order: 20,
+    is_visible: true,
+    config: {
+      eyebrow: 'PHILOSOPHY',
+      title: 'Designing with Purpose',
+      body: 'Leading product designer with deep expertise in design systems and AI integrations.',
+    },
+  },
+  {
+    id: 'sec-about-3',
+    page_id: 'page-about',
+    section_type: 'timeline',
+    label: 'Experience Timeline',
+    sort_order: 30,
+    is_visible: true,
+    config: {
+      title: 'Career Milestones',
+      items: [
+        { year: '2026', title: 'Lead Product Designer', description: 'Designing AI-native product workflows.' },
+        { year: '2024', title: 'Senior UX Designer', description: 'Design system engineering.' },
+      ],
+    },
+  },
+  {
+    id: 'sec-about-4',
+    page_id: 'page-about',
+    section_type: 'workflow',
+    label: 'Process Framework',
+    sort_order: 40,
+    is_visible: true,
+    config: {
+      title: 'Process Framework',
+      steps: [
+        { title: 'Understand & Frame', description: 'Deconstruct complex business problems.' },
+        { title: 'Design & Systematize', description: 'Architect intuitive user flows.' },
+        { title: 'Build & Automate', description: 'Implement with web tech and AI.' },
+      ],
+    },
+  },
+  {
+    id: 'sec-about-5',
+    page_id: 'page-about',
+    section_type: 'cta',
+    label: 'Collaboration CTA',
+    sort_order: 50,
+    is_visible: true,
+    config: {
+      eyebrow: 'GET IN TOUCH',
+      title: 'Ready to collaborate on your next product?',
+      description: 'Let’s build scalable design systems and AI experiences together.',
+      buttonLabel: 'Send an Email',
+      buttonHref: 'mailto:contact@naiimbsili.com',
+    },
+  },
+  {
+    id: 'sec-blog-1',
+    page_id: 'page-blog',
+    section_type: 'rich_text',
+    label: 'Blog Introduction',
+    sort_order: 10,
+    is_visible: true,
+    config: {
+      eyebrow: 'WRITING & THOUGHTS',
+      title: 'Design Systems & AI Engineering Notes',
+      body: 'Articles and explorations on design systems, autonomous AI agents, and product design.',
+    },
+  },
 ];
 
 // In-memory admin store for local development when offline
 let localPagesStore = [...FALLBACK_PAGES];
-let localSectionsStore = [];
+let localSectionsStore = [...FALLBACK_SECTIONS];
 let localNavStore = [...FALLBACK_NAVIGATION];
 let localSettingsStore = {};
 
@@ -91,15 +205,49 @@ export async function getAdminPages() {
     return { data: localPagesStore, error: null, source: 'local' };
   }
   try {
-    const { data, error } = await supabase
-      .from('pages')
-      .select('*')
-      .order('created_at', { ascending: false });
+    const [pagesRes, regRes] = await Promise.all([
+      supabase.from('pages').select('*').order('created_at', { ascending: false }),
+      supabase.from('content_registry').select('*').eq('content_type', 'page'),
+    ]);
 
-    if (error) return { data: [], error, source: 'supabase_error' };
-    return { data: data || [], error: null, source: 'supabase' };
+    const pages = pagesRes.data || [];
+    const registryEntries = regRes.data || [];
+
+    // Include localPagesStore items that might not yet be in Supabase (e.g. blog, dynamic QA pages)
+    const dbSlugs = new Set(pages.map((p) => p.slug));
+    const pendingLocalPages = localPagesStore.filter((p) => !dbSlugs.has(p.slug));
+    const allDiscoveredPages = [...pages, ...pendingLocalPages];
+
+    // Map registry entries to pages
+    const pagesWithRegistry = allDiscoveredPages.map((p) => {
+      const regEntry = registryEntries.find((r) => r.slug === p.slug || (r.metadata && r.metadata.pageId === p.id));
+      return {
+        ...p,
+        registryEntry: regEntry || null,
+      };
+    });
+
+    // Also identify any orphan registry entries (in content_registry but not in pages)
+    const existingSlugs = new Set(allDiscoveredPages.map((p) => p.slug));
+    const orphanEntries = registryEntries.filter((r) => !existingSlugs.has(r.slug));
+    const orphanPages = orphanEntries.map((r) => ({
+      id: r.metadata?.pageId || r.id,
+      title: r.title,
+      slug: r.slug,
+      status: r.status,
+      template: r.metadata?.template || 'default',
+      seo_title: r.metadata?.seo_title || null,
+      seo_description: r.metadata?.description || null,
+      created_at: r.created_at,
+      updated_at: r.updated_at,
+      isOrphanRegistry: true,
+      registryEntry: r,
+    }));
+
+    const combined = [...pagesWithRegistry, ...orphanPages];
+    return { data: combined, error: null, source: 'supabase' };
   } catch (err) {
-    return { data: [], error: err, source: 'error' };
+    return { data: localPagesStore, error: err, source: 'error' };
   }
 }
 
@@ -154,6 +302,10 @@ export async function createPage(pageData) {
       .single();
 
     if (error) return { data: null, error };
+
+    // Synchronize Content Registry lifecycle
+    await syncPageWithRegistry(data);
+
     return { data, error: null };
   } catch (err) {
     return { data: null, error: err };
@@ -179,6 +331,10 @@ export async function updatePage(id, updates) {
       .single();
 
     if (error) return { data: null, error };
+
+    // Synchronize Content Registry lifecycle
+    await syncPageWithRegistry(data);
+
     return { data, error: null };
   } catch (err) {
     return { data: null, error: err };
@@ -193,9 +349,80 @@ export async function deletePage(id) {
   }
   try {
     const { error } = await supabase.from('pages').delete().eq('id', id);
+    if (!error) {
+      // Also remove from content_registry if present
+      await supabase
+        .from('content_registry')
+        .delete()
+        .eq('content_type', 'page')
+        .eq('id', id);
+    }
     return { error };
   } catch (err) {
     return { error: err };
+  }
+}
+
+/**
+ * Synchronizes a Page database record with the authoritative Content Registry lifecycle.
+ * Ensures title, slug, status, visibility, and public_route remain 100% consistent.
+ */
+export async function syncPageWithRegistry(page) {
+  if (!isSupabaseConfigured || !supabase || !page?.id) {
+    return { data: null, error: null };
+  }
+  try {
+    const { data: existing } = await supabase
+      .from('content_registry')
+      .select('*')
+      .eq('content_type', 'page')
+      .or(`id.eq.${page.id},slug.eq.${page.slug}`)
+      .maybeSingle();
+
+    const isPublished = page.status === 'published';
+    const expectedRoute = page.slug === 'about' ? '/about' : `/p/${page.slug}`;
+    const payload = {
+      title: page.title || 'Untitled Page',
+      slug: page.slug,
+      content_type: 'page',
+      status: page.status || 'draft',
+      visibility: isPublished ? 'public' : 'private',
+      public_route: expectedRoute,
+      metadata: {
+        ...(existing?.metadata || {}),
+        pageId: page.id,
+        seo_title: page.seo_title || null,
+        description: page.seo_description || null,
+        template: page.template || 'default',
+      },
+    };
+
+    if (existing) {
+      const { data, error } = await supabase
+        .from('content_registry')
+        .update({
+          ...payload,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', existing.id)
+        .select()
+        .single();
+      return { data, error };
+    } else {
+      const { data, error } = await supabase
+        .from('content_registry')
+        .insert([{
+          ...payload,
+          id: page.id,
+          sort_order: 10,
+        }])
+        .select()
+        .single();
+      return { data, error };
+    }
+  } catch (err) {
+    console.error('[siteCms] syncPageWithRegistry error:', err);
+    return { data: null, error: err };
   }
 }
 
@@ -206,7 +433,8 @@ export async function deletePage(id) {
 export async function getPageSections(pageId) {
   if (!isSupabaseConfigured || !supabase) {
     const sections = localSectionsStore
-      .filter((s) => s.page_id === pageId && s.is_visible)
+      .filter((s) => s.page_id === pageId || ((pageId === 'b458c42a-8e8e-4629-b6cd-9eae47ccbb79' || pageId === 'page-about') && (s.page_id === 'page-about' || s.page_id === 'b458c42a-8e8e-4629-b6cd-9eae47ccbb79')))
+      .filter((s) => s.is_visible)
       .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
     return { data: sections, error: null, source: 'local' };
   }
@@ -218,17 +446,27 @@ export async function getPageSections(pageId) {
       .eq('is_visible', true)
       .order('sort_order', { ascending: true });
 
-    if (error) return { data: [], error, source: 'local_fallback' };
+    if (error) {
+      const fallback = localSectionsStore
+        .filter((s) => s.page_id === pageId || ((pageId === 'b458c42a-8e8e-4629-b6cd-9eae47ccbb79' || pageId === 'page-about') && (s.page_id === 'page-about' || s.page_id === 'b458c42a-8e8e-4629-b6cd-9eae47ccbb79')))
+        .filter((s) => s.is_visible)
+        .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+      return { data: fallback, error, source: 'local_fallback' };
+    }
     return { data: data || [], error: null, source: 'supabase' };
   } catch (err) {
-    return { data: [], error: err, source: 'local_fallback' };
+    const fallback = localSectionsStore
+      .filter((s) => s.page_id === pageId || ((pageId === 'b458c42a-8e8e-4629-b6cd-9eae47ccbb79' || pageId === 'page-about') && (s.page_id === 'page-about' || s.page_id === 'b458c42a-8e8e-4629-b6cd-9eae47ccbb79')))
+      .filter((s) => s.is_visible)
+      .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+    return { data: fallback, error: err, source: 'local_fallback' };
   }
 }
 
 export async function getAdminPageSections(pageId) {
   if (!isSupabaseConfigured || !supabase) {
     const sections = localSectionsStore
-      .filter((s) => s.page_id === pageId)
+      .filter((s) => s.page_id === pageId || ((pageId === 'b458c42a-8e8e-4629-b6cd-9eae47ccbb79' || pageId === 'page-about') && (s.page_id === 'page-about' || s.page_id === 'b458c42a-8e8e-4629-b6cd-9eae47ccbb79')))
       .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
     return { data: sections, error: null, source: 'local' };
   }
@@ -239,10 +477,35 @@ export async function getAdminPageSections(pageId) {
       .eq('page_id', pageId)
       .order('sort_order', { ascending: true });
 
-    if (error) return { data: [], error, source: 'local_fallback' };
+    if (error) {
+      const fallback = localSectionsStore
+        .filter((s) => s.page_id === pageId || ((pageId === 'b458c42a-8e8e-4629-b6cd-9eae47ccbb79' || pageId === 'page-about') && (s.page_id === 'page-about' || s.page_id === 'b458c42a-8e8e-4629-b6cd-9eae47ccbb79')))
+        .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+      return { data: fallback, error, source: 'local_fallback' };
+    }
     return { data: data || [], error: null, source: 'supabase' };
   } catch (err) {
-    return { data: [], error: err, source: 'local_fallback' };
+    const fallback = localSectionsStore
+      .filter((s) => s.page_id === pageId || ((pageId === 'b458c42a-8e8e-4629-b6cd-9eae47ccbb79' || pageId === 'page-about') && (s.page_id === 'page-about' || s.page_id === 'b458c42a-8e8e-4629-b6cd-9eae47ccbb79')))
+      .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+    return { data: fallback, error: err, source: 'local_fallback' };
+  }
+}
+
+export async function getAllAdminPageSections() {
+  if (!isSupabaseConfigured || !supabase) {
+    return { data: localSectionsStore, error: null, source: 'local' };
+  }
+  try {
+    const { data, error } = await supabase
+      .from('page_sections')
+      .select('*')
+      .order('sort_order', { ascending: true });
+
+    if (error) return { data: localSectionsStore, error, source: 'local_fallback' };
+    return { data: data || [], error: null, source: 'supabase' };
+  } catch (err) {
+    return { data: localSectionsStore, error: err, source: 'local_fallback' };
   }
 }
 
@@ -436,6 +699,32 @@ export async function deleteNavigationItem(id) {
   }
 }
 
+export async function seedDefaultNavigation() {
+  const defaults = [...DEFAULT_HEADER_NAV, ...DEFAULT_FOOTER_NAV];
+  if (!isSupabaseConfigured || !supabase) {
+    localNavStore = [...defaults];
+    return { data: localNavStore, error: null };
+  }
+  try {
+    for (const item of defaults) {
+      const { id, ...payload } = item;
+      const { data: existing } = await supabase
+        .from('navigation_items')
+        .select('id')
+        .eq('location', payload.location)
+        .eq('href', payload.href)
+        .maybeSingle();
+
+      if (!existing) {
+        await supabase.from('navigation_items').insert([payload]);
+      }
+    }
+    return getAdminNavigationItems();
+  } catch (err) {
+    return { data: null, error: err };
+  }
+}
+
 /* ==============================================================================
    4. SITE SETTINGS SERVICE
    ============================================================================== */
@@ -458,6 +747,7 @@ export const DEFAULT_SITE_SETTINGS = {
   default_seo_description: 'Naïm Bsili — Product Designer & AI Builder. UX/UI, Product Design, AI, Low-Code and Product Operations.',
   default_og_image: '/assets/images/naim-portrait.jpg',
 };
+export const DEFAULT_SETTINGS = DEFAULT_SITE_SETTINGS;
 
 const parseSettingValue = (val) => {
   if (val === null || val === undefined) return '';

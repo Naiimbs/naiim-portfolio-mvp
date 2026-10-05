@@ -31,6 +31,7 @@ export default function AdminSidebar() {
     {
       title: 'CONTENT',
       items: [
+        { to: '/admin/registry', label: 'Content Registry', icon: 'bi-grid-3x3-gap' },
         { to: '/admin/projects', label: 'Projects', icon: 'bi-folder2-open' },
         { to: '/admin/case-studies', label: 'Case Studies', icon: 'bi-journal-richtext' },
         { to: '/admin/agents', label: 'AI Agents', icon: 'bi-robot' },

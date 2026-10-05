@@ -68,16 +68,18 @@ export default function Navbar() {
       );
     }
 
-    if (item.href.startsWith('#')) {
+    const isAnchor = item.href.startsWith('#') || item.href.startsWith('/#');
+    if (isAnchor) {
+      const anchorHash = item.href.startsWith('/#') ? item.href.substring(1) : item.href;
       if (isHome) {
         return (
-          <a key={item.id} className="nav-link" href={item.href} onClick={closeNav}>
+          <a key={item.id} className="nav-link" href={anchorHash} onClick={closeNav}>
             {item.label}
           </a>
         );
       }
       return (
-        <Link key={item.id} className="nav-link" to={`/${item.href}`} onClick={closeNav}>
+        <Link key={item.id} className="nav-link" to={`/${anchorHash}`} onClick={closeNav}>
           {item.label}
         </Link>
       );
