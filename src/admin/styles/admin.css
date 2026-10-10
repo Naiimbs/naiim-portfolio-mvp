@@ -143,6 +143,100 @@
   font-weight: 600;
 }
 
+/* ------------------------------------------------------------------------------
+   Hierarchical Submenu Groups
+   ------------------------------------------------------------------------------ */
+.expandable-group {
+  margin-bottom: 6px;
+}
+
+.nav-group-toggle-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.nav-group-toggle-btn:hover {
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.nav-group-toggle-btn.parent-active {
+  color: #5dd4b1;
+}
+
+.nav-group-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-group-badge {
+  font-size: 0.58rem;
+  padding: 1px 5px;
+  background: rgba(8, 127, 102, 0.4);
+  color: #5dd4b1;
+  border-radius: 4px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+.nav-chevron {
+  font-size: 0.75rem;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-chevron.rotated {
+  transform: rotate(180deg);
+}
+
+.nav-submenu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: 6px;
+  margin-top: 3px;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  margin-left: 12px;
+}
+
+.admin-subnav-item {
+  font-size: 0.82rem;
+  padding: 6px 10px;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.admin-subnav-item i {
+  font-size: 0.95rem;
+  min-width: 18px;
+}
+
+.admin-subnav-item:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.admin-subnav-item.active {
+  color: #ffffff;
+  background-color: rgba(8, 127, 102, 0.8);
+  font-weight: 600;
+}
+
 .admin-sidebar-footer {
   padding: 14px 14px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -925,9 +1019,11 @@
 
   .admin-nav {
     flex-direction: row;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow-x: auto;
     padding: 10px 16px;
-    gap: 8px;
+    gap: 12px;
+    -webkit-overflow-scrolling: touch;
   }
 
   .admin-sidebar-header {
@@ -1017,8 +1113,9 @@
   }
 
   .admin-sidebar.collapsed .admin-nav-item {
-    justify-content: flex-start !important;
+    justify-content: center !important;
     padding: 10px 12px !important;
+    white-space: nowrap;
   }
 
   .admin-sidebar.collapsed .admin-nav-item span {

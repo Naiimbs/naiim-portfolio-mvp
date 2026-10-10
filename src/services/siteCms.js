@@ -1,4 +1,4 @@
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
 
 /**
  * Service for Pages, Page Sections, Navigation Items, and Site Settings.
@@ -65,20 +65,22 @@ export const FALLBACK_PAGES = [
 export const DEFAULT_HEADER_NAV = [
   { id: 'nav-header-1', location: 'header', label: 'Work', href: '/work', item_type: 'link', parent_id: null, sort_order: 10, is_visible: true, open_in_new_tab: false },
   { id: 'nav-header-2', location: 'header', label: 'Agents', href: '/agents', item_type: 'link', parent_id: null, sort_order: 20, is_visible: true, open_in_new_tab: false },
-  { id: 'nav-header-3', location: 'header', label: 'Copilot', href: '/copilot', item_type: 'link', parent_id: null, sort_order: 30, is_visible: true, open_in_new_tab: false },
-  { id: 'nav-header-4', location: 'header', label: 'Career', href: '#career', item_type: 'link', parent_id: null, sort_order: 40, is_visible: true, open_in_new_tab: false },
-  { id: 'nav-header-5', location: 'header', label: 'Lab', href: '#lab', item_type: 'link', parent_id: null, sort_order: 50, is_visible: true, open_in_new_tab: false },
-  { id: 'nav-header-6', location: 'header', label: 'About', href: '/about', item_type: 'link', parent_id: null, sort_order: 60, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-header-3', location: 'header', label: 'Resources', href: '/resources', item_type: 'link', parent_id: null, sort_order: 25, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-header-4', location: 'header', label: 'Copilot', href: '/copilot', item_type: 'link', parent_id: null, sort_order: 30, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-header-5', location: 'header', label: 'Career', href: '#career', item_type: 'link', parent_id: null, sort_order: 40, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-header-6', location: 'header', label: 'Lab', href: '#lab', item_type: 'link', parent_id: null, sort_order: 50, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-header-7', location: 'header', label: 'About', href: '/about', item_type: 'link', parent_id: null, sort_order: 60, is_visible: true, open_in_new_tab: false },
 ];
 
 export const DEFAULT_FOOTER_NAV = [
   { id: 'nav-footer-1', location: 'footer', label: 'Work', href: '/work', item_type: 'link', parent_id: null, sort_order: 10, is_visible: true, open_in_new_tab: false },
   { id: 'nav-footer-2', location: 'footer', label: 'Case Studies', href: '/work', item_type: 'link', parent_id: null, sort_order: 20, is_visible: true, open_in_new_tab: false },
   { id: 'nav-footer-3', location: 'footer', label: 'Agents', href: '/agents', item_type: 'link', parent_id: null, sort_order: 30, is_visible: true, open_in_new_tab: false },
-  { id: 'nav-footer-4', location: 'footer', label: 'Copilot', href: '/copilot', item_type: 'link', parent_id: null, sort_order: 40, is_visible: true, open_in_new_tab: false },
-  { id: 'nav-footer-5', location: 'footer', label: 'Career', href: '#career', item_type: 'link', parent_id: null, sort_order: 50, is_visible: true, open_in_new_tab: false },
-  { id: 'nav-footer-6', location: 'footer', label: 'Lab', href: '#lab', item_type: 'link', parent_id: null, sort_order: 60, is_visible: true, open_in_new_tab: false },
-  { id: 'nav-footer-7', location: 'footer', label: 'About', href: '/about', item_type: 'link', parent_id: null, sort_order: 70, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-footer-4', location: 'footer', label: 'Resources', href: '/resources', item_type: 'link', parent_id: null, sort_order: 35, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-footer-5', location: 'footer', label: 'Copilot', href: '/copilot', item_type: 'link', parent_id: null, sort_order: 40, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-footer-6', location: 'footer', label: 'Career', href: '#career', item_type: 'link', parent_id: null, sort_order: 50, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-footer-7', location: 'footer', label: 'Lab', href: '#lab', item_type: 'link', parent_id: null, sort_order: 60, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-footer-8', location: 'footer', label: 'About', href: '/about', item_type: 'link', parent_id: null, sort_order: 70, is_visible: true, open_in_new_tab: false },
 ];
 
 export const FALLBACK_NAVIGATION = [...DEFAULT_HEADER_NAV, ...DEFAULT_FOOTER_NAV];
@@ -175,7 +177,31 @@ export const FALLBACK_SECTIONS = [
 // In-memory admin store for local development when offline
 let localPagesStore = [...FALLBACK_PAGES];
 let localSectionsStore = [...FALLBACK_SECTIONS];
-let localNavStore = [...FALLBACK_NAVIGATION];
+let localNavStore = [
+  ...FALLBACK_NAVIGATION,
+  {
+    id: 'nav-header-blog',
+    location: 'header',
+    label: 'Blog',
+    href: '/blog',
+    item_type: 'link',
+    parent_id: null,
+    sort_order: 25,
+    is_visible: true,
+    open_in_new_tab: false,
+  },
+  {
+    id: 'nav-footer-blog',
+    location: 'footer',
+    label: 'Blog',
+    href: '/blog',
+    item_type: 'link',
+    parent_id: null,
+    sort_order: 25,
+    is_visible: true,
+    open_in_new_tab: false,
+  },
+];
 let localSettingsStore = {};
 
 /* ==============================================================================
@@ -313,7 +339,10 @@ export async function createPage(pageData) {
 }
 
 export async function updatePage(id, updates) {
-  const updatedPayload = { ...updates, updated_at: new Date().toISOString() };
+  // Sanitize out virtual/injected properties
+  const { registryEntry, isOrphanRegistry, ...validUpdates } = updates;
+  const updatedPayload = { ...validUpdates, updated_at: new Date().toISOString() };
+
   if (!isSupabaseConfigured || !supabase) {
     const idx = localPagesStore.findIndex((p) => p.id === id);
     if (idx !== -1) {
@@ -335,7 +364,7 @@ export async function updatePage(id, updates) {
     // Synchronize Content Registry lifecycle
     await syncPageWithRegistry(data);
 
-    return { data, error: null };
+    return { data: { ...data, registryEntry, isOrphanRegistry }, error: null };
   } catch (err) {
     return { data: null, error: err };
   }
@@ -596,10 +625,27 @@ export async function getNavigationItems(location = 'header') {
       .eq('is_visible', true)
       .order('sort_order', { ascending: true });
 
-    if (error) return { data: FALLBACK_NAVIGATION.filter((n) => n.location === location), error, source: 'local_fallback' };
-    return { data: data || [], error: null, source: 'supabase' };
+    if (error) {
+      const fallbackItems = localNavStore
+        .filter((n) => n.location === location && n.is_visible)
+        .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+      return { data: fallbackItems, error, source: 'local_fallback' };
+    }
+
+    const items = data || [];
+    // Ensure canonical destinations like Blog are included if not yet migrated in remote DB
+    const existingHrefs = new Set(items.map((i) => i.href));
+    const missingCanonical = localNavStore.filter(
+      (n) => n.location === location && n.is_visible && !existingHrefs.has(n.href)
+    );
+    const merged = [...items, ...missingCanonical].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+
+    return { data: merged, error: null, source: 'supabase' };
   } catch (err) {
-    return { data: FALLBACK_NAVIGATION.filter((n) => n.location === location), error: err, source: 'local_fallback' };
+    const fallbackItems = localNavStore
+      .filter((n) => n.location === location && n.is_visible)
+      .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+    return { data: fallbackItems, error: err, source: 'local_fallback' };
   }
 }
 
@@ -623,7 +669,13 @@ export async function getAdminNavigationItems() {
       .order('sort_order', { ascending: true });
 
     if (error) return { data: localNavStore, error, source: 'local_fallback' };
-    return { data: data || [], error: null, source: 'supabase' };
+
+    const items = data || [];
+    const existingKeys = new Set(items.map((i) => `${i.location}:${i.href}`));
+    const pendingLocal = localNavStore.filter((n) => !existingKeys.has(`${n.location}:${n.href}`));
+    const merged = [...items, ...pendingLocal].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+
+    return { data: merged, error: null, source: 'supabase' };
   } catch (err) {
     return { data: localNavStore, error: err, source: 'local_fallback' };
   }
@@ -823,4 +875,29 @@ export async function updateMultipleSiteSettings(settingsObj, isPublic = true) {
     if (res.error) return { error: res.error };
   }
   return { error: null };
+}
+
+/* ==============================================================================
+   5. THEME TOKENS SETTINGS SERVICE
+   ============================================================================== */
+
+export async function getThemeSettings() {
+  const res = await getPublicSiteSettings();
+  const rawTheme = res.data?.theme_tokens;
+  let parsed = null;
+  if (typeof rawTheme === 'string') {
+    try {
+      parsed = JSON.parse(rawTheme);
+    } catch (e) {
+      parsed = null;
+    }
+  } else if (typeof rawTheme === 'object' && rawTheme !== null) {
+    parsed = rawTheme;
+  }
+  return { data: parsed, error: res.error };
+}
+
+export async function updateThemeSettings(themeConfig) {
+  const payload = typeof themeConfig === 'object' && themeConfig !== null ? themeConfig : {};
+  return updateSiteSetting('theme_tokens', payload, true);
 }

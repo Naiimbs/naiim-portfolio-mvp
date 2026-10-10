@@ -11,6 +11,10 @@ import CaseStudyRenderer from './components/case-study/CaseStudyRenderer';
 import LegacyCaseStudyRedirect from './components/common/LegacyCaseStudyRedirect';
 
 import AboutPage from './pages/AboutPage';
+import BlogPage from './pages/BlogPage';
+import BlogPostPage from './pages/BlogPostPage';
+import ResourcesPage from './pages/ResourcesPage';
+import ResourceDetailPage from './pages/ResourceDetailPage';
 
 import CmsDynamicPage from './pages/CmsDynamicPage';
 
@@ -20,10 +24,14 @@ import AdminGuard from './admin/components/AdminGuard';
 import AdminLayout from './admin/layouts/AdminLayout';
 import AdminLogin from './admin/pages/AdminLogin';
 import AdminDashboard from './admin/pages/AdminDashboard';
+import AdminContent from './admin/pages/AdminContent';
+import AdminBlogEditor from './admin/pages/AdminBlogEditor';
 import AdminProjects from './admin/pages/AdminProjects';
 import AdminProjectEditor from './admin/pages/AdminProjectEditor';
 import AdminCaseStudies from './admin/pages/AdminCaseStudies';
 import AdminCaseStudyEditor from './admin/pages/AdminCaseStudyEditor';
+import AdminResources from './admin/pages/AdminResources';
+import AdminResourceEditor from './admin/pages/AdminResourceEditor';
 import AdminAgents from './admin/pages/AdminAgents';
 import AdminAgentEditor from './admin/pages/AdminAgentEditor';
 import AdminMCPConnections from './admin/pages/AdminMCPConnections';
@@ -34,8 +42,13 @@ import AdminPages from './admin/pages/AdminPages';
 import AdminPageEditor from './admin/pages/AdminPageEditor';
 import AdminNavigation from './admin/pages/AdminNavigation';
 import AdminSettings from './admin/pages/AdminSettings';
+import AdminThemeSettings from './admin/pages/AdminThemeSettings';
 import AdminRegistry from './admin/pages/AdminRegistry';
 import AdminRegistryEntry from './admin/pages/AdminRegistryEntry';
+import AdminMarketingLeads from './admin/pages/AdminMarketingLeads';
+import AdminMarketingDownloads from './admin/pages/AdminMarketingDownloads';
+import AdminMarketingSupporters from './admin/pages/AdminMarketingSupporters';
+import AdminMarketingCampaigns from './admin/pages/AdminMarketingCampaigns';
 
 // Admin Documentation
 import AdminDocs from './admin/pages/AdminDocs';
@@ -60,14 +73,17 @@ export default function App() {
         <Route path="/agents" element={<AgentsPage />} />
         <Route path="/agents/:slug" element={<AgentCaseStudyPage />} />
         <Route path="/agents/:slug/demo" element={<AgentDemoPage />} />
+        <Route path="/resources" element={<ResourcesPage />} />
+        <Route path="/resources/:slug" element={<ResourceDetailPage />} />
         <Route path="/plugins" element={<PlaceholderPage title="Figma Plugins" description="Tools and utilities built for design systems." />} />
-        <Route path="/blog" element={<PlaceholderPage title="Blog & Articles" description="Writing about design, AI and technology." />} />
-        <Route path="/blog/:slug" element={<PlaceholderPage title="Article" description="Post details." />} />
+        <Route path="/blog" element={<BlogPage />} />
+        <Route path="/blog/:slug" element={<BlogPostPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/copilot" element={<PlaceholderPage title="Naïm Copilot" description="Interactive AI Assistant." />} />
         <Route path="/p/:slug" element={<CmsDynamicPage />} />
 
         {/* Legacy redirects for old static URLs */}
+        <Route path="/projects" element={<Navigate to="/work" replace />} />
         <Route path="/case-studies" element={<Navigate to="/work" replace />} />
         <Route path="/case-studies/:slug" element={<LegacyCaseStudyRedirect />} />
         <Route path="/index.html" element={<Navigate to="/" replace />} />
@@ -79,12 +95,22 @@ export default function App() {
         <Route element={<AdminGuard />}>
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
+            <Route path="content" element={<AdminContent />} />
+            <Route path="content/blog/new" element={<AdminBlogEditor />} />
+            <Route path="content/blog/:id" element={<AdminBlogEditor />} />
             <Route path="registry" element={<AdminRegistry />} />
             <Route path="registry/:id" element={<AdminRegistryEntry />} />
             <Route path="projects" element={<AdminProjects />} />
             <Route path="projects/:id" element={<AdminProjectEditor />} />
             <Route path="case-studies" element={<AdminCaseStudies />} />
             <Route path="case-studies/:id" element={<AdminCaseStudyEditor />} />
+
+            {/* Resources Management Routes */}
+            <Route path="resources" element={<AdminResources />} />
+            <Route path="resources/new" element={<AdminResourceEditor />} />
+            <Route path="resources/:id" element={<AdminResourceEditor />} />
+
+            {/* AI & Automation Routes */}
             <Route path="agents" element={<AdminAgents />} />
             <Route path="agents/new" element={<AdminAgentEditor />} />
             <Route path="agents/:id" element={<AdminAgentEditor />} />
@@ -92,11 +118,22 @@ export default function App() {
             <Route path="mcp-connections/new" element={<AdminMCPConnectionEditor />} />
             <Route path="mcp-connections/:id" element={<AdminMCPConnectionEditor />} />
             <Route path="runtime-console" element={<AdminRuntimeConsole />} />
+
+            {/* Marketing & Leads Routes */}
+            <Route path="marketing/leads" element={<AdminMarketingLeads />} />
+            <Route path="marketing/downloads" element={<AdminMarketingDownloads />} />
+            <Route path="marketing/supporters" element={<AdminMarketingSupporters />} />
+            <Route path="marketing/campaigns" element={<AdminMarketingCampaigns />} />
+
+            {/* Media & Pages */}
             <Route path="media" element={<AdminMedia />} />
             <Route path="pages" element={<AdminPages />} />
             <Route path="pages/:id" element={<AdminPageEditor />} />
             <Route path="navigation" element={<AdminNavigation />} />
+
+            {/* Settings */}
             <Route path="settings" element={<AdminSettings />} />
+            <Route path="settings/theme" element={<AdminThemeSettings />} />
 
             {/* Documentation Routes */}
             <Route path="docs" element={<AdminDocs />} />

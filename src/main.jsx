@@ -6,6 +6,7 @@ import App from './App';
 import './i18n';
 import { initClarity } from './lib/clarity';
 import './styles/style.css';
+import './ui/theme/theme.css';
 import './styles/winni.css';
 import './styles/assestini.css';
 

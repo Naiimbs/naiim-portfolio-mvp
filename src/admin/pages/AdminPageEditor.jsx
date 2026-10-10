@@ -12,7 +12,7 @@ import {
   deletePageSection,
 } from '../../services/siteCms';
 import { getPagePublishingReadiness } from '../../utils/registryHealth';
-import { PAGE_SECTION_TYPES, validateSection } from '../../components/cms/sectionSchemas';
+import { PAGE_SECTION_TYPES, validateSection, normalizeSectionConfig } from '../../components/cms/sectionSchemas';
 
 export default function AdminPageEditor() {
   const { id } = useParams();
@@ -271,8 +271,16 @@ export default function AdminPageEditor() {
     setShowAddSectionModal(true);
   };
 
-  const handleAddSection = async (type, label) => {
+  const handleAddSection = async (type, label, layoutConfig) => {
     if (!page) return;
+
+    const resolvedLayout = typeof layoutConfig === 'object' && layoutConfig !== null
+      ? layoutConfig
+      : (typeof layoutConfig === 'string' ? getLayoutPresetById(layoutConfig) : null);
+
+    const safeLabel = typeof label === 'string' && label.trim()
+      ? label.trim()
+      : (PAGE_SECTION_TYPES[type]?.label || `${String(type).toUpperCase()} Section`);
 
     let sortOrder = 10;
     if (insertAtIndex !== null && insertAtIndex >= 0 && sections.length > 0) {
@@ -287,14 +295,25 @@ export default function AdminPageEditor() {
       sortOrder = Math.max(...sections.map((s) => s.sort_order || 0)) + 10;
     }
 
+    const initialConfig = normalizeSectionConfig(type, {});
+    if (resolvedLayout) {
+      initialConfig.layout = resolvedLayout;
+      initialConfig.columnLayout = resolvedLayout.presetId;
+    }
+
     const res = await createPageSection({
       page_id: page.id,
       section_type: type,
-      label,
+      label: safeLabel,
       sort_order: sortOrder,
       is_visible: true,
-      config: {},
+      config: initialConfig,
     });
+
+    if (res.error) {
+      setFeedback({ type: 'danger', message: `Failed to add section: ${res.error.message}` });
+      return;
+    }
 
     if (res.data) {
       let updatedList;
@@ -715,12 +734,15 @@ export default function AdminPageEditor() {
                               <span className="badge bg-secondary bg-opacity-10 text-secondary border" style={{ fontSize: '0.62rem' }}>
                                 #{idx + 1} {sec.section_type}
                               </span>
+                              <span className="badge bg-light text-muted border" style={{ fontSize: '0.62rem' }} title={`Layout: ${sec.config?.layout?.presetId || sec.config?.columnLayout || '12'}`}>
+                                {sec.config?.layout?.presetId || sec.config?.columnLayout || '12'}
+                              </span>
                               {sec.is_visible ? (
-                                <span className="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25" style={{ fontSize: '0.62rem' }}>
+                                <span className="badge bg-success-subtle text-success-emphasis border border-success-subtle fw-semibold" style={{ fontSize: '0.62rem' }}>
                                   Visible
                                 </span>
                               ) : (
-                                <span className="badge bg-warning bg-opacity-10 text-warning-emphasis border border-warning border-opacity-25" style={{ fontSize: '0.62rem' }}>
+                                <span className="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fw-semibold" style={{ fontSize: '0.62rem' }}>
                                   Hidden
                                 </span>
                               )}
@@ -840,6 +862,7 @@ export default function AdminPageEditor() {
                   loading={false}
                   error={null}
                   activeSectionId={activeSectionId}
+                  viewport={previewViewport}
                   onSelectSection={handleSelectSection}
                   onMoveSection={handleMoveSection}
                   onToggleVisibility={handleToggleVisibility}

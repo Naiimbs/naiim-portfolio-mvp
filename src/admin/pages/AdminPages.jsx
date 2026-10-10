@@ -4,6 +4,42 @@ import { getAdminPages, createPage, deletePage, getAllAdminPageSections, syncPag
 import { getPagePublishingReadiness, getPageRegistryConsistency, getPageContentIntegrity } from '../../utils/registryHealth';
 import { PAGE_SECTION_TYPES } from '../../components/cms/sectionSchemas';
 
+function resolvePageRoute(slug) {
+  if (!slug) return '/';
+  if (slug === 'home' || slug === 'index') return '/';
+  if (slug === 'about') return '/about';
+  if (slug === 'work') return '/work';
+  if (slug === 'agents') return '/agents';
+  if (slug === 'blog') return '/blog';
+  if (slug === 'copilot') return '/copilot';
+  if (slug === 'plugins') return '/plugins';
+  if (slug === 'case-studies') return '/work';
+  return `/p/${slug}`;
+}
+
+function getPageClassification(p, pageSections = []) {
+  if (p.isOrphanRegistry) {
+    return { type: 'ORPHAN', label: 'ORPHAN', bg: 'bg-danger-subtle text-danger border-danger-subtle' };
+  }
+  const slug = p.slug?.toLowerCase();
+  if (slug === 'copilot' || slug === 'plugins') {
+    return { type: 'PLACEHOLDER', label: 'PLACEHOLDER', bg: 'bg-warning-subtle text-warning-emphasis border-warning-subtle' };
+  }
+  if (slug === 'case-studies') {
+    return { type: 'REDIRECT', label: 'REDIRECT', bg: 'bg-secondary-subtle text-secondary border-secondary-subtle' };
+  }
+  if (slug === 'home' || slug === 'index' || slug === 'work' || slug === 'agents' || slug === 'blog') {
+    return { type: 'CODE', label: 'CODE OWNED', bg: 'bg-info-subtle text-info-emphasis border-info-subtle' };
+  }
+  if (slug === 'about') {
+    return { type: 'CMS', label: 'CMS MANAGED', bg: 'bg-success-subtle text-success border-success-subtle' };
+  }
+  if (pageSections.length === 0) {
+    return { type: 'MISSING CONTENT', label: 'MISSING CONTENT', bg: 'bg-warning-subtle text-warning-emphasis border-warning-subtle' };
+  }
+  return { type: 'CMS', label: 'CMS DYNAMIC', bg: 'bg-primary-subtle text-primary border-primary-subtle' };
+}
+
 export default function AdminPages() {
   const [pages, setPages] = useState([]);
   const [sections, setSections] = useState([]);
@@ -230,7 +266,7 @@ export default function AdminPages() {
               </thead>
               <tbody>
                 {filteredPages.map((p) => {
-                  const canonicalRoute = (p.slug === 'home' || p.slug === 'index') ? '/' : p.slug === 'about' ? '/about' : `/p/${p.slug}`;
+                  const canonicalRoute = resolvePageRoute(p.slug);
                   const previewUrl = canonicalRoute === '/' ? '/?preview=true' : `${canonicalRoute}?preview=true`;
                   const pageSections = sections
                     .filter(
@@ -246,6 +282,7 @@ export default function AdminPages() {
                   const readiness = getPagePublishingReadiness(p, pageSections);
                   const integrity = getPageContentIntegrity(p, p.registryEntry, pageSections);
                   const isPublished = p.status === 'published';
+                  const classification = getPageClassification(p, pageSections);
 
                   return (
                     <tr key={p.id}>
@@ -254,11 +291,9 @@ export default function AdminPages() {
                           <Link to={`/admin/pages/${p.id}`} className="text-decoration-none text-dark fw-bold">
                             {p.title}
                           </Link>
-                          {p.isOrphanRegistry && (
-                            <span className="badge bg-danger-subtle text-danger ms-1" style={{ fontSize: '0.65rem' }}>
-                              Orphan
-                            </span>
-                          )}
+                          <span className={`badge border ms-1 ${classification.bg}`} style={{ fontSize: '0.62rem', letterSpacing: '0.04em' }}>
+                            {classification.label}
+                          </span>
                           {p.template && p.template !== 'default' && (
                             <span className="badge bg-light text-secondary ms-1" style={{ fontSize: '0.68rem' }}>
                               {p.template}

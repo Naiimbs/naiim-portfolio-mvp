@@ -13,6 +13,15 @@ export default function AdminLayout() {
     if (path.startsWith('/admin/registry')) return 'Content Registry';
     if (path.startsWith('/admin/projects')) return 'Projects';
     if (path.startsWith('/admin/case-studies')) return 'Case Studies';
+    if (path.startsWith('/admin/marketing/leads')) return 'Marketing Leads';
+    if (path.startsWith('/admin/marketing/downloads')) return 'Resource Downloads';
+    if (path.startsWith('/admin/marketing/supporters')) return 'Supporters & Donations';
+    if (path.startsWith('/admin/marketing/campaigns')) return 'Marketing Campaigns';
+    if (path.startsWith('/admin/marketing')) return 'Marketing & Leads';
+    if (path.startsWith('/admin/resources')) return 'Resources & Skills';
+    if (path.startsWith('/admin/agents')) return 'AI Agents';
+    if (path.startsWith('/admin/mcp-connections')) return 'MCP Servers';
+    if (path.startsWith('/admin/runtime-console')) return 'Agent Runtime';
     if (path.startsWith('/admin/pages')) return 'Pages';
     if (path.startsWith('/admin/navigation')) return 'Navigation Management';
     if (path.startsWith('/admin/settings')) return 'Global Site Settings';

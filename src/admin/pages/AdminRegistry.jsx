@@ -6,6 +6,7 @@ import {
   createContentRegistryEntry,
   updateContentRegistryEntry,
   deleteContentRegistryEntry,
+  checkRegistryEntryDependencies,
   toggleRegistryPublish,
   toggleRegistryVisibility,
   toggleRegistryFeatured,
@@ -162,6 +163,12 @@ export default function AdminRegistry() {
   const [editingEntry, setEditingEntry] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
+  // Safe Deletion with Dependency Checking State
+  const [itemPendingDelete, setItemPendingDelete] = useState(null);
+  const [deleteDependencies, setDeleteDependencies] = useState(null);
+  const [isCheckingDeps, setIsCheckingDeps] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
   useEffect(() => { loadEntries(); }, []);
 
   async function loadEntries() {
@@ -234,11 +241,50 @@ export default function AdminRegistry() {
     setSubmitting(false);
   };
 
-  const handleDelete = async (item) => {
-    if (!window.confirm(`Are you sure you want to delete "${item.title}" (${item.slug}) from the registry?\n\nWarning: This will remove this item from the public catalog and block access to its route.`)) return;
-    const res = await deleteContentRegistryEntry(item.id);
-    if (res.error) { setError(res.error.message || 'Failed to delete entry.'); }
-    else { showNotification(`Deleted "${item.title}" from Registry.`); await loadEntries(); }
+  const handleOpenDelete = async (item) => {
+    setItemPendingDelete(item);
+    setIsCheckingDeps(true);
+    setDeleteDependencies(null);
+    const deps = await checkRegistryEntryDependencies(item);
+    setDeleteDependencies(deps);
+    setIsCheckingDeps(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!itemPendingDelete) return;
+    setDeleting(true);
+    setError(null);
+    const itemToDelete = itemPendingDelete;
+    const res = await deleteContentRegistryEntry(itemToDelete.id);
+    if (res?.error) {
+      setError(res.error.message || 'Failed to delete registry entry.');
+      setDeleting(false);
+    } else {
+      setEntries((prev) => prev.filter((e) => e.id !== itemToDelete.id));
+      showNotification(`Deleted "${itemToDelete.title}" from Registry.`);
+      setItemPendingDelete(null);
+      setDeleteDependencies(null);
+      setDeleting(false);
+      await loadEntries();
+    }
+  };
+
+  const handleArchiveInstead = async () => {
+    if (!itemPendingDelete) return;
+    setDeleting(true);
+    setError(null);
+    const itemToArchive = itemPendingDelete;
+    const res = await updateContentRegistryEntry(itemToArchive.id, { status: 'archived' });
+    if (res?.error) {
+      setError(res.error.message || 'Failed to archive registry entry.');
+      setDeleting(false);
+    } else {
+      setEntries((prev) => prev.map((e) => e.id === itemToArchive.id ? { ...e, status: 'archived' } : e));
+      showNotification(`Archived "${itemToArchive.title}" (safe state).`);
+      setItemPendingDelete(null);
+      setDeleteDependencies(null);
+      setDeleting(false);
+    }
   };
 
   const handleTogglePublish = async (item) => {
@@ -629,7 +675,7 @@ export default function AdminRegistry() {
                         <Link to={`/admin/registry/${item.id}`} className="admin-btn admin-btn-secondary py-1 px-2 text-decoration-none" title="Edit in CMS Editor">
                           <i className="bi bi-pencil" />
                         </Link>
-                        <button type="button" className="admin-btn admin-btn-secondary py-1 px-2 text-danger" onClick={() => handleDelete(item)} title="Delete Entry">
+                        <button type="button" className="admin-btn admin-btn-secondary py-1 px-2 text-danger" onClick={() => handleOpenDelete(item)} title="Delete Entry">
                           <i className="bi bi-trash" />
                         </button>
                       </div>
@@ -649,6 +695,110 @@ export default function AdminRegistry() {
         initialData={editingEntry}
         isSubmitting={submitting}
       />
+
+      {itemPendingDelete && (
+        <div
+          className="modal fade show d-block"
+          tabIndex="-1"
+          style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(3px)', zIndex: 1060 }}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: '520px' }}>
+            <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+              <div className="modal-header border-bottom bg-danger-subtle p-3">
+                <div className="d-flex align-items-center gap-2">
+                  <div className="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center" style={{ width: 32, height: 32 }}>
+                    <i className="bi bi-exclamation-triangle-fill" />
+                  </div>
+                  <div>
+                    <h5 className="modal-title fw-bold mb-0 text-danger" style={{ fontSize: '1.05rem', fontFamily: 'Space Grotesk, sans-serif' }}>
+                      Delete Registry Entry
+                    </h5>
+                    <small className="text-muted">Safe Content Deletion & Dependency Check</small>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setItemPendingDelete(null)}
+                  disabled={deleting}
+                  aria-label="Close"
+                />
+              </div>
+
+              <div className="modal-body p-4">
+                <p className="mb-2">
+                  Are you sure you want to delete <strong className="text-dark">&quot;{itemPendingDelete.title}&quot;</strong>?
+                </p>
+                <div className="p-3 bg-light rounded-3 small mb-3 border">
+                  <div><strong>Slug:</strong> <code>{itemPendingDelete.slug}</code></div>
+                  <div><strong>Type:</strong> <span className="text-capitalize">{itemPendingDelete.content_type}</span></div>
+                  <div><strong>Status:</strong> <span className="text-capitalize">{itemPendingDelete.status}</span></div>
+                  <div><strong>Route:</strong> <code>{itemPendingDelete.public_route || `/${itemPendingDelete.content_type}/${itemPendingDelete.slug}`}</code></div>
+                </div>
+
+                {isCheckingDeps ? (
+                  <div className="d-flex align-items-center gap-2 text-muted small my-3">
+                    <span className="spinner-border spinner-border-sm text-secondary" role="status" />
+                    Checking content dependencies and active routes...
+                  </div>
+                ) : deleteDependencies?.warnings?.length > 0 ? (
+                  <div className="alert alert-warning rounded-3 p-3 mb-3 small">
+                    <div className="fw-bold mb-1 text-warning-emphasis">
+                      <i className="bi bi-exclamation-octagon-fill me-1" /> Potential Impact Detected:
+                    </div>
+                    <ul className="mb-0 ps-3">
+                      {deleteDependencies.warnings.map((w, idx) => (
+                        <li key={idx} className="mb-1">{w}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : (
+                  <div className="alert alert-info rounded-3 p-2 mb-3 small">
+                    <i className="bi bi-info-circle me-1" /> No active dependencies found. Safe to delete.
+                  </div>
+                )}
+
+                <p className="small text-muted mb-0">
+                  <i className="bi bi-shield-check me-1" />
+                  <strong>Tip:</strong> If you only want to take this item offline without breaking historical relationships, choose <em>Archive Instead</em>.
+                </p>
+              </div>
+
+              <div className="modal-footer border-top bg-light p-3 d-flex justify-content-between">
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary rounded-pill px-3"
+                  onClick={() => setItemPendingDelete(null)}
+                  disabled={deleting}
+                >
+                  Cancel
+                </button>
+                <div className="d-flex gap-2">
+                  <button
+                    type="button"
+                    className="btn btn-warning rounded-pill px-3"
+                    onClick={handleArchiveInstead}
+                    disabled={deleting}
+                    title="Safely mark this item as archived"
+                  >
+                    {deleting ? 'Updating...' : 'Archive Instead'}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-danger rounded-pill px-3"
+                    onClick={handleConfirmDelete}
+                    disabled={deleting}
+                  >
+                    {deleting ? 'Deleting...' : 'Permanent Delete'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
-}
+}

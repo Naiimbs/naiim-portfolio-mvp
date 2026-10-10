@@ -16,3 +16,10 @@ services/gmail-mcp/.env.*
 
 # Development scratch directory
 scratch/
+
+supabase/.temp/
+vite.config.js.timestamp-*.mjs
+
+# Local backup files
+*.bak
+*.bak.*

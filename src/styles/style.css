@@ -166,6 +166,11 @@ h1 em {
   flex-wrap: wrap;
   gap: 20px;
 }
+@media (max-width: 575.98px) {
+  .building-list {
+    gap: 12px;
+  }
+}
 .building-list a {
   display: flex;
   align-items: center;
@@ -841,6 +846,13 @@ h1 em {
   .site-nav {
     height: auto;
     min-height: 70px;
+  }
+  .navbar-collapse {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-top: 10px;
   }
   .hero {
     padding-top: 120px;

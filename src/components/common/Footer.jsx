@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { getFooterNavigation, getPublicSiteSettings } from '../../services/siteCms';
+import { getFooterNavigation, getPublicSiteSettings, DEFAULT_FOOTER_NAV } from '../../services/siteCms';
 
 export default function Footer() {
-  const [navItems, setNavItems] = useState(null);
+  const [navItems, setNavItems] = useState(DEFAULT_FOOTER_NAV);
   const [siteSettings, setSiteSettings] = useState(null);
   const location = useLocation();
   const isHome = location.pathname === '/';
@@ -19,7 +19,7 @@ export default function Footer() {
         if (navRes.data && navRes.data.length > 0) {
           setNavItems(navRes.data);
         } else {
-          setNavItems([]);
+          setNavItems(DEFAULT_FOOTER_NAV);
         }
         if (settingsRes.data) {
           setSiteSettings(settingsRes.data);
@@ -41,34 +41,38 @@ export default function Footer() {
   const behanceUrl = siteSettings?.behance || '';
   const dribbbleUrl = siteSettings?.dribbble || '';
 
-  const hasCmsNav = Boolean(navItems && navItems.length > 0);
+  const displayNavItems = (navItems && Array.isArray(navItems) && navItems.length > 0 ? navItems : DEFAULT_FOOTER_NAV).filter(Boolean);
 
   const renderFooterLink = (item) => {
-    const isExternal = Boolean(item.open_in_new_tab) || item.href.startsWith('http://') || item.href.startsWith('https://');
+    if (!item) return null;
+    const href = typeof item.href === 'string' ? item.href.trim() : '#';
+    const label = item.label || 'Link';
+    const isExternal = Boolean(item.open_in_new_tab) || href.startsWith('http://') || href.startsWith('https://');
 
     if (isExternal) {
       return (
         <a
-          key={item.id}
-          href={item.href}
+          key={item.id || `ftr-${href}`}
+          href={href}
           target={item.open_in_new_tab ? '_blank' : undefined}
           rel={item.open_in_new_tab ? 'noopener noreferrer' : undefined}
         >
-          {item.label}
+          {label}
         </a>
       );
     }
 
-    const isAnchor = item.href.startsWith('#') || item.href.startsWith('/#');
+    const isAnchor = href.startsWith('#') || href.startsWith('/#');
     if (isAnchor) {
-      const anchorHash = item.href.startsWith('/#') ? item.href.substring(1) : item.href;
+      const anchorHash = href.startsWith('/#') ? href.substring(1) : href;
+      const cleanHash = anchorHash.startsWith('#') ? anchorHash : `#${anchorHash}`;
       if (isHome) {
-        return <a key={item.id} href={anchorHash}>{item.label}</a>;
+        return <a key={item.id || `ftr-${cleanHash}`} href={cleanHash}>{label}</a>;
       }
-      return <Link key={item.id} to={`/${anchorHash}`}>{item.label}</Link>;
+      return <Link key={item.id || `ftr-${cleanHash}`} to={{ pathname: '/', hash: cleanHash }}>{label}</Link>;
     }
 
-    return <Link key={item.id} to={item.href}>{item.label}</Link>;
+    return <Link key={item.id || `ftr-${href}`} to={href}>{label}</Link>;
   };
 
   return (
@@ -78,29 +82,7 @@ export default function Footer() {
           {brandName} <span className="beta-badge">Beta</span>
         </Link>
         <div className="footer-links">
-          {hasCmsNav ? (
-            navItems.map((item) => renderFooterLink(item))
-          ) : isHome ? (
-            <>
-              <a href="#work">Work</a>
-              <a href="#case-studies">Case Studies</a>
-              <Link to="/agents">Agents</Link>
-              <a href="#copilot">Copilot</a>
-              <a href="#career">Career</a>
-              <a href="#lab">Lab</a>
-              <a href="#about">About</a>
-            </>
-          ) : (
-            <>
-              <Link to="/work">Work</Link>
-              <Link to="/work">Case Studies</Link>
-              <Link to="/agents">Agents</Link>
-              <Link to="/copilot">Copilot</Link>
-              <Link to="/#career">Career</Link>
-              <Link to="/#lab">Lab</Link>
-              <Link to="/about">About</Link>
-            </>
-          )}
+          {displayNavItems.map((item) => renderFooterLink(item))}
         </div>
         <div className="socials">
           {linkedinUrl && (

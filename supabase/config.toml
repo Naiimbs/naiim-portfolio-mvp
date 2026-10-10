@@ -1,0 +1,4 @@
+project_id = "naim-portfolio-mvp"
+
+[functions.resource-ingest]
+verify_jwt = false

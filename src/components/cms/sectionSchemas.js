@@ -356,6 +356,127 @@ export const PAGE_SECTION_TYPES = {
       return { valid: errors.length === 0, errors, advisories };
     },
   },
+  // UI PRIMITIVES
+  heading: {
+    type: 'heading',
+    label: 'Heading',
+    category: 'PRIMITIVES',
+    icon: 'bi-type-h1',
+    description: 'Semantic typography heading (H1 to H6) with custom alignment.',
+    hasEditor: true,
+    defaultConfig: {
+      level: 2,
+      text: 'Section Heading',
+      align: 'left',
+      variant: 'h2',
+    },
+    validate: (cfg = {}) => {
+      const errors = [];
+      if (!cfg.text?.trim()) errors.push('Heading text is required.');
+      return { valid: errors.length === 0, errors, advisories: [] };
+    },
+  },
+  button: {
+    type: 'button',
+    label: 'Button',
+    category: 'PRIMITIVES',
+    icon: 'bi-cursor-fill',
+    description: 'Interactive button with link destination and style variants.',
+    hasEditor: true,
+    defaultConfig: {
+      label: 'Explore More',
+      href: '/work',
+      variant: 'primary',
+      size: 'md',
+      pill: true,
+      open_in_new_tab: false,
+    },
+    validate: (cfg = {}) => {
+      const errors = [];
+      if (!cfg.label?.trim()) errors.push('Button label is required.');
+      return { valid: errors.length === 0, errors, advisories: [] };
+    },
+  },
+  divider: {
+    type: 'divider',
+    label: 'Divider',
+    category: 'PRIMITIVES',
+    icon: 'bi-hr',
+    description: 'Visual content separator with optional label.',
+    hasEditor: true,
+    defaultConfig: {
+      spacing: 4,
+      label: '',
+      orientation: 'horizontal',
+    },
+    validate: () => ({ valid: true, errors: [], advisories: [] }),
+  },
+  tabs: {
+    type: 'tabs',
+    label: 'Tabs',
+    category: 'PRIMITIVES',
+    icon: 'bi-segmented-nav',
+    description: 'Segmented tabbed container for organized content.',
+    hasEditor: true,
+    defaultConfig: {
+      tabs: [
+        { key: 'tab-1', label: 'Overview', content: 'Comprehensive overview and key context.' },
+        { key: 'tab-2', label: 'Architecture', content: 'System specifications and technical details.' },
+      ],
+    },
+    validate: (cfg = {}) => {
+      const errors = [];
+      if (!Array.isArray(cfg.tabs) || cfg.tabs.length === 0) {
+        errors.push('At least one tab is required.');
+      }
+      return { valid: errors.length === 0, errors, advisories: [] };
+    },
+  },
+  accordion: {
+    type: 'accordion',
+    label: 'Accordion',
+    category: 'PRIMITIVES',
+    icon: 'bi-chevron-bar-expand',
+    description: 'Collapsible accordion disclosures for FAQs or structured guides.',
+    hasEditor: true,
+    defaultConfig: {
+      items: [
+        { title: 'What is this design system built on?', content: 'A tokenized responsive design architecture.' },
+        { title: 'How are components rendered?', content: 'Strictly through shared PageRenderer and theme tokens.' },
+      ],
+    },
+    validate: (cfg = {}) => {
+      const errors = [];
+      if (!Array.isArray(cfg.items) || cfg.items.length === 0) {
+        errors.push('At least one accordion item is required.');
+      }
+      return { valid: errors.length === 0, errors, advisories: [] };
+    },
+  },
+  form: {
+    type: 'form',
+    label: 'Form (UI Primitive)',
+    category: 'PRIMITIVES',
+    icon: 'bi-ui-checks',
+    description: 'Configurable form interface (visual preview mode).',
+    hasEditor: true,
+    defaultConfig: {
+      title: 'Get in Touch',
+      description: 'Send a message or inquiry directly.',
+      submitLabel: 'Send Message',
+      isNonSubmittingPreview: true,
+      fields: [
+        { id: 'f_name', label: 'Your Name', type: 'text', placeholder: 'e.g. Jane Doe', required: true },
+        { id: 'f_email', label: 'Email Address', type: 'email', placeholder: 'jane@example.com', required: true },
+        { id: 'f_msg', label: 'Your Message', type: 'textarea', placeholder: 'Write your message...', required: false },
+      ],
+    },
+    validate: (cfg = {}) => {
+      const errors = [];
+      if (!cfg.title?.trim()) errors.push('Form title is required.');
+      return { valid: errors.length === 0, errors, advisories: ['This form is currently in visual preview mode.'] };
+    },
+  },
 };
 
 /**
@@ -371,6 +492,7 @@ export function getCategorizedSectionTypes() {
     CONVERSION: { category: 'CONVERSION', icon: 'bi-bullseye', items: [] },
     WORK: { category: 'WORK', icon: 'bi-briefcase', items: [] },
     CONTENT: { category: 'CONTENT', icon: 'bi-file-text', items: [] },
+    PRIMITIVES: { category: 'PRIMITIVES', icon: 'bi-grid-1x2', items: [] },
     LAYOUT: { category: 'LAYOUT', icon: 'bi-layout-text-window-reverse', items: [] },
   };
 
@@ -408,15 +530,38 @@ export function normalizeSectionConfig(sectionType, rawConfig = {}) {
   if (type === 'hero') {
     config.primaryCta = { ...defaults.primaryCta, ...(config.primaryCta || {}) };
     config.secondaryCta = { ...defaults.secondaryCta, ...(config.secondaryCta || {}) };
-    if (!['split', 'centered', 'left'].includes(config.layout)) {
+    if (typeof config.layout === 'string' && !['split', 'centered', 'left'].includes(config.layout)) {
       config.layout = 'split';
     }
   }
 
-  if (type === 'rich_text') {
+  if (type === 'rich_text' || type === 'text') {
     if (!['left', 'center', 'right'].includes(config.alignment)) {
       config.alignment = 'left';
     }
+  }
+
+  if (type === 'heading') {
+    config.level = Math.min(6, Math.max(1, parseInt(config.level, 10) || 2));
+    if (!['left', 'center', 'right'].includes(config.align)) {
+      config.align = 'left';
+    }
+  }
+
+  if (type === 'button') {
+    if (!config.href) config.href = '#';
+  }
+
+  if (type === 'tabs') {
+    if (!Array.isArray(config.tabs)) config.tabs = defaults.tabs;
+  }
+
+  if (type === 'accordion') {
+    if (!Array.isArray(config.items)) config.items = defaults.items;
+  }
+
+  if (type === 'form') {
+    if (!Array.isArray(config.fields)) config.fields = defaults.fields;
   }
 
   if (type === 'project_grid') {
@@ -436,7 +581,6 @@ export function normalizeSectionConfig(sectionType, rawConfig = {}) {
   }
 
   if (type === 'image') {
-    // Support either src or imageUrl seamlessly
     if (!config.src && config.imageUrl) config.src = config.imageUrl;
     if (!config.imageUrl && config.src) config.imageUrl = config.src;
   }

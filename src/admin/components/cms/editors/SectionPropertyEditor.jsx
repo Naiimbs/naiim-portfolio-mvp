@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import HeroSectionEditor from './HeroSectionEditor';
 import RichTextSectionEditor from './RichTextSectionEditor';
 import ProjectGridSectionEditor from './ProjectGridSectionEditor';
 import AgentGridSectionEditor from './AgentGridSectionEditor';
 import CtaSectionEditor from './CtaSectionEditor';
+import LayoutInspector from './LayoutInspector';
+import StyleInspector from './StyleInspector';
 import { normalizeSectionConfig, validateSection } from '../../../../components/cms/sectionSchemas';
 
 export default function SectionPropertyEditor({ section, onChange, onSave, onCancel, dirty }) {
+  const [activeTab, setActiveTab] = useState('content'); // 'content' | 'layout' | 'style' | 'advanced'
   if (!section) {
     return (
       <div className="p-4 text-center text-muted">
@@ -792,6 +795,272 @@ export default function SectionPropertyEditor({ section, onChange, onSave, onCan
         );
       }
 
+      case 'heading':
+        return (
+          <div className="card border-0 bg-light rounded-3 p-3 mb-3">
+            <h6 className="fw-bold mb-3 small text-uppercase">Heading Properties</h6>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Heading Text</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.text || ''}
+                onChange={(e) => handleConfigChange({ ...config, text: e.target.value })}
+                placeholder="Enter heading text..."
+              />
+            </div>
+            <div className="row g-2 mb-3">
+              <div className="col-6">
+                <label className="form-label small fw-semibold">Semantic Level</label>
+                <select
+                  className="form-select form-select-sm rounded-3"
+                  value={config.level || 2}
+                  onChange={(e) => handleConfigChange({ ...config, level: parseInt(e.target.value, 10) })}
+                >
+                  <option value={1}>H1</option>
+                  <option value={2}>H2</option>
+                  <option value={3}>H3</option>
+                  <option value={4}>H4</option>
+                  <option value={5}>H5</option>
+                  <option value={6}>H6</option>
+                </select>
+              </div>
+              <div className="col-6">
+                <label className="form-label small fw-semibold">Alignment</label>
+                <select
+                  className="form-select form-select-sm rounded-3"
+                  value={config.align || 'left'}
+                  onChange={(e) => handleConfigChange({ ...config, align: e.target.value })}
+                >
+                  <option value="left">Left</option>
+                  <option value="center">Center</option>
+                  <option value="right">Right</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'button':
+        return (
+          <div className="card border-0 bg-light rounded-3 p-3 mb-3">
+            <h6 className="fw-bold mb-3 small text-uppercase">Button Properties</h6>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Button Label</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.label || ''}
+                onChange={(e) => handleConfigChange({ ...config, label: e.target.value })}
+                placeholder="e.g. Learn More"
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Link URL / Destination</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3 font-monospace"
+                value={config.href || ''}
+                onChange={(e) => handleConfigChange({ ...config, href: e.target.value })}
+                placeholder="/work or https://..."
+              />
+            </div>
+            <div className="row g-2 mb-3">
+              <div className="col-6">
+                <label className="form-label small fw-semibold">Variant</label>
+                <select
+                  className="form-select form-select-sm rounded-3"
+                  value={config.variant || 'primary'}
+                  onChange={(e) => handleConfigChange({ ...config, variant: e.target.value })}
+                >
+                  <option value="primary">Brand Primary</option>
+                  <option value="secondary">Dark Secondary</option>
+                  <option value="outline">Outline</option>
+                </select>
+              </div>
+              <div className="col-6">
+                <label className="form-label small fw-semibold">Shape</label>
+                <select
+                  className="form-select form-select-sm rounded-3"
+                  value={config.pill !== false ? 'pill' : 'square'}
+                  onChange={(e) => handleConfigChange({ ...config, pill: e.target.value === 'pill' })}
+                >
+                  <option value="pill">Pill Rounded</option>
+                  <option value="square">Rounded Rect</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'divider':
+        return (
+          <div className="card border-0 bg-light rounded-3 p-3 mb-3">
+            <h6 className="fw-bold mb-3 small text-uppercase">Divider Properties</h6>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Label (Optional)</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.label || ''}
+                onChange={(e) => handleConfigChange({ ...config, label: e.target.value })}
+                placeholder="e.g. OR / Next Section"
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Spacing ({config.spacing || 4})</label>
+              <input
+                type="range"
+                className="form-range"
+                min="1"
+                max="5"
+                value={config.spacing || 4}
+                onChange={(e) => handleConfigChange({ ...config, spacing: parseInt(e.target.value, 10) })}
+              />
+            </div>
+          </div>
+        );
+
+      case 'tabs': {
+        const tabsList = Array.isArray(config.tabs) ? config.tabs : [];
+        const handleAddTab = () => {
+          handleConfigChange({
+            ...config,
+            tabs: [...tabsList, { key: `tab-${Date.now()}`, label: 'New Tab', content: 'Tab description...' }],
+          });
+        };
+        const handleUpdateTab = (idx, field, val) => {
+          const updated = [...tabsList];
+          updated[idx] = { ...updated[idx], [field]: val };
+          handleConfigChange({ ...config, tabs: updated });
+        };
+        const handleRemoveTab = (idx) => {
+          handleConfigChange({ ...config, tabs: tabsList.filter((_, i) => i !== idx) });
+        };
+
+        return (
+          <div className="card border-0 bg-light rounded-3 p-3 mb-3">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h6 className="fw-bold mb-0 small text-uppercase">Tabs ({tabsList.length})</h6>
+              <button type="button" className="btn btn-sm btn-outline-primary py-0 px-2" onClick={handleAddTab}>
+                <i className="bi bi-plus-lg me-1" /> Add Tab
+              </button>
+            </div>
+            <div className="d-flex flex-column gap-2">
+              {tabsList.map((tab, idx) => (
+                <div key={idx} className="p-2 border rounded-3 bg-white">
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <span className="badge bg-secondary-subtle text-secondary small">Tab #{idx + 1}</span>
+                    <button type="button" className="btn btn-sm btn-link text-danger p-0" onClick={() => handleRemoveTab(idx)}>
+                      <i className="bi bi-trash" />
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    className="form-control form-control-sm mb-2"
+                    placeholder="Tab Label"
+                    value={tab.label || ''}
+                    onChange={(e) => handleUpdateTab(idx, 'label', e.target.value)}
+                  />
+                  <textarea
+                    className="form-control form-control-sm"
+                    rows="2"
+                    placeholder="Tab Content..."
+                    value={tab.content || ''}
+                    onChange={(e) => handleUpdateTab(idx, 'content', e.target.value)}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      }
+
+      case 'accordion': {
+        const items = Array.isArray(config.items) ? config.items : [];
+        const handleAddItem = () => {
+          handleConfigChange({
+            ...config,
+            items: [...items, { title: 'New Topic', content: 'Topic details...' }],
+          });
+        };
+        const handleUpdateItem = (idx, field, val) => {
+          const updated = [...items];
+          updated[idx] = { ...updated[idx], [field]: val };
+          handleConfigChange({ ...config, items: updated });
+        };
+        const handleRemoveItem = (idx) => {
+          handleConfigChange({ ...config, items: items.filter((_, i) => i !== idx) });
+        };
+
+        return (
+          <div className="card border-0 bg-light rounded-3 p-3 mb-3">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h6 className="fw-bold mb-0 small text-uppercase">Accordion Panels ({items.length})</h6>
+              <button type="button" className="btn btn-sm btn-outline-primary py-0 px-2" onClick={handleAddItem}>
+                <i className="bi bi-plus-lg me-1" /> Add Panel
+              </button>
+            </div>
+            <div className="d-flex flex-column gap-2">
+              {items.map((item, idx) => (
+                <div key={idx} className="p-2 border rounded-3 bg-white">
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <span className="badge bg-secondary-subtle text-secondary small">Panel #{idx + 1}</span>
+                    <button type="button" className="btn btn-sm btn-link text-danger p-0" onClick={() => handleRemoveItem(idx)}>
+                      <i className="bi bi-trash" />
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    className="form-control form-control-sm mb-2"
+                    placeholder="Title / Question"
+                    value={item.title || ''}
+                    onChange={(e) => handleUpdateItem(idx, 'title', e.target.value)}
+                  />
+                  <textarea
+                    className="form-control form-control-sm"
+                    rows="2"
+                    placeholder="Panel Content..."
+                    value={item.content || ''}
+                    onChange={(e) => handleUpdateItem(idx, 'content', e.target.value)}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      }
+
+      case 'form':
+        return (
+          <div className="card border-0 bg-light rounded-3 p-3 mb-3">
+            <h6 className="fw-bold mb-3 small text-uppercase">Form (Visual Primitive)</h6>
+            <div className="alert alert-info py-2 px-3 small rounded-3 mb-3">
+              <i className="bi bi-info-circle me-1" /> Visual Form Component · For design/layout testing.
+            </div>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Form Title</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.title || ''}
+                onChange={(e) => handleConfigChange({ ...config, title: e.target.value })}
+                placeholder="e.g. Contact Form"
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Submit Button Text</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.submitLabel || ''}
+                onChange={(e) => handleConfigChange({ ...config, submitLabel: e.target.value })}
+                placeholder="e.g. Submit"
+              />
+            </div>
+          </div>
+        );
+
       default:
         return (
           <div className="alert alert-secondary text-center py-4 rounded-3 border-0 my-3">
@@ -815,6 +1084,48 @@ export default function SectionPropertyEditor({ section, onChange, onSave, onCan
           </small>
         </div>
         {dirty && <span className="badge bg-warning text-dark">Unsaved Changes</span>}
+      </div>
+
+      {/* Editor Tab Navigation */}
+      <div className="bg-light border-bottom px-3 pt-2">
+        <ul className="nav nav-tabs border-bottom-0 gap-1" style={{ fontSize: '0.8rem' }}>
+          <li className="nav-item">
+            <button
+              type="button"
+              className={`nav-link py-1 px-3 fw-semibold ${activeTab === 'content' ? 'active bg-white text-primary border-bottom-0' : 'text-secondary border-0'}`}
+              onClick={() => setActiveTab('content')}
+            >
+              <i className="bi bi-pencil-square me-1" /> Content
+            </button>
+          </li>
+          <li className="nav-item">
+            <button
+              type="button"
+              className={`nav-link py-1 px-3 fw-semibold ${activeTab === 'layout' ? 'active bg-white text-primary border-bottom-0' : 'text-secondary border-0'}`}
+              onClick={() => setActiveTab('layout')}
+            >
+              <i className="bi bi-grid-fill me-1" /> Layout
+            </button>
+          </li>
+          <li className="nav-item">
+            <button
+              type="button"
+              className={`nav-link py-1 px-3 fw-semibold ${activeTab === 'style' ? 'active bg-white text-primary border-bottom-0' : 'text-secondary border-0'}`}
+              onClick={() => setActiveTab('style')}
+            >
+              <i className="bi bi-palette me-1" /> Style
+            </button>
+          </li>
+          <li className="nav-item">
+            <button
+              type="button"
+              className={`nav-link py-1 px-3 fw-semibold ${activeTab === 'advanced' ? 'active bg-white text-primary border-bottom-0' : 'text-secondary border-0'}`}
+              onClick={() => setActiveTab('advanced')}
+            >
+              <i className="bi bi-code-slash me-1" /> Advanced
+            </button>
+          </li>
+        </ul>
       </div>
 
       <div className="p-3 flex-grow-1 overflow-auto">
@@ -846,47 +1157,70 @@ export default function SectionPropertyEditor({ section, onChange, onSave, onCan
           </div>
         )}
 
-        {/* Layout & CSS Customization Panel */}
-        <div className="card border-0 bg-light rounded-3 p-3 mb-3">
-          <div className="fw-bold small text-uppercase tracking-wider text-muted mb-2 d-flex align-items-center">
-            <i className="bi bi-sliders me-2 text-primary"></i> Layout & CSS Styling
-          </div>
+        {/* TAB 1: CONTENT */}
+        {activeTab === 'content' && renderEditorContent()}
 
-          <div className="mb-2">
-            <label className="form-label small fw-semibold">Column Layout Split</label>
-            <select
-              className="form-select form-select-sm rounded-3"
-              value={config.columnLayout || '12'}
-              onChange={(e) => handleConfigChange({ ...config, columnLayout: e.target.value })}
-            >
-              <option value="12">12 (Full Width - 100%)</option>
-              <option value="6:6">6 : 6 (50% / 50% Split)</option>
-              <option value="4:8">4 : 8 (1/3 & 2/3 Split)</option>
-              <option value="8:4">8 : 4 (2/3 & 1/3 Split)</option>
-              <option value="4:4:4">4 : 4 : 4 (3 Equal Columns)</option>
-              <option value="3:3:3:3">3 : 3 : 3 : 3 (4 Equal Columns)</option>
-            </select>
-            <small className="text-muted" style={{ fontSize: '0.7rem' }}>
-              Applies responsive grid column wrapping for section content blocks.
-            </small>
-          </div>
+        {/* TAB 2: LAYOUT */}
+        {activeTab === 'layout' && (
+          <LayoutInspector
+            layout={config.layout}
+            onChange={(updatedLayout) =>
+              handleConfigChange({
+                ...config,
+                layout: updatedLayout,
+                columnLayout: updatedLayout.presetId,
+              })
+            }
+          />
+        )}
 
-          <div>
-            <label className="form-label small fw-semibold">Custom CSS Class Name(s)</label>
-            <input
-              type="text"
-              className="form-control form-control-sm rounded-3 font-monospace"
-              placeholder="e.g. my-custom-section py-5 bg-dark text-white rounded-4"
-              value={config.customClassName || ''}
-              onChange={(e) => handleConfigChange({ ...config, customClassName: e.target.value })}
-            />
-            <small className="text-muted" style={{ fontSize: '0.7rem' }}>
-              Add custom class names. Define CSS rules in Admin Settings → Custom CSS.
-            </small>
-          </div>
-        </div>
+        {/* TAB 3: STYLE */}
+        {activeTab === 'style' && (
+          <StyleInspector
+            style={config.style}
+            sectionId={section.id}
+            onChange={(updatedStyle) =>
+              handleConfigChange({
+                ...config,
+                style: updatedStyle,
+              })
+            }
+          />
+        )}
 
-        {renderEditorContent()}
+        {/* TAB 4: ADVANCED */}
+        {activeTab === 'advanced' && (
+          <div className="advanced-settings-panel">
+            <div className="card border-0 bg-light rounded-3 p-3 mb-3">
+              <h6 className="fw-bold mb-2 small text-uppercase text-secondary">
+                <i className="bi bi-tags me-1 text-primary" /> CSS Class Names
+              </h6>
+              <label className="form-label small fw-semibold">Custom Class Name(s)</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3 font-monospace"
+                placeholder="e.g. my-custom-section py-5 bg-dark text-white rounded-4"
+                value={config.customClassName || ''}
+                onChange={(e) => handleConfigChange({ ...config, customClassName: e.target.value })}
+              />
+              <small className="text-muted mt-1 d-block" style={{ fontSize: '0.7rem' }}>
+                Space-separated classes applied to the root section wrapper element.
+              </small>
+            </div>
+
+            <div className="card border-0 bg-light rounded-3 p-3">
+              <h6 className="fw-bold mb-2 small text-uppercase text-secondary">
+                <i className="bi bi-info-circle me-1 text-primary" /> Section Metadata
+              </h6>
+              <div className="small text-muted">
+                <div>Section ID: <code className="text-dark">{section.id}</code></div>
+                <div>Type: <code className="text-dark">{section.section_type}</code></div>
+                <div>Sort Order: <code className="text-dark">{section.sort_order}</code></div>
+                <div>Visibility: <code className="text-dark">{section.is_visible !== false ? 'Public (Visible)' : 'Hidden'}</code></div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="p-3 border-top bg-light d-flex justify-content-end gap-2">

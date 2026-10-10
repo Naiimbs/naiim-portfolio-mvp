@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { getAdminSiteSettings, updateMultipleSiteSettings } from '../../services/siteCms';
 import MediaPickerModal from '../components/cms/MediaPickerModal';
 
@@ -137,6 +138,9 @@ export default function AdminSettings() {
               Saved
             </span>
           )}
+          <Link to="/admin/settings/theme" className="btn btn-outline-secondary rounded-pill px-3 shadow-xs">
+            <i className="bi bi-palette me-1"></i> Theme Tokens
+          </Link>
           <button className="btn btn-primary rounded-pill px-4 shadow-sm" onClick={handleSave} disabled={saving || loading}>
             {saving ? 'Saving...' : 'Save All Settings'}
           </button>

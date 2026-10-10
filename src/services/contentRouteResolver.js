@@ -38,8 +38,14 @@ export const PUBLIC_ROUTE_REGISTRY = {
   blog: {
     basePath: '/blog',
     label: 'Blog Article',
-    implemented: false,
-    description: 'Blog & editorial articles (future)',
+    implemented: true,
+    description: 'Blog & editorial articles (/blog/:slug)',
+  },
+  resource: {
+    basePath: '/resources',
+    label: 'Resource',
+    implemented: true,
+    description: 'First-class Resources, Skills, Templates, and Playbooks (/resources/:slug)',
   },
   other: {
     basePath: '/p',
@@ -94,12 +100,13 @@ export function getCanonicalRoute(contentType, slug) {
  */
 export function isPublicRouteImplemented(entryOrType) {
   if (!entryOrType) return false;
-  const contentType =
-    typeof entryOrType === 'string'
-      ? entryOrType
-      : entryOrType.content_type;
-
-  const cleanType = (contentType || '').toLowerCase().trim();
+  if (typeof entryOrType === 'object') {
+    const contentType = (entryOrType.content_type || '').toLowerCase().trim();
+    if (contentType === 'blog') return true;
+    const config = PUBLIC_ROUTE_REGISTRY[contentType];
+    return Boolean(config && config.implemented);
+  }
+  const cleanType = String(entryOrType).toLowerCase().trim();
   const config = PUBLIC_ROUTE_REGISTRY[cleanType];
   return Boolean(config && config.implemented);
 }

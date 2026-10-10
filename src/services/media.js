@@ -6,6 +6,21 @@ const ALLOWED_MIME_TYPES = [
   'image/webp',
   'image/svg+xml',
   'image/gif',
+  'application/pdf',
+  'application/zip',
+  'application/x-zip-compressed',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.ms-excel',
+  'text/markdown',
+  'text/plain',
+  'text/x-python',
+  'application/json',
+  'text/csv'
+];
+
+const ALLOWED_EXTENSIONS = [
+  '.jpg', '.jpeg', '.png', '.webp', '.svg', '.gif',
+  '.pdf', '.zip', '.xlsx', '.xls', '.md', '.txt', '.py', '.json', '.csv'
 ];
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -86,12 +101,14 @@ export async function uploadMedia(file, metadata = {}) {
     };
   }
 
-  // 1. Validation: MIME type
-  if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+  const ext = file.name ? file.name.substring(file.name.lastIndexOf('.')).toLowerCase() : '';
+
+  // 1. Validation: MIME type or extension
+  if (!ALLOWED_MIME_TYPES.includes(file.type) && !ALLOWED_EXTENSIONS.includes(ext)) {
     return {
       data: null,
       error: {
-        message: `Unsupported file type: ${file.type}. Allowed formats: JPG, PNG, WebP, SVG, GIF.`,
+        message: `Unsupported file type: ${file.type || ext}. Allowed formats: Images, PDF, ZIP, XLSX, MD, PY, JSON, CSV.`,
       },
     };
   }

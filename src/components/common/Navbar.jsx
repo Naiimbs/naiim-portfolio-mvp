@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { getHeaderNavigation, getPublicSiteSettings } from '../../services/siteCms';
+import { getHeaderNavigation, getPublicSiteSettings, DEFAULT_HEADER_NAV } from '../../services/siteCms';
 
 export default function Navbar() {
-  const [navItems, setNavItems] = useState(null);
+  const [navItems, setNavItems] = useState(DEFAULT_HEADER_NAV);
   const [siteSettings, setSiteSettings] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -12,18 +12,24 @@ export default function Navbar() {
   useEffect(() => {
     let isMounted = true;
     async function fetchNavAndSettings() {
-      const [navRes, settingsRes] = await Promise.all([
-        getHeaderNavigation(),
-        getPublicSiteSettings(),
-      ]);
-      if (isMounted) {
-        if (navRes.data && navRes.data.length > 0) {
-          setNavItems(navRes.data);
-        } else {
-          setNavItems([]);
+      try {
+        const [navRes, settingsRes] = await Promise.all([
+          getHeaderNavigation(),
+          getPublicSiteSettings(),
+        ]);
+        if (isMounted) {
+          if (navRes?.data && Array.isArray(navRes.data) && navRes.data.length > 0) {
+            setNavItems(navRes.data.filter(Boolean));
+          } else {
+            setNavItems(DEFAULT_HEADER_NAV);
+          }
+          if (settingsRes?.data) {
+            setSiteSettings(settingsRes.data);
+          }
         }
-        if (settingsRes.data) {
-          setSiteSettings(settingsRes.data);
+      } catch (err) {
+        if (isMounted) {
+          setNavItems(DEFAULT_HEADER_NAV);
         }
       }
     }
@@ -38,9 +44,33 @@ export default function Navbar() {
       setIsScrolled(window.scrollY > 20);
     };
     handleScroll();
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isNavOpen) {
+        setIsNavOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isNavOpen]);
+
+  // Handle smooth scroll to hash when navigating between pages
+  useEffect(() => {
+    if (location.hash) {
+      const targetId = location.hash.replace(/^#/, '');
+      const timer = setTimeout(() => {
+        const el = document.getElementById(targetId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [location.pathname, location.hash]);
 
   const closeNav = () => setIsNavOpen(false);
 
@@ -48,51 +78,152 @@ export default function Navbar() {
 
   const brandName = siteSettings?.site_name || 'NAÏM BSILI';
   const ctaLabel = siteSettings?.contact_cta_label || "Let's Talk";
-  const ctaHref = siteSettings?.contact_cta_href || '#contact';
+  const rawCtaHref = typeof siteSettings?.contact_cta_href === 'string' ? siteSettings.contact_cta_href.trim() : '#contact';
+  const ctaHref = rawCtaHref || '#contact';
+
+  const checkIsActive = (href) => {
+    if (!href || typeof href !== 'string') return false;
+    const currentPath = location.pathname;
+    const currentHash = location.hash;
+
+    // Anchor links
+    if (href.startsWith('#') || href.startsWith('/#')) {
+      const anchor = href.startsWith('/#') ? href.substring(1) : href;
+      const cleanAnchor = anchor.startsWith('#') ? anchor : `#${anchor}`;
+      return isHome && currentHash === cleanAnchor;
+    }
+
+    // Work section (including case studies)
+    if (href === '/work') {
+      return currentPath === '/work' || currentPath.startsWith('/work/') || currentPath.startsWith('/case-studies');
+    }
+
+    // Agents section
+    if (href === '/agents') {
+      return currentPath === '/agents' || currentPath.startsWith('/agents/');
+    }
+
+    // Blog section
+    if (href === '/blog') {
+      return currentPath === '/blog' || currentPath.startsWith('/blog/');
+    }
+
+    // About section
+    if (href === '/about') {
+      return currentPath === '/about';
+    }
+
+    // Copilot section
+    if (href === '/copilot') {
+      return currentPath === '/copilot';
+    }
+
+    // Home
+    if (href === '/') {
+      return currentPath === '/' && !currentHash;
+    }
+
+    // Generic exact match
+    return currentPath === href;
+  };
 
   const renderNavLink = (item) => {
-    const isExternal = Boolean(item.open_in_new_tab) || item.href.startsWith('http://') || item.href.startsWith('https://');
+    if (!item) return null;
+    const href = typeof item.href === 'string' ? item.href.trim() : '#';
+    const label = item.label || 'Link';
+    const isExternal = Boolean(item.open_in_new_tab) || href.startsWith('http://') || href.startsWith('https://');
+    const isActive = !isExternal && checkIsActive(href);
+    const linkClass = `nav-link ${isActive ? 'active' : ''}`.trim();
 
     if (isExternal) {
       return (
         <a
-          key={item.id}
-          className="nav-link"
-          href={item.href}
+          className={linkClass}
+          href={href}
           target={item.open_in_new_tab ? '_blank' : undefined}
           rel={item.open_in_new_tab ? 'noopener noreferrer' : undefined}
           onClick={closeNav}
         >
-          {item.label}
+          {label}
         </a>
       );
     }
 
-    const isAnchor = item.href.startsWith('#') || item.href.startsWith('/#');
+    const isAnchor = href.startsWith('#') || href.startsWith('/#');
     if (isAnchor) {
-      const anchorHash = item.href.startsWith('/#') ? item.href.substring(1) : item.href;
+      const anchorHash = href.startsWith('/#') ? href.substring(1) : href;
+      const cleanHash = anchorHash.startsWith('#') ? anchorHash : `#${anchorHash}`;
       if (isHome) {
         return (
-          <a key={item.id} className="nav-link" href={anchorHash} onClick={closeNav}>
-            {item.label}
+          <a
+            className={linkClass}
+            href={cleanHash}
+            onClick={closeNav}
+            aria-current={isActive ? 'page' : undefined}
+          >
+            {label}
           </a>
         );
       }
       return (
-        <Link key={item.id} className="nav-link" to={`/${anchorHash}`} onClick={closeNav}>
-          {item.label}
+        <Link
+          className={linkClass}
+          to={{ pathname: '/', hash: cleanHash }}
+          onClick={closeNav}
+          aria-current={isActive ? 'page' : undefined}
+        >
+          {label}
         </Link>
       );
     }
 
     return (
-      <Link key={item.id} className="nav-link" to={item.href} onClick={closeNav}>
-        {item.label}
+      <Link
+        className={linkClass}
+        to={href}
+        onClick={closeNav}
+        aria-current={isActive ? 'page' : undefined}
+      >
+        {label}
       </Link>
     );
   };
 
-  const hasCmsNav = Boolean(navItems && navItems.length > 0);
+  const displayItems = (navItems && Array.isArray(navItems) && navItems.length > 0 ? navItems : DEFAULT_HEADER_NAV).filter(Boolean);
+
+  const renderCtaButton = () => {
+    const isCtaAnchor = ctaHref.startsWith('#') || ctaHref.startsWith('/#');
+    if (isCtaAnchor) {
+      const anchorHash = ctaHref.startsWith('/#') ? ctaHref.substring(1) : ctaHref;
+      const cleanHash = anchorHash.startsWith('#') ? anchorHash : `#${anchorHash}`;
+      if (isHome) {
+        return (
+          <a className="btn btn-dark rounded-pill px-4" href={cleanHash} onClick={closeNav}>
+            {ctaLabel} <i className="bi bi-arrow-up-right ms-1"></i>
+          </a>
+        );
+      }
+      return (
+        <Link className="btn btn-dark rounded-pill px-4" to={{ pathname: '/', hash: cleanHash }} onClick={closeNav}>
+          {ctaLabel} <i className="bi bi-arrow-up-right ms-1"></i>
+        </Link>
+      );
+    }
+
+    if (ctaHref.startsWith('/')) {
+      return (
+        <Link className="btn btn-dark rounded-pill px-4" to={ctaHref} onClick={closeNav}>
+          {ctaLabel} <i className="bi bi-arrow-up-right ms-1"></i>
+        </Link>
+      );
+    }
+
+    return (
+      <a className="btn btn-dark rounded-pill px-4" href={ctaHref} onClick={closeNav}>
+        {ctaLabel} <i className="bi bi-arrow-up-right ms-1"></i>
+      </a>
+    );
+  };
 
   return (
     <nav className={`navbar navbar-expand-lg fixed-top site-nav ${isScrolled ? 'scrolled' : ''}`} id="siteNav">
@@ -117,64 +248,13 @@ export default function Navbar() {
 
         <div className={`collapse navbar-collapse ${isNavOpen ? 'show' : ''}`} id="mainNav">
           <ul className="navbar-nav mx-auto gap-lg-2">
-            {hasCmsNav ? (
-              navItems.map((item) => (
-                <li key={item.id} className="nav-item">
-                  {renderNavLink(item)}
-                </li>
-              ))
-            ) : (
-              <>
-                <li className="nav-item">
-                  {isHome ? (
-                    <a className="nav-link" href="#work" onClick={closeNav}>Work</a>
-                  ) : (
-                    <Link className="nav-link" to="/work" onClick={closeNav}>Work</Link>
-                  )}
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/agents" onClick={closeNav}>Agents</Link>
-                </li>
-                <li className="nav-item">
-                  {isHome ? (
-                    <a className="nav-link" href="#copilot" onClick={closeNav}>Copilot</a>
-                  ) : (
-                    <Link className="nav-link" to="/copilot" onClick={closeNav}>Copilot</Link>
-                  )}
-                </li>
-                <li className="nav-item">
-                  {isHome ? (
-                    <a className="nav-link" href="#career" onClick={closeNav}>Career</a>
-                  ) : (
-                    <Link className="nav-link" to="/#career" onClick={closeNav}>Career</Link>
-                  )}
-                </li>
-                <li className="nav-item">
-                  {isHome ? (
-                    <a className="nav-link" href="#lab" onClick={closeNav}>Lab</a>
-                  ) : (
-                    <Link className="nav-link" to="/#lab" onClick={closeNav}>Lab</Link>
-                  )}
-                </li>
-                <li className="nav-item">
-                  {isHome ? (
-                    <a className="nav-link" href="#about" onClick={closeNav}>About</a>
-                  ) : (
-                    <Link className="nav-link" to="/about" onClick={closeNav}>About</Link>
-                  )}
-                </li>
-              </>
-            )}
+            {displayItems.map((item, idx) => (
+              <li key={item.id || `nav-${item.href || idx}`} className="nav-item">
+                {renderNavLink(item)}
+              </li>
+            ))}
           </ul>
-          {ctaHref.startsWith('#') && !isHome ? (
-            <Link className="btn btn-dark rounded-pill px-4" to={`/${ctaHref}`} onClick={closeNav}>
-              {ctaLabel} <i className="bi bi-arrow-up-right ms-1"></i>
-            </Link>
-          ) : (
-            <a className="btn btn-dark rounded-pill px-4" href={ctaHref} onClick={closeNav}>
-              {ctaLabel} <i className="bi bi-arrow-up-right ms-1"></i>
-            </a>
-          )}
+          {renderCtaButton()}
         </div>
       </div>
     </nav>

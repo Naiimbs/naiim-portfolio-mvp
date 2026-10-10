@@ -2,6 +2,8 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { getSectionComponent } from './sectionRegistry';
 import { PAGE_SECTION_TYPES } from './sectionSchemas';
+import { computeSectionStyleObject, scopeCustomCss } from './styleSystem';
+import { getLayoutContainerStyle, resolveResponsiveColumns } from './layoutSystem';
 
 /**
  * Generic Page Renderer for Site-Wide CMS.
@@ -24,6 +26,7 @@ export default function PageRenderer({
   loading = false,
   error = null,
   activeSectionId = null,
+  viewport = 'desktop',
   onSelectSection = null,
   onMoveSection = null,
   onToggleVisibility = null,
@@ -76,7 +79,8 @@ export default function PageRenderer({
             const isSelected = isEditorMode && activeSectionId && String(sec.id) === String(activeSectionId);
             const isHidden = sec.is_visible === false;
             const schemaMeta = PAGE_SECTION_TYPES[sec.section_type] || {};
-            const sectionLabel = sec.label || schemaMeta.label || sec.section_type;
+            const rawLabel = sec.label || schemaMeta.label || sec.section_type;
+            const sectionLabel = typeof rawLabel === 'string' ? rawLabel : (schemaMeta.label || String(sec.section_type || 'Section'));
 
             if (!SectionComp) {
               if (isEditorMode) {
@@ -97,6 +101,24 @@ export default function PageRenderer({
             }
 
             const customClass = sec.config?.customClassName ? String(sec.config.customClassName).trim() : '';
+            const sectionStyles = computeSectionStyleObject(sec.config?.style, viewport);
+            const scopedCss = sec.config?.style?.customCss ? scopeCustomCss(sec.config.style.customCss, sec.id) : null;
+            const layoutConfig = sec.config?.layout;
+            const resolvedCols = layoutConfig ? resolveResponsiveColumns(layoutConfig, viewport) : null;
+            const layoutGridStyle = layoutConfig ? getLayoutContainerStyle(layoutConfig, viewport) : null;
+            // For a single full-width column [12], skip the grid wrapper so the section naturally fills 100% width.
+            const isSingleFullWidth = !resolvedCols || (resolvedCols.length === 1 && Number(resolvedCols[0]) === 12);
+            const needsGridWrapper = Boolean(resolvedCols && !isSingleFullWidth);
+
+            const containerWidth = layoutConfig?.containerWidth;
+            const containerWidthStyle = containerWidth === 'narrow'
+              ? { maxWidth: '720px', marginLeft: 'auto', marginRight: 'auto', width: '100%' }
+              : containerWidth === 'wide'
+              ? { maxWidth: '1440px', marginLeft: 'auto', marginRight: 'auto', width: '100%' }
+              : containerWidth === 'full'
+              ? { maxWidth: '100%', width: '100%' }
+              : { width: '100%' };
+            const combinedSectionStyles = { ...sectionStyles, ...containerWidthStyle };
 
             if (isEditorMode) {
               return (
@@ -151,7 +173,7 @@ export default function PageRenderer({
                           #{idx + 1}
                         </span>
                         <strong className="text-truncate">{sectionLabel}</strong>
-                        <span className={`badge rounded-pill ${isSelected ? 'bg-primary-subtle text-primary' : 'bg-light text-muted border'}`} style={{ fontSize: '0.65rem' }}>
+                        <span className={`badge rounded-pill ${isSelected ? 'builder-section-selected-badge' : 'bg-light text-muted border'}`} style={{ fontSize: '0.65rem' }}>
                           {sec.section_type}
                         </span>
                         {isHidden && (
@@ -221,8 +243,29 @@ export default function PageRenderer({
                     </div>
 
                     {/* Section Render Output - Unconstrained live section parity */}
-                    <div className={`cms-canvas-section-body ${customClass || ''}`}>
-                      <SectionComp config={sec.config || {}} section={sec} />
+                    <div
+                      className={`cms-canvas-section-body ${customClass || ''}`}
+                      data-section-id={sec.id}
+                      style={combinedSectionStyles}
+                    >
+                      {scopedCss && <style dangerouslySetInnerHTML={{ __html: scopedCss }} />}
+                      {needsGridWrapper && layoutGridStyle ? (
+                        <div className="cms-layout-grid-container" style={layoutGridStyle}>
+                          {resolvedCols.map((span, colIdx) => (
+                            <div key={colIdx} style={{ gridColumn: `span ${span}`, minWidth: 0, width: '100%' }}>
+                              {colIdx === 0 ? <SectionComp config={sec.config || {}} section={sec} /> : null}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div style={{ width: '100%' }}>
+                          <SectionComp config={sec.config || {}} section={sec} />
+                        </div>
+                      )}
+                      {/* Editor placeholder for components that return null or minimal height */}
+                      {isEditorMode && !needsGridWrapper && (
+                        <div style={{ minHeight: '6px' }} />
+                      )}
                     </div>
                   </div>
                 </React.Fragment>
@@ -231,8 +274,26 @@ export default function PageRenderer({
 
             // Public runtime render
             return (
-              <div key={sec.id || idx} className={customClass || undefined}>
-                <SectionComp config={sec.config || {}} section={sec} />
+              <div
+                key={sec.id || idx}
+                className={customClass || undefined}
+                data-section-id={sec.id}
+                style={combinedSectionStyles}
+              >
+                {scopedCss && <style dangerouslySetInnerHTML={{ __html: scopedCss }} />}
+                {needsGridWrapper && layoutGridStyle ? (
+                  <div className="cms-layout-grid-container" style={layoutGridStyle}>
+                    {resolvedCols.map((span, colIdx) => (
+                      <div key={colIdx} style={{ gridColumn: `span ${span}`, minWidth: 0, width: '100%' }}>
+                        {colIdx === 0 ? <SectionComp config={sec.config || {}} section={sec} /> : null}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ width: '100%' }}>
+                    <SectionComp config={sec.config || {}} section={sec} />
+                  </div>
+                )}
               </div>
             );
           })

@@ -1,0 +1,203 @@
+/**
+ * Global Theme Stylesheet & Bootstrap Semantic Overrides.
+ * Centralizes all semantic tokens and binds Bootstrap directly to Naïm Bsili brand tokens.
+ */
+
+:root {
+  /* Brand Foundation */
+  --color-brand-primary: #087f66;
+  --color-brand-primary-hover: #075b4b;
+  --color-brand-primary-active: #06483b;
+  --color-brand-secondary: #10242a;
+  --color-accent: #eab52e;
+
+  /* Typography */
+  --font-heading: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-body: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Text */
+  --color-text-primary: #10242a;
+  --color-text-secondary: #42545a;
+  --color-text-muted: #718187;
+  --color-text-inverse: #ffffff;
+
+  /* Surface */
+  --color-surface: #ffffff;
+  --color-surface-elevated: #ffffff;
+  --color-surface-muted: #f8f9f6;
+  --color-surface-dark: #10242a;
+
+  /* Borders & Lines */
+  --color-border: #dfe7e4;
+  --color-border-strong: #aebdb9;
+
+  /* Status */
+  --color-success: #087f66;
+  --color-warning: #eab52e;
+  --color-danger: #d32f2f;
+  --color-info: #087f66;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-pill: 9999px;
+
+  /* Spacing */
+  --space-unit: 4px;
+
+  /* Bootstrap 5 Primary Overrides */
+  --bs-primary: #087f66;
+  --bs-primary-rgb: 8, 127, 102;
+  --bs-link-color: #087f66;
+  --bs-link-hover-color: #075b4b;
+  --bs-border-color: #dfe7e4;
+  --bs-body-color: #10242a;
+  --bs-body-bg: #f8f9f6;
+  --bs-heading-color: #10242a;
+  --bs-focus-ring-color: rgba(8, 127, 102, 0.25);
+}
+
+/* Base Headings & Typography */
+h1, h2, h3, h4, h5, h6,
+.font-heading {
+  font-family: var(--font-heading);
+  color: var(--color-text-primary);
+}
+
+body,
+.font-body {
+  font-family: var(--font-body);
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-muted);
+}
+
+/* Bootstrap Primary Button Override */
+.btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--color-brand-primary);
+  --bs-btn-border-color: var(--color-brand-primary);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--color-brand-primary-hover);
+  --bs-btn-hover-border-color: var(--color-brand-primary-hover);
+  --bs-btn-focus-shadow-rgb: 8, 127, 102;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--color-brand-primary-active);
+  --bs-btn-active-border-color: var(--color-brand-primary-active);
+  background-color: var(--color-brand-primary) !important;
+  border-color: var(--color-brand-primary) !important;
+  color: #fff !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--color-brand-primary-hover) !important;
+  border-color: var(--color-brand-primary-hover) !important;
+  color: #fff !important;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--color-brand-primary);
+  --bs-btn-border-color: var(--color-brand-primary);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--color-brand-primary);
+  --bs-btn-hover-border-color: var(--color-brand-primary);
+  color: var(--color-brand-primary) !important;
+  border-color: var(--color-brand-primary) !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--color-brand-primary) !important;
+  border-color: var(--color-brand-primary) !important;
+  color: #fff !important;
+}
+
+/* Text & Background Utilities */
+.text-primary {
+  color: var(--color-brand-primary) !important;
+}
+
+.bg-primary {
+  background-color: var(--color-brand-primary) !important;
+}
+
+.border-primary {
+  border-color: var(--color-brand-primary) !important;
+}
+
+.hover-text-primary:hover {
+  color: var(--color-brand-primary) !important;
+}
+
+/* Form Controls & Checkboxes */
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--color-brand-primary);
+  box-shadow: 0 0 0 0.25rem rgba(8, 127, 102, 0.2);
+}
+
+.form-check-input:checked {
+  background-color: var(--color-brand-primary);
+  border-color: var(--color-brand-primary);
+}
+
+/* Spinners */
+.spinner-border.text-primary {
+  color: var(--color-brand-primary) !important;
+}
+
+/* Nav Tabs & Active States */
+.nav-pills .nav-link.active,
+.nav-tabs .nav-link.active {
+  background-color: var(--color-brand-primary);
+  color: #fff;
+}
+
+/* Accessibility & High-Contrast Utility Badges (Phase 19.4) */
+.badge-contrast-success,
+.bg-success-subtle.text-success-emphasis {
+  background-color: #d1e7dd !important;
+  color: #0f5132 !important;
+}
+
+.badge-contrast-danger,
+.bg-danger-subtle.text-danger-emphasis {
+  background-color: #f8d7da !important;
+  color: #842029 !important;
+}
+
+.badge-contrast-warning,
+.bg-warning-subtle.text-warning-emphasis {
+  background-color: #fff3cd !important;
+  color: #664d03 !important;
+}
+
+.badge-contrast-info,
+.bg-info-subtle.text-info-emphasis {
+  background-color: #cff4fc !important;
+  color: #055160 !important;
+}
+
+.badge-contrast-primary,
+.bg-primary-subtle.text-primary-emphasis {
+  background-color: #d2f4ea !important;
+  color: #055140 !important;
+}
+
+/* Accessible Interactive Item Hover States */
+.list-group-item-action:hover {
+  background-color: #f1f5f3;
+  color: var(--color-ink-primary);
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f8faf8;
+}
+
+.builder-section-selected-badge {
+  background-color: #ffffff !important;
+  color: #1a2521 !important;
+  font-weight: 700;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+

@@ -67,6 +67,11 @@ export async function getAdminContentRegistry({ contentType = null, status = nul
     }
 
     let results = data || [];
+    const deletedIds = getDeletedRegistryIds();
+    if (deletedIds.size > 0) {
+      results = results.filter((item) => !deletedIds.has(String(item.id)));
+    }
+
     if (search && search.trim()) {
       const q = search.trim().toLowerCase();
       results = results.filter(
@@ -192,11 +197,99 @@ export async function updateContentRegistryEntry(id, payload) {
 }
 
 /**
- * Delete a registry entry.
+ * Inspect dependencies for a registry entry before deletion.
+ * Returns { hasDependencies, isPublished, isInNavigation, hasPages, warnings }
+ */
+export async function checkRegistryEntryDependencies(entry) {
+  if (!entry) return { hasDependencies: false, warnings: [] };
+
+  const warnings = [];
+  const isPublished = entry.status === 'published' && entry.visibility === 'public';
+  if (isPublished) {
+    warnings.push(`This entry is currently PUBLISHED and publicly accessible at "${entry.public_route || entry.slug}". Deleting it will result in a 404 for visitors.`);
+  }
+
+  let isInNavigation = false;
+  let hasPages = false;
+
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const route = entry.public_route || `/${entry.content_type === 'case-study' ? 'work' : entry.content_type}/${entry.slug}`;
+      const [navRes, pageRes] = await Promise.all([
+        supabase.from('navigation_items').select('id, label, href').or(`href.eq.${route},href.eq./work/${entry.slug},href.eq./blog/${entry.slug}`),
+        supabase.from('pages').select('id, title, slug').eq('slug', entry.slug),
+      ]);
+
+      if (navRes.data && navRes.data.length > 0) {
+        isInNavigation = true;
+        warnings.push(`Referenced in site navigation: "${navRes.data.map((n) => n.label).join(', ')}" (${navRes.data[0].href}). Deleting will leave broken navigation links.`);
+      }
+
+      if (pageRes.data && pageRes.data.length > 0) {
+        hasPages = true;
+        warnings.push(`Associated with site page record "${pageRes.data[0].title}" (${pageRes.data[0].slug}).`);
+      }
+    } catch (err) {
+      console.warn('[contentRegistry] Error checking dependencies:', err);
+    }
+  }
+
+  return {
+    hasDependencies: warnings.length > 0,
+    isPublished,
+    isInNavigation,
+    hasPages,
+    warnings,
+  };
+}
+
+const LOCAL_DELETED_KEY = 'cms_deleted_registry_ids';
+
+/**
+ * Returns set of locally deleted entry IDs (persists in localStorage)
+ */
+export function getDeletedRegistryIds() {
+  try {
+    const raw = typeof window !== 'undefined' ? localStorage.getItem(LOCAL_DELETED_KEY) : null;
+    return raw ? new Set(JSON.parse(raw)) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+/**
+ * Records an entry ID as deleted in local storage
+ */
+export function recordLocalDeletedId(id) {
+  if (!id) return;
+  try {
+    const set = getDeletedRegistryIds();
+    set.add(String(id));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(LOCAL_DELETED_KEY, JSON.stringify([...set]));
+    }
+  } catch {
+    // Ignore localStorage quota errors
+  }
+}
+
+/**
+ * Delete a registry entry safely (supports Supabase persistence & local store fallback).
  */
 export async function deleteContentRegistryEntry(id) {
+  if (!id) {
+    return { error: new Error('Entry ID is required for deletion.') };
+  }
+
+  // Always record locally deleted ID so deleted entries stay removed across renders
+  recordLocalDeletedId(id);
+
   if (!isSupabaseConfigured || !supabase) {
-    return { error: new Error('Supabase is not configured.') };
+    return {
+      error: null,
+      source: 'local_storage',
+      message: 'Content item deleted locally.',
+    };
   }
 
   try {
@@ -205,8 +298,14 @@ export async function deleteContentRegistryEntry(id) {
       .delete()
       .eq('id', id);
 
-    return { error };
+    if (error) {
+      console.warn('[contentRegistry] Delete error:', error);
+      return { error: new Error(error.message || 'Database error occurred during deletion.') };
+    }
+
+    return { error: null, source: 'supabase' };
   } catch (err) {
+    console.error('[contentRegistry] Unexpected delete error:', err);
     return { error: err };
   }
 }
