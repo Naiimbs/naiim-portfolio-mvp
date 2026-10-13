@@ -17,6 +17,9 @@ services/gmail-mcp/.env.*
 # Development scratch directory
 scratch/
 
+# Claude Code harness session state
+.claude/
+
 supabase/.temp/
 vite.config.js.timestamp-*.mjs
 
