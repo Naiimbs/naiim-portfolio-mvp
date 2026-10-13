@@ -35,4 +35,26 @@ export default defineConfig({
       ignored: ['**/server/.secrets.env**', '**/.git/**', '**/legacy/**'],
     },
   },
+  build: {
+    chunkSizeWarningLimit: 900,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined;
+          if (id.includes('@supabase')) return 'vendor-supabase';
+          if (id.includes('bootstrap')) return 'vendor-bootstrap';
+          if (id.includes('i18next') || id.includes('react-i18next')) return 'vendor-i18n';
+          if (
+            id.includes('react-router') ||
+            id.includes('/react-dom/') ||
+            id.includes('/react/') ||
+            id.includes('react-helmet')
+          ) {
+            return 'vendor-react';
+          }
+          return 'vendor';
+        },
+      },
+    },
+  },
 });
