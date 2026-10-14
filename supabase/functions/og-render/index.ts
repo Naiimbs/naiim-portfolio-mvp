@@ -30,8 +30,21 @@ function absImage(src: string): string {
   return DEFAULT_IMAGE; // bare filenames (hashed build assets) aren't resolvable here
 }
 
-function htmlFor(opts: { title: string; description: string; image: string; url: string; type: string }) {
-  const { title, description, image, url, type } = opts;
+function imageType(src: string): string {
+  const s = src.toLowerCase();
+  if (s.endsWith(".jpg") || s.endsWith(".jpeg")) return "image/jpeg";
+  if (s.endsWith(".webp")) return "image/webp";
+  if (s.endsWith(".gif")) return "image/gif";
+  return "image/png";
+}
+
+function htmlFor(opts: { title: string; description: string; image: string; url: string; type: string; imageW?: number; imageH?: number }) {
+  const { title, description, image, url, type, imageW = 0, imageH = 0 } = opts;
+  const dims = imageW > 0 && imageH > 0
+    ? `<meta property="og:image:width" content="${imageW}" />
+<meta property="og:image:height" content="${imageH}" />
+`
+    : "";
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8" />
 <title>${esc(title)}</title>
@@ -42,7 +55,10 @@ function htmlFor(opts: { title: string; description: string; image: string; url:
 <meta property="og:title" content="${esc(title)}" />
 <meta property="og:description" content="${esc(description)}" />
 <meta property="og:image" content="${esc(image)}" />
-<meta property="og:url" content="${esc(url)}" />
+<meta property="og:image:secure_url" content="${esc(image)}" />
+<meta property="og:image:type" content="${imageType(image)}" />
+<meta property="og:image:alt" content="${esc(title)}" />
+${dims}<meta property="og:url" content="${esc(url)}" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="${esc(title)}" />
 <meta name="twitter:description" content="${esc(description)}" />
@@ -67,15 +83,16 @@ Deno.serve(async (req: Request) => {
   }
 
   const slug = decodeURIComponent(blogMatch[1]);
+  const headers = { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` };
   let title = DEFAULT_TITLE;
   let description = DEFAULT_DESC;
   let image = DEFAULT_IMAGE;
+  let imageW = 0;
+  let imageH = 0;
 
   try {
     const api = `${SUPABASE_URL}/rest/v1/content_registry?slug=eq.${encodeURIComponent(slug)}&content_type=eq.blog&status=eq.published&visibility=eq.public&select=title,metadata&limit=1`;
-    const res = await fetch(api, {
-      headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
-    });
+    const res = await fetch(api, { headers });
     if (res.ok) {
       const rows = await res.json();
       const row = Array.isArray(rows) ? rows[0] : null;
@@ -86,12 +103,26 @@ Deno.serve(async (req: Request) => {
         image = absImage(meta.social?.ogImage || meta.featuredImage || "");
       }
     }
+
+    // Best-effort: read the image dimensions from the media table (if readable)
+    // so Facebook/LinkedIn can render the image on the first scrape.
+    if (/^https?:\/\//i.test(image)) {
+      try {
+        const mediaApi = `${SUPABASE_URL}/rest/v1/media?public_url=eq.${encodeURIComponent(image)}&select=width,height&limit=1`;
+        const mres = await fetch(mediaApi, { headers });
+        if (mres.ok) {
+          const mrows = await mres.json();
+          const m = Array.isArray(mrows) ? mrows[0] : null;
+          if (m) { imageW = Number(m.width) || 0; imageH = Number(m.height) || 0; }
+        }
+      } catch (_e) { /* no dimensions */ }
+    }
   } catch (_err) {
     // fall back to defaults
   }
 
   return new Response(
-    htmlFor({ title, description, image, url: canonicalUrl, type: "article" }),
+    htmlFor({ title, description, image, url: canonicalUrl, type: "article", imageW, imageH }),
     { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } },
   );
 });
