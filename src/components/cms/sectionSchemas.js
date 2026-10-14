@@ -4,6 +4,8 @@
  * Centralized Single Source of Truth for Page Builder Section Types.
  */
 
+import { HERO_DEFAULTS } from '../hero/heroDefaults';
+
 const HOME_BLOCK = (type, label, icon, description) => ({
   type,
   label,
@@ -18,7 +20,22 @@ const HOME_BLOCK = (type, label, icon, description) => ({
 
 export const PAGE_SECTION_TYPES = {
   // ---- Composite homepage blocks (render the real live components) ----
-  home_hero: HOME_BLOCK('home_hero', 'Home · Hero', 'bi-stars', 'Homepage hero: headline, CTAs and motion/portrait. Rendered from the live Hero component.'),
+  home_hero: {
+    type: 'home_hero',
+    label: 'Home · Hero',
+    category: 'HOME',
+    icon: 'bi-stars',
+    description: 'Homepage hero — editable headline, lead, CTAs and "currently building" list. The motion/portrait visual stays fixed.',
+    hasEditor: true,
+    defaultConfig: JSON.parse(JSON.stringify(HERO_DEFAULTS)),
+    validate: (cfg = {}) => {
+      const errors = [];
+      const advisories = [];
+      const lines = Array.isArray(cfg.titleLines) ? cfg.titleLines.filter((l) => String(l || '').trim()) : [];
+      if (lines.length === 0) errors.push('Hero needs at least one title line.');
+      return { valid: errors.length === 0, errors, advisories };
+    },
+  },
   selected_work: HOME_BLOCK('selected_work', 'Home · Selected Work', 'bi-grid-3x3-gap', 'Homepage "Selected Work" showcase, rendered from the live component.'),
   case_studies_strip: HOME_BLOCK('case_studies_strip', 'Home · Case Studies Strip', 'bi-collection', 'Homepage case-studies strip, rendered from the live component.'),
   copilot_career: HOME_BLOCK('copilot_career', 'Home · Copilot + Career', 'bi-stars', 'Homepage two-column block: Naïm Copilot widget + Career card.'),
@@ -555,6 +572,17 @@ export function normalizeSectionConfig(sectionType, rawConfig = {}) {
     if (typeof config.layout === 'string' && !['split', 'centered', 'left'].includes(config.layout)) {
       config.layout = 'split';
     }
+  }
+
+  if (type === 'home_hero') {
+    if (!Array.isArray(config.titleLines) || config.titleLines.length === 0) {
+      config.titleLines = [...defaults.titleLines];
+    }
+    if (!Array.isArray(config.buildingItems)) {
+      config.buildingItems = defaults.buildingItems.map((it) => ({ ...it }));
+    }
+    config.primaryCta = { ...defaults.primaryCta, ...(config.primaryCta || {}) };
+    config.secondaryCta = { ...defaults.secondaryCta, ...(config.secondaryCta || {}) };
   }
 
   if (type === 'rich_text' || type === 'text') {

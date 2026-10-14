@@ -2,51 +2,82 @@ import React, { useState } from 'react';
 import VoicePlayer from './VoicePlayer';
 import MotionHero from '../../motion/MotionHero';
 import portraitCutout from '../../assets/images/naim-portrait.png';
+import { HERO_DEFAULTS } from './heroDefaults';
 
-export default function HeroSection() {
+/**
+ * Homepage Hero.
+ *
+ * Content (left column: eyebrow, title, lead, CTAs, "currently building")
+ * is driven by `config` when rendered as the `home_hero` CMS section, and
+ * falls back to HERO_DEFAULTS field-by-field so an empty config renders the
+ * original hero verbatim. The right column (Motion / Portrait + audio) is
+ * presentation and stays as-is.
+ */
+export default function HeroSection({ config = {} }) {
   const [heroMode, setHeroMode] = useState('motion'); // 'motion' | 'portrait'
+
+  const cfg = { ...HERO_DEFAULTS, ...(config || {}) };
+  const titleLines = Array.isArray(cfg.titleLines) && cfg.titleLines.length ? cfg.titleLines : HERO_DEFAULTS.titleLines;
+  const buildingItems = Array.isArray(cfg.buildingItems) && cfg.buildingItems.length ? cfg.buildingItems : HERO_DEFAULTS.buildingItems;
+  const primaryCta = { ...HERO_DEFAULTS.primaryCta, ...(cfg.primaryCta || {}) };
+  const secondaryCta = { ...HERO_DEFAULTS.secondaryCta, ...(cfg.secondaryCta || {}) };
+
   return (
     <section className="hero section-pad">
       <div className="container">
         <div className="row align-items-center g-5">
           <div className="col-lg-6 hero-copy">
-            <div className="eyebrow">
-              <span></span> SENIOR UX/UI DESIGNER · AI PRODUCT BUILDER
-            </div>
+            {cfg.eyebrow && (
+              <div className="eyebrow">
+                <span></span> {cfg.eyebrow}
+              </div>
+            )}
 
             <h1>
-              I DESIGN.<br />
-              I BUILD.<br />
-              <em>I EXPERIMENT.</em>
+              {titleLines.map((line, i) => {
+                const isLast = i === titleLines.length - 1;
+                return (
+                  <React.Fragment key={i}>
+                    {isLast && cfg.emphasizeLastLine ? <em>{line}</em> : line}
+                    {i < titleLines.length - 1 && <br />}
+                  </React.Fragment>
+                );
+              })}
             </h1>
 
-            <p className="hero-lead">
-              I turn ambiguous problems into usable digital products at the intersection of{' '}
-              <strong>product design, AI, low-code and automation.</strong>
-            </p>
+            {(cfg.lead || cfg.leadStrong) && (
+              <p className="hero-lead">
+                {cfg.lead}
+                {cfg.leadStrong && <strong>{cfg.leadStrong}</strong>}
+              </p>
+            )}
 
             <div className="d-flex flex-wrap gap-3 mb-4">
-              <a className="btn btn-primary-custom btn-lg rounded-pill px-4" href="#work">
-                Explore my work <i className="bi bi-arrow-right"></i>
-              </a>
-              <a className="btn btn-outline-custom btn-lg rounded-pill px-4" href="#copilot">
-                <i className="bi bi-stars"></i> Talk to Naïm Copilot
-              </a>
+              {primaryCta.label && (
+                <a className="btn btn-primary-custom btn-lg rounded-pill px-4" href={primaryCta.href || '#work'}>
+                  {primaryCta.label} <i className="bi bi-arrow-right"></i>
+                </a>
+              )}
+              {secondaryCta.label && (
+                <a className="btn btn-outline-custom btn-lg rounded-pill px-4" href={secondaryCta.href || '#copilot'}>
+                  <i className="bi bi-stars"></i> {secondaryCta.label}
+                </a>
+              )}
             </div>
 
-            <div className="building-label">CURRENTLY BUILDING</div>
-            <div className="building-list">
-              <a href="#work">
-                <span className="mini-icon winni">W</span> WINNI
-              </a>
-              <a href="#copilot">
-                <span className="mini-icon copilot">✦</span> Naïm Copilot
-              </a>
-              <a href="#work">
-                <span className="mini-icon assestini">A</span> Assestini{' '}
-                <small>Product / Operations OS</small>
-              </a>
-            </div>
+            {cfg.buildingLabel && <div className="building-label">{cfg.buildingLabel}</div>}
+            {buildingItems.length > 0 && (
+              <div className="building-list">
+                {buildingItems.map((item, i) => (
+                  <a key={i} href={item.href || '#'}>
+                    {item.iconText && (
+                      <span className={`mini-icon ${item.iconClass || ''}`.trim()}>{item.iconText}</span>
+                    )}{' '}
+                    {item.label} {item.note && <small>{item.note}</small>}
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="col-lg-6">

@@ -748,8 +748,8 @@ function FormSectionComponent({ config = {} }) {
 // show, reorder, hide, duplicate and remove the actual homepage structure.
 // Fine-grained per-block content editing can be layered on later.
 // ---------------------------------------------------------------------------
-function HomeHeroBlock() {
-  return <HomeHero />;
+function HomeHeroBlock({ config = {} }) {
+  return <HomeHero config={config} />;
 }
 
 function SelectedWorkBlock() {

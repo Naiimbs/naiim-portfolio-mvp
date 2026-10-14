@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import HeroSectionEditor from './HeroSectionEditor';
+import HomeHeroSectionEditor from './HomeHeroSectionEditor';
 import RichTextSectionEditor from './RichTextSectionEditor';
 import ProjectGridSectionEditor from './ProjectGridSectionEditor';
 import AgentGridSectionEditor from './AgentGridSectionEditor';
@@ -34,6 +35,8 @@ export default function SectionPropertyEditor({ section, onChange, onSave, onCan
     switch (type) {
       case 'hero':
         return <HeroSectionEditor config={config} onChange={handleConfigChange} />;
+      case 'home_hero':
+        return <HomeHeroSectionEditor config={config} onChange={handleConfigChange} />;
       case 'rich_text':
       case 'text':
         return <RichTextSectionEditor config={config} onChange={handleConfigChange} />;
