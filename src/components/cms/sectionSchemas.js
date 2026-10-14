@@ -42,6 +42,20 @@ export const PAGE_SECTION_TYPES = {
   lab: HOME_BLOCK('lab', 'Home · Lab', 'bi-beaker', 'Homepage "Lab" section, rendered from the live component.'),
   home_about: HOME_BLOCK('home_about', 'Home · About', 'bi-person-badge', 'Homepage About section, rendered from the live component.'),
   home_contact: HOME_BLOCK('home_contact', 'Home · Contact', 'bi-envelope-heart', 'Homepage contact section, rendered from the live component.'),
+  work_catalog: {
+    type: 'work_catalog',
+    label: 'Work · Catalog',
+    category: 'WORK',
+    icon: 'bi-collection',
+    description: 'The /work catalog of published case studies (Content Registry) with an editable heading.',
+    hasEditor: true,
+    defaultConfig: {
+      eyebrow: 'SELECTED WORK',
+      title: 'Products, systems & digital experiences',
+      intro: 'From startup products and AI systems to Saudi digital services and front-end implementation.',
+    },
+    validate: () => ({ valid: true, errors: [], advisories: [] }),
+  },
 
   hero: {
     type: 'hero',

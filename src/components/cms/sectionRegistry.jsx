@@ -37,6 +37,7 @@ import HomeCareerCard from '../career/CareerCard';
 import HomeLab from '../lab/LabSection';
 import HomeAbout from '../about/AboutSection';
 import HomeContact from '../common/ContactSection';
+import WorkCatalog from '../work/WorkCatalog';
 
 // 1. Hero Section
 function HeroSection({ config = {} }) {
@@ -789,6 +790,10 @@ function HomeContactBlock() {
   return <HomeContact />;
 }
 
+function WorkCatalogBlock({ config = {} }) {
+  return <WorkCatalog config={config} />;
+}
+
 // Section Registry Object
 export const SECTION_REGISTRY = {
   hero: HeroSection,
@@ -825,6 +830,7 @@ export const SECTION_REGISTRY = {
   lab: LabBlock,
   home_about: HomeAboutBlock,
   home_contact: HomeContactBlock,
+  work_catalog: WorkCatalogBlock,
 };
 
 /**

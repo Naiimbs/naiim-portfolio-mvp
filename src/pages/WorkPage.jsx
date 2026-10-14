@@ -1,156 +1,101 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 import SEO from '../components/common/SEO';
-import ProjectCard from '../components/work/ProjectCard';
-import MiniProjectCard from '../components/work/MiniProjectCard';
-import { getPublishedPublicContent, normalizeRegistryEntry } from '../services/contentRegistry';
-import { isPublicRouteImplemented } from '../services/contentRouteResolver';
+import PageRenderer from '../components/cms/PageRenderer';
+import WorkCatalog from '../components/work/WorkCatalog';
+import {
+  getPageBySlug,
+  getPageSections,
+  getAdminPages,
+  getAdminPageSections,
+} from '../services/siteCms';
+import { getPublishedPublicContentBySlug } from '../services/contentRegistry';
+import { isSupabaseConfigured } from '../lib/supabase';
+import { useAuth } from '../admin/context/AuthContext';
 
 /**
  * WorkPage — /work
  *
- * Source of truth: Content Registry (published + public, ordered by sort_order).
- * Content Registry is the sole authority for the public portfolio catalog.
- *
- * States:
- *   loading       — Registry query in progress
- *   error         — Supabase query failed or unconfigured
- *   empty         — Registry has zero published+public entries
- *   ready         — 1+ published+public entries returned
+ * CMS-first: when a published `work` page with sections exists it is rendered
+ * through the shared PageRenderer (editable in the Site Pages builder).
+ * Otherwise it falls back to the WorkCatalog block (Content Registry catalog),
+ * which is identical to the previous hardcoded page.
  */
 export default function WorkPage() {
-  const [entries, setEntries] = useState([]);
+  const [searchParams] = useSearchParams();
+  const { isAuthenticated, isEditor, loading: authLoading } = useAuth();
+  const isPreviewRequested = searchParams.get('preview') === 'true';
+
+  const [workPage, setWorkPage] = useState(null);
+  const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [empty, setEmpty] = useState(false);
+
+  const canPreviewDraft = isPreviewRequested && (isAuthenticated || isEditor || !isSupabaseConfigured);
 
   useEffect(() => {
     let isMounted = true;
+    async function loadWorkCms() {
+      if (authLoading) return;
 
-    async function load() {
-      setLoading(true);
-      const res = await getPublishedPublicContent();
-      if (!isMounted) return;
-
-      // Supabase unconfigured — treat as error, do not fall back to local data
-      if (res.source === 'unconfigured') {
-        setError(new Error('Registry unavailable'));
-        setLoading(false);
-        return;
-      }
-
-      if (res.error) {
-        setError(res.error);
-        setLoading(false);
-        return;
-      }
-
-      if (res.data && res.data.length > 0) {
-        // Only include items supported by the case study portfolio
-        const supported = res.data.filter(
-          (entry) => (!entry.content_type || entry.content_type === 'case-study') && isPublicRouteImplemented(entry)
-        );
-        const normalized = supported.map((entry) => normalizeRegistryEntry(entry));
-        setEntries(normalized);
-        if (normalized.length === 0) {
-          setEmpty(true);
+      if (canPreviewDraft) {
+        const adminPagesRes = await getAdminPages();
+        const found = (adminPagesRes.data || []).find((p) => p.slug === 'work');
+        if (found && isMounted) {
+          setWorkPage(found);
+          const secRes = await getAdminPageSections(found.id);
+          setSections(secRes.data || []);
+          setLoading(false);
+          return;
         }
-      } else {
-        setEmpty(true);
       }
-      setLoading(false);
+
+      const registryRes = await getPublishedPublicContentBySlug('work');
+      const pageRes = await getPageBySlug('work');
+
+      if (isMounted) {
+        const isRegistryAllowed =
+          !isSupabaseConfigured ||
+          (registryRes.data && registryRes.data.status === 'published' && registryRes.data.visibility === 'public');
+        const isPagePublished = pageRes.data && pageRes.data.status === 'published';
+
+        if (isRegistryAllowed && isPagePublished) {
+          setWorkPage(pageRes.data);
+          const secRes = await getPageSections(pageRes.data.id);
+          if (secRes.data && secRes.data.length > 0) {
+            setSections(secRes.data);
+          }
+        }
+        setLoading(false);
+      }
     }
+    loadWorkCms();
+    return () => {
+      isMounted = false;
+    };
+  }, [canPreviewDraft, authLoading]);
 
-
-    load();
-    return () => { isMounted = false; };
-  }, []);
+  const hasCmsSections = Boolean(sections && sections.length > 0);
 
   return (
     <MainLayout>
       <SEO
-        title="Selected Work — Naim Bsili"
-        description="Case studies and digital products by Naim Bsili — Product Designer and AI Builder."
+        title={workPage?.seo_title || 'Selected Work — Naim Bsili'}
+        description={workPage?.seo_description || 'Case studies and digital products by Naim Bsili — Product Designer and AI Builder.'}
         canonical="/work"
       />
 
-      <section className="section-pad" style={{ minHeight: '60vh' }}>
-        <div className="container">
-          <div className="section-heading mb-5">
-            <div className="eyebrow">
-              <span></span> SELECTED WORK
-            </div>
-            <h1>Products, systems &amp; digital experiences</h1>
-            <p>
-              From startup products and AI systems to Saudi digital services and front-end implementation.
-            </p>
-          </div>
-
-          {/* Loading */}
-          {loading && (
-            <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '30vh' }}>
-              <div className="spinner-border text-success" role="status">
-                <span className="visually-hidden">Loading work...</span>
-              </div>
-            </div>
-          )}
-
-          {/* Registry error — do not crash */}
-          {!loading && error && (
-            <div className="text-center py-5">
-              <p className="text-muted">
-                Unable to load the work registry right now. Please try again shortly.
-              </p>
-              <Link to="/" className="btn btn-primary-custom rounded-pill px-4 mt-2">
-                <i className="bi bi-arrow-left"></i> Back to Home
-              </Link>
-            </div>
-          )}
-
-          {/* Registry entries */}
-          {!loading && !error && entries.length > 0 && (
-            <RegistryListing entries={entries} />
-          )}
-
-          {/* Registry configured but zero published+public entries */}
-          {!loading && !error && empty && (
-            <div className="text-center py-5">
-              <p className="text-muted">No published work items yet.</p>
-            </div>
-          )}
+      {canPreviewDraft && (
+        <div className="bg-warning text-dark text-center py-2 px-3 fw-semibold small shadow-sm position-sticky top-0 z-3">
+          <i className="bi bi-eye-fill me-2"></i> PREVIEW MODE — You are previewing the Work page layout.
         </div>
-      </section>
+      )}
+
+      {hasCmsSections ? (
+        <PageRenderer page={workPage} sections={sections} loading={loading} />
+      ) : (
+        <WorkCatalog />
+      )}
     </MainLayout>
-  );
-}
-
-// ─── Registry listing ──────────────────────────────────────────────────────────
-
-function RegistryListing({ entries }) {
-  const featured = entries.filter((e) => e.featured);
-  const rest = entries.filter((e) => !e.featured);
-
-  return (
-    <>
-      {featured.length > 0 && (
-        <div className="row g-4 mb-4">
-          {featured.map((project) => (
-            <div className="col-lg-6" key={project.id || project.slug}>
-              <ProjectCard project={project} />
-            </div>
-          ))}
-        </div>
-      )}
-      {rest.length > 0 && (
-        <div className="row g-3">
-          {rest.map((project) => (
-            <div className="col-md-6 col-lg-4" key={project.id || project.slug}>
-              <MiniProjectCard project={project} />
-            </div>
-          ))}
-        </div>
-      )}
-    </>
   );
 }

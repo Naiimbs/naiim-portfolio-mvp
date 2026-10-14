@@ -37,6 +37,45 @@ export default function SectionPropertyEditor({ section, onChange, onSave, onCan
         return <HeroSectionEditor config={config} onChange={handleConfigChange} />;
       case 'home_hero':
         return <HomeHeroSectionEditor config={config} onChange={handleConfigChange} />;
+      case 'work_catalog':
+        return (
+          <div className="card border-0 bg-light rounded-3 p-3 mb-3">
+            <h6 className="fw-bold mb-3 small text-uppercase">Work Catalog Heading</h6>
+            <div className="mb-2">
+              <label className="form-label small fw-semibold">Eyebrow</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.eyebrow || ''}
+                placeholder="SELECTED WORK"
+                onChange={(e) => handleConfigChange({ ...config, eyebrow: e.target.value })}
+              />
+            </div>
+            <div className="mb-2">
+              <label className="form-label small fw-semibold">Title</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.title || ''}
+                placeholder="Products, systems & digital experiences"
+                onChange={(e) => handleConfigChange({ ...config, title: e.target.value })}
+              />
+            </div>
+            <div className="mb-1">
+              <label className="form-label small fw-semibold">Intro</label>
+              <textarea
+                className="form-control form-control-sm rounded-3"
+                rows="2"
+                value={config.intro || ''}
+                placeholder="From startup products and AI systems to…"
+                onChange={(e) => handleConfigChange({ ...config, intro: e.target.value })}
+              />
+            </div>
+            <div className="small text-muted" style={{ fontSize: '0.72rem' }}>
+              <i className="bi bi-info-circle me-1" /> The case-study cards below the heading are managed in the Content Registry.
+            </div>
+          </div>
+        );
       case 'rich_text':
       case 'text':
         return <RichTextSectionEditor config={config} onChange={handleConfigChange} />;
