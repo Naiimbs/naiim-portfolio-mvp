@@ -1211,7 +1211,7 @@ export default function AdminBlogEditor() {
                 <h6 className="fw-bold mb-3">Google Snippet Preview</h6>
                 <div className="p-3 bg-light rounded-3 border">
                   <div className="text-muted small text-truncate" style={{ fontSize: '0.75rem' }}>
-                    https://naimbsili.com{resolvedSeo.canonical}
+                    https://naiimbsili.com{resolvedSeo.canonical}
                   </div>
                   <div className="text-primary fw-semibold small text-truncate mt-1" style={{ fontSize: '0.95rem' }}>
                     {resolvedSeo.title}
@@ -1278,11 +1278,21 @@ export default function AdminBlogEditor() {
               <div className="card border-0 bg-white rounded-4 shadow-sm p-4">
                 <h6 className="fw-bold mb-3">Twitter / LinkedIn Card Preview</h6>
                 <div className="border rounded-4 overflow-hidden bg-light shadow-xs">
-                  <div className="bg-secondary bg-opacity-25 d-flex align-items-center justify-content-center" style={{ height: '140px' }}>
-                    <i className="bi bi-image display-4 text-muted"></i>
+                  <div className="bg-secondary bg-opacity-25 d-flex align-items-center justify-content-center overflow-hidden" style={{ height: '140px' }}>
+                    {(ogImage || featuredImage) ? (
+                      <img
+                        src={ogImage || featuredImage}
+                        alt=""
+                        className="w-100 h-100"
+                        style={{ objectFit: 'cover' }}
+                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                      />
+                    ) : (
+                      <i className="bi bi-image display-4 text-muted"></i>
+                    )}
                   </div>
                   <div className="p-3 bg-white">
-                    <span className="text-muted text-uppercase small d-block mb-1" style={{ fontSize: '0.68rem' }}>naimbsili.com</span>
+                    <span className="text-muted text-uppercase small d-block mb-1" style={{ fontSize: '0.68rem' }}>naiimbsili.com</span>
                     <strong className="text-dark small d-block mb-1">{resolvedSeo.ogTitle}</strong>
                     <p className="text-secondary small mb-0 line-clamp-2" style={{ fontSize: '0.75rem' }}>{resolvedSeo.ogDescription}</p>
                   </div>

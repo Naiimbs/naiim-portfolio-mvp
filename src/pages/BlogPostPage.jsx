@@ -94,7 +94,7 @@ export default function BlogPostPage() {
       <Helmet>
         <title>{seo.title}</title>
         <meta name="description" content={seo.description} />
-        <link rel="canonical" href={`https://naimbsili.com${seo.canonical}`} />
+        <link rel="canonical" href={`https://naiimbsili.com${seo.canonical}`} />
         <meta property="og:title" content={seo.ogTitle} />
         <meta property="og:description" content={seo.ogDescription} />
         {seo.ogImage && <meta property="og:image" content={seo.ogImage} />}

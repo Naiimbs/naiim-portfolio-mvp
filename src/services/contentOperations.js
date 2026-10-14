@@ -375,7 +375,7 @@ export function resolveContentSeo(item, siteSettings = {}) {
     meta.featured_image ||
     meta.featuredImage ||
     siteSettings.ogImage ||
-    'https://naimbsili.com/assets/og-default.png';
+    'https://naiimbsili.com/assets/og-default.png';
 
   const ogTitle = meta.social?.ogTitle || explicitSeo.ogTitle || title;
   const ogDescription = meta.social?.ogDescription || explicitSeo.ogDescription || description;

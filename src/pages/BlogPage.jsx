@@ -47,7 +47,7 @@ export default function BlogPage() {
           name="description"
           content="Articles, technical write-ups, and case studies on AI copilot architecture, design systems, and product automation."
         />
-        <link rel="canonical" href="https://naimbsili.com/blog" />
+        <link rel="canonical" href="https://naiimbsili.com/blog" />
       </Helmet>
 
       <div className="pt-5 pb-5">

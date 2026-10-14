@@ -278,7 +278,7 @@ export default function AdminSidebar() {
       <div className="admin-sidebar-footer">
         {!collapsed && (
           <div className="admin-user-info">
-            <span className="admin-user-email" title={user?.email}>{user?.email || 'admin@naimbsili.com'}</span>
+            <span className="admin-user-email" title={user?.email}>{user?.email || 'admin@naiimbsili.com'}</span>
             <span className="admin-user-role">{profile?.role || 'administrator'}</span>
           </div>
         )}
