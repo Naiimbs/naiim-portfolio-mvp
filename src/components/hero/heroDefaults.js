@@ -17,6 +17,10 @@ export const HERO_DEFAULTS = {
   leadStrong: 'product design, AI, low-code and automation.',
   primaryCta: { label: 'Explore my work', href: '#work' },
   secondaryCta: { label: 'Talk to Naïm Copilot', href: '#copilot' },
+  // Right-column visual controls
+  showVisual: true, // master toggle for the whole right-column visual
+  showMotion: true, // offer the "Motion Sequence" mode
+  showPortrait: true, // offer the "Portrait & Audio" mode
   buildingLabel: 'CURRENTLY BUILDING',
   buildingItems: [
     { iconText: 'W', iconClass: 'winni', label: 'WINNI', href: '#work', note: '' },

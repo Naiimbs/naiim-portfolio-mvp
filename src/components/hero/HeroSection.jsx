@@ -22,6 +22,14 @@ export default function HeroSection({ config = {} }) {
   const primaryCta = { ...HERO_DEFAULTS.primaryCta, ...(cfg.primaryCta || {}) };
   const secondaryCta = { ...HERO_DEFAULTS.secondaryCta, ...(cfg.secondaryCta || {}) };
 
+  // Right-column visual controls
+  const showVisual = cfg.showVisual !== false;
+  const showMotion = cfg.showMotion !== false;
+  const showPortrait = cfg.showPortrait !== false;
+  const modes = [showMotion ? 'motion' : null, showPortrait ? 'portrait' : null].filter(Boolean);
+  const activeMode = modes.includes(heroMode) ? heroMode : modes[0] || 'motion';
+  const showToggle = modes.length > 1;
+
   return (
     <section className="hero section-pad">
       <div className="container">
@@ -80,12 +88,15 @@ export default function HeroSection({ config = {} }) {
             )}
           </div>
 
+          {showVisual && modes.length > 0 && (
           <div className="col-lg-6">
+            {showToggle && (
             <div className="d-flex justify-content-end mb-3 gap-2">
+              {showMotion && (
               <button
                 type="button"
                 className={`btn btn-sm rounded-pill px-3 ${
-                  heroMode === 'motion'
+                  activeMode === 'motion'
                     ? 'btn-primary-custom'
                     : 'btn-outline-secondary text-dark'
                 }`}
@@ -94,10 +105,12 @@ export default function HeroSection({ config = {} }) {
               >
                 <i className="bi bi-play-circle-fill me-1"></i> Motion Sequence (24s)
               </button>
+              )}
+              {showPortrait && (
               <button
                 type="button"
                 className={`btn btn-sm rounded-pill px-3 ${
-                  heroMode === 'portrait'
+                  activeMode === 'portrait'
                     ? 'btn-primary-custom'
                     : 'btn-outline-secondary text-dark'
                 }`}
@@ -106,9 +119,11 @@ export default function HeroSection({ config = {} }) {
               >
                 <i className="bi bi-person-fill me-1"></i> Portrait & Audio
               </button>
+              )}
             </div>
+            )}
 
-            {heroMode === 'motion' ? (
+            {activeMode === 'motion' ? (
               <MotionHero />
             ) : (
               <div className="hero-visual">
@@ -153,6 +168,7 @@ export default function HeroSection({ config = {} }) {
               </div>
             )}
           </div>
+          )}
         </div>
       </div>
     </section>

@@ -23,6 +23,45 @@ export default function HomeHeroSectionEditor({ config = {}, onChange }) {
     <div className="card border-0 bg-light rounded-3 p-3 mb-3">
       <h6 className="fw-bold mb-3 small text-uppercase">Hero Properties</h6>
 
+      <div className="mb-3 p-2 border rounded-3 bg-white">
+        <span className="small text-uppercase fw-bold text-muted d-block mb-2">Right-column visual</span>
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            id="hero-show-visual"
+            checked={config.showVisual !== false}
+            onChange={(e) => set({ showVisual: e.target.checked })}
+          />
+          <label className="form-check-label small" htmlFor="hero-show-visual">Show the visual panel</label>
+        </div>
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            id="hero-show-motion"
+            checked={config.showMotion !== false}
+            disabled={config.showVisual === false}
+            onChange={(e) => set({ showMotion: e.target.checked })}
+          />
+          <label className="form-check-label small" htmlFor="hero-show-motion">Offer “Motion Sequence”</label>
+        </div>
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            id="hero-show-portrait"
+            checked={config.showPortrait !== false}
+            disabled={config.showVisual === false}
+            onChange={(e) => set({ showPortrait: e.target.checked })}
+          />
+          <label className="form-check-label small" htmlFor="hero-show-portrait">Offer “Portrait &amp; Audio”</label>
+        </div>
+        <div className="small text-muted mt-1" style={{ fontSize: '0.72rem' }}>
+          Uncheck both modes (or the panel) to hide the right-column visual entirely.
+        </div>
+      </div>
+
       <div className="mb-3">
         <label className="form-label small fw-semibold">Eyebrow</label>
         <input
