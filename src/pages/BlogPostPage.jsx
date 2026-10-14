@@ -6,6 +6,9 @@ import PageRenderer from '../components/cms/PageRenderer';
 import AdSlot from '../components/monetization/AdSlot';
 import { getBlogPostBySlug, resolveContentSeo } from '../services/contentOperations';
 import { resolveAsset } from '../services/assetRegistry';
+import { recordPostView } from '../services/engagement';
+import ShareButtons from '../components/blog/ShareButtons';
+import PostFeedback from '../components/blog/PostFeedback';
 
 export default function BlogPostPage() {
   const { slug } = useParams();
@@ -15,6 +18,7 @@ export default function BlogPostPage() {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [views, setViews] = useState(null);
 
   useEffect(() => {
     async function loadPost() {
@@ -31,6 +35,17 @@ export default function BlogPostPage() {
     }
     loadPost();
   }, [slug, isPreview]);
+
+  // Count a view once the published article is loaded (skipped in preview mode).
+  useEffect(() => {
+    if (isPreview || !post || notFound) return undefined;
+    let mounted = true;
+    (async () => {
+      const res = await recordPostView(slug);
+      if (mounted && typeof res.data === 'number') setViews(res.data);
+    })();
+    return () => { mounted = false; };
+  }, [post, isPreview, notFound, slug]);
 
   if (loading) {
     return (
@@ -105,8 +120,11 @@ export default function BlogPostPage() {
               <span className="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-2">
                 {meta.category || 'Article'}
               </span>
-              <span className="ms-auto text-muted" style={{ fontSize: '0.75rem' }}>
-                {meta.readingTime || '4 min read'}
+              <span className="ms-auto text-muted d-inline-flex align-items-center gap-2" style={{ fontSize: '0.75rem' }}>
+                {views !== null && (
+                  <span><i className="bi bi-eye me-1"></i>{views.toLocaleString()} view{views === 1 ? '' : 's'}</span>
+                )}
+                <span><i className="bi bi-clock me-1"></i>{meta.readingTime || '4 min read'}</span>
               </span>
             </div>
 
@@ -160,6 +178,11 @@ export default function BlogPostPage() {
             <AdSlot placement="article_bottom" />
           </div>
 
+          {/* Share */}
+          <div className="max-w-4xl mx-auto pt-4 mt-4 border-top">
+            <ShareButtons title={post.title} />
+          </div>
+
           {/* Tags */}
           {Array.isArray(meta.tags) && meta.tags.length > 0 && (
             <div className="max-w-4xl mx-auto pt-4 border-top mt-5">
@@ -201,6 +224,13 @@ export default function BlogPostPage() {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Reader feedback (ratings) */}
+          {!isPreview && (
+            <div className="max-w-4xl mx-auto mt-5 pt-4 border-top">
+              <PostFeedback slug={slug} />
             </div>
           )}
 
