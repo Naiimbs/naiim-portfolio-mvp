@@ -5,6 +5,7 @@ import RichTextSectionEditor from './RichTextSectionEditor';
 import ProjectGridSectionEditor from './ProjectGridSectionEditor';
 import AgentGridSectionEditor from './AgentGridSectionEditor';
 import CtaSectionEditor from './CtaSectionEditor';
+import MediaUploadField from '../MediaUploadField';
 import LayoutInspector from './LayoutInspector';
 import StyleInspector from './StyleInspector';
 import { normalizeSectionConfig, validateSection } from '../../../../components/cms/sectionSchemas';
@@ -91,13 +92,12 @@ export default function SectionPropertyEditor({ section, onChange, onSave, onCan
           <div className="card border-0 bg-light rounded-3 p-3 mb-3">
             <h6 className="fw-bold mb-3 small text-uppercase">Image Properties</h6>
             <div className="mb-3">
-              <label className="form-label small fw-semibold">Image Source (URL or Asset Path)</label>
-              <input
-                type="text"
-                className="form-control form-control-sm rounded-3"
-                placeholder="https://... or winni-sticker-real.png"
+              <label className="form-label small fw-semibold">Image Source</label>
+              <MediaUploadField
                 value={config.src || config.imageUrl || ''}
-                onChange={(e) => handleConfigChange({ ...config, src: e.target.value, imageUrl: e.target.value })}
+                folder="blog"
+                placeholder="https://… or upload an image"
+                onChange={(url) => handleConfigChange({ ...config, src: url, imageUrl: url })}
               />
             </div>
             <div className="mb-3">

@@ -19,6 +19,7 @@ import {
 import { normalizeSlug, getCanonicalRoute } from '../../services/contentRouteResolver';
 import PageRenderer from '../../components/cms/PageRenderer';
 import AddSectionModal from '../components/cms/AddSectionModal';
+import MediaUploadField from '../components/cms/MediaUploadField';
 import SectionPropertyEditor from '../components/cms/editors/SectionPropertyEditor';
 import { normalizeSectionConfig, PAGE_SECTION_TYPES } from '../../components/cms/sectionSchemas';
 import { getLayoutPresetById } from '../../components/cms/layoutSystem';
@@ -369,12 +370,39 @@ export default function AdminBlogEditor() {
       setDirty(false);
       setInitialStatus(status);
       setPublishedAt(nextPublishedAt || null);
-      setFeedback({ type: 'success', message: 'Article saved successfully!' });
+      if (opts.silent) {
+        setFeedback({ type: 'info', message: 'Autosaved.' });
+        setTimeout(() => setFeedback(null), 2000);
+      } else {
+        setFeedback({ type: 'success', message: 'Article saved successfully!' });
+      }
       if (isNew && res.data) {
         navigate(`/admin/content/blog/${res.data.id}`);
       }
     }
   };
+
+  // Warn before leaving the tab with unsaved changes.
+  useEffect(() => {
+    const handler = (e) => {
+      if (dirty) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [dirty]);
+
+  // Autosave existing articles ~15s after edits settle. Content only — pending
+  // status changes are left for an explicit Save so the workflow stays clear.
+  useEffect(() => {
+    if (isNew || !dirty || saving) return undefined;
+    if (status !== initialStatus) return undefined;
+    const t = setTimeout(() => { handleSave({ silent: true }); }, 15000);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dirty, saving, isNew, status, initialStatus, title, excerpt, sections, tags, seoTitle, seoDesc, canonicalUrl, ogTitle, ogDesc, featuredImage, ogImage, category, author, relationships]);
 
   const handlePublish = async () => {
     if (!quality.isReady) {
@@ -687,14 +715,13 @@ export default function AdminBlogEditor() {
                 </div>
 
                 <div className="mb-3">
-                  <label className="form-label small fw-semibold">Featured Image (URL or Filename)</label>
-                  <input
-                    type="text"
-                    className="form-control form-control-sm rounded-3"
-                    placeholder="cover-copilot-naim-DXZL9efD.png"
+                  <label className="form-label small fw-semibold">Featured Image</label>
+                  <MediaUploadField
                     value={featuredImage}
-                    onChange={(e) => {
-                      setFeaturedImage(e.target.value);
+                    folder="blog"
+                    placeholder="https://… or upload a cover image"
+                    onChange={(url) => {
+                      setFeaturedImage(url);
                       setDirty(true);
                     }}
                   />
@@ -1103,14 +1130,13 @@ export default function AdminBlogEditor() {
                 </div>
 
                 <div className="mb-3">
-                  <label className="form-label small fw-semibold">OG Image URL</label>
-                  <input
-                    type="text"
-                    className="form-control rounded-3"
-                    placeholder="cover-copilot-naim-DXZL9efD.png"
+                  <label className="form-label small fw-semibold">OG Image</label>
+                  <MediaUploadField
                     value={ogImage}
-                    onChange={(e) => {
-                      setOgImage(e.target.value);
+                    folder="blog"
+                    placeholder="https://… or upload a social share image"
+                    onChange={(url) => {
+                      setOgImage(url);
                       setDirty(true);
                     }}
                   />
