@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { parseFrontMatter } from '../utils/frontMatter';
 import {
   getContentRegistryEntryById,
   createContentRegistryEntry,
@@ -418,6 +419,50 @@ export default function AdminBlogEditor() {
     setTimeout(() => handleSave({ skipTransitionCheck: true }), 100);
   };
 
+  const mdInputRef = useRef(null);
+  const handleImportMarkdown = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (e.target) e.target.value = '';
+    if (!file) return;
+    if (sections.length > 0 && !window.confirm('Importing will replace the current article body. Continue?')) return;
+
+    let text = '';
+    try {
+      text = await file.text();
+    } catch {
+      setFeedback({ type: 'danger', message: 'Could not read the file.' });
+      return;
+    }
+    const { frontMatter: fm, body } = parseFrontMatter(text);
+
+    if (fm.title) setTitle(fm.title);
+    if (fm.slug) setSlug(normalizeSlug(fm.slug));
+    else if (fm.title && isNew) setSlug(normalizeSlug(fm.title));
+    if (fm.excerpt) setExcerpt(fm.excerpt);
+    if (fm.category) setCategory(fm.category);
+    if (Array.isArray(fm.tags) && fm.tags.length) setTags(fm.tags);
+    if (fm.seo_title) setSeoTitle(fm.seo_title);
+    if (fm.seo_description) setSeoDesc(fm.seo_description);
+    if (fm.og_title) setOgTitle(fm.og_title);
+    if (fm.og_description) setOgDesc(fm.og_description);
+
+    if (body) {
+      const sec = {
+        id: `sec-blog-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        section_type: 'rich_text',
+        label: 'Article Body',
+        sort_order: 10,
+        is_visible: true,
+        config: { eyebrow: '', title: '', body, alignment: 'left' },
+      };
+      setSections([sec]);
+      setActiveSectionId(sec.id);
+    }
+    setDirty(true);
+    setActiveTab('metadata');
+    setFeedback({ type: 'success', message: `Imported "${fm.title || file.name}". Review the fields and the body, then Save.` });
+  };
+
   const handlePreviewClick = () => {
     try {
       const cleanSlug = normalizeSlug(slug || title || 'draft');
@@ -501,6 +546,20 @@ export default function AdminBlogEditor() {
             <i className={`bi bi-${quality.isReady ? 'check-circle-fill' : 'exclamation-triangle-fill'} me-1`}></i>
             Quality: {quality.score}%
           </div>
+
+          <label
+            className="btn btn-outline-secondary bg-white rounded-pill px-3 shadow-xs mb-0"
+            title="Import a markdown file (YAML front matter + body)"
+          >
+            <i className="bi bi-filetype-md me-1"></i> Import .md
+            <input
+              ref={mdInputRef}
+              type="file"
+              accept=".md,.markdown,text/markdown"
+              className="d-none"
+              onChange={handleImportMarkdown}
+            />
+          </label>
 
           <a
             href={previewUrl}
