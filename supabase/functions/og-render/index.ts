@@ -47,9 +47,7 @@ function htmlFor(opts: { title: string; description: string; image: string; url:
 <meta name="twitter:title" content="${esc(title)}" />
 <meta name="twitter:description" content="${esc(description)}" />
 <meta name="twitter:image" content="${esc(image)}" />
-<meta http-equiv="refresh" content="0; url=${esc(url)}" />
-<script>location.replace(${JSON.stringify(url)});</script>
-</head><body><p>Redirecting to <a href="${esc(url)}">${esc(title)}</a>…</p></body></html>`;
+</head><body><p><a href="${esc(url)}">${esc(title)}</a></p></body></html>`;
 }
 
 Deno.serve(async (req: Request) => {
