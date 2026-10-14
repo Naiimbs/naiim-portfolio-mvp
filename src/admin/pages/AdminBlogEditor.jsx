@@ -440,11 +440,15 @@ export default function AdminBlogEditor() {
     else if (fm.title && isNew) setSlug(normalizeSlug(fm.title));
     if (fm.excerpt) setExcerpt(fm.excerpt);
     if (fm.category) setCategory(fm.category);
+    if (fm.author) setAuthor(fm.author);
     if (Array.isArray(fm.tags) && fm.tags.length) setTags(fm.tags);
     if (fm.seo_title) setSeoTitle(fm.seo_title);
     if (fm.seo_description) setSeoDesc(fm.seo_description);
     if (fm.og_title) setOgTitle(fm.og_title);
     if (fm.og_description) setOgDesc(fm.og_description);
+    const cover = fm.featured_image || fm.featuredImage || fm.cover || fm.image || '';
+    if (cover) setFeaturedImage(cover);
+    if (fm.og_image || fm.ogImage) setOgImage(fm.og_image || fm.ogImage);
 
     if (body) {
       const sec = {
