@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { parseFrontMatter } from '../utils/frontMatter';
+import { parseFrontMatter, splitMarkdownSections } from '../utils/frontMatter';
 import {
   getContentRegistryEntryById,
   createContentRegistryEntry,
@@ -420,19 +420,32 @@ export default function AdminBlogEditor() {
   };
 
   const mdInputRef = useRef(null);
-  const handleImportMarkdown = async (e) => {
-    const file = e.target.files && e.target.files[0];
-    if (e.target) e.target.value = '';
-    if (!file) return;
-    if (sections.length > 0 && !window.confirm('Importing will replace the current article body. Continue?')) return;
+  const [mdDragOver, setMdDragOver] = useState(false);
 
-    let text = '';
-    try {
-      text = await file.text();
-    } catch {
-      setFeedback({ type: 'danger', message: 'Could not read the file.' });
-      return;
+  const buildBodySections = (body, split) => {
+    const base = Date.now();
+    const rid = () => Math.random().toString(36).slice(2, 6);
+    if (!split) {
+      return [{
+        id: `sec-blog-${base}-${rid()}`,
+        section_type: 'rich_text',
+        label: 'Article Body',
+        sort_order: 10,
+        is_visible: true,
+        config: { eyebrow: '', title: '', body, alignment: 'left' },
+      }];
     }
+    return splitMarkdownSections(body).map((p, i) => ({
+      id: `sec-blog-${base}-${i}-${rid()}`,
+      section_type: 'rich_text',
+      label: (p.title ? `Body · ${p.title}` : 'Intro').slice(0, 60),
+      sort_order: (i + 1) * 10,
+      is_visible: true,
+      config: { eyebrow: '', title: p.title || '', body: p.body, alignment: 'left' },
+    }));
+  };
+
+  const applyImportedMarkdown = (text, fallbackName = 'article.md') => {
     const { frontMatter: fm, body } = parseFrontMatter(text);
 
     if (fm.title) setTitle(fm.title);
@@ -451,21 +464,57 @@ export default function AdminBlogEditor() {
     if (fm.og_image || fm.ogImage) setOgImage(fm.og_image || fm.ogImage);
 
     if (body) {
-      const sec = {
-        id: `sec-blog-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-        section_type: 'rich_text',
-        label: 'Article Body',
-        sort_order: 10,
-        is_visible: true,
-        config: { eyebrow: '', title: '', body, alignment: 'left' },
-      };
-      setSections([sec]);
-      setActiveSectionId(sec.id);
+      const multiH2 = (body.match(/^##\s+/gm) || []).length > 1;
+      const split = multiH2 && window.confirm(
+        'Split the article into separate sections by heading (##)?\n\nOK = one editable block per heading (easier to insert images between).\nCancel = keep the whole article as a single block.',
+      );
+      const secs = buildBodySections(body, split);
+      setSections(secs);
+      if (secs[0]) setActiveSectionId(secs[0].id);
     }
     setDirty(true);
     setActiveTab('metadata');
-    setFeedback({ type: 'success', message: `Imported "${fm.title || file.name}". Review the fields and the body, then Save.` });
+    setFeedback({ type: 'success', message: `Imported "${fm.title || fallbackName}". Review the fields and body, then Save.` });
   };
+
+  const isMarkdownFile = (file) => file && /\.(md|markdown)$/i.test(file.name || '');
+
+  const importFile = async (file) => {
+    if (!file) return;
+    if (!isMarkdownFile(file)) {
+      setFeedback({ type: 'danger', message: 'Please choose a .md (markdown) file.' });
+      return;
+    }
+    if (sections.length > 0 && !window.confirm('Importing will replace the current article body. Continue?')) return;
+    try {
+      const text = await file.text();
+      applyImportedMarkdown(text, file.name);
+    } catch {
+      setFeedback({ type: 'danger', message: 'Could not read the file.' });
+    }
+  };
+
+  const handleImportMarkdown = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (e.target) e.target.value = '';
+    await importFile(file);
+  };
+
+  const handleMdDrop = async (e) => {
+    e.preventDefault();
+    setMdDragOver(false);
+    const file = e.dataTransfer?.files && e.dataTransfer.files[0];
+    await importFile(file);
+  };
+
+  const handleMdDragOver = (e) => {
+    if (e.dataTransfer && Array.from(e.dataTransfer.types || []).includes('Files')) {
+      e.preventDefault();
+      setMdDragOver(true);
+    }
+  };
+
+  const handleMdDragLeave = () => setMdDragOver(false);
 
   const handlePreviewClick = () => {
     try {
@@ -520,7 +569,25 @@ export default function AdminBlogEditor() {
   const previewUrl = `/blog/${normalizeSlug(slug || title || 'draft')}?preview=true`;
 
   return (
-    <div className="admin-blog-editor p-4">
+    <div
+      className="admin-blog-editor p-4 position-relative"
+      onDragOver={handleMdDragOver}
+      onDragLeave={handleMdDragLeave}
+      onDrop={handleMdDrop}
+    >
+      {mdDragOver && (
+        <div
+          className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+          style={{ zIndex: 1050, background: 'rgba(8,127,102,0.08)', border: '3px dashed #087f66', borderRadius: '1rem', pointerEvents: 'none' }}
+        >
+          <div className="bg-white rounded-4 shadow px-4 py-3 text-center">
+            <i className="bi bi-filetype-md display-6 text-primary d-block mb-1"></i>
+            <strong>Drop your .md file to import</strong>
+            <div className="small text-muted">front matter + body</div>
+          </div>
+        </div>
+      )}
+
       {/* 1. Editor Header */}
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-3 border-bottom">
         <div>

@@ -51,3 +51,30 @@ export function parseFrontMatter(text) {
   body = body.replace(/^\s*#\s+.*\r?\n+/, '').trimStart();
   return { frontMatter: fm, body };
 }
+
+/**
+ * Split a markdown body into blocks at each top-level "## Heading".
+ * Content before the first "##" becomes an intro block (no title).
+ * Returns [{ title, body }].
+ */
+export function splitMarkdownSections(body) {
+  const lines = String(body || '').split(/\r?\n/);
+  const out = [];
+  let cur = { title: '', lines: [] };
+  const flush = () => {
+    if (cur.title || cur.lines.join('').trim()) {
+      out.push({ title: cur.title, body: cur.lines.join('\n').trim() });
+    }
+  };
+  for (const line of lines) {
+    const h2 = line.match(/^##\s+(.*)$/);
+    if (h2) {
+      flush();
+      cur = { title: h2[1].trim(), lines: [] };
+    } else {
+      cur.lines.push(line);
+    }
+  }
+  flush();
+  return out;
+}
