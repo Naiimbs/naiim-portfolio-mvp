@@ -631,14 +631,19 @@ export async function getNavigationItems(location = 'header') {
     }
 
     const items = data || [];
-    // Ensure canonical destinations like Blog are included if not yet migrated in remote DB
-    const existingHrefs = new Set(items.map((i) => i.href));
-    const missingCanonical = localNavStore.filter(
-      (n) => n.location === location && n.is_visible && !existingHrefs.has(n.href)
-    );
-    const merged = [...items, ...missingCanonical].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+    // The CMS navigation table is AUTHORITATIVE as soon as any items exist for
+    // this location: hidden (is_visible=false) and deleted links are fully
+    // respected. We no longer re-inject "missing" canonical links, which used
+    // to resurrect links the editor had intentionally hidden or removed.
+    // Canonical visible defaults are used ONLY when nothing is configured yet.
+    if (items.length === 0) {
+      const defaults = localNavStore
+        .filter((n) => n.location === location && n.is_visible)
+        .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+      return { data: defaults, error: null, source: 'supabase_empty_defaults' };
+    }
 
-    return { data: merged, error: null, source: 'supabase' };
+    return { data: items, error: null, source: 'supabase' };
   } catch (err) {
     const fallbackItems = localNavStore
       .filter((n) => n.location === location && n.is_visible)
@@ -668,12 +673,11 @@ export async function getAdminNavigationItems() {
 
     if (error) return { data: localNavStore, error, source: 'local_fallback' };
 
-    const items = data || [];
-    const existingKeys = new Set(items.map((i) => `${i.location}:${i.href}`));
-    const pendingLocal = localNavStore.filter((n) => !existingKeys.has(`${n.location}:${n.href}`));
-    const merged = [...items, ...pendingLocal].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
-
-    return { data: merged, error: null, source: 'supabase' };
+    // Return only persisted DB rows, so every toggle / edit / delete targets a
+    // real record. When empty, the admin UI offers "Seed Defaults" to persist
+    // the canonical set as real rows (after which visibility fully works).
+    const items = (data || []).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+    return { data: items, error: null, source: 'supabase' };
   } catch (err) {
     return { data: localNavStore, error: err, source: 'local_fallback' };
   }
