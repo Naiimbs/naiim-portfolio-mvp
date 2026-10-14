@@ -41,17 +41,12 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (!id.includes('node_modules')) return undefined;
+          // Split only large, self-contained libraries into their own cacheable
+          // chunks. Everything else (React, router, helmet, i18n and their small
+          // helper deps) stays in one `vendor` chunk to avoid circular chunks.
           if (id.includes('@supabase')) return 'vendor-supabase';
+          if (id.includes('jszip')) return 'vendor-jszip';
           if (id.includes('bootstrap')) return 'vendor-bootstrap';
-          if (id.includes('i18next') || id.includes('react-i18next')) return 'vendor-i18n';
-          if (
-            id.includes('react-router') ||
-            id.includes('/react-dom/') ||
-            id.includes('/react/') ||
-            id.includes('react-helmet')
-          ) {
-            return 'vendor-react';
-          }
           return 'vendor';
         },
       },

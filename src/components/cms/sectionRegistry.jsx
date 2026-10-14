@@ -27,6 +27,17 @@ import { getAdminAgents } from '../../services/agents';
 
 import MotionHero from '../../motion/MotionHero';
 
+// Real homepage block components — wrapped as composite CMS sections (Approach A).
+// These render the exact live components so the builder mirrors the real page.
+import HomeHero from '../hero/HeroSection';
+import HomeSelectedWork from '../work/SelectedWorkSection';
+import HomeCaseStudiesStrip from '../work/CaseStudiesStrip';
+import HomeCopilotWidget from '../copilot/CopilotWidget';
+import HomeCareerCard from '../career/CareerCard';
+import HomeLab from '../lab/LabSection';
+import HomeAbout from '../about/AboutSection';
+import HomeContact from '../common/ContactSection';
+
 // 1. Hero Section
 function HeroSection({ config = {} }) {
   const [heroMode, setHeroMode] = useState('motion'); // 'motion' | 'portrait'
@@ -731,6 +742,53 @@ function FormSectionComponent({ config = {} }) {
   );
 }
 
+// ---------------------------------------------------------------------------
+// Composite homepage blocks (Approach A).
+// Config-less wrappers around the real live components so the page builder can
+// show, reorder, hide, duplicate and remove the actual homepage structure.
+// Fine-grained per-block content editing can be layered on later.
+// ---------------------------------------------------------------------------
+function HomeHeroBlock() {
+  return <HomeHero />;
+}
+
+function SelectedWorkBlock() {
+  return <HomeSelectedWork />;
+}
+
+function CaseStudiesStripBlock() {
+  return <HomeCaseStudiesStrip />;
+}
+
+function CopilotCareerBlock() {
+  return (
+    <section className="section-pad pt-4" id="copilot">
+      <div className="container">
+        <div className="row g-4 align-items-stretch">
+          <div className="col-lg-7">
+            <HomeCopilotWidget />
+          </div>
+          <div className="col-lg-5" id="career">
+            <HomeCareerCard />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function LabBlock() {
+  return <HomeLab />;
+}
+
+function HomeAboutBlock() {
+  return <HomeAbout />;
+}
+
+function HomeContactBlock() {
+  return <HomeContact />;
+}
+
 // Section Registry Object
 export const SECTION_REGISTRY = {
   hero: HeroSection,
@@ -758,6 +816,15 @@ export const SECTION_REGISTRY = {
   tabs: TabsSectionComponent,
   accordion: AccordionSectionComponent,
   form: FormSectionComponent,
+
+  // Composite homepage blocks (render the real live components)
+  home_hero: HomeHeroBlock,
+  selected_work: SelectedWorkBlock,
+  case_studies_strip: CaseStudiesStripBlock,
+  copilot_career: CopilotCareerBlock,
+  lab: LabBlock,
+  home_about: HomeAboutBlock,
+  home_contact: HomeContactBlock,
 };
 
 /**
