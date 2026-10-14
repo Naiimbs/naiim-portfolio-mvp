@@ -236,10 +236,18 @@ function rpcError(id: any, code: number, message: string) {
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
 
-  // Auth
-  const auth = req.headers.get("authorization") || "";
-  if (!MCP_TOKEN || auth !== `Bearer ${MCP_TOKEN}`) {
-    return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: { ...CORS, "Content-Type": "application/json" } });
+  // Auth — accept the token via Authorization: Bearer, x-api-key header, or a
+  // ?token= / ?apikey= query param (for clients that can't send custom headers).
+  const reqUrl = new URL(req.url);
+  const bearer = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "").trim();
+  const apikeyHeader = (req.headers.get("x-api-key") || "").trim();
+  const qToken = (reqUrl.searchParams.get("token") || reqUrl.searchParams.get("apikey") || "").trim();
+  const provided = bearer || apikeyHeader || qToken;
+  if (!MCP_TOKEN || provided !== MCP_TOKEN) {
+    return new Response(JSON.stringify({ error: "unauthorized" }), {
+      status: 401,
+      headers: { ...CORS, "Content-Type": "application/json", "WWW-Authenticate": 'Bearer realm="cms-mcp"' },
+    });
   }
 
   if (req.method === "GET") {
