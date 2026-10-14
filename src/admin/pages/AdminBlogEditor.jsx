@@ -12,7 +12,7 @@ import {
   resolveContentSeo,
   addContentRelationship,
   removeContentRelationship,
-  transitionContentStatus,
+  isValidStatusTransition,
   STATUS_LABELS,
   STATUS_BADGE_VARIANTS,
 } from '../../services/contentOperations';
@@ -53,6 +53,8 @@ export default function AdminBlogEditor() {
   const [ogDesc, setOgDesc] = useState('');
   const [ogImage, setOgImage] = useState('');
   const [relationships, setRelationships] = useState([]);
+  const [initialStatus, setInitialStatus] = useState('draft'); // last persisted status (for transition rules)
+  const [publishedAt, setPublishedAt] = useState(null); // preserved across saves
 
   // Visual Page Builder State & Handlers
   const [activeSectionId, setActiveSectionId] = useState(null);
@@ -74,6 +76,8 @@ export default function AdminBlogEditor() {
         setTitle(item.title || '');
         setSlug(item.slug || '');
         setStatus(item.status || 'draft');
+        setInitialStatus(item.status || 'draft');
+        setPublishedAt(meta.publishedAt || null);
         setFeatured(Boolean(item.featured));
         setExcerpt(meta.excerpt || '');
         setAuthor(meta.author || 'Naïm Bsili');
@@ -276,15 +280,41 @@ export default function AdminBlogEditor() {
     setDirty(true);
   };
 
-  const handleSave = async () => {
+  const handleSave = async (opts = {}) => {
     const cleanSlug = normalizeSlug(slug || title);
     if (!title.trim()) {
       setFeedback({ type: 'danger', message: 'Article title is required.' });
       return;
     }
 
+    // Enforce the editorial state machine for dropdown-driven status changes.
+    // An explicit Publish action passes skipTransitionCheck (gated by quality).
+    if (!isNew && status !== initialStatus && !opts.skipTransitionCheck) {
+      if (!isValidStatusTransition(initialStatus, status)) {
+        const allowed = { draft: 'In review, Ready', in_review: 'Draft, Ready', ready: 'Draft, Published', published: 'Archived', archived: 'Draft' }[initialStatus] || '—';
+        setFeedback({
+          type: 'danger',
+          message: `Invalid status change ${STATUS_LABELS[initialStatus] || initialStatus} → ${STATUS_LABELS[status] || status}. Allowed from "${STATUS_LABELS[initialStatus] || initialStatus}": ${allowed}.`,
+        });
+        setStatus(initialStatus);
+        return;
+      }
+    }
+
     setSaving(true);
     setFeedback(null);
+
+    // Word count / reading time from the real article body (section prose), not the excerpt.
+    const bodyText = [
+      excerpt,
+      ...sections.map((s) => {
+        const c = s.config || {};
+        return [c.title, c.body, c.content, c.intro, c.description, c.quote].filter(Boolean).join(' ');
+      }),
+    ].join(' ').trim();
+    const wordCount = bodyText ? bodyText.split(/\s+/).filter(Boolean).length : 0;
+    const readingTime = `${Math.max(1, Math.round(wordCount / 200))} min read`;
+    const nextPublishedAt = status === 'published' ? publishedAt || new Date().toISOString() : publishedAt || undefined;
 
     const isAvailable = await checkSlugAvailable(cleanSlug, isNew ? null : id);
     if (!isAvailable) {
@@ -308,9 +338,9 @@ export default function AdminBlogEditor() {
         tags,
         featuredImage: featuredImage.trim(),
         sections,
-        readingTime: `${Math.max(1, Math.round((excerpt.length + 500) / 200))} min read`,
-        wordCount: excerpt.split(/\s+/).length + 400,
-        publishedAt: status === 'published' ? new Date().toISOString() : undefined,
+        readingTime,
+        wordCount,
+        publishedAt: nextPublishedAt,
         seo: {
           title: seoTitle.trim(),
           description: seoDesc.trim(),
@@ -337,6 +367,8 @@ export default function AdminBlogEditor() {
       setFeedback({ type: 'danger', message: `Save error: ${res.error.message}` });
     } else {
       setDirty(false);
+      setInitialStatus(status);
+      setPublishedAt(nextPublishedAt || null);
       setFeedback({ type: 'success', message: 'Article saved successfully!' });
       if (isNew && res.data) {
         navigate(`/admin/content/blog/${res.data.id}`);
@@ -355,7 +387,7 @@ export default function AdminBlogEditor() {
 
     setStatus('published');
     setDirty(true);
-    setTimeout(() => handleSave(), 100);
+    setTimeout(() => handleSave({ skipTransitionCheck: true }), 100);
   };
 
   const handlePreviewClick = () => {
@@ -367,7 +399,7 @@ export default function AdminBlogEditor() {
         slug: cleanSlug,
         content_type: 'blog',
         status: status || 'draft',
-        visibility: visibility || 'public',
+        visibility: 'public',
         public_route: `/blog/${cleanSlug}`,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),

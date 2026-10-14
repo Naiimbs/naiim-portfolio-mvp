@@ -26,6 +26,7 @@ import { getAdminAgents } from '../../services/agents';
  */
 
 import MotionHero from '../../motion/MotionHero';
+import Markdown from './Markdown';
 
 // Real homepage block components — wrapped as composite CMS sections (Approach A).
 // These render the exact live components so the builder mirrors the real page.
@@ -133,7 +134,7 @@ function TextSection({ config = {} }) {
       <div className="container">
         {eyebrow && <div className="text-uppercase tracking-wider text-primary fw-semibold small mb-2">{eyebrow}</div>}
         {title && <h2 className="cms-section-heading fw-bold mb-3">{title}</h2>}
-        {body && <div className="cms-text-content lead text-secondary max-w-3xl mx-auto">{body}</div>}
+        {body && <Markdown className="cms-text-content lead text-secondary max-w-3xl mx-auto" text={body} />}
       </div>
     </section>
   );
