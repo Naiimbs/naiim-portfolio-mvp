@@ -30,7 +30,9 @@ const AdminBlogEditor = lazy(() => import('./admin/pages/AdminBlogEditor'));
 const AdminProjects = lazy(() => import('./admin/pages/AdminProjects'));
 const AdminProjectEditor = lazy(() => import('./admin/pages/AdminProjectEditor'));
 const AdminCaseStudies = lazy(() => import('./admin/pages/AdminCaseStudies'));
-const AdminCaseStudyEditor = lazy(() => import('./admin/pages/AdminCaseStudyEditor'));
+// Legacy standalone case-study editor (AdminCaseStudyEditor) is retired: it wrote
+// the old case_studies tables that no public route reads. Case studies are now
+// edited via the Content Registry (/admin/registry/:id).
 const AdminResources = lazy(() => import('./admin/pages/AdminResources'));
 const AdminResourceEditor = lazy(() => import('./admin/pages/AdminResourceEditor'));
 const AdminAgents = lazy(() => import('./admin/pages/AdminAgents'));
@@ -122,7 +124,8 @@ export default function App() {
               <Route path="projects" element={<AdminProjects />} />
               <Route path="projects/:id" element={<AdminProjectEditor />} />
               <Route path="case-studies" element={<AdminCaseStudies />} />
-              <Route path="case-studies/:id" element={<AdminCaseStudyEditor />} />
+              {/* Legacy editor retired — redirect any deep links to the list (editing is via Content Registry) */}
+              <Route path="case-studies/:id" element={<Navigate to="/admin/case-studies" replace />} />
 
               {/* Resources Management Routes */}
               <Route path="resources" element={<AdminResources />} />

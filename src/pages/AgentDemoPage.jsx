@@ -7,7 +7,6 @@ import AgentDemoInput from '../components/agents/demo/AgentDemoInput';
 import AgentDemoResult from '../components/agents/demo/AgentDemoResult';
 import AgentDemoStatus from '../components/agents/demo/AgentDemoStatus';
 import { getPublishedAgentBySlug } from '../services/agents';
-import { answerFor } from '../components/copilot/copilotMock';
 import '../styles/agent-demo.css';
 
 const COPILOT_SUGGESTIONS = [

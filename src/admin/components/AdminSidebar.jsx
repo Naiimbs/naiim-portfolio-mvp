@@ -114,7 +114,6 @@ export default function AdminSidebar() {
           { to: '/admin/marketing/leads', label: 'Leads', icon: 'bi-people-fill' },
           { to: '/admin/marketing/downloads', label: 'Downloads', icon: 'bi-download' },
           { to: '/admin/marketing/supporters', label: 'Supporters', icon: 'bi-cup-hot-fill' },
-          { to: '/admin/marketing/campaigns', label: 'Campaigns', icon: 'bi-send-fill' },
         ],
       },
       {
