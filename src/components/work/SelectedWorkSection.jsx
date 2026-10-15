@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import ProjectCard from './ProjectCard';
 import MiniProjectCard from './MiniProjectCard';
 import { getPublishedPublicContent, normalizeRegistryEntry } from '../../services/contentRegistry';
@@ -17,6 +18,7 @@ import { isPublicRouteImplemented } from '../../services/contentRouteResolver';
  *   ready          — 1+ entries returned, split into featured/mini
  */
 export default function SelectedWorkSection() {
+  const { t } = useTranslation();
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -71,7 +73,7 @@ export default function SelectedWorkSection() {
           <SectionHeading />
           <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '20vh' }}>
             <div className="spinner-border text-success" role="status">
-              <span className="visually-hidden">Loading work...</span>
+              <span className="visually-hidden">{t('work.loading')}</span>
             </div>
           </div>
         </div>
@@ -86,7 +88,7 @@ export default function SelectedWorkSection() {
         <div className="container">
           <SectionHeading />
           <p className="text-muted text-center py-4">
-            Selected work is temporarily unavailable.
+            {t('work.unavailable')}
           </p>
         </div>
       </section>
@@ -99,7 +101,7 @@ export default function SelectedWorkSection() {
       <section className="section-pad pt-5" id="work">
         <div className="container">
           <SectionHeading />
-          <p className="text-muted text-center py-4">No published work items yet.</p>
+          <p className="text-muted text-center py-4">{t('work.empty')}</p>
         </div>
       </section>
     );
@@ -143,19 +145,18 @@ export default function SelectedWorkSection() {
 // ── Shared section heading ───────────────────────────────────────────────────
 
 function SectionHeading() {
+  const { t } = useTranslation();
   return (
     <div className="section-heading d-flex justify-content-between align-items-end mb-4">
       <div>
         <div className="eyebrow">
-          <span></span> SELECTED WORK
+          <span></span> {t('work.eyebrow')}
         </div>
-        <h2>Products, systems &amp; digital experiences</h2>
-        <p>
-          From startup products and AI systems to Saudi digital services and front-end implementation.
-        </p>
+        <h2>{t('work.title')}</h2>
+        <p>{t('work.subtitle')}</p>
       </div>
       <a href="#contact" className="text-link d-none d-md-inline">
-        Let's talk <i className="bi bi-arrow-up-right"></i>
+        {t('work.talk')} <i className="bi bi-arrow-up-right"></i>
       </a>
     </div>
   );

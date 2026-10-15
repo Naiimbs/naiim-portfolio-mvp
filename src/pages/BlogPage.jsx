@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import MainLayout from '../layouts/MainLayout';
 import AdSlot from '../components/monetization/AdSlot';
 import { getPublishedBlogPosts } from '../services/contentOperations';
 import { resolveAsset } from '../services/assetRegistry';
 
 export default function BlogPage() {
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language === 'fr' ? 'fr-FR' : i18n.language === 'ar' ? 'ar' : 'en-US';
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -55,13 +58,13 @@ export default function BlogPage() {
           {/* Header */}
           <div className="text-center max-w-3xl mx-auto mb-5">
             <div className="eyebrow justify-content-center mb-2">
-              <span></span> EDITORIAL & WRITING
+              <span></span> {t('blogList.eyebrow')}
             </div>
             <h1 className="display-4 fw-bold font-heading mb-3">
-              Design, AI &amp; Digital Craft.
+              {t('blogList.title')}
             </h1>
             <p className="lead text-secondary">
-              Thoughts, architecture breakdowns, and systems design notes on building at the intersection of AI, low-code, and UX.
+              {t('blogList.lead')}
             </p>
           </div>
 
@@ -79,7 +82,7 @@ export default function BlogPage() {
                   style={{ fontSize: '0.8rem' }}
                   onClick={() => setActiveCategory(cat)}
                 >
-                  {cat === 'ALL' ? 'All Articles' : cat}
+                  {cat === 'ALL' ? t('blogList.allArticles') : cat}
                 </button>
               ))}
             </div>
@@ -92,7 +95,7 @@ export default function BlogPage() {
               <input
                 type="text"
                 className="form-control border-start-0"
-                placeholder="Search articles & tags…"
+                placeholder={t('blogList.searchPlaceholder')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -112,17 +115,20 @@ export default function BlogPage() {
           {loading ? (
             <div className="text-center py-5">
               <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Loading articles...</span>
+                <span className="visually-hidden">{t('blogList.loading')}</span>
               </div>
             </div>
           ) : filteredPosts.length > 0 ? (
             <div className="row g-4">
               {filteredPosts.map((post) => {
                 const meta = post.metadata || {};
+                const ptx = (i18n.language && i18n.language !== 'en' && meta.i18n) ? meta.i18n[i18n.language] : null;
+                const cardTitle = (ptx && ptx.title) || post.title;
+                const cardExcerpt = (ptx && ptx.excerpt) || meta.excerpt;
                 const cover = meta.featuredImage ? resolveAsset(meta.featuredImage) : null;
                 const dateStr = meta.publishedAt
-                  ? new Date(meta.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                  : 'Published';
+                  ? new Date(meta.publishedAt).toLocaleDateString(dateLocale, { month: 'short', day: 'numeric', year: 'numeric' })
+                  : t('blogList.datePublished');
 
                 return (
                   <div key={post.id} className="col-12 col-md-6 col-lg-4">
@@ -131,7 +137,7 @@ export default function BlogPage() {
                         <Link to={`/blog/${post.slug}`} className="d-block overflow-hidden" style={{ maxHeight: '220px' }}>
                           <img
                             src={cover}
-                            alt={post.title}
+                            alt={cardTitle}
                             className="w-100 object-fit-cover transition-transform"
                             style={{ height: '220px' }}
                           />
@@ -141,21 +147,21 @@ export default function BlogPage() {
                       <div className="card-body p-4 d-flex flex-column">
                         <div className="d-flex justify-content-between align-items-center mb-2">
                           <span className="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-2 py-1" style={{ fontSize: '0.7rem' }}>
-                            {meta.category || 'Article'}
+                            {meta.category || t('blog.categoryFallback')}
                           </span>
                           <span className="text-muted small" style={{ fontSize: '0.75rem' }}>
-                            {meta.readingTime || '4 min read'}
+                            {meta.readingTime || t('blog.readingFallback')}
                           </span>
                         </div>
 
                         <h5 className="card-title fw-bold mb-2 font-heading">
                           <Link to={`/blog/${post.slug}`} className="text-dark text-decoration-none hover-text-primary">
-                            {post.title}
+                            {cardTitle}
                           </Link>
                         </h5>
 
                         <p className="card-text text-secondary small flex-grow-1 line-clamp-3">
-                          {meta.excerpt || 'Read the full editorial breakdown.'}
+                          {cardExcerpt || t('blogList.excerptFallback')}
                         </p>
 
                         <div className="pt-3 border-top mt-3 d-flex justify-content-between align-items-center">
@@ -163,7 +169,7 @@ export default function BlogPage() {
                             {dateStr}
                           </span>
                           <Link to={`/blog/${post.slug}`} className="btn btn-sm btn-link text-primary p-0 fw-semibold text-decoration-none">
-                            Read Article <i className="bi bi-arrow-right ms-1"></i>
+                            {t('blogList.readArticle')} <i className="bi bi-arrow-right ms-1"></i>
                           </Link>
                         </div>
                       </div>
@@ -175,11 +181,11 @@ export default function BlogPage() {
           ) : (
             <div className="text-center py-5 my-5 bg-white rounded-4 border border-light-subtle p-5">
               <i className="bi bi-journal-text display-4 text-muted mb-3 d-block"></i>
-              <h4 className="fw-bold mb-2">No articles found</h4>
+              <h4 className="fw-bold mb-2">{t('blogList.emptyTitle')}</h4>
               <p className="text-secondary small mb-4">
                 {search
-                  ? `No published articles match "${search}". Try clearing your search.`
-                  : 'No published articles in this category yet. Check back soon!'}
+                  ? t('blogList.emptyMatch', { search })
+                  : t('blogList.emptyNone')}
               </p>
               {search && (
                 <button
@@ -190,7 +196,7 @@ export default function BlogPage() {
                     setActiveCategory('ALL');
                   }}
                 >
-                  Clear Filters
+                  {t('blogList.clearFilters')}
                 </button>
               )}
             </div>

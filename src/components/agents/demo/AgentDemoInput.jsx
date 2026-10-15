@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function AgentDemoInput({
   input,
@@ -10,6 +11,7 @@ export default function AgentDemoInput({
   suggestions = [],
   maxLength = 1000,
 }) {
+  const { t } = useTranslation();
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!loading && !disabled && input.trim()) {
@@ -28,7 +30,7 @@ export default function AgentDemoInput({
     <div className="agent-demo-input-card">
       <form onSubmit={handleSubmit}>
         <label htmlFor="agentInput" className="agent-demo-label">
-          <span>Prompt / Query:</span>
+          <span>{t('agents.demo.promptLabel')}</span>
           <span className="text-muted small font-monospace">
             {input.length}/{maxLength}
           </span>
@@ -39,7 +41,7 @@ export default function AgentDemoInput({
             id="agentInput"
             rows="3"
             className="form-control agent-demo-textarea"
-            placeholder={placeholder || 'Ask a question or enter a task for the agent...'}
+            placeholder={placeholder || t('agents.demo.inputPlaceholder')}
             value={input}
             maxLength={maxLength}
             disabled={loading || disabled}
@@ -55,7 +57,7 @@ export default function AgentDemoInput({
 
         <div className="d-flex justify-content-between align-items-center mt-3">
           <div className="small text-muted d-none d-md-block">
-            <i className="bi bi-info-circle me-1"></i> Press <kbd>Enter</kbd> to run, <kbd>Shift + Enter</kbd> for newline
+            <i className="bi bi-info-circle me-1"></i> {t('agents.demo.pressKey')} <kbd>Enter</kbd> {t('agents.demo.toRun')} <kbd>Shift + Enter</kbd> {t('agents.demo.forNewline')}
           </div>
 
           <button
@@ -66,12 +68,12 @@ export default function AgentDemoInput({
             {loading ? (
               <>
                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                <span>Executing Agent...</span>
+                <span>{t('agents.demo.executing')}</span>
               </>
             ) : (
               <>
                 <i className="bi bi-play-fill fs-5"></i>
-                <span>Run Agent</span>
+                <span>{t('agents.demo.run')}</span>
               </>
             )}
           </button>
@@ -81,7 +83,7 @@ export default function AgentDemoInput({
       {/* Suggested Quick Prompts */}
       {suggestions.length > 0 && (
         <div className="agent-demo-suggestions mt-4">
-          <div className="suggestion-label">EXAMPLE QUERIES:</div>
+          <div className="suggestion-label">{t('agents.demo.examples')}</div>
           <div className="suggestion-pill-row">
             {suggestions.map((item, idx) => {
               const text = typeof item === 'string' ? item : item.text || item.question;

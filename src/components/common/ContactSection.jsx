@@ -1,22 +1,25 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function ContactSection() {
+  const { t } = useTranslation();
+
   return (
     <section className="contact-section" id="contact">
       <div className="container">
         <div className="contact-box">
           <div>
             <div className="eyebrow light">
-              <span></span> LET'S CONNECT
+              <span></span> {t('contact.eyebrow')}
             </div>
             <h2>
-              Have an idea, a product<br />
-              or a problem to solve?
+              {t('contact.titleLine1')}<br />
+              {t('contact.titleLine2')}
             </h2>
-            <p>Let's turn it into something real.</p>
+            <p>{t('contact.subtitle')}</p>
           </div>
           <a className="btn btn-warning rounded-pill px-4" href="mailto:hi@naiimbsili.com">
-            Let's talk <i className="bi bi-arrow-up-right"></i>
+            {t('contact.cta')} <i className="bi bi-arrow-up-right"></i>
           </a>
         </div>
       </div>

@@ -2,12 +2,365 @@
   "nav": {
     "work": "Projets",
     "copilot": "Copilot",
-    "career": "Carrière",
+    "career": "Parcours",
     "lab": "Lab",
     "about": "À propos",
-    "talk": "Contact"
+    "talk": "Discutons",
+    "blog": "Blog"
   },
   "footer": {
     "rights": "© 2026 Naïm Bsili. Tous droits réservés."
+  },
+  "contact": {
+    "eyebrow": "RESTONS EN CONTACT",
+    "titleLine1": "Une idée, un produit",
+    "titleLine2": "ou un problème à résoudre ?",
+    "subtitle": "Transformons-le en quelque chose de réel.",
+    "cta": "Discutons"
+  },
+  "share": {
+    "on": "Partager sur {{network}}",
+    "copy": "Copier le lien",
+    "copied": "Copié",
+    "label": "Partager :"
+  },
+  "feedback": {
+    "title": "Cet article vous a-t-il été utile ?",
+    "ratings": "{{avg}} · {{count}} avis",
+    "note": "Votre note m'aide à améliorer mes écrits. Les commentaires sont privés.",
+    "placeholder": "Facultatif : qu'est-ce qui pourrait être amélioré ? (privé)",
+    "send": "Envoyer",
+    "sending": "Envoi…",
+    "thanks": "Merci pour votre retour !",
+    "chooseStar": "Veuillez d'abord choisir une note.",
+    "errorGeneric": "Impossible d'envoyer votre retour. Veuillez réessayer.",
+    "ratingAria": "Note",
+    "starAria": "Noter {{n}} sur 5"
+  },
+  "blog": {
+    "notFoundTitle": "Article introuvable",
+    "notFoundBody": "L’article demandé « {{slug}} » n’existe pas ou n’a pas encore été publié.",
+    "backToCatalog": "Retour au catalogue du blog",
+    "previewBanner": "Mode aperçu : affichage du contenu enregistré pour « {{title}} » (statut : {{status}}).",
+    "categoryFallback": "Article",
+    "views_one": "{{count}} vue",
+    "views_other": "{{count}} vues",
+    "readingFallback": "4 min de lecture",
+    "words_one": "{{count}} mot",
+    "words_other": "{{count}} mots",
+    "draftPreview": "Aperçu brouillon",
+    "tags": "Tags :",
+    "related": "Contenu lié & études de cas",
+    "explore": "Découvrir {{type}}",
+    "viewAll": "Voir tous les articles"
+  },
+  "blogList": {
+    "eyebrow": "ÉDITORIAL & ÉCRITURE",
+    "title": "Design, IA & Artisanat numérique.",
+    "lead": "Réflexions, analyses d’architecture et notes de conception de systèmes, à l’intersection de l’IA, du low-code et de l’UX.",
+    "allArticles": "Tous les articles",
+    "searchPlaceholder": "Rechercher articles & tags…",
+    "loading": "Chargement des articles...",
+    "excerptFallback": "Lire l’analyse éditoriale complète.",
+    "readArticle": "Lire l’article",
+    "datePublished": "Publié",
+    "emptyTitle": "Aucun article trouvé",
+    "emptyMatch": "Aucun article publié ne correspond à « {{search}} ». Essayez d’effacer votre recherche.",
+    "emptyNone": "Aucun article publié dans cette catégorie pour l’instant. Revenez bientôt !",
+    "clearFilters": "Effacer les filtres"
+  },
+  "placeholder": {
+    "error404": "ERREUR 404",
+    "comingSoon": "BIENTÔT DISPONIBLE",
+    "defaultDesc": "Cette page est configurée dans le routeur et sera implémentée dans les prochaines phases.",
+    "backHome": "Retour à l’accueil"
+  },
+  "lab": {
+    "eyebrow": "EXPÉRIMENTATIONS",
+    "title": "Naïm Lab",
+    "subtitle": "Outils, expérimentations et idées à l’intersection du design, de l’IA et de la technologie.",
+    "exploreAgents": "Découvrir les agents IA",
+    "pluginsEyebrow": "PLUGINS FIGMA QUE J’AI CRÉÉS",
+    "experiments": [
+      {
+        "title": "Agents IA",
+        "description": "Agents intelligents"
+      },
+      {
+        "title": "n8n",
+        "description": "Automatisation & workflows"
+      },
+      {
+        "title": "MCP",
+        "description": "Model Context Protocol"
+      },
+      {
+        "title": "RAG",
+        "description": "Connaissance & recherche"
+      },
+      {
+        "title": "Figma",
+        "description": "Design systems"
+      },
+      {
+        "title": "Vibe Coding",
+        "description": "Prototypage rapide"
+      }
+    ]
+  },
+  "career": {
+    "kicker": "RECHERCHE D’EMPLOI",
+    "title": "Et après ?",
+    "subtitle": "Découvrez le type d’opportunités que je vise.",
+    "role": "Product Designer & Bâtisseur IA",
+    "openTo": "Ouvert à KSA · UAE · Europe · Remote",
+    "targetLabel": "Objectif",
+    "targetValue": "Senior / Lead Product Designer",
+    "marketsLabel": "Marchés",
+    "marketsValue": "KSA · UAE · Europe · Remote",
+    "focusLabel": "Focus",
+    "focusValue": "Produit · UX/UI · IA · Produits numériques",
+    "exploreBtn": "Explorer les opportunités",
+    "lookingFor": "CE QUE JE RECHERCHE",
+    "downloadCv": "Télécharger le CV",
+    "toastTitle": "Recherche d’emploi",
+    "toastBody": "Ceci est l’UI du MVP. Le vrai workflow n8n de recherche d’emploi pourra être connecté ici plus tard.",
+    "tags": [
+      "Senior Product Designer",
+      "Lead Product Designer",
+      "AI Product Designer",
+      "Design Systems",
+      "Remote"
+    ]
+  },
+  "about": {
+    "eyebrow": "LE PARCOURS",
+    "titleLine1": "De la fabrication manuelle",
+    "titleLine2": "à la création de produits intelligents.",
+    "nowLabel": "AUJOURD’HUI",
+    "timeline": [
+      {
+        "title": "Conception mécanique",
+        "subtitle": "& fabrication",
+        "small": null
+      },
+      {
+        "title": "Environnements industriels",
+        "subtitle": null,
+        "small": "Procédés & maintenance · industrie du chlore"
+      },
+      {
+        "title": "Injection plastique",
+        "subtitle": null,
+        "small": "Moulage & fabrication"
+      },
+      {
+        "title": "Design numérique",
+        "subtitle": "& UX/UI",
+        "small": null
+      },
+      {
+        "title": "Product Design",
+        "subtitle": "& création de produits IA",
+        "small": null
+      }
+    ],
+    "cardEyebrow": "À PROPOS",
+    "cardTitleLine1": "Concevoir avec curiosité.",
+    "cardTitleLine2": "Bâtir avec intention.",
+    "bio": "Je suis Naïm, product designer et bâtisseur IA basé en Tunisie. J’aime prendre des idées floues, leur donner une structure, concevoir l’expérience et les transformer en quelque chose de réellement utilisable.",
+    "skills": [
+      "UX/UI",
+      "Product Design",
+      "IA",
+      "Low-Code",
+      "Design Systems",
+      "Automatisation"
+    ],
+    "languagesLabel": "LANGUES",
+    "languagesLine1": "Arabe · Français",
+    "languagesLine2": "Anglais · Italien",
+    "certificationsLabel": "CERTIFICATIONS",
+    "certLine1": "PSM I",
+    "certLine2": "Mendix Rapid Developer",
+    "certLine3": "Design — ISSAT Sousse"
+  },
+  "copilot": {
+    "kicker": "ASSISTANT IA",
+    "subtitle": "Posez des questions sur mon travail, mes projets, mes compétences et mon parcours.",
+    "online": "En ligne",
+    "defaultUser": "Quel type de produits Naïm conçoit-il ?",
+    "defaultAi": "Naïm conçoit des produits numériques mêlant design, technologie et IA, avec un accent sur des expériences utilisables et un impact métier réel. Son travail couvre l’UX/UI, le Product Design, les solutions basées sur l’IA, le Low-Code et les Product Operations.",
+    "thinking": "Réflexion…",
+    "inputPlaceholder": "Posez une autre question...",
+    "send": "Envoyer",
+    "tryAsking": "ESSAYEZ DE DEMANDER :",
+    "poweredNote": "UI prototype · prêt à être connecté à n8n",
+    "suggestions": [
+      "Quelles sont les meilleures compétences de Naïm ?",
+      "Montre-moi des projets pertinents",
+      "Quels outils IA utilise-t-il ?",
+      "Est-il disponible pour un projet ?",
+      "Pourquoi travailler avec Naïm ?"
+    ]
+  },
+  "work": {
+    "eyebrow": "PROJETS SÉLECTIONNÉS",
+    "title": "Produits, systèmes & expériences numériques",
+    "subtitle": "Des produits de startups et systèmes IA aux services numériques saoudiens et à l’intégration front-end.",
+    "talk": "Discutons",
+    "loading": "Chargement des projets...",
+    "unavailable": "Les projets sélectionnés sont momentanément indisponibles.",
+    "empty": "Aucun projet publié pour l’instant.",
+    "loadError": "Impossible de charger les projets pour le moment. Veuillez réessayer sous peu."
+  },
+  "caseStrip": {
+    "eyebrow": "ÉTUDES DE CAS",
+    "title": "Comment je résous les problèmes produit",
+    "subtitle": "Chaque récit se concentre sur le problème, mon rôle, les décisions de design et la technologie utilisée pour rendre l’idée utilisable.",
+    "steps": [
+      {
+        "strong": "Problème",
+        "span": "Qu’est-ce qui devait changer ?"
+      },
+      {
+        "strong": "Rôle",
+        "span": "Ce dont j’étais responsable."
+      },
+      {
+        "strong": "Approche",
+        "span": "Comment j’ai cadré la solution."
+      },
+      {
+        "strong": "Build",
+        "span": "Comment le design a rencontré la technologie."
+      }
+    ]
+  },
+  "resources": {
+    "eyebrow": "BIBLIOTHÈQUE DE RESSOURCES & SKILLS",
+    "title": "Compétences, outils & systèmes que j’utilise pour penser, concevoir et construire.",
+    "lead": "Bundles de capacités d’agents autonomes, playbooks d’audits heuristiques, templates de design systems et artefacts de référence téléchargeables.",
+    "all": "Toutes les ressources",
+    "searchPlaceholder": "Rechercher ressources & tags...",
+    "loading": "Chargement des ressources...",
+    "loadingSub": "Chargement des ressources sélectionnées...",
+    "errorTitle": "Impossible de charger les ressources",
+    "errorBody": "Un problème temporaire est survenu lors de la récupération du répertoire.",
+    "retry": "Réessayer la connexion",
+    "emptyTitle": "Aucune ressource ne correspond à votre sélection",
+    "emptyBody": "Essayez d’ajuster votre recherche ou de choisir une autre catégorie.",
+    "resetFilters": "Réinitialiser les filtres",
+    "featured": "En vedette",
+    "assets_one": "{{count}} fichier inclus",
+    "assets_other": "{{count}} fichiers inclus",
+    "explore": "Explorer",
+    "backToWork": "Retour aux projets",
+    "requestCustom": "Demander un Skill ou un outil sur mesure"
+  },
+  "agents": {
+    "eyebrow": "LAB AGENTS IA & AUTOMATISATION",
+    "title": "Agents autonomes & systèmes de workflow",
+    "lead": "De petits systèmes qui transforment le travail répétitif en actions utiles. Alliant raisonnement conversationnel, mémoire vectorielle, orchestration n8n et intégrations d’outils sur mesure.",
+    "loading": "Chargement des agents IA...",
+    "activeEyebrow": "AGENTS ACTIFS",
+    "exploreTitle": "Explorer les systèmes réalisés",
+    "exploreLead": "Analyses d’architecture détaillées, prototypes en direct et arbres de décision de workflow.",
+    "backToWork": "Retour aux projets",
+    "buildTogether": "Construisons un agent ensemble",
+    "detail": {
+      "loading": "Chargement de l’étude de cas...",
+      "notFoundEyebrow": "404 — INTROUVABLE",
+      "notFoundTitle": "Agent IA introuvable",
+      "notFoundBody": "L’étude de cas de cet agent IA est introuvable.",
+      "back": "Retour aux agents IA",
+      "tryDemo": "Essayer la démo interactive",
+      "viewRepo": "Voir le dépôt"
+    },
+    "demo": {
+      "loading": "Chargement de la démo...",
+      "notFoundTitle": "Agent introuvable",
+      "notFoundBody": "La démo de cet agent n’existe pas.",
+      "placeholder": "Posez une question à {{name}} sur les projets, compétences ou workflows...",
+      "gatewayError": "Impossible de se connecter à la passerelle de l’agent. Vérifiez votre connexion internet.",
+      "unavailableError": "Le Copilot est momentanément indisponible. Réessayez plus tard.",
+      "promptLabel": "Invite / Requête :",
+      "inputPlaceholder": "Posez une question ou saisissez une tâche pour l’agent...",
+      "pressKey": "Appuyez sur",
+      "toRun": "pour exécuter,",
+      "forNewline": "pour un saut de ligne",
+      "executing": "Exécution de l’agent...",
+      "run": "Lancer l’agent",
+      "examples": "EXEMPLES DE REQUÊTES :",
+      "thinking": "L’agent réfléchit...",
+      "processing": "Traitement avec n8n & Gemini...",
+      "processingSub": "Interrogation de la mémoire vectorielle, exécution du raisonnement et préparation de la réponse.",
+      "response": "Réponse de l’agent",
+      "reset": "Réinitialiser",
+      "resetTitle": "Effacer la réponse et poser une autre question",
+      "backToCase": "Retour à l’étude de cas",
+      "interactiveDemo": "Démo interactive",
+      "inactiveTitle": "Démo en direct inactive",
+      "inactiveBody": "Cet agent fonctionne comme un pipeline autonome en arrière-plan et n’accepte pas pour l’instant de requêtes synchrones.",
+      "readCase": "Lire l’étude de cas",
+      "errorDefault": "La démo est momentanément indisponible. Réessayez dans quelques instants.",
+      "failedTitle": "Échec de l’exécution de l’agent",
+      "tryAgain": "Réessayer",
+      "viewCase": "Voir l’étude de cas",
+      "suggestions": [
+        "Quelles sont les meilleures compétences de Naïm en product design ?",
+        "Quels projets d’IA et d’automatisation n8n a-t-il construits ?",
+        "Montre-moi les projets gouvernementaux et bancaires saoudiens",
+        "Comment Naïm aborde-t-il le cadrage des problèmes et les design systems ?"
+      ],
+      "liveEyebrow": "DÉMO SYSTÈME IA EN DIRECT"
+    },
+    "card": {
+      "demoAvailable": "Démo disponible",
+      "caseOnly": "Étude de cas seulement",
+      "explore": "Explorer l’agent",
+      "category": "Agent IA",
+      "try": "Essayer"
+    },
+    "grid": {
+      "empty": "Aucun agent IA publié pour l’instant."
+    }
+  },
+  "resourceDetail": {
+    "loadingBundle": "Chargement du bundle...",
+    "loadingDetails": "Chargement des détails...",
+    "notFoundSeo": "Ressource introuvable — Naïm Bsili",
+    "notFoundDesc": "La ressource demandée est introuvable.",
+    "notFoundTitle": "Ressource introuvable",
+    "notFoundBody": "La ressource « {{slug}} » est introuvable ou a peut-être été archivée.",
+    "backToCatalog": "Retour au catalogue des ressources",
+    "freeDownload": "Téléchargement gratuit",
+    "downloadBundle": "Télécharger le bundle gratuit",
+    "readSkill": "Lire le Skill",
+    "instantDownload": "Téléchargement immédiat · Sans carte bancaire",
+    "overview": "Aperçu & objectif",
+    "whenToUse": "Quand l’utiliser",
+    "whenNotToUse": "Quand NE PAS l’utiliser",
+    "howToUse": "Utilisation & pipeline autonome",
+    "copyPrompt": "Copier le prompt",
+    "exampleOutput": "Exemples de résultats & preuves responsives",
+    "exampleOutputSub": "Exemples réels de la ressource en action sur desktop, tablette et mobile.",
+    "captureFallback": "Capture",
+    "captureProof": "Preuve de capture d’audit heuristique",
+    "blankTemplates": "Templates & classeurs vierges",
+    "blankTemplatesSub": "Classeurs de départ réutilisables pour accompagner ce skill. Téléchargement gratuit avec feuilles de résultats structurées.",
+    "sourceLinks": "Liens source & documentation",
+    "officialSource": "Lien source officiel",
+    "docLink": "Lien de documentation",
+    "compatibility": "Compatibilité",
+    "verified": "✓ Vérifié",
+    "compatible": "Compatible",
+    "installPaths": "Chemins d’installation",
+    "globalPath": "Chemin du Skill global :",
+    "workspacePath": "Chemin du Skill workspace :",
+    "setupInstructions": "Instructions d’installation :",
+    "tagsClassification": "Tags & classification",
+    "backToResources": "Retour à toutes les ressources",
+    "backToTop": "Haut de page"
   }
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export default function AgentDemoShell({
   agent,
@@ -7,16 +8,17 @@ export default function AgentDemoShell({
   subtitle,
   children,
 }) {
+  const { t } = useTranslation();
   return (
     <div className="agent-demo-shell">
       {/* Header Bar */}
       <div className="agent-demo-header">
         <div className="container d-flex justify-content-between align-items-center">
           <Link to={`/agents/${agent?.slug || ''}`} className="agent-demo-back">
-            <i className="bi bi-arrow-left"></i> <span>Back to Case Study</span>
+            <i className="bi bi-arrow-left"></i> <span>{t('agents.demo.backToCase')}</span>
           </Link>
           <div className="agent-demo-badge-live">
-            <span className="live-dot">●</span> <span>Interactive Demo</span>
+            <span className="live-dot">●</span> <span>{t('agents.demo.interactiveDemo')}</span>
           </div>
         </div>
       </div>
@@ -25,9 +27,9 @@ export default function AgentDemoShell({
       <section className="agent-demo-hero">
         <div className="container">
           <div className="eyebrow mb-2">
-            <span></span> LIVE AI SYSTEM DEMO
+            <span></span> {t('agents.demo.liveEyebrow')}
           </div>
-          <h1>{title || agent?.name || 'AI Agent Demo'}</h1>
+          <h1>{title || agent?.name || t('agents.demo.notFoundTitle')}</h1>
           {subtitle && <p className="agent-demo-lead">{subtitle}</p>}
         </div>
       </section>

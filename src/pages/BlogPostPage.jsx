@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 import MainLayout from '../layouts/MainLayout';
 import PageRenderer from '../components/cms/PageRenderer';
 import AdSlot from '../components/monetization/AdSlot';
@@ -11,9 +12,11 @@ import ShareButtons from '../components/blog/ShareButtons';
 import PostFeedback from '../components/blog/PostFeedback';
 
 export default function BlogPostPage() {
+  const { t, i18n } = useTranslation();
   const { slug } = useParams();
   const [searchParams] = useSearchParams();
   const isPreview = searchParams.get('preview') === 'true';
+  const dateLocale = i18n.language === 'fr' ? 'fr-FR' : i18n.language === 'ar' ? 'ar' : 'en-US';
 
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -63,16 +66,16 @@ export default function BlogPostPage() {
     return (
       <MainLayout>
         <Helmet>
-          <title>Article Not Found — Naïm Bsili</title>
+          <title>{t('blog.notFoundTitle')} — Naïm Bsili</title>
         </Helmet>
         <div className="container d-flex flex-column align-items-center justify-content-center text-center py-5">
           <i className="bi bi-file-earmark-x display-3 text-muted mb-3"></i>
-          <h2 className="fw-bold mb-2">Article Not Found</h2>
+          <h2 className="fw-bold mb-2">{t('blog.notFoundTitle')}</h2>
           <p className="text-secondary mb-4" style={{ maxWidth: '420px' }}>
-            The requested article &quot;{slug}&quot; either does not exist or has not been published yet.
+            {t('blog.notFoundBody', { slug })}
           </p>
           <Link to="/blog" className="btn btn-primary-custom rounded-pill px-4">
-            <i className="bi bi-arrow-left me-1"></i> Back to Blog Catalog
+            <i className="bi bi-arrow-left me-1"></i> {t('blog.backToCatalog')}
           </Link>
         </div>
       </MainLayout>
@@ -83,11 +86,18 @@ export default function BlogPostPage() {
   const seo = resolveContentSeo(post);
   const cover = meta.featuredImage ? resolveAsset(meta.featuredImage) : null;
   const relationships = Array.isArray(meta.relationships) ? meta.relationships : [];
-  const sections = Array.isArray(meta.sections) ? meta.sections : [];
+
+  // Phase 3 — localized article content (falls back to default English).
+  const tx = (i18n.language && i18n.language !== 'en' && meta.i18n) ? meta.i18n[i18n.language] : null;
+  const displayTitle = (tx && tx.title) || post.title;
+  const displayExcerpt = (tx && tx.excerpt) || meta.excerpt;
+  const sections = (tx && Array.isArray(tx.sections) && tx.sections.length)
+    ? tx.sections
+    : (Array.isArray(meta.sections) ? meta.sections : []);
 
   const dateStr = meta.publishedAt
-    ? new Date(meta.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-    : 'Draft Preview';
+    ? new Date(meta.publishedAt).toLocaleDateString(dateLocale, { month: 'long', day: 'numeric', year: 'numeric' })
+    : t('blog.draftPreview');
 
   return (
     <MainLayout>
@@ -104,7 +114,7 @@ export default function BlogPostPage() {
       {/* Preview Notification Banner */}
       {isPreview && (
         <div className="bg-warning bg-opacity-25 border-bottom border-warning py-2 text-center text-dark small fw-semibold">
-          <i className="bi bi-eye-fill me-1"></i> Preview Mode: Displaying saved content for &quot;{post.title}&quot; (Status: {post.status}).
+          <i className="bi bi-eye-fill me-1"></i> {t('blog.previewBanner', { title: post.title, status: post.status })}
         </div>
       )}
 
@@ -118,25 +128,25 @@ export default function BlogPostPage() {
               </Link>
               <i className="bi bi-chevron-right" style={{ fontSize: '0.65rem' }}></i>
               <span className="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-2">
-                {meta.category || 'Article'}
+                {meta.category || t('blog.categoryFallback')}
               </span>
               <span className="ms-auto text-muted d-inline-flex align-items-center gap-2" style={{ fontSize: '0.75rem' }}>
                 {views !== null && (
-                  <span><i className="bi bi-eye me-1"></i>{views.toLocaleString()} view{views === 1 ? '' : 's'}</span>
+                  <span><i className="bi bi-eye me-1"></i>{t('blog.views', { count: views })}</span>
                 )}
-                <span><i className="bi bi-clock me-1"></i>{meta.readingTime || '4 min read'}</span>
+                <span><i className="bi bi-clock me-1"></i>{meta.readingTime || t('blog.readingFallback')}</span>
               </span>
             </div>
 
             {/* Article Headline */}
             <h1 className="display-4 fw-bold font-heading mb-3 text-dark">
-              {post.title}
+              {displayTitle}
             </h1>
 
             {/* Excerpt Lead */}
-            {meta.excerpt && (
+            {displayExcerpt && (
               <p className="lead text-secondary mb-4">
-                {meta.excerpt}
+                {displayExcerpt}
               </p>
             )}
 
@@ -148,7 +158,7 @@ export default function BlogPostPage() {
               <div>
                 <div className="fw-semibold text-dark small">{meta.author || 'Naïm Bsili'}</div>
                 <div className="text-muted small" style={{ fontSize: '0.75rem' }}>
-                  {dateStr} · {meta.wordCount ? `${meta.wordCount} words` : ''}
+                  {dateStr}{meta.wordCount ? ` · ${t('blog.words', { count: meta.wordCount })}` : ''}
                 </div>
               </div>
             </div>
@@ -157,7 +167,7 @@ export default function BlogPostPage() {
           {/* Featured Hero Cover Image */}
           {cover && (
             <div className="max-w-4xl mx-auto mb-5 rounded-4 overflow-hidden shadow-sm">
-              <img src={cover} alt={post.title} className="w-100 object-fit-cover" style={{ maxHeight: '460px' }} />
+              <img src={cover} alt={displayTitle} className="w-100 object-fit-cover" style={{ maxHeight: '460px' }} />
             </div>
           )}
 
@@ -166,7 +176,7 @@ export default function BlogPostPage() {
             <AdSlot placement="article_top" />
             {sections.length > 0 ? (
               <PageRenderer
-                page={{ title: post.title, template: 'default' }}
+                page={{ title: displayTitle, template: 'default' }}
                 sections={sections}
                 loading={false}
               />
@@ -180,14 +190,14 @@ export default function BlogPostPage() {
 
           {/* Share */}
           <div className="max-w-4xl mx-auto pt-4 mt-4 border-top">
-            <ShareButtons title={post.title} />
+            <ShareButtons title={displayTitle} />
           </div>
 
           {/* Tags */}
           {Array.isArray(meta.tags) && meta.tags.length > 0 && (
             <div className="max-w-4xl mx-auto pt-4 border-top mt-5">
               <span className="small fw-semibold text-uppercase text-muted me-2" style={{ fontSize: '0.7rem' }}>
-                Tags:
+                {t('blog.tags')}
               </span>
               <div className="d-inline-flex flex-wrap gap-1">
                 {meta.tags.map((tag) => (
@@ -202,7 +212,7 @@ export default function BlogPostPage() {
           {/* Related Content / Case Studies */}
           {relationships.length > 0 && (
             <div className="max-w-4xl mx-auto mt-5 pt-4 border-top">
-              <h4 className="fw-bold mb-3 font-heading">Related Content &amp; Case Studies</h4>
+              <h4 className="fw-bold mb-3 font-heading">{t('blog.related')}</h4>
               <div className="row g-3">
                 {relationships.map((rel) => (
                   <div key={rel.id} className="col-12 col-md-6">
@@ -218,7 +228,7 @@ export default function BlogPostPage() {
                         </Link>
                       </h6>
                       <Link to={rel.public_route || `/work/${rel.slug}`} className="small text-primary fw-semibold text-decoration-none mt-auto">
-                        Explore {rel.type} <i className="bi bi-arrow-right ms-1"></i>
+                        {t('blog.explore', { type: rel.type })} <i className="bi bi-arrow-right ms-1"></i>
                       </Link>
                     </div>
                   </div>
@@ -237,7 +247,7 @@ export default function BlogPostPage() {
           {/* Back to Blog CTA */}
           <div className="max-w-4xl mx-auto text-center mt-5 pt-4">
             <Link to="/blog" className="btn btn-outline-dark rounded-pill px-4">
-              <i className="bi bi-arrow-left me-1"></i> View All Blog Articles
+              <i className="bi bi-arrow-left me-1"></i> {t('blog.viewAll')}
             </Link>
           </div>
         </article>

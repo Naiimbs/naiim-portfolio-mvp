@@ -491,7 +491,7 @@ h1 em {
   margin: 3px 0 0;
 }
 .online-dot {
-  margin-left: auto;
+  margin-inline-start: auto;
   font-size: 0.65rem;
   color: var(--green);
   white-space: nowrap;
@@ -570,7 +570,7 @@ h1 em {
   letter-spacing: 0.1em;
 }
 .suggestions button {
-  text-align: left;
+  text-align: start;
   border: 1px solid var(--line);
   background: #fff;
   border-radius: 12px;
@@ -731,8 +731,8 @@ h1 em {
 }
 
 .about-card {
-  border-left: 1px solid var(--line);
-  padding-left: 45px;
+  border-inline-start: 1px solid var(--line);
+  padding-inline-start: 45px;
 }
 .about-card h3 {
   font-size: 2rem;
@@ -865,8 +865,8 @@ h1 em {
     right: 6%;
   }
   .about-card {
-    border-left: 0;
-    padding-left: 0;
+    border-inline-start: 0;
+    padding-inline-start: 0;
   }
 }
 @media (max-width: 767.98px) {
@@ -1273,7 +1273,7 @@ h1 em {
   font-size: 1.05rem;
   font-weight: 700;
   transform: rotate(-3deg);
-  margin-left: 77px;
+  margin-inline-start: 77px;
   margin-top: -45px;
   white-space: nowrap;
 }
@@ -1558,4 +1558,139 @@ h1 em {
     right: 1%;
     top: 0%;
   }
+}
+
+/* ── Language switcher ──────────────────────────────────────────────── */
+.lang-switcher .dropdown-item-like:hover,
+.lang-switcher .dropdown-item-like:focus {
+  background-color: var(--bs-light, #f8f9fa) !important;
+}
+.lang-switcher ul {
+  animation: langFadeIn 0.12s ease-out;
+}
+@keyframes langFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Minimal RTL baseline (Phase 0; full RTL pass in Phase 2) ───────── */
+[dir="rtl"] .lang-switcher ul {
+  left: 0;
+  right: auto;
+}
+
+/* ── Arabic typography (applied only when the UI is in Arabic) ───────── */
+html[lang="ar"] body,
+body[dir="rtl"] {
+  font-family: "Tajawal", "DM Sans", sans-serif;
+}
+html[lang="ar"] h1,
+html[lang="ar"] h2,
+html[lang="ar"] h3,
+html[lang="ar"] h4,
+html[lang="ar"] h5,
+html[lang="ar"] h6,
+html[lang="ar"] .font-heading,
+html[lang="ar"] .eyebrow,
+html[lang="ar"] .navbar-brand {
+  font-family: "Cairo", "Space Grotesk", sans-serif;
+}
+/* Latin letter-spacing hurts Arabic shaping; relax it and give more line-height. */
+html[lang="ar"] body {
+  letter-spacing: normal;
+  line-height: 1.8;
+}
+html[lang="ar"] .eyebrow,
+html[lang="ar"] .text-uppercase {
+  letter-spacing: normal;
+}
+
+/* ── Phase 2: targeted RTL position flips for card decorations ───────── */
+[dir="rtl"] .project-badge { left: auto; right: 15px; }
+[dir="rtl"] .coming-pill { right: auto; left: 15px; }
+[dir="rtl"] .mini-project-card i { right: auto; left: 17px; }
+[dir="rtl"] .listen-note { right: auto; left: 27px; }
+/* Mirror directional arrow icons in RTL so they point the natural way. */
+[dir="rtl"] .bi-arrow-right,
+[dir="rtl"] .bi-arrow-left,
+[dir="rtl"] .bi-arrow-up-right,
+[dir="rtl"] .bi-arrow-return-left,
+[dir="rtl"] .bi-chevron-right,
+[dir="rtl"] .bi-chevron-left {
+  display: inline-block;
+  transform: scaleX(-1);
+}
+
+/* ── Occasion editorial topbar (e.g. عيد الجلاء) ─────────────────────── */
+/* When active, offset the fixed navbar and page content by the banner height. */
+body.has-occasion-topbar { --topbar-h: 140px; }
+@media (max-width: 991.98px) { body.has-occasion-topbar { --topbar-h: 120px; } }
+@media (max-width: 575.98px) { body.has-occasion-topbar { --topbar-h: 104px; } }
+
+body.has-occasion-topbar .site-nav { top: var(--topbar-h, 0); }
+body.has-occasion-topbar main#top { padding-top: var(--topbar-h, 0); }
+html { scroll-padding-top: calc(var(--topbar-h, 0px) + 90px); }
+
+.occasion-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--topbar-h, 140px);
+  z-index: 1001; /* sits above the navbar (1000); they do not overlap */
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background-color: var(--paper);
+  /* Text sits on the physical left; the flag stays anchored on the physical
+     right. The gradient is opaque on the left for legibility and fades out
+     before the flag, regardless of text direction. */
+  background-image:
+    linear-gradient(90deg, rgba(248, 249, 246, 0.95) 0%, rgba(248, 249, 246, 0.72) 40%, rgba(248, 249, 246, 0) 68%),
+    var(--occasion-img);
+  background-repeat: no-repeat, no-repeat;
+  background-position: left center, right center;
+  background-size: cover, cover;
+  border-bottom: 1px solid var(--line);
+}
+
+.occasion-topbar-inner {
+  margin-inline-start: auto; /* push the text block away from the flag side */
+  padding-inline: clamp(16px, 5vw, 72px);
+  max-width: min(680px, 66%);
+  text-align: center;
+}
+
+.occasion-quote {
+  font-family: "Cairo", "Tajawal", sans-serif;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.5;
+  font-size: clamp(1.1rem, 2.4vw, 1.85rem);
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);
+}
+
+.occasion-label {
+  font-family: "Cairo", "Tajawal", sans-serif;
+  font-weight: 600;
+  color: var(--green-dark);
+  margin: 4px 0 0;
+  font-size: clamp(0.7rem, 1.2vw, 0.9rem);
+  letter-spacing: 0.02em;
+  opacity: 0.9;
+}
+
+@media (max-width: 575.98px) {
+  .occasion-topbar {
+    /* Stronger left gradient on narrow screens while keeping the flag visible. */
+    background-image:
+      linear-gradient(90deg, rgba(248, 249, 246, 0.97) 0%, rgba(248, 249, 246, 0.82) 48%, rgba(248, 249, 246, 0.1) 82%),
+      var(--occasion-img);
+  }
+  .occasion-topbar-inner {
+    max-width: 80%;
+    padding-inline: 14px;
+  }
+  .occasion-label { margin-top: 2px; }
 }

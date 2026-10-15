@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getPostRatingSummary, submitPostRating } from '../../services/engagement';
 
 /**
@@ -6,6 +7,7 @@ import { getPostRatingSummary, submitPostRating } from '../../services/engagemen
  * and an optional private comment (visible only to the author in the DB).
  */
 export default function PostFeedback({ slug }) {
+  const { t } = useTranslation();
   const [summary, setSummary] = useState({ avg: 0, count: 0 });
   const [hover, setHover] = useState(0);
   const [rating, setRating] = useState(0);
@@ -31,7 +33,7 @@ export default function PostFeedback({ slug }) {
 
   const handleSubmit = async () => {
     if (!rating) {
-      setError('Please choose a star rating first.');
+      setError(t('feedback.chooseStar'));
       return;
     }
     setSubmitting(true);
@@ -39,7 +41,7 @@ export default function PostFeedback({ slug }) {
     const res = await submitPostRating(slug, rating, comment);
     setSubmitting(false);
     if (res.error) {
-      setError(res.error.message || 'Could not send your feedback. Please try again.');
+      setError(res.error.message || t('feedback.errorGeneric'));
       return;
     }
     try { localStorage.setItem(storeKey, '1'); } catch { /* noop */ }
@@ -49,7 +51,7 @@ export default function PostFeedback({ slug }) {
   };
 
   const Stars = ({ interactive }) => (
-    <div className="d-inline-flex align-items-center gap-1" role={interactive ? 'radiogroup' : undefined} aria-label="Rating">
+    <div className="d-inline-flex align-items-center gap-1" role={interactive ? 'radiogroup' : undefined} aria-label={t('feedback.ratingAria')}>
       {[1, 2, 3, 4, 5].map((n) => {
         const filled = interactive ? n <= (hover || rating) : n <= Math.round(summary.avg);
         return interactive ? (
@@ -61,7 +63,7 @@ export default function PostFeedback({ slug }) {
             onMouseEnter={() => setHover(n)}
             onMouseLeave={() => setHover(0)}
             onClick={() => setRating(n)}
-            aria-label={`${n} star${n > 1 ? 's' : ''}`}
+            aria-label={t('feedback.starAria', { n })}
           >
             <i className={`bi ${filled ? 'bi-star-fill' : 'bi-star'}`}></i>
           </button>
@@ -75,27 +77,27 @@ export default function PostFeedback({ slug }) {
   return (
     <div className="card border-0 shadow-sm rounded-4 p-4 bg-light">
       <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-        <h5 className="fw-bold font-heading mb-0">Was this article helpful?</h5>
+        <h5 className="fw-bold font-heading mb-0">{t('feedback.title')}</h5>
         {summary.count > 0 && (
           <div className="d-flex align-items-center gap-2 small text-muted">
             <Stars interactive={false} />
-            <span>{summary.avg.toFixed(1)} · {summary.count} rating{summary.count > 1 ? 's' : ''}</span>
+            <span>{t('feedback.ratings', { avg: summary.avg.toFixed(1), count: summary.count })}</span>
           </div>
         )}
       </div>
 
       {done ? (
         <div className="text-success fw-semibold">
-          <i className="bi bi-check-circle-fill me-2"></i> Thanks for your feedback!
+          <i className="bi bi-check-circle-fill me-2"></i> {t('feedback.thanks')}
         </div>
       ) : (
         <>
-          <p className="text-muted small mb-2">Your rating helps me improve my writing. Comments are private.</p>
+          <p className="text-muted small mb-2">{t('feedback.note')}</p>
           <Stars interactive />
           <textarea
             className="form-control rounded-3 mt-3"
             rows="2"
-            placeholder="Optional: what could be better? (private)"
+            placeholder={t('feedback.placeholder')}
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             maxLength={2000}
@@ -103,7 +105,7 @@ export default function PostFeedback({ slug }) {
           {error && <div className="small text-danger mt-2"><i className="bi bi-exclamation-triangle me-1"></i>{error}</div>}
           <div className="mt-3">
             <button type="button" className="btn btn-primary rounded-pill px-4" onClick={handleSubmit} disabled={submitting}>
-              {submitting ? 'Sending…' : 'Send feedback'}
+              {submitting ? t('feedback.sending') : t('feedback.send')}
             </button>
           </div>
         </>

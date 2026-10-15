@@ -1,40 +1,36 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import LabCard from './LabCard';
 import PluginCard from './PluginCard';
 import { plugins } from '../../data/plugins';
 
-const LAB_EXPERIMENTS = [
-  { icon: 'bi-robot', title: 'AI Agents', description: 'Intelligent agents' },
-  { icon: 'bi-diagram-3', title: 'n8n', description: 'Automation & workflows' },
-  { icon: 'bi-boxes', title: 'MCP', description: 'Model Context Protocol' },
-  { icon: 'bi-database', title: 'RAG', description: 'Knowledge & search' },
-  { icon: 'bi-bezier2', title: 'Figma', description: 'Design systems' },
-  { icon: 'bi-code-slash', title: 'Vibe Coding', description: 'Rapid prototyping' },
-];
+const LAB_ICONS = ['bi-robot', 'bi-diagram-3', 'bi-boxes', 'bi-database', 'bi-bezier2', 'bi-code-slash'];
 
 export default function LabSection() {
+  const { t } = useTranslation();
+  const experiments = t('lab.experiments', { returnObjects: true }) || [];
   return (
     <section className="section-pad" id="lab">
       <div className="container">
         <div className="section-heading d-flex justify-content-between align-items-end mb-4">
           <div>
             <div className="eyebrow">
-              <span></span> EXPERIMENTS
+              <span></span> {t('lab.eyebrow')}
             </div>
-            <h2>Naïm Lab</h2>
-            <p>Tools, experiments and ideas at the intersection of design, AI and technology.</p>
+            <h2>{t('lab.title')}</h2>
+            <p>{t('lab.subtitle')}</p>
           </div>
           <Link to="/agents" className="text-link d-none d-md-inline">
-            Explore AI Agents <i className="bi bi-arrow-right"></i>
+            {t('lab.exploreAgents')} <i className="bi bi-arrow-right"></i>
           </Link>
         </div>
 
         <div className="row g-3">
-          {LAB_EXPERIMENTS.map((exp, index) => (
+          {experiments.map((exp, index) => (
             <div className="col-6 col-lg-2" key={index}>
               <LabCard
-                icon={exp.icon}
+                icon={LAB_ICONS[index] || 'bi-box'}
                 title={exp.title}
                 description={exp.description}
               />
@@ -44,7 +40,7 @@ export default function LabSection() {
 
         <div className="plugin-showcase mt-5">
           <div className="eyebrow">
-            <span></span> FIGMA PLUGINS I BUILT
+            <span></span> {t('lab.pluginsEyebrow')}
           </div>
           <div className="row g-3 mt-1">
             {plugins.map((plugin) => (

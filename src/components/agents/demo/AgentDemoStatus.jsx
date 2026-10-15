@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export default function AgentDemoStatus({
   error,
@@ -7,6 +8,7 @@ export default function AgentDemoStatus({
   agentSlug,
   onRetry,
 }) {
+  const { t } = useTranslation();
   if (!error && status !== 'disabled') return null;
 
   if (status === 'disabled') {
@@ -15,12 +17,12 @@ export default function AgentDemoStatus({
         <div className="d-flex align-items-start gap-3">
           <i className="bi bi-info-circle-fill fs-4 text-warning"></i>
           <div>
-            <h4 className="fs-6 fw-bold mb-1">Live Demo Inactive</h4>
+            <h4 className="fs-6 fw-bold mb-1">{t('agents.demo.inactiveTitle')}</h4>
             <p className="mb-2 small text-muted">
-              This agent operates as an autonomous background pipeline and does not currently accept synchronous user prompts.
+              {t('agents.demo.inactiveBody')}
             </p>
             <Link to={`/agents/${agentSlug}`} className="btn btn-sm btn-dark rounded-pill px-3">
-              <i className="bi bi-journal-text me-1"></i> Read Case Study
+              <i className="bi bi-journal-text me-1"></i> {t('agents.demo.readCase')}
             </Link>
           </div>
         </div>
@@ -28,7 +30,7 @@ export default function AgentDemoStatus({
     );
   }
 
-  const errorMessage = error?.message || 'The demo is temporarily unavailable. Please try again in a few moments.';
+  const errorMessage = error?.message || t('agents.demo.errorDefault');
   const errorCode = error?.code || 'ERROR';
 
   return (
@@ -37,7 +39,7 @@ export default function AgentDemoStatus({
         <i className="bi bi-exclamation-triangle-fill fs-4 text-danger"></i>
         <div className="flex-grow-1">
           <div className="d-flex justify-content-between align-items-center mb-1">
-            <h4 className="fs-6 fw-bold mb-0">Agent Execution Failed</h4>
+            <h4 className="fs-6 fw-bold mb-0">{t('agents.demo.failedTitle')}</h4>
             <span className="badge bg-danger-subtle text-danger border border-danger-subtle small font-monospace">
               {errorCode}
             </span>
@@ -51,11 +53,11 @@ export default function AgentDemoStatus({
                 onClick={onRetry}
                 className="btn btn-sm btn-outline-danger rounded-pill px-3"
               >
-                <i className="bi bi-arrow-repeat me-1"></i> Try Again
+                <i className="bi bi-arrow-repeat me-1"></i> {t('agents.demo.tryAgain')}
               </button>
             )}
             <Link to={`/agents/${agentSlug}`} className="btn btn-sm btn-outline-secondary rounded-pill px-3">
-              <i className="bi bi-journal-text me-1"></i> View Case Study
+              <i className="bi bi-journal-text me-1"></i> {t('agents.demo.viewCase')}
             </Link>
           </div>
         </div>

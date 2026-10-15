@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import MainLayout from '../layouts/MainLayout';
 import SEO from '../components/common/SEO';
 import { getResourceBySlug } from '../services/resources';
@@ -11,6 +12,7 @@ import ResourceSupportCard from '../components/resources/ResourceSupportCard';
 import '../styles/resources.css';
 
 export default function ResourceDetailPage() {
+  const { t } = useTranslation();
   const { slug } = useParams();
   const [resource, setResource] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -71,9 +73,9 @@ export default function ResourceDetailPage() {
       <MainLayout>
         <div className="d-flex flex-column align-items-center justify-content-center py-5" style={{ minHeight: '60vh' }}>
           <div className="spinner-border text-success mb-3" role="status" style={{ color: 'var(--green)' }}>
-            <span className="visually-hidden">Loading resource bundle...</span>
+            <span className="visually-hidden">{t('resourceDetail.loadingBundle')}</span>
           </div>
-          <div className="text-secondary small">Loading resource details...</div>
+          <div className="text-secondary small">{t('resourceDetail.loadingDetails')}</div>
         </div>
       </MainLayout>
     );
@@ -82,15 +84,15 @@ export default function ResourceDetailPage() {
   if (error || !resource) {
     return (
       <MainLayout>
-        <SEO title="Resource Not Found — Naïm Bsili" description="The requested resource could not be found." canonical={`/resources/${slug}`} />
+        <SEO title={t('resourceDetail.notFoundSeo')} description={t('resourceDetail.notFoundDesc')} canonical={`/resources/${slug}`} />
         <div className="container py-5 text-center" style={{ minHeight: '60vh' }}>
           <i className="bi bi-file-earmark-x text-muted display-3 mb-3 d-block"></i>
-          <h2 className="fw-bold font-heading mb-2">Resource Not Found</h2>
+          <h2 className="fw-bold font-heading mb-2">{t('resourceDetail.notFoundTitle')}</h2>
           <p className="text-secondary mb-4 mx-auto" style={{ maxWidth: '460px' }}>
-            The resource &quot;{slug}&quot; could not be located or may have been archived.
+            {t('resourceDetail.notFoundBody', { slug })}
           </p>
           <Link to="/resources" className="btn btn-primary-custom rounded-pill px-4">
-            <i className="bi bi-arrow-left me-1"></i> Back to Resources Catalog
+            <i className="bi bi-arrow-left me-1"></i> {t('resourceDetail.backToCatalog')}
           </Link>
         </div>
       </MainLayout>
@@ -177,10 +179,10 @@ export default function ResourceDetailPage() {
                 <div className="d-flex flex-wrap align-items-center gap-3 text-secondary small pt-3 border-top border-light-subtle">
                   <span>v{resource.version || '1.0.0'}</span>
                   <span>·</span>
-                  <span>{assets.length} assets included</span>
+                  <span>{t('resources.assets', { count: assets.length })}</span>
                   <span>·</span>
                   <span className="badge bg-success bg-opacity-10 text-success fw-bold px-2 py-1 rounded-pill">
-                    Free download
+                    {t('resourceDetail.freeDownload')}
                   </span>
                 </div>
               </div>
@@ -195,7 +197,7 @@ export default function ResourceDetailPage() {
                     style={{ fontSize: '0.95rem' }}
                   >
                     <i className="bi bi-download"></i>
-                    <span>Download Free Bundle</span>
+                    <span>{t('resourceDetail.downloadBundle')}</span>
                   </button>
 
                   <button
@@ -205,11 +207,11 @@ export default function ResourceDetailPage() {
                     style={{ fontSize: '0.9rem' }}
                   >
                     <i className="bi bi-file-earmark-code"></i>
-                    <span>Read Skill</span>
+                    <span>{t('resourceDetail.readSkill')}</span>
                   </button>
 
                   <div className="text-muted text-center" style={{ fontSize: '0.75rem' }}>
-                    Instant download · No credit card required
+                    {t('resourceDetail.instantDownload')}
                   </div>
                 </div>
               </div>
@@ -225,7 +227,7 @@ export default function ResourceDetailPage() {
                 <div className="resource-block">
                   <h3 className="resource-block-title">
                     <i className="bi bi-bullseye" style={{ color: 'var(--green)' }}></i>
-                    <span>Overview &amp; Purpose</span>
+                    <span>{t('resourceDetail.overview')}</span>
                   </h3>
                   <p className="text-secondary leading-relaxed mb-0" style={{ whiteSpace: 'pre-line' }}>
                     {resource.purpose}
@@ -241,7 +243,7 @@ export default function ResourceDetailPage() {
                       <div className="h-100 p-4 rounded-4 border" style={{ backgroundColor: 'var(--green-soft)', borderColor: 'rgba(8, 127, 102, 0.2)' }}>
                         <div className="fw-bold small text-uppercase mb-3 d-flex align-items-center gap-2" style={{ color: 'var(--green)' }}>
                           <i className="bi bi-check-circle-fill"></i>
-                          <span>When to Use</span>
+                          <span>{t('resourceDetail.whenToUse')}</span>
                         </div>
                         {Array.isArray(resource.when_to_use) ? (
                           <ul className="small text-dark mb-0 ps-3">
@@ -261,7 +263,7 @@ export default function ResourceDetailPage() {
                       <div className="h-100 p-4 rounded-4 border bg-danger bg-opacity-10 border-danger border-opacity-25">
                         <div className="fw-bold small text-uppercase text-danger mb-3 d-flex align-items-center gap-2">
                           <i className="bi bi-x-circle-fill"></i>
-                          <span>When NOT to Use</span>
+                          <span>{t('resourceDetail.whenNotToUse')}</span>
                         </div>
                         {Array.isArray(resource.when_not_to_use) ? (
                           <ul className="small text-dark mb-0 ps-3">
@@ -284,7 +286,7 @@ export default function ResourceDetailPage() {
                   <div className="d-flex align-items-center justify-content-between mb-3">
                     <h3 className="resource-block-title mb-0">
                       <i className="bi bi-terminal" style={{ color: 'var(--green)' }}></i>
-                      <span>How to Use &amp; Autonomous Pipeline</span>
+                      <span>{t('resourceDetail.howToUse')}</span>
                     </h3>
                     <button
                       type="button"
@@ -294,11 +296,11 @@ export default function ResourceDetailPage() {
                     >
                       {copiedKey === 'pipeline' ? (
                         <>
-                          <i className="bi bi-check-lg text-success me-1"></i> Copied
+                          <i className="bi bi-check-lg text-success me-1"></i> {t('share.copied')}
                         </>
                       ) : (
                         <>
-                          <i className="bi bi-clipboard me-1"></i> Copy Prompt
+                          <i className="bi bi-clipboard me-1"></i> {t('resourceDetail.copyPrompt')}
                         </>
                       )}
                     </button>
@@ -316,10 +318,10 @@ export default function ResourceDetailPage() {
                 <div className="resource-block">
                   <h3 className="resource-block-title">
                     <i className="bi bi-images" style={{ color: 'var(--green)' }}></i>
-                    <span>Example Output &amp; Responsive Evidence</span>
+                    <span>{t('resourceDetail.exampleOutput')}</span>
                   </h3>
                   <p className="text-secondary small mb-4">
-                    Real examples of the resource in action across desktop, tablet and mobile contexts.
+                    {t('resourceDetail.exampleOutputSub')}
                   </p>
 
                   <div className="row g-3">
@@ -339,11 +341,11 @@ export default function ResourceDetailPage() {
                             <div className="d-flex justify-content-between align-items-center mb-1">
                               <span className="fw-bold small text-dark text-truncate">{asset.name || asset.title}</span>
                               <span className="badge bg-light text-muted border" style={{ fontSize: '0.65rem' }}>
-                                {asset.device || asset.viewport || 'Capture'}
+                                {asset.device || asset.viewport || t('resourceDetail.captureFallback')}
                               </span>
                             </div>
                             <div className="text-muted small" style={{ fontSize: '0.75rem' }}>
-                              {asset.caption || asset.description || 'Heuristic audit capture proof'}
+                              {asset.caption || asset.description || t('resourceDetail.captureProof')}
                             </div>
                           </div>
                         </div>
@@ -360,10 +362,10 @@ export default function ResourceDetailPage() {
                 <div className="resource-block">
                   <h3 className="resource-block-title mb-2">
                     <i className="bi bi-file-earmark-spreadsheet" style={{ color: 'var(--green)' }}></i>
-                    <span>Blank Templates &amp; Workbooks</span>
+                    <span>{t('resourceDetail.blankTemplates')}</span>
                   </h3>
                   <p className="text-secondary small mb-4">
-                    Reusable starter workbooks to accompany this skill. Free download with structured findings sheets.
+                    {t('resourceDetail.blankTemplatesSub')}
                   </p>
 
                   <div className="d-flex flex-column gap-3">
@@ -371,7 +373,7 @@ export default function ResourceDetailPage() {
                       <ResourceTemplateCard
                         key={idx}
                         template={template}
-                        onDownload={(t) => handleOpenLeadModal(t)}
+                        onDownload={(tpl) => handleOpenLeadModal(tpl)}
                       />
                     ))}
                   </div>
@@ -383,7 +385,7 @@ export default function ResourceDetailPage() {
                 <div className="resource-block">
                   <h3 className="resource-block-title mb-3">
                     <i className="bi bi-link-45deg" style={{ color: 'var(--green)' }}></i>
-                    <span>Source &amp; Documentation Links</span>
+                    <span>{t('resourceDetail.sourceLinks')}</span>
                   </h3>
                   <div className="d-flex flex-wrap gap-3">
                     {validSourceUrl && (
@@ -394,7 +396,7 @@ export default function ResourceDetailPage() {
                         className="btn btn-outline-custom rounded-pill btn-sm px-3 d-inline-flex align-items-center gap-2"
                       >
                         <i className="bi bi-box-arrow-up-right"></i>
-                        <span>Official Source Link</span>
+                        <span>{t('resourceDetail.officialSource')}</span>
                       </a>
                     )}
                     {validDocUrl && (
@@ -405,7 +407,7 @@ export default function ResourceDetailPage() {
                         className="btn btn-outline-custom rounded-pill btn-sm px-3 d-inline-flex align-items-center gap-2"
                       >
                         <i className="bi bi-book"></i>
-                        <span>Documentation Link</span>
+                        <span>{t('resourceDetail.docLink')}</span>
                       </a>
                     )}
                   </div>
@@ -419,7 +421,7 @@ export default function ResourceDetailPage() {
               {Array.isArray(resource.compatibility) && resource.compatibility.length > 0 && (
                 <div className="resource-block mb-4">
                   <h4 className="fw-bold font-heading mb-3 small text-uppercase" style={{ letterSpacing: '0.05em' }}>
-                    <i className="bi bi-cpu me-1" style={{ color: 'var(--green)' }}></i> Compatibility
+                    <i className="bi bi-cpu me-1" style={{ color: 'var(--green)' }}></i> {t('resourceDetail.compatibility')}
                   </h4>
                   <div className="d-flex flex-column gap-2">
                     {resource.compatibility.map((item, idx) => {
@@ -432,7 +434,7 @@ export default function ResourceDetailPage() {
                           <div className="d-flex justify-content-between align-items-center">
                             <span className="fw-bold small text-dark">{name}</span>
                             <span className={`badge ${status === 'verified' ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary'}`} style={{ fontSize: '0.68rem' }}>
-                              {status === 'verified' ? '✓ Verified' : 'Compatible'}
+                              {status === 'verified' ? t('resourceDetail.verified') : t('resourceDetail.compatible')}
                             </span>
                           </div>
                           {notes && <div className="text-muted mt-1" style={{ fontSize: '0.72rem' }}>{notes}</div>}
@@ -446,11 +448,11 @@ export default function ResourceDetailPage() {
               {/* Installation Paths */}
               <div className="resource-block mb-4">
                 <h4 className="fw-bold font-heading mb-3 small text-uppercase" style={{ letterSpacing: '0.05em' }}>
-                  <i className="bi bi-folder-symlink me-1" style={{ color: 'var(--green)' }}></i> Installation Paths
+                  <i className="bi bi-folder-symlink me-1" style={{ color: 'var(--green)' }}></i> {t('resourceDetail.installPaths')}
                 </h4>
                 <div className="space-y-3">
                   <div className="mb-3">
-                    <div className="small text-secondary fw-semibold mb-1">Global Skill Path:</div>
+                    <div className="small text-secondary fw-semibold mb-1">{t('resourceDetail.globalPath')}</div>
                     <div className="d-flex align-items-center justify-content-between p-2 rounded-3 bg-light border font-monospace" style={{ fontSize: '0.72rem' }}>
                       <span className="text-dark text-truncate">~/.gemini/config/skills/{resource.slug}/</span>
                       <button
@@ -464,7 +466,7 @@ export default function ResourceDetailPage() {
                   </div>
 
                   <div className="mb-3">
-                    <div className="small text-secondary fw-semibold mb-1">Workspace Skill Path:</div>
+                    <div className="small text-secondary fw-semibold mb-1">{t('resourceDetail.workspacePath')}</div>
                     <div className="d-flex align-items-center justify-content-between p-2 rounded-3 bg-light border font-monospace" style={{ fontSize: '0.72rem' }}>
                       <span className="text-dark text-truncate">.agents/skills/{resource.slug}/</span>
                       <button
@@ -479,7 +481,7 @@ export default function ResourceDetailPage() {
 
                   {resource.installation && (
                     <div className="pt-2 border-top">
-                      <div className="small text-secondary fw-semibold mb-1">Setup Instructions:</div>
+                      <div className="small text-secondary fw-semibold mb-1">{t('resourceDetail.setupInstructions')}</div>
                       <pre className="p-2.5 rounded-3 bg-light border text-secondary font-monospace m-0" style={{ fontSize: '0.72rem', whiteSpace: 'pre-wrap' }}>
                         {resource.installation}
                       </pre>
@@ -492,7 +494,7 @@ export default function ResourceDetailPage() {
               {Array.isArray(resource.tags) && resource.tags.length > 0 && (
                 <div className="resource-block">
                   <h4 className="fw-bold font-heading mb-3 small text-uppercase" style={{ letterSpacing: '0.05em' }}>
-                    <i className="bi bi-tags me-1" style={{ color: 'var(--green)' }}></i> Tags &amp; Classification
+                    <i className="bi bi-tags me-1" style={{ color: 'var(--green)' }}></i> {t('resourceDetail.tagsClassification')}
                   </h4>
                   <div className="d-flex flex-wrap gap-1.5">
                     {resource.tags.map((tag, idx) => (
@@ -509,10 +511,10 @@ export default function ResourceDetailPage() {
           {/* Bottom Back Nav */}
           <div className="d-flex justify-content-between align-items-center pt-3 pb-5">
             <Link to="/resources" className="text-link">
-              <i className="bi bi-arrow-left"></i> Back to all resources
+              <i className="bi bi-arrow-left"></i> {t('resourceDetail.backToResources')}
             </Link>
             <a href="#top" className="text-link" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-              Back to top <i className="bi bi-arrow-up"></i>
+              {t('resourceDetail.backToTop')} <i className="bi bi-arrow-up"></i>
             </a>
           </div>
         </div>

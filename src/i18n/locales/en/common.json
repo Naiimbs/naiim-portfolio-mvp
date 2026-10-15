@@ -5,9 +5,362 @@
     "career": "Career",
     "lab": "Lab",
     "about": "About",
-    "talk": "Let's Talk"
+    "talk": "Let's Talk",
+    "blog": "Blog"
   },
   "footer": {
     "rights": "© 2026 Naïm Bsili. All rights reserved."
+  },
+  "contact": {
+    "eyebrow": "LET'S CONNECT",
+    "titleLine1": "Have an idea, a product",
+    "titleLine2": "or a problem to solve?",
+    "subtitle": "Let's turn it into something real.",
+    "cta": "Let's talk"
+  },
+  "share": {
+    "on": "Share on {{network}}",
+    "copy": "Copy link",
+    "copied": "Copied",
+    "label": "Share:"
+  },
+  "feedback": {
+    "title": "Was this article helpful?",
+    "ratings": "{{avg}} · {{count}} ratings",
+    "note": "Your rating helps me improve my writing. Comments are private.",
+    "placeholder": "Optional: what could be better? (private)",
+    "send": "Send feedback",
+    "sending": "Sending…",
+    "thanks": "Thanks for your feedback!",
+    "chooseStar": "Please choose a star rating first.",
+    "errorGeneric": "Could not send your feedback. Please try again.",
+    "ratingAria": "Rating",
+    "starAria": "Rate {{n}} out of 5"
+  },
+  "blog": {
+    "notFoundTitle": "Article Not Found",
+    "notFoundBody": "The requested article “{{slug}}” either does not exist or has not been published yet.",
+    "backToCatalog": "Back to Blog Catalog",
+    "previewBanner": "Preview Mode: Displaying saved content for “{{title}}” (Status: {{status}}).",
+    "categoryFallback": "Article",
+    "views_one": "{{count}} view",
+    "views_other": "{{count}} views",
+    "readingFallback": "4 min read",
+    "words_one": "{{count}} word",
+    "words_other": "{{count}} words",
+    "draftPreview": "Draft Preview",
+    "tags": "Tags:",
+    "related": "Related Content & Case Studies",
+    "explore": "Explore {{type}}",
+    "viewAll": "View All Blog Articles"
+  },
+  "blogList": {
+    "eyebrow": "EDITORIAL & WRITING",
+    "title": "Design, AI & Digital Craft.",
+    "lead": "Thoughts, architecture breakdowns, and systems design notes on building at the intersection of AI, low-code, and UX.",
+    "allArticles": "All Articles",
+    "searchPlaceholder": "Search articles & tags…",
+    "loading": "Loading articles...",
+    "excerptFallback": "Read the full editorial breakdown.",
+    "readArticle": "Read Article",
+    "datePublished": "Published",
+    "emptyTitle": "No articles found",
+    "emptyMatch": "No published articles match “{{search}}”. Try clearing your search.",
+    "emptyNone": "No published articles in this category yet. Check back soon!",
+    "clearFilters": "Clear Filters"
+  },
+  "placeholder": {
+    "error404": "404 ERROR",
+    "comingSoon": "COMING SOON",
+    "defaultDesc": "This route is configured in React Router and will be implemented in subsequent phases.",
+    "backHome": "Back to Home"
+  },
+  "lab": {
+    "eyebrow": "EXPERIMENTS",
+    "title": "Naïm Lab",
+    "subtitle": "Tools, experiments and ideas at the intersection of design, AI and technology.",
+    "exploreAgents": "Explore AI Agents",
+    "pluginsEyebrow": "FIGMA PLUGINS I BUILT",
+    "experiments": [
+      {
+        "title": "AI Agents",
+        "description": "Intelligent agents"
+      },
+      {
+        "title": "n8n",
+        "description": "Automation & workflows"
+      },
+      {
+        "title": "MCP",
+        "description": "Model Context Protocol"
+      },
+      {
+        "title": "RAG",
+        "description": "Knowledge & search"
+      },
+      {
+        "title": "Figma",
+        "description": "Design systems"
+      },
+      {
+        "title": "Vibe Coding",
+        "description": "Rapid prototyping"
+      }
+    ]
+  },
+  "career": {
+    "kicker": "CAREER SEARCH",
+    "title": "What's next?",
+    "subtitle": "Explore the kind of opportunities I'm targeting.",
+    "role": "Product Designer & AI Builder",
+    "openTo": "Open to KSA · UAE · Europe · Remote",
+    "targetLabel": "Target",
+    "targetValue": "Senior / Lead Product Designer",
+    "marketsLabel": "Markets",
+    "marketsValue": "KSA · UAE · Europe · Remote",
+    "focusLabel": "Focus",
+    "focusValue": "Product · UX/UI · AI · Digital Products",
+    "exploreBtn": "Explore opportunities",
+    "lookingFor": "WHAT I'M LOOKING FOR",
+    "downloadCv": "Download CV",
+    "toastTitle": "Career Search",
+    "toastBody": "This is the MVP UI. The real n8n job-search workflow can be connected here later.",
+    "tags": [
+      "Senior Product Designer",
+      "Lead Product Designer",
+      "AI Product Designer",
+      "Design Systems",
+      "Remote"
+    ]
+  },
+  "about": {
+    "eyebrow": "THE JOURNEY",
+    "titleLine1": "From making things with my hands",
+    "titleLine2": "to building intelligent products.",
+    "nowLabel": "NOW",
+    "timeline": [
+      {
+        "title": "Mechanical design",
+        "subtitle": "& fabrication",
+        "small": null
+      },
+      {
+        "title": "Industrial environments",
+        "subtitle": null,
+        "small": "Process & maintenance · chlorine industry"
+      },
+      {
+        "title": "Plastic injection",
+        "subtitle": null,
+        "small": "Moulding & manufacturing"
+      },
+      {
+        "title": "Digital design",
+        "subtitle": "& UX/UI",
+        "small": null
+      },
+      {
+        "title": "Product Design",
+        "subtitle": "& AI Product Building",
+        "small": null
+      }
+    ],
+    "cardEyebrow": "ABOUT ME",
+    "cardTitleLine1": "Designing with curiosity.",
+    "cardTitleLine2": "Building with purpose.",
+    "bio": "I'm Naïm, a product designer and AI builder based in Tunisia. I enjoy taking ambiguous ideas, giving them structure, designing the experience, and turning them into something people can actually use.",
+    "skills": [
+      "UX/UI",
+      "Product Design",
+      "AI",
+      "Low-Code",
+      "Design Systems",
+      "Automation"
+    ],
+    "languagesLabel": "LANGUAGES",
+    "languagesLine1": "Arabic · French",
+    "languagesLine2": "English · Italian",
+    "certificationsLabel": "CERTIFICATIONS",
+    "certLine1": "PSM I",
+    "certLine2": "Mendix Rapid Developer",
+    "certLine3": "Design — ISSAT Sousse"
+  },
+  "copilot": {
+    "kicker": "AI ASSISTANT",
+    "subtitle": "Ask about my work, projects, skills and professional journey.",
+    "online": "Online",
+    "defaultUser": "What kind of products does Naïm build?",
+    "defaultAi": "Naïm builds digital products combining design, technology and AI, with a focus on usable experiences and real business impact. His work spans UX/UI, Product Design, AI-driven solutions, Low-Code and Product Operations.",
+    "thinking": "Thinking…",
+    "inputPlaceholder": "Ask another question...",
+    "send": "Send",
+    "tryAsking": "TRY ASKING:",
+    "poweredNote": "Prototype UI · ready to connect to n8n",
+    "suggestions": [
+      "What are Naïm's strongest skills?",
+      "Show me relevant projects",
+      "What AI tools does he use?",
+      "Is he available for a project?",
+      "Why should I work with Naïm?"
+    ]
+  },
+  "work": {
+    "eyebrow": "SELECTED WORK",
+    "title": "Products, systems & digital experiences",
+    "subtitle": "From startup products and AI systems to Saudi digital services and front-end implementation.",
+    "talk": "Let's talk",
+    "loading": "Loading work...",
+    "unavailable": "Selected work is temporarily unavailable.",
+    "empty": "No published work items yet.",
+    "loadError": "Unable to load the work registry right now. Please try again shortly."
+  },
+  "caseStrip": {
+    "eyebrow": "CASE STUDIES",
+    "title": "How I solve product problems",
+    "subtitle": "Each story focuses on the problem, my role, the design decisions and the technology used to turn the idea into something usable.",
+    "steps": [
+      {
+        "strong": "Problem",
+        "span": "What needed to change?"
+      },
+      {
+        "strong": "Role",
+        "span": "What I owned."
+      },
+      {
+        "strong": "Approach",
+        "span": "How I framed the solution."
+      },
+      {
+        "strong": "Build",
+        "span": "How design met technology."
+      }
+    ]
+  },
+  "resources": {
+    "eyebrow": "RESOURCES & SKILLS LIBRARY",
+    "title": "Skills, tools & systems I use to think, design and build.",
+    "lead": "Autonomous agent capability bundles, heuristic audit playbooks, design system templates, and downloadable reference artifacts.",
+    "all": "All Resources",
+    "searchPlaceholder": "Search resources & tags...",
+    "loading": "Loading resources...",
+    "loadingSub": "Loading curated resources...",
+    "errorTitle": "Unable to load resources",
+    "errorBody": "There was a temporary problem retrieving the resource directory.",
+    "retry": "Retry Connection",
+    "emptyTitle": "No resources match your selection",
+    "emptyBody": "Try adjusting your search query or selecting a different category filter.",
+    "resetFilters": "Reset Filters",
+    "featured": "Featured",
+    "assets_one": "{{count}} asset included",
+    "assets_other": "{{count}} assets included",
+    "explore": "Explore",
+    "backToWork": "Back to selected work",
+    "requestCustom": "Request a custom Skill or Tool"
+  },
+  "agents": {
+    "eyebrow": "AI AGENTS & AUTOMATION LAB",
+    "title": "Autonomous Agents & Workflow Systems",
+    "lead": "Small systems that turn repetitive work into useful actions. Combining conversational reasoning, vector memory, n8n orchestration, and custom tool integrations.",
+    "loading": "Loading AI Agents...",
+    "activeEyebrow": "ACTIVE AGENTS",
+    "exploreTitle": "Explore Built Systems",
+    "exploreLead": "Detailed architecture breakdowns, live prototypes, and workflow decision trees.",
+    "backToWork": "Back to selected work",
+    "buildTogether": "Build an Agent together",
+    "detail": {
+      "loading": "Loading Agent Case Study...",
+      "notFoundEyebrow": "404 — NOT FOUND",
+      "notFoundTitle": "AI Agent Not Found",
+      "notFoundBody": "The requested AI agent case study could not be located.",
+      "back": "Back to AI Agents",
+      "tryDemo": "Try Interactive Demo",
+      "viewRepo": "View Repository"
+    },
+    "demo": {
+      "loading": "Loading Agent Demo...",
+      "notFoundTitle": "Agent Not Found",
+      "notFoundBody": "The requested agent demo does not exist.",
+      "placeholder": "Ask {{name}} anything regarding projects, skills, or workflows...",
+      "gatewayError": "Unable to connect to the agent gateway. Please check your internet connection.",
+      "unavailableError": "Copilot is temporarily unavailable. Please try again later.",
+      "promptLabel": "Prompt / Query:",
+      "inputPlaceholder": "Ask a question or enter a task for the agent...",
+      "pressKey": "Press",
+      "toRun": "to run,",
+      "forNewline": "for newline",
+      "executing": "Executing Agent...",
+      "run": "Run Agent",
+      "examples": "EXAMPLE QUERIES:",
+      "thinking": "Agent thinking...",
+      "processing": "Processing with n8n & Gemini...",
+      "processingSub": "Querying vector memory, executing agent reasoning, and preparing response.",
+      "response": "Agent Response",
+      "reset": "Reset",
+      "resetTitle": "Clear response and ask another question",
+      "backToCase": "Back to Case Study",
+      "interactiveDemo": "Interactive Demo",
+      "inactiveTitle": "Live Demo Inactive",
+      "inactiveBody": "This agent operates as an autonomous background pipeline and does not currently accept synchronous user prompts.",
+      "readCase": "Read Case Study",
+      "errorDefault": "The demo is temporarily unavailable. Please try again in a few moments.",
+      "failedTitle": "Agent Execution Failed",
+      "tryAgain": "Try Again",
+      "viewCase": "View Case Study",
+      "suggestions": [
+        "What are Naïm's strongest product design skills?",
+        "Which AI and n8n automation projects did he build?",
+        "Show me Saudi digital government and banking work",
+        "How does Naïm approach problem framing and design systems?"
+      ],
+      "liveEyebrow": "LIVE AI SYSTEM DEMO"
+    },
+    "card": {
+      "demoAvailable": "Demo Available",
+      "caseOnly": "Case Study Only",
+      "explore": "Explore Agent",
+      "category": "AI Agent",
+      "try": "Try"
+    },
+    "grid": {
+      "empty": "No AI Agents published yet."
+    }
+  },
+  "resourceDetail": {
+    "loadingBundle": "Loading resource bundle...",
+    "loadingDetails": "Loading resource details...",
+    "notFoundSeo": "Resource Not Found — Naïm Bsili",
+    "notFoundDesc": "The requested resource could not be found.",
+    "notFoundTitle": "Resource Not Found",
+    "notFoundBody": "The resource “{{slug}}” could not be located or may have been archived.",
+    "backToCatalog": "Back to Resources Catalog",
+    "freeDownload": "Free download",
+    "downloadBundle": "Download Free Bundle",
+    "readSkill": "Read Skill",
+    "instantDownload": "Instant download · No credit card required",
+    "overview": "Overview & Purpose",
+    "whenToUse": "When to Use",
+    "whenNotToUse": "When NOT to Use",
+    "howToUse": "How to Use & Autonomous Pipeline",
+    "copyPrompt": "Copy Prompt",
+    "exampleOutput": "Example Output & Responsive Evidence",
+    "exampleOutputSub": "Real examples of the resource in action across desktop, tablet and mobile contexts.",
+    "captureFallback": "Capture",
+    "captureProof": "Heuristic audit capture proof",
+    "blankTemplates": "Blank Templates & Workbooks",
+    "blankTemplatesSub": "Reusable starter workbooks to accompany this skill. Free download with structured findings sheets.",
+    "sourceLinks": "Source & Documentation Links",
+    "officialSource": "Official Source Link",
+    "docLink": "Documentation Link",
+    "compatibility": "Compatibility",
+    "verified": "✓ Verified",
+    "compatible": "Compatible",
+    "installPaths": "Installation Paths",
+    "globalPath": "Global Skill Path:",
+    "workspacePath": "Workspace Skill Path:",
+    "setupInstructions": "Setup Instructions:",
+    "tagsClassification": "Tags & Classification",
+    "backToResources": "Back to all resources",
+    "backToTop": "Back to top"
   }
 }

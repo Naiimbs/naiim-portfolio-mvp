@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import ProjectCard from './ProjectCard';
 import MiniProjectCard from './MiniProjectCard';
 import { getPublishedPublicContent, normalizeRegistryEntry } from '../../services/contentRegistry';
@@ -21,6 +22,7 @@ export const WORK_CATALOG_DEFAULTS = {
 };
 
 export default function WorkCatalog({ config = {} }) {
+  const { t } = useTranslation();
   const eyebrow = config.eyebrow !== undefined ? config.eyebrow : WORK_CATALOG_DEFAULTS.eyebrow;
   const title = config.title !== undefined ? config.title : WORK_CATALOG_DEFAULTS.title;
   const intro = config.intro !== undefined ? config.intro : WORK_CATALOG_DEFAULTS.intro;
@@ -84,16 +86,16 @@ export default function WorkCatalog({ config = {} }) {
         {loading && (
           <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '30vh' }}>
             <div className="spinner-border text-success" role="status">
-              <span className="visually-hidden">Loading work...</span>
+              <span className="visually-hidden">{t('work.loading')}</span>
             </div>
           </div>
         )}
 
         {!loading && error && (
           <div className="text-center py-5">
-            <p className="text-muted">Unable to load the work registry right now. Please try again shortly.</p>
+            <p className="text-muted">{t('work.loadError')}</p>
             <Link to="/" className="btn btn-primary-custom rounded-pill px-4 mt-2">
-              <i className="bi bi-arrow-left"></i> Back to Home
+              <i className="bi bi-arrow-left"></i> {t('placeholder.backHome')}
             </Link>
           </div>
         )}
@@ -102,7 +104,7 @@ export default function WorkCatalog({ config = {} }) {
 
         {!loading && !error && empty && (
           <div className="text-center py-5">
-            <p className="text-muted">No published work items yet.</p>
+            <p className="text-muted">{t('work.empty')}</p>
           </div>
         )}
       </div>

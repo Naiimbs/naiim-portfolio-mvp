@@ -1,19 +1,22 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { answerFor } from './copilotMock';
 
-const SUGGESTIONS = [
-  { text: "What are Naïm's strongest skills?", question: "What are Naïm's strongest skills?" },
-  { text: 'Show me relevant projects', question: 'Show me relevant projects.' },
-  { text: 'What AI tools does he use?', question: 'What AI tools does he use?' },
-  { text: 'Is he available for a project?', question: 'Is Naïm available for a project?' },
-  { text: 'Why should I work with Naïm?', question: 'Why should I work with Naïm?' },
+// The `question` values are the lookup keys for the mock knowledge base
+// (answerFor), so they stay in English; only the displayed text is translated.
+const SUGGESTION_QUESTIONS = [
+  "What are Naïm's strongest skills?",
+  'Show me relevant projects.',
+  'What AI tools does he use?',
+  'Is Naïm available for a project?',
+  'Why should I work with Naïm?',
 ];
 
 export default function CopilotWidget() {
-  const [userMsg, setUserMsg] = useState('What kind of products does Naïm build?');
-  const [aiMsg, setAiMsg] = useState(
-    'Naïm builds digital products combining design, technology and AI, with a focus on usable experiences and real business impact. His work spans UX/UI, Product Design, AI-driven solutions, Low-Code and Product Operations.'
-  );
+  const { t } = useTranslation();
+  const suggestionTexts = t('copilot.suggestions', { returnObjects: true }) || [];
+  const [userMsg, setUserMsg] = useState(t('copilot.defaultUser'));
+  const [aiMsg, setAiMsg] = useState(t('copilot.defaultAi'));
   const [inputValue, setInputValue] = useState('');
 
   const handleAsk = (question) => {
@@ -21,7 +24,7 @@ export default function CopilotWidget() {
     if (!clean) return;
 
     setUserMsg(clean);
-    setAiMsg('Thinking…');
+    setAiMsg(t('copilot.thinking'));
     setInputValue('');
 
     setTimeout(() => {
@@ -41,13 +44,13 @@ export default function CopilotWidget() {
           <i className="bi bi-stars"></i>
         </div>
         <div>
-          <div className="feature-kicker">AI ASSISTANT</div>
+          <div className="feature-kicker">{t('copilot.kicker')}</div>
           <h2>
             Naïm Copilot <span>AI</span>
           </h2>
-          <p>Ask about my work, projects, skills and professional journey.</p>
+          <p>{t('copilot.subtitle')}</p>
         </div>
-        <span className="online-dot">● Online</span>
+        <span className="online-dot">● {t('copilot.online')}</span>
       </div>
 
       <div className="chat-layout">
@@ -63,34 +66,34 @@ export default function CopilotWidget() {
             <input
               id="copilotInput"
               type="text"
-              placeholder="Ask another question..."
+              placeholder={t('copilot.inputPlaceholder')}
               autoComplete="off"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
             />
-            <button id="copilotSend" type="submit" aria-label="Send">
+            <button id="copilotSend" type="submit" aria-label={t('copilot.send')}>
               <i className="bi bi-arrow-up"></i>
             </button>
           </form>
         </div>
 
         <div className="suggestions">
-          <small>TRY ASKING:</small>
-          {SUGGESTIONS.map((item, index) => (
+          <small>{t('copilot.tryAsking')}</small>
+          {SUGGESTION_QUESTIONS.map((question, index) => (
             <button
               key={index}
               type="button"
-              data-question={item.question}
-              onClick={() => handleAsk(item.question)}
+              data-question={question}
+              onClick={() => handleAsk(question)}
             >
-              {item.text}
+              {suggestionTexts[index] || question}
             </button>
           ))}
         </div>
       </div>
 
       <div className="powered-note">
-        <i className="bi bi-diagram-3"></i> Prototype UI · ready to connect to n8n
+        <i className="bi bi-diagram-3"></i> {t('copilot.poweredNote')}
       </div>
     </div>
   );

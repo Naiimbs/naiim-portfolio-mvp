@@ -1,9 +1,11 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 import { getSectionComponent } from './sectionRegistry';
 import { PAGE_SECTION_TYPES } from './sectionSchemas';
 import { computeSectionStyleObject, scopeCustomCss } from './styleSystem';
 import { getLayoutContainerStyle, resolveResponsiveColumns } from './layoutSystem';
+import { localizeConfig } from '../../utils/localizeConfig';
 
 /**
  * Generic Page Renderer for Site-Wide CMS.
@@ -35,6 +37,8 @@ export default function PageRenderer({
   onInsertSection = null,
 }) {
   const isEditorMode = Boolean(onSelectSection);
+  const { i18n } = useTranslation();
+  const lang = i18n?.language || 'en';
 
   if (loading) {
     return (
@@ -100,6 +104,8 @@ export default function PageRenderer({
               return null;
             }
 
+            // Localized content for the active language (styles/layout stay on base config).
+            const localizedConfig = localizeConfig(sec.config, lang);
             const customClass = sec.config?.customClassName ? String(sec.config.customClassName).trim() : '';
             const sectionStyles = computeSectionStyleObject(sec.config?.style, viewport);
             const scopedCss = sec.config?.style?.customCss ? scopeCustomCss(sec.config.style.customCss, sec.id) : null;
@@ -253,13 +259,13 @@ export default function PageRenderer({
                         <div className="cms-layout-grid-container" style={layoutGridStyle}>
                           {resolvedCols.map((span, colIdx) => (
                             <div key={colIdx} style={{ gridColumn: `span ${span}`, minWidth: 0, width: '100%' }}>
-                              {colIdx === 0 ? <SectionComp config={sec.config || {}} section={sec} /> : null}
+                              {colIdx === 0 ? <SectionComp config={localizedConfig} section={sec} /> : null}
                             </div>
                           ))}
                         </div>
                       ) : (
                         <div style={{ width: '100%' }}>
-                          <SectionComp config={sec.config || {}} section={sec} />
+                          <SectionComp config={localizedConfig} section={sec} />
                         </div>
                       )}
                       {/* Editor placeholder for components that return null or minimal height */}
@@ -285,13 +291,13 @@ export default function PageRenderer({
                   <div className="cms-layout-grid-container" style={layoutGridStyle}>
                     {resolvedCols.map((span, colIdx) => (
                       <div key={colIdx} style={{ gridColumn: `span ${span}`, minWidth: 0, width: '100%' }}>
-                        {colIdx === 0 ? <SectionComp config={sec.config || {}} section={sec} /> : null}
+                        {colIdx === 0 ? <SectionComp config={localizedConfig} section={sec} /> : null}
                       </div>
                     ))}
                   </div>
                 ) : (
                   <div style={{ width: '100%' }}>
-                    <SectionComp config={sec.config || {}} section={sec} />
+                    <SectionComp config={localizedConfig} section={sec} />
                   </div>
                 )}
               </div>

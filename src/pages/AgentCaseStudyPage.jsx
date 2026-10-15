@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import MainLayout from '../layouts/MainLayout';
 import SEO from '../components/common/SEO';
 import CMSSectionRenderer from '../components/case-study/CMSSectionRenderer';
@@ -8,6 +9,7 @@ import { siteConfig } from '../config/site';
 import '../styles/agents.css';
 
 export default function AgentCaseStudyPage() {
+  const { t } = useTranslation();
   const { slug } = useParams();
   const [agent, setAgent] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -28,7 +30,7 @@ export default function AgentCaseStudyPage() {
       <MainLayout>
         <div className="d-flex align-items-center justify-content-center min-vh-100">
           <div className="spinner-border text-success" role="status">
-            <span className="visually-hidden">Loading Agent Case Study...</span>
+            <span className="visually-hidden">{t('agents.detail.loading')}</span>
           </div>
         </div>
       </MainLayout>
@@ -39,11 +41,11 @@ export default function AgentCaseStudyPage() {
     return (
       <MainLayout>
         <div className="container text-center py-5 my-5">
-          <div className="eyebrow text-danger mb-2"><span></span> 404 — NOT FOUND</div>
-          <h2>AI Agent Not Found</h2>
-          <p className="text-muted">The requested AI agent case study could not be located.</p>
+          <div className="eyebrow text-danger mb-2"><span></span> {t('agents.detail.notFoundEyebrow')}</div>
+          <h2>{t('agents.detail.notFoundTitle')}</h2>
+          <p className="text-muted">{t('agents.detail.notFoundBody')}</p>
           <Link to="/agents" className="btn btn-dark rounded-pill px-4 mt-3">
-            <i className="bi bi-arrow-left"></i> Back to AI Agents
+            <i className="bi bi-arrow-left"></i> {t('agents.detail.back')}
           </Link>
         </div>
       </MainLayout>
@@ -112,7 +114,7 @@ export default function AgentCaseStudyPage() {
       <section className="case-hero">
         <div className="container">
           <Link className="text-link" to="/agents">
-            <i className="bi bi-arrow-left"></i> Back to AI Agents
+            <i className="bi bi-arrow-left"></i> {t('agents.detail.back')}
           </Link>
 
           <div className="eyebrow mt-4">
@@ -151,7 +153,7 @@ export default function AgentCaseStudyPage() {
             <div className="d-flex flex-wrap gap-3 mt-4">
               {demo_type !== 'none' && (
                 <Link to={`/agents/${slug}/demo`} className="btn btn-success rounded-pill px-4">
-                  <i className="bi bi-lightning-charge-fill me-1"></i> Try Interactive Demo
+                  <i className="bi bi-lightning-charge-fill me-1"></i> {t('agents.detail.tryDemo')}
                 </Link>
               )}
 
@@ -162,7 +164,7 @@ export default function AgentCaseStudyPage() {
                   rel="noopener noreferrer"
                   className="btn btn-outline-dark rounded-pill px-4"
                 >
-                  <i className="bi bi-github me-1"></i> View Repository
+                  <i className="bi bi-github me-1"></i> {t('agents.detail.viewRepo')}
                 </a>
               )}
             </div>
@@ -181,7 +183,7 @@ export default function AgentCaseStudyPage() {
       <section className="case-nav">
         <div className="container d-flex justify-content-between align-items-center">
           <Link to="/agents" className="text-link">
-            <i className="bi bi-arrow-left"></i> Back to AI Agents
+            <i className="bi bi-arrow-left"></i> {t('agents.detail.back')}
           </Link>
           <a href="#contact" className="text-link">
             Build an Agent <i className="bi bi-arrow-up-right"></i>

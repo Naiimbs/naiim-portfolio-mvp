@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 /**
  * Editor for the homepage Hero (`home_hero` composite section).
@@ -11,6 +11,16 @@ export default function HomeHeroSectionEditor({ config = {}, onChange }) {
   const secondaryCta = config.secondaryCta || {};
 
   const set = (patch) => onChange({ ...config, ...patch });
+
+  // ── Translations (Phase 3): edits config.i18n[lang] overrides ──────────
+  const [txLang, setTxLang] = useState('fr');
+  const i18nData = config.i18n || {};
+  const tx = i18nData[txLang] || {};
+  const setTx = (patch) =>
+    set({ i18n: { ...i18nData, [txLang]: { ...tx, ...patch } } });
+  const setTxCta = (key, label) =>
+    setTx({ [key]: { ...(tx[key] || {}), label } });
+  const txTitleLines = Array.isArray(tx.titleLines) ? tx.titleLines : [];
 
   const updateItem = (index, field, val) => {
     const updated = buildingItems.map((it, i) => (i === index ? { ...it, [field]: val } : it));
@@ -212,6 +222,51 @@ export default function HomeHeroSectionEditor({ config = {}, onChange }) {
         {buildingItems.length === 0 && (
           <div className="text-muted small p-2 bg-white rounded border text-center">No items. Click &quot;Add item&quot;.</div>
         )}
+      </div>
+
+      {/* ── Translations (FR / AR) ─────────────────────────────────────── */}
+      <div className="mt-4 p-2 border rounded-3 bg-white">
+        <div className="d-flex justify-content-between align-items-center mb-2">
+          <span className="small text-uppercase fw-bold text-muted">
+            <i className="bi bi-translate me-1"></i> Translations
+          </span>
+          <div className="btn-group btn-group-sm" role="group">
+            <button type="button" className={`btn btn-sm ${txLang === 'fr' ? 'btn-dark' : 'btn-outline-secondary'} py-0 px-2`} onClick={() => setTxLang('fr')}>FR</button>
+            <button type="button" className={`btn btn-sm ${txLang === 'ar' ? 'btn-dark' : 'btn-outline-secondary'} py-0 px-2`} onClick={() => setTxLang('ar')}>ع AR</button>
+          </div>
+        </div>
+        <div className="small text-muted mb-2" style={{ fontSize: '0.72rem' }}>
+          Leave a field empty to fall back to the default (English) text. These show when a visitor switches the site to {txLang === 'fr' ? 'French' : 'Arabic'}.
+        </div>
+
+        <div className="mb-2" dir={txLang === 'ar' ? 'rtl' : 'ltr'}>
+          <label className="form-label small fw-semibold">Eyebrow</label>
+          <input type="text" className="form-control form-control-sm rounded-3" value={tx.eyebrow || ''} placeholder={config.eyebrow || ''} onChange={(e) => setTx({ eyebrow: e.target.value })} />
+        </div>
+        <div className="mb-2" dir={txLang === 'ar' ? 'rtl' : 'ltr'}>
+          <label className="form-label small fw-semibold">Title lines <span className="text-muted">(one per line)</span></label>
+          <textarea className="form-control form-control-sm rounded-3" rows="3" value={txTitleLines.join('\n')} placeholder={titleLines.join('\n')} onChange={(e) => setTx({ titleLines: e.target.value ? e.target.value.split('\n') : [] })} />
+        </div>
+        <div className="mb-2" dir={txLang === 'ar' ? 'rtl' : 'ltr'}>
+          <label className="form-label small fw-semibold">Lead paragraph</label>
+          <textarea className="form-control form-control-sm rounded-3" rows="2" value={tx.lead || ''} placeholder={config.lead || ''} onChange={(e) => setTx({ lead: e.target.value })} />
+          <label className="form-label small fw-semibold mt-2">Lead bold tail</label>
+          <input type="text" className="form-control form-control-sm rounded-3" value={tx.leadStrong || ''} placeholder={config.leadStrong || ''} onChange={(e) => setTx({ leadStrong: e.target.value })} />
+        </div>
+        <div className="row g-2 mb-2" dir={txLang === 'ar' ? 'rtl' : 'ltr'}>
+          <div className="col-6">
+            <label className="form-label small fw-semibold">Primary button</label>
+            <input type="text" className="form-control form-control-sm rounded-3" value={tx.primaryCta?.label || ''} placeholder={primaryCta.label || ''} onChange={(e) => setTxCta('primaryCta', e.target.value)} />
+          </div>
+          <div className="col-6">
+            <label className="form-label small fw-semibold">Secondary button</label>
+            <input type="text" className="form-control form-control-sm rounded-3" value={tx.secondaryCta?.label || ''} placeholder={secondaryCta.label || ''} onChange={(e) => setTxCta('secondaryCta', e.target.value)} />
+          </div>
+        </div>
+        <div className="mb-1" dir={txLang === 'ar' ? 'rtl' : 'ltr'}>
+          <label className="form-label small fw-semibold">"Currently building" label</label>
+          <input type="text" className="form-control form-control-sm rounded-3" value={tx.buildingLabel || ''} placeholder={config.buildingLabel || ''} onChange={(e) => setTx({ buildingLabel: e.target.value })} />
+        </div>
       </div>
     </div>
   );

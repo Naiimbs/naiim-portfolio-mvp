@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getFooterNavigation, getPublicSiteSettings, DEFAULT_FOOTER_NAV } from '../../services/siteCms';
 
 export default function Footer() {
+  const { t } = useTranslation();
   const [navItems, setNavItems] = useState(DEFAULT_FOOTER_NAV);
   const [siteSettings, setSiteSettings] = useState(null);
   const location = useLocation();
@@ -33,7 +35,7 @@ export default function Footer() {
   }, []);
 
   const brandName = siteSettings?.site_name || 'NAÏM BSILI';
-  const copyrightText = siteSettings?.copyright_text || '© 2026 Naïm Bsili. All rights reserved.';
+  const copyrightText = siteSettings?.copyright_text || t('footer.rights');
   const emailAddr = siteSettings?.contact_email ? `mailto:${siteSettings.contact_email}` : 'mailto:hi@naiimbsili.com';
   const linkedinUrl = siteSettings?.linkedin || 'https://tn.linkedin.com/in/bsili-naiim';
   const githubUrl = siteSettings?.github || 'https://github.com/naiimbsili';
