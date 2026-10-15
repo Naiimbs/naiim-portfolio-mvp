@@ -142,6 +142,20 @@ export async function createContentRegistryEntry(payload) {
   }
 
   try {
+    // Auto-assign a distinct sort_order when none is provided, so new entries
+    // append at the end instead of all defaulting to 0 (which triggers the
+    // "Duplicate sort_order 0" registry integrity warning).
+    let sortOrder = Number(payload.sort_order);
+    if (!Number.isFinite(sortOrder) || sortOrder <= 0) {
+      const { data: maxRow } = await supabase
+        .from('content_registry')
+        .select('sort_order')
+        .order('sort_order', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      sortOrder = (Number(maxRow?.sort_order) || 0) + 10;
+    }
+
     const cleanPayload = {
       title: payload.title.trim(),
       slug: payload.slug.trim().toLowerCase(),
@@ -149,7 +163,7 @@ export async function createContentRegistryEntry(payload) {
       status: payload.status || 'draft',
       visibility: payload.visibility || 'public',
       featured: Boolean(payload.featured),
-      sort_order: Number(payload.sort_order) || 0,
+      sort_order: sortOrder,
       public_route: payload.public_route?.trim() || null,
       metadata: payload.metadata || {},
     };
