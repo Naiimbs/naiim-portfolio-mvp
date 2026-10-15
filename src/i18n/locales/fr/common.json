@@ -2,12 +2,38 @@
   "nav": {
     "work": "Projets",
     "copilot": "Copilot",
-    "career": "Carrière",
+    "career": "Parcours",
     "lab": "Lab",
     "about": "À propos",
-    "talk": "Contact"
+    "talk": "Discutons"
   },
   "footer": {
     "rights": "© 2026 Naïm Bsili. Tous droits réservés."
+  },
+  "contact": {
+    "eyebrow": "RESTONS EN CONTACT",
+    "titleLine1": "Une idée, un produit",
+    "titleLine2": "ou un problème à résoudre ?",
+    "subtitle": "Transformons-le en quelque chose de réel.",
+    "cta": "Discutons"
+  },
+  "share": {
+    "on": "Partager sur {{network}}",
+    "copy": "Copier le lien",
+    "copied": "Copié",
+    "label": "Partager :"
+  },
+  "feedback": {
+    "title": "Cet article vous a-t-il été utile ?",
+    "ratings": "{{avg}} · {{count}} avis",
+    "note": "Votre note m'aide à améliorer mes écrits. Les commentaires sont privés.",
+    "placeholder": "Facultatif : qu'est-ce qui pourrait être amélioré ? (privé)",
+    "send": "Envoyer",
+    "sending": "Envoi…",
+    "thanks": "Merci pour votre retour !",
+    "chooseStar": "Veuillez d'abord choisir une note.",
+    "errorGeneric": "Impossible d'envoyer votre retour. Veuillez réessayer.",
+    "ratingAria": "Note",
+    "starAria": "Noter {{n}} sur 5"
   }
 }

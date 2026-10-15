@@ -9,5 +9,31 @@
   },
   "footer": {
     "rights": "© 2026 Naïm Bsili. All rights reserved."
+  },
+  "contact": {
+    "eyebrow": "LET'S CONNECT",
+    "titleLine1": "Have an idea, a product",
+    "titleLine2": "or a problem to solve?",
+    "subtitle": "Let's turn it into something real.",
+    "cta": "Let's talk"
+  },
+  "share": {
+    "on": "Share on {{network}}",
+    "copy": "Copy link",
+    "copied": "Copied",
+    "label": "Share:"
+  },
+  "feedback": {
+    "title": "Was this article helpful?",
+    "ratings": "{{avg}} · {{count}} ratings",
+    "note": "Your rating helps me improve my writing. Comments are private.",
+    "placeholder": "Optional: what could be better? (private)",
+    "send": "Send feedback",
+    "sending": "Sending…",
+    "thanks": "Thanks for your feedback!",
+    "chooseStar": "Please choose a star rating first.",
+    "errorGeneric": "Could not send your feedback. Please try again.",
+    "ratingAria": "Rating",
+    "starAria": "Rate {{n}} out of 5"
   }
 }
