@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getHeaderNavigation, getPublicSiteSettings, DEFAULT_HEADER_NAV } from '../../services/siteCms';
 import LanguageSwitcher from './LanguageSwitcher';
 
 export default function Navbar() {
+  const { t } = useTranslation();
   const [navItems, setNavItems] = useState(DEFAULT_HEADER_NAV);
   const [siteSettings, setSiteSettings] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -78,7 +80,7 @@ export default function Navbar() {
   const isHome = location.pathname === '/';
 
   const brandName = siteSettings?.site_name || 'NAÏM BSILI';
-  const ctaLabel = siteSettings?.contact_cta_label || "Let's Talk";
+  const ctaLabel = siteSettings?.contact_cta_label || t('nav.talk');
   const rawCtaHref = typeof siteSettings?.contact_cta_href === 'string' ? siteSettings.contact_cta_href.trim() : '#contact';
   const ctaHref = rawCtaHref || '#contact';
 
