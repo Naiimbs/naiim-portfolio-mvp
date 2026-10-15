@@ -202,5 +202,37 @@
       "Est-il disponible pour un projet ?",
       "Pourquoi travailler avec Naïm ?"
     ]
+  },
+  "work": {
+    "eyebrow": "PROJETS SÉLECTIONNÉS",
+    "title": "Produits, systèmes & expériences numériques",
+    "subtitle": "Des produits de startups et systèmes IA aux services numériques saoudiens et à l’intégration front-end.",
+    "talk": "Discutons",
+    "loading": "Chargement des projets...",
+    "unavailable": "Les projets sélectionnés sont momentanément indisponibles.",
+    "empty": "Aucun projet publié pour l’instant."
+  },
+  "caseStrip": {
+    "eyebrow": "ÉTUDES DE CAS",
+    "title": "Comment je résous les problèmes produit",
+    "subtitle": "Chaque récit se concentre sur le problème, mon rôle, les décisions de design et la technologie utilisée pour rendre l’idée utilisable.",
+    "steps": [
+      {
+        "strong": "Problème",
+        "span": "Qu’est-ce qui devait changer ?"
+      },
+      {
+        "strong": "Rôle",
+        "span": "Ce dont j’étais responsable."
+      },
+      {
+        "strong": "Approche",
+        "span": "Comment j’ai cadré la solution."
+      },
+      {
+        "strong": "Build",
+        "span": "Comment le design a rencontré la technologie."
+      }
+    ]
   }
 }

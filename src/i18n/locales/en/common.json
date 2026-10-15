@@ -202,5 +202,37 @@
       "Is he available for a project?",
       "Why should I work with Naïm?"
     ]
+  },
+  "work": {
+    "eyebrow": "SELECTED WORK",
+    "title": "Products, systems & digital experiences",
+    "subtitle": "From startup products and AI systems to Saudi digital services and front-end implementation.",
+    "talk": "Let's talk",
+    "loading": "Loading work...",
+    "unavailable": "Selected work is temporarily unavailable.",
+    "empty": "No published work items yet."
+  },
+  "caseStrip": {
+    "eyebrow": "CASE STUDIES",
+    "title": "How I solve product problems",
+    "subtitle": "Each story focuses on the problem, my role, the design decisions and the technology used to turn the idea into something usable.",
+    "steps": [
+      {
+        "strong": "Problem",
+        "span": "What needed to change?"
+      },
+      {
+        "strong": "Role",
+        "span": "What I owned."
+      },
+      {
+        "strong": "Approach",
+        "span": "How I framed the solution."
+      },
+      {
+        "strong": "Build",
+        "span": "How design met technology."
+      }
+    ]
   }
 }
