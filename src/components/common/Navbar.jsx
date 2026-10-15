@@ -130,10 +130,27 @@ export default function Navbar() {
     return currentPath === href;
   };
 
+  // Localized label for known default routes; custom CMS items keep their label.
+  const NAV_LABEL_KEYS = {
+    '/work': 'nav.work',
+    '/about': 'nav.about',
+    '#copilot': 'nav.copilot',
+    '/#copilot': 'nav.copilot',
+    '#career': 'nav.career',
+    '/#career': 'nav.career',
+    '#lab': 'nav.lab',
+    '/#lab': 'nav.lab',
+  };
+  const navLabel = (item) => {
+    const href = typeof item.href === 'string' ? item.href.trim() : '';
+    const key = NAV_LABEL_KEYS[href];
+    return key ? t(key) : (item.label || 'Link');
+  };
+
   const renderNavLink = (item) => {
     if (!item) return null;
     const href = typeof item.href === 'string' ? item.href.trim() : '#';
-    const label = item.label || 'Link';
+    const label = navLabel(item);
     const isExternal = Boolean(item.open_in_new_tab) || href.startsWith('http://') || href.startsWith('https://');
     const isActive = !isExternal && checkIsActive(href);
     const linkClass = `nav-link ${isActive ? 'active' : ''}`.trim();
