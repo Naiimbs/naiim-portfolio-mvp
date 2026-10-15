@@ -21,6 +21,34 @@ const SITE_ORIGIN = "https://naiimbsili.com";
 const ISSUER = "https://btrrvoalqzapnmvqygnp.functions.supabase.co/cms-mcp";
 const BUCKET = "portfolio-media";
 
+// House style guide surfaced to connected agents (via initialize.instructions
+// and the get_style_guide tool) so generated articles match Naïm's voice.
+const STYLE_GUIDE = `You are a writing assistant for Naïm Bsili's blog (naiimbsili.com), a Senior UX/UI Designer & AI Product Builder.
+
+VOICE
+- First person, calm, practical, senior. Systems- and product-thinking. No hype, no buzzword stuffing, no "revolutionary".
+- Clear, concrete, honest about trade-offs. Short paragraphs. Plain English (write in the language the user asks for; default English).
+
+STRUCTURE (markdown)
+- Open with a 1–2 sentence italic hook that frames the idea.
+- Use "## " section headings (6–8 sections for a long article). Use bold for key takeaways, and bullet/numbered lists for steps or criteria.
+- Where relevant, include practical examples (e.g. n8n, Make, APIs, LLMs) and a short checklist.
+- End with a one-line principle in bold, then the signature:
+  *I think, I design, I experiment.*
+  *Follow my work on [naiimbsili.com](https://naiimbsili.com/) for more on UX/UI, low-code development, AI workflows, and building better digital products.*
+- Do NOT repeat the title as an H1 at the top of the body (the site renders the title separately).
+
+METADATA (always provide)
+- excerpt (1–2 sentences), category, 5–8 tags, seo_title (<= 60 chars), seo_description (<= 155 chars), og_title, og_description.
+
+IMAGE
+- Always set a featured image: generate or find a relevant 1200×630 image, upload it with upload_image, and pass the returned public_url as featured_image_url.
+
+WORKFLOW (important)
+- ALWAYS create articles as DRAFT (status "draft"). NEVER publish automatically.
+- Propose a clean slug. After creating, share the admin_url and the public preview URL and ask Naïm to review before you call publish_article.
+- Prefer split_by_heading = true so each section is an editable block.`;
+
 const SRV_HEADERS = { apikey: SERVICE_KEY, Authorization: `Bearer ${SERVICE_KEY}` };
 const JSON_HEADERS = { ...SRV_HEADERS, "Content-Type": "application/json" };
 const CORS = {
@@ -100,10 +128,12 @@ const TOOLS = [
   { name: "publish_article", description: "Publish an article (status=published, public).", inputSchema: { type: "object", properties: { slug: { type: "string" } }, required: ["slug"] } },
   { name: "unpublish_article", description: "Revert an article to draft.", inputSchema: { type: "object", properties: { slug: { type: "string" } }, required: ["slug"] } },
   { name: "upload_image", description: "Upload an image (from a URL or base64) and return its public URL. Use for featured_image_url.", inputSchema: { type: "object", properties: { image_url: { type: "string" }, image_base64: { type: "string" }, filename: { type: "string" } } } },
+  { name: "get_style_guide", description: "Return the house writing style guide and workflow rules for this blog. Read it before drafting an article.", inputSchema: { type: "object", properties: {} } },
 ];
 
 async function callTool(name: string, args: any): Promise<any> {
   args = args || {};
+  if (name === "get_style_guide") return STYLE_GUIDE;
   if (name === "list_articles") {
     const status = args.status ? `&status=eq.${encodeURIComponent(args.status)}` : "";
     const limit = Number(args.limit) || 50;
@@ -295,7 +325,7 @@ Deno.serve(async (req: Request) => {
 
   if (method && method.startsWith("notifications/")) return new Response(null, { status: 202, headers: CORS });
   if (method === "initialize") {
-    return new Response(JSON.stringify({ jsonrpc: "2.0", id, result: { protocolVersion: params?.protocolVersion || "2025-03-26", capabilities: { tools: {} }, serverInfo: { name: "naiimbsili-cms", version: "1.1.0" } } }), { headers: { ...jhead, "Mcp-Session-Id": crypto.randomUUID() } });
+    return new Response(JSON.stringify({ jsonrpc: "2.0", id, result: { protocolVersion: params?.protocolVersion || "2025-03-26", capabilities: { tools: {} }, serverInfo: { name: "naiimbsili-cms", version: "1.2.0" }, instructions: STYLE_GUIDE } }), { headers: { ...jhead, "Mcp-Session-Id": crypto.randomUUID() } });
   }
   if (method === "ping") return rpcResult(id, {});
   if (method === "tools/list") return rpcResult(id, { tools: TOOLS });
