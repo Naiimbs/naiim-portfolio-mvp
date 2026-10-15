@@ -67,5 +67,69 @@
     "emptyMatch": "No published articles match “{{search}}”. Try clearing your search.",
     "emptyNone": "No published articles in this category yet. Check back soon!",
     "clearFilters": "Clear Filters"
+  },
+  "placeholder": {
+    "error404": "404 ERROR",
+    "comingSoon": "COMING SOON",
+    "defaultDesc": "This route is configured in React Router and will be implemented in subsequent phases.",
+    "backHome": "Back to Home"
+  },
+  "lab": {
+    "eyebrow": "EXPERIMENTS",
+    "title": "Naïm Lab",
+    "subtitle": "Tools, experiments and ideas at the intersection of design, AI and technology.",
+    "exploreAgents": "Explore AI Agents",
+    "pluginsEyebrow": "FIGMA PLUGINS I BUILT",
+    "experiments": [
+      {
+        "title": "AI Agents",
+        "description": "Intelligent agents"
+      },
+      {
+        "title": "n8n",
+        "description": "Automation & workflows"
+      },
+      {
+        "title": "MCP",
+        "description": "Model Context Protocol"
+      },
+      {
+        "title": "RAG",
+        "description": "Knowledge & search"
+      },
+      {
+        "title": "Figma",
+        "description": "Design systems"
+      },
+      {
+        "title": "Vibe Coding",
+        "description": "Rapid prototyping"
+      }
+    ]
+  },
+  "career": {
+    "kicker": "CAREER SEARCH",
+    "title": "What's next?",
+    "subtitle": "Explore the kind of opportunities I'm targeting.",
+    "role": "Product Designer & AI Builder",
+    "openTo": "Open to KSA · UAE · Europe · Remote",
+    "targetLabel": "Target",
+    "targetValue": "Senior / Lead Product Designer",
+    "marketsLabel": "Markets",
+    "marketsValue": "KSA · UAE · Europe · Remote",
+    "focusLabel": "Focus",
+    "focusValue": "Product · UX/UI · AI · Digital Products",
+    "exploreBtn": "Explore opportunities",
+    "lookingFor": "WHAT I'M LOOKING FOR",
+    "downloadCv": "Download CV",
+    "toastTitle": "Career Search",
+    "toastBody": "This is the MVP UI. The real n8n job-search workflow can be connected here later.",
+    "tags": [
+      "Senior Product Designer",
+      "Lead Product Designer",
+      "AI Product Designer",
+      "Design Systems",
+      "Remote"
+    ]
   }
 }

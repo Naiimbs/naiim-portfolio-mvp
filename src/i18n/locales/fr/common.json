@@ -67,5 +67,69 @@
     "emptyMatch": "Aucun article publié ne correspond à « {{search}} ». Essayez d’effacer votre recherche.",
     "emptyNone": "Aucun article publié dans cette catégorie pour l’instant. Revenez bientôt !",
     "clearFilters": "Effacer les filtres"
+  },
+  "placeholder": {
+    "error404": "ERREUR 404",
+    "comingSoon": "BIENTÔT DISPONIBLE",
+    "defaultDesc": "Cette page est configurée dans le routeur et sera implémentée dans les prochaines phases.",
+    "backHome": "Retour à l’accueil"
+  },
+  "lab": {
+    "eyebrow": "EXPÉRIMENTATIONS",
+    "title": "Naïm Lab",
+    "subtitle": "Outils, expérimentations et idées à l’intersection du design, de l’IA et de la technologie.",
+    "exploreAgents": "Découvrir les agents IA",
+    "pluginsEyebrow": "PLUGINS FIGMA QUE J’AI CRÉÉS",
+    "experiments": [
+      {
+        "title": "Agents IA",
+        "description": "Agents intelligents"
+      },
+      {
+        "title": "n8n",
+        "description": "Automatisation & workflows"
+      },
+      {
+        "title": "MCP",
+        "description": "Model Context Protocol"
+      },
+      {
+        "title": "RAG",
+        "description": "Connaissance & recherche"
+      },
+      {
+        "title": "Figma",
+        "description": "Design systems"
+      },
+      {
+        "title": "Vibe Coding",
+        "description": "Prototypage rapide"
+      }
+    ]
+  },
+  "career": {
+    "kicker": "RECHERCHE D’EMPLOI",
+    "title": "Et après ?",
+    "subtitle": "Découvrez le type d’opportunités que je vise.",
+    "role": "Product Designer & Bâtisseur IA",
+    "openTo": "Ouvert à KSA · UAE · Europe · Remote",
+    "targetLabel": "Objectif",
+    "targetValue": "Senior / Lead Product Designer",
+    "marketsLabel": "Marchés",
+    "marketsValue": "KSA · UAE · Europe · Remote",
+    "focusLabel": "Focus",
+    "focusValue": "Produit · UX/UI · IA · Produits numériques",
+    "exploreBtn": "Explorer les opportunités",
+    "lookingFor": "CE QUE JE RECHERCHE",
+    "downloadCv": "Télécharger le CV",
+    "toastTitle": "Recherche d’emploi",
+    "toastBody": "Ceci est l’UI du MVP. Le vrai workflow n8n de recherche d’emploi pourra être connecté ici plus tard.",
+    "tags": [
+      "Senior Product Designer",
+      "Lead Product Designer",
+      "AI Product Designer",
+      "Design Systems",
+      "Remote"
+    ]
   }
 }

@@ -1578,3 +1578,29 @@ h1 em {
   left: 0;
   right: auto;
 }
+
+/* ── Arabic typography (applied only when the UI is in Arabic) ───────── */
+html[lang="ar"] body,
+body[dir="rtl"] {
+  font-family: "Tajawal", "DM Sans", sans-serif;
+}
+html[lang="ar"] h1,
+html[lang="ar"] h2,
+html[lang="ar"] h3,
+html[lang="ar"] h4,
+html[lang="ar"] h5,
+html[lang="ar"] h6,
+html[lang="ar"] .font-heading,
+html[lang="ar"] .eyebrow,
+html[lang="ar"] .navbar-brand {
+  font-family: "Cairo", "Space Grotesk", sans-serif;
+}
+/* Latin letter-spacing hurts Arabic shaping; relax it and give more line-height. */
+html[lang="ar"] body {
+  letter-spacing: normal;
+  line-height: 1.8;
+}
+html[lang="ar"] .eyebrow,
+html[lang="ar"] .text-uppercase {
+  letter-spacing: normal;
+}

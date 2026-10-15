@@ -1,15 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import portraitPhoto from '../../assets/images/naim-portrait.webp';
 
-const TARGET_TAGS = [
-  'Senior Product Designer',
-  'Lead Product Designer',
-  'AI Product Designer',
-  'Design Systems',
-  'Remote',
-];
-
 export default function CareerCard() {
+  const { t } = useTranslation();
+  const targetTags = t('career.tags', { returnObjects: true }) || [];
   const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
@@ -28,9 +23,9 @@ export default function CareerCard() {
             <i className="bi bi-briefcase"></i>
           </div>
           <div>
-            <div className="feature-kicker">CAREER SEARCH</div>
-            <h2>What's next?</h2>
-            <p>Explore the kind of opportunities I'm targeting.</p>
+            <div className="feature-kicker">{t('career.kicker')}</div>
+            <h2>{t('career.title')}</h2>
+            <p>{t('career.subtitle')}</p>
           </div>
         </div>
 
@@ -38,26 +33,26 @@ export default function CareerCard() {
           <img src={portraitPhoto} alt="Naïm Bsili" />
           <div>
             <strong>Naïm Bsili</strong>
-            <span>Product Designer & AI Builder</span>
-            <small>Open to KSA · UAE · Europe · Remote</small>
+            <span>{t('career.role')}</span>
+            <small>{t('career.openTo')}</small>
           </div>
         </div>
 
         <div className="career-list">
           <div>
             <i className="bi bi-bullseye"></i>
-            <span>Target</span>
-            <strong>Senior / Lead Product Designer</strong>
+            <span>{t('career.targetLabel')}</span>
+            <strong>{t('career.targetValue')}</strong>
           </div>
           <div>
             <i className="bi bi-geo-alt"></i>
-            <span>Markets</span>
-            <strong>KSA · UAE · Europe · Remote</strong>
+            <span>{t('career.marketsLabel')}</span>
+            <strong>{t('career.marketsValue')}</strong>
           </div>
           <div>
             <i className="bi bi-layers"></i>
-            <span>Focus</span>
-            <strong>Product · UX/UI · AI · Digital Products</strong>
+            <span>{t('career.focusLabel')}</span>
+            <strong>{t('career.focusValue')}</strong>
           </div>
         </div>
 
@@ -67,20 +62,20 @@ export default function CareerCard() {
           type="button"
           onClick={() => setShowToast(true)}
         >
-          Explore opportunities <i className="bi bi-arrow-right"></i>
+          {t('career.exploreBtn')} <i className="bi bi-arrow-right"></i>
         </button>
 
         <div className="looking-for">
-          <small>WHAT I'M LOOKING FOR</small>
+          <small>{t('career.lookingFor')}</small>
           <div className="tag-row">
-            {TARGET_TAGS.map((tag, idx) => (
+            {targetTags.map((tag, idx) => (
               <span key={idx}>{tag}</span>
             ))}
           </div>
         </div>
 
         <a href="#contact" className="download-cv">
-          <i className="bi bi-download"></i> Download CV
+          <i className="bi bi-download"></i> {t('career.downloadCv')}
         </a>
       </div>
 
@@ -89,7 +84,7 @@ export default function CareerCard() {
           <div id="careerToast" className="toast show border-0 shadow" role="alert">
             <div className="toast-header">
               <i className="bi bi-stars me-2"></i>
-              <strong className="me-auto">Career Search</strong>
+              <strong className="me-auto">{t('career.toastTitle')}</strong>
               <button
                 type="button"
                 className="btn-close"
@@ -98,7 +93,7 @@ export default function CareerCard() {
               ></button>
             </div>
             <div className="toast-body">
-              This is the MVP UI. The real n8n job-search workflow can be connected here later.
+              {t('career.toastBody')}
             </div>
           </div>
         </div>
