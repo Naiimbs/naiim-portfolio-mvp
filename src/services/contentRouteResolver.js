@@ -77,14 +77,16 @@ export function getCanonicalRoute(contentType, slug) {
   const cleanType = (contentType || 'case-study').toLowerCase().trim();
   const cleanSlug = normalizeSlug(slug);
 
-  // Top-level canonical routes
+  // Top-level canonical routes for pages that live at dedicated routes
+  // (declared in src/App.jsx) instead of under the generic /p/ prefix.
   if (cleanType === 'page') {
-    if (cleanSlug === 'home' || cleanSlug === 'index') {
-      return '/';
-    }
-    if (cleanSlug === 'about') {
-      return '/about';
-    }
+    if (cleanSlug === 'home' || cleanSlug === 'index') return '/';
+    if (cleanSlug === 'about') return '/about';
+    if (cleanSlug === 'work' || cleanSlug === 'case-studies') return '/work';
+    if (cleanSlug === 'agents') return '/agents';
+    if (cleanSlug === 'blog') return '/blog';
+    if (cleanSlug === 'copilot') return '/copilot';
+    if (cleanSlug === 'plugins') return '/plugins';
   }
 
   const typeConfig = PUBLIC_ROUTE_REGISTRY[cleanType] || PUBLIC_ROUTE_REGISTRY.other;

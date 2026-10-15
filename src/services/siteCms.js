@@ -1,4 +1,5 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
+import { getCanonicalRoute } from './contentRouteResolver.js';
 
 /**
  * Service for Pages, Page Sections, Navigation Items, and Site Settings.
@@ -446,7 +447,7 @@ export async function syncPageWithRegistry(page) {
       .maybeSingle();
 
     const isPublished = page.status === 'published';
-    const expectedRoute = page.slug === 'about' ? '/about' : `/p/${page.slug}`;
+    const expectedRoute = getCanonicalRoute('page', page.slug);
     const payload = {
       title: page.title || 'Untitled Page',
       slug: page.slug,
