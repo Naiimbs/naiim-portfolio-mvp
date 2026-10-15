@@ -1208,8 +1208,9 @@ export default function SectionPropertyEditor({ section, onChange, onSave, onCan
             </div>
             <div className="mb-2">
               <label className="form-label small fw-semibold">Portrait Image URL (Optional)</label>
-              <MediaPickerInput
+              <MediaUploadField
                 value={config.portraitUrl || ''}
+                folder="about"
                 placeholder="Leave blank for default portrait, or paste URL"
                 onChange={(url) => handleConfigChange({ ...config, portraitUrl: url })}
               />

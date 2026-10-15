@@ -71,7 +71,7 @@ export default function AdminPageEditor() {
   async function loadPageAndSections() {
     setLoading(true);
     const pagesRes = await getAdminPages();
-    const target = (pagesRes.data || []).find((p) => String(p.id) === String(id));
+    const target = (pagesRes.data || []).find((p) => String(p.id) === String(id) || String(p.slug) === String(id));
     if (!target) {
       setPage(null);
       setLoading(false);
