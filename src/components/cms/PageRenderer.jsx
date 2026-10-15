@@ -257,11 +257,51 @@ export default function PageRenderer({
                       {scopedCss && <style dangerouslySetInnerHTML={{ __html: scopedCss }} />}
                       {needsGridWrapper && layoutGridStyle ? (
                         <div className="cms-layout-grid-container" style={layoutGridStyle}>
-                          {resolvedCols.map((span, colIdx) => (
-                            <div key={colIdx} style={{ gridColumn: `span ${span}`, minWidth: 0, width: '100%' }}>
-                              {colIdx === 0 ? <SectionComp config={localizedConfig} section={sec} /> : null}
-                            </div>
-                          ))}
+                          {resolvedCols.map((span, colIdx) => {
+                            const colSlot = sec.config?.columnSlots?.[colIdx];
+                            if (colSlot && colSlot.type) {
+                              const SlotComp = getSectionComponent(colSlot.type);
+                              if (SlotComp) {
+                                const slotLocalizedConfig = localizeConfig(colSlot.config || {}, lang);
+                                return (
+                                  <div key={colIdx} style={{ gridColumn: `span ${span}`, minWidth: 0, width: '100%' }}>
+                                    <SlotComp config={slotLocalizedConfig} section={{ ...sec, id: `${sec.id}-slot-${colIdx}` }} />
+                                  </div>
+                                );
+                              }
+                            }
+
+                            if (colIdx === 0) {
+                              return (
+                                <div key={colIdx} style={{ gridColumn: `span ${span}`, minWidth: 0, width: '100%' }}>
+                                  <SectionComp config={localizedConfig} section={sec} />
+                                </div>
+                              );
+                            }
+
+                            return (
+                              <div
+                                key={colIdx}
+                                style={{ gridColumn: `span ${span}`, minWidth: 0, width: '100%' }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onSelectSection(sec.id);
+                                }}
+                              >
+                                <div
+                                  className="builder-empty-column-slot p-4 border border-2 border-dashed rounded-4 text-center bg-light bg-opacity-75 transition-all d-flex flex-column align-items-center justify-content-center"
+                                  style={{ minHeight: '130px', cursor: 'pointer' }}
+                                  title={`Column ${colIdx + 1} (${span}/12): Click to add a component in Section Properties`}
+                                >
+                                  <i className="bi bi-plus-circle text-primary fs-3 mb-1" />
+                                  <strong className="text-dark small d-block">Column {colIdx + 1} ({span}/12)</strong>
+                                  <span className="text-muted small" style={{ fontSize: '0.72rem' }}>
+                                    Add component in Section Properties
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
                       ) : (
                         <div style={{ width: '100%' }}>
@@ -289,11 +329,30 @@ export default function PageRenderer({
                 {scopedCss && <style dangerouslySetInnerHTML={{ __html: scopedCss }} />}
                 {needsGridWrapper && layoutGridStyle ? (
                   <div className="cms-layout-grid-container" style={layoutGridStyle}>
-                    {resolvedCols.map((span, colIdx) => (
-                      <div key={colIdx} style={{ gridColumn: `span ${span}`, minWidth: 0, width: '100%' }}>
-                        {colIdx === 0 ? <SectionComp config={localizedConfig} section={sec} /> : null}
-                      </div>
-                    ))}
+                    {resolvedCols.map((span, colIdx) => {
+                      const colSlot = sec.config?.columnSlots?.[colIdx];
+                      if (colSlot && colSlot.type) {
+                        const SlotComp = getSectionComponent(colSlot.type);
+                        if (SlotComp) {
+                          const slotLocalizedConfig = localizeConfig(colSlot.config || {}, lang);
+                          return (
+                            <div key={colIdx} style={{ gridColumn: `span ${span}`, minWidth: 0, width: '100%' }}>
+                              <SlotComp config={slotLocalizedConfig} section={{ ...sec, id: `${sec.id}-slot-${colIdx}` }} />
+                            </div>
+                          );
+                        }
+                      }
+
+                      if (colIdx === 0) {
+                        return (
+                          <div key={colIdx} style={{ gridColumn: `span ${span}`, minWidth: 0, width: '100%' }}>
+                            <SectionComp config={localizedConfig} section={sec} />
+                          </div>
+                        );
+                      }
+
+                      return <div key={colIdx} style={{ gridColumn: `span ${span}`, minWidth: 0, width: '100%' }} />;
+                    })}
                   </div>
                 ) : (
                   <div style={{ width: '100%' }}>

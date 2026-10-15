@@ -208,7 +208,51 @@
     "certificationsLabel": "CERTIFICATIONS",
     "certLine1": "PSM I",
     "certLine2": "Mendix Rapid Developer",
-    "certLine3": "Design — ISSAT Sousse"
+    "certLine3": "Design — ISSAT Sousse",
+    "heroEyebrow": "PRODUCT DESIGNER · AI BUILDER",
+    "heroHeadline": "I DESIGN. I BUILD. I EXPERIMENT.",
+    "heroLead": "I turn complex problems into usable digital products through product design, AI, low-code, and automation.",
+    "exploreWork": "Explore My Work",
+    "letsTalk": "Let's Talk",
+    "journeyEyebrow": "SIGNATURE EVOLUTION",
+    "journeyTitle": "From Mechanical Design to AI",
+    "journeySubtitle": "A visual progression connecting physical engineering, visual craft, human-centered UX, low-code delivery, and autonomous AI systems.",
+    "stages": {
+      "1": { "title": "Mechanical Design & Fabrication", "tag": "Physical Engineering", "exp": "Learning how physical things are designed, manufactured, and refined under real-world constraints; developing a rigorous, practical approach to problem-solving.", "lesson": "Physical constraints teach you that every millimeter matters before production begins." },
+      "2": { "title": "Graphic & Visual Design", "tag": "Visual Communication", "exp": "Turning concepts into visual communication and developing a sharp intuition for typography, layout hierarchy, contrast, and visual clarity.", "lesson": "Clarity is kindness; design begins with how information is perceived and understood." },
+      "3": { "title": "UX/UI & Product Design", "tag": "Human-Centered Design", "exp": "Understanding human mental models, mapping user journeys, and structuring cohesive, accessible digital experiences across web and mobile platforms.", "lesson": "The best interface is the one that removes friction between the human and their goal." },
+      "4": { "title": "Low-Code & Implementation", "tag": "Mendix & OutSystems", "exp": "Connecting design decisions directly to production application behavior, data structures, and APIs—bridging the gap between design vision and engineered reality.", "lesson": "A design is only as strong as what actually ships and survives production." },
+      "5": { "title": "AI Product Building & Automation", "tag": "Agents & Orchestration", "exp": "Experimenting with agentic workflows, Model Context Protocol (MCP), API automations, and LLM orchestration to build connected, intelligent digital systems.", "lesson": "AI expands the leverage of one builder, but human discernment defines the taste and quality." }
+    },
+    "philosophyEyebrow": "HOW I THINK",
+    "philosophyTitle": "Principles over trends.",
+    "philosophyIntro": "Tools evolve every month, but how you approach problems remains your true craft. Here is how I think before touching any tool.",
+    "principles": {
+      "1": { "title": "Understand before designing", "body": "Deconstruct the real problem and its operational context before deciding what to build. Avoid rushing to solutions before framing the root necessity." },
+      "2": { "title": "Design with implementation in mind", "body": "A design should account for real technical constraints, performance bottlenecks, and state transitions so that usability is preserved in production." },
+      "3": { "title": "Experiment to learn", "body": "Test assumptions through rapid functional prototypes, measure real behavior, and iterate relentlessly rather than assuming the first idea is optimal." }
+    },
+    "expertiseEyebrow": "AREAS OF EXPERTISE",
+    "expertiseTitle": "What I Bring to Products",
+    "expertise": {
+      "1": { "title": "Product & UX/UI Design", "desc": "Designing systems and human experiences from initial discovery to validated components." },
+      "2": { "title": "Low-Code Product Delivery", "desc": "Delivering enterprise apps with robust logic, data models, and clean UI." },
+      "3": { "title": "AI Product Building & Automation", "desc": "Building connected workflows and autonomous agentic interfaces." }
+    },
+    "proofEyebrow": "PROOF, NOT CLAIMS",
+    "proofTitle": "Selected Work & Artifacts",
+    "projects": {
+      "1": { "badge": "Concept & Physical Identity", "desc": "A QR/NFC physical-to-digital lost-item recovery identity requiring zero finder accounts while keeping owner private.", "role": "Product Concept · Physical Form Factor · End-to-End Flow" },
+      "2": { "badge": "AI Assistant & Lab", "desc": "An autonomous conversational assistant and portfolio intelligence system built to answer questions and demonstrate live AI orchestration.", "role": "Agent Architecture · Prompt Design · Frontend UI" },
+      "3": { "badge": "Professional Client Work", "desc": "Enterprise-grade banking and government digital services designed under strict compliance, confidentiality, and scalability standards.", "role": "UX/UI Architecture · Component Library · Multi-Platform Guidelines" },
+      "4": { "badge": "Automation Experiment", "desc": "Real automation pipelines connecting LLMs, webhooks, and operations with proven, repeatable business outcomes.", "role": "Integration Architecture · n8n Pipelines · Outcome Verification" }
+    },
+    "shareEyebrow": "KNOWLEDGE SHARING",
+    "shareTitle": "Beyond the Portfolio",
+    "humanEyebrow": "THE PERSON BEHIND",
+    "humanTitle": "Curiosity as the continuous thread.",
+    "closingTitle": "Let's Build Something Meaningful",
+    "closingDesc": "I'm interested in meaningful product challenges where design, technology, and AI come together. Whether you are building an ambitious system or exploring workflow automation, let's talk."
   },
   "copilot": {
     "kicker": "AI ASSISTANT",

@@ -12,6 +12,7 @@ import { normalizeSectionConfig, validateSection } from '../../../../components/
 
 export default function SectionPropertyEditor({ section, onChange, onSave, onCancel, dirty }) {
   const [activeTab, setActiveTab] = useState('content'); // 'content' | 'layout' | 'style' | 'advanced'
+  const [selectedColIndex, setSelectedColIndex] = useState(0);
   if (!section) {
     return (
       <div className="p-4 text-center text-muted">
@@ -1130,41 +1131,77 @@ export default function SectionPropertyEditor({ section, onChange, onSave, onCan
 
       {/* Editor Tab Navigation */}
       <div className="bg-light border-bottom px-3 pt-2">
-        <ul className="nav nav-tabs border-bottom-0 gap-1" style={{ fontSize: '0.8rem' }}>
+        <ul className="nav nav-tabs border-bottom-0 gap-1" style={{ fontSize: '0.82rem' }}>
           <li className="nav-item">
             <button
               type="button"
-              className={`nav-link py-1 px-3 fw-semibold ${activeTab === 'content' ? 'active bg-white text-primary border-bottom-0' : 'text-secondary border-0'}`}
+              className={`nav-link py-2 px-3 transition-all ${
+                activeTab === 'content'
+                  ? 'active bg-white text-dark fw-bold border-bottom-0 border-top border-3 border-primary shadow-xs'
+                  : 'text-secondary fw-semibold border-0'
+              }`}
+              style={{
+                color: activeTab === 'content' ? '#0f172a' : '#64748b',
+                fontWeight: activeTab === 'content' ? 700 : 500,
+                backgroundColor: activeTab === 'content' ? '#ffffff' : 'transparent',
+              }}
               onClick={() => setActiveTab('content')}
             >
-              <i className="bi bi-pencil-square me-1" /> Content
+              <i className={`bi bi-pencil-square me-1 ${activeTab === 'content' ? 'text-primary' : 'text-muted'}`} /> Content
             </button>
           </li>
           <li className="nav-item">
             <button
               type="button"
-              className={`nav-link py-1 px-3 fw-semibold ${activeTab === 'layout' ? 'active bg-white text-primary border-bottom-0' : 'text-secondary border-0'}`}
+              className={`nav-link py-2 px-3 transition-all ${
+                activeTab === 'layout'
+                  ? 'active bg-white text-dark fw-bold border-bottom-0 border-top border-3 border-primary shadow-xs'
+                  : 'text-secondary fw-semibold border-0'
+              }`}
+              style={{
+                color: activeTab === 'layout' ? '#0f172a' : '#64748b',
+                fontWeight: activeTab === 'layout' ? 700 : 500,
+                backgroundColor: activeTab === 'layout' ? '#ffffff' : 'transparent',
+              }}
               onClick={() => setActiveTab('layout')}
             >
-              <i className="bi bi-grid-fill me-1" /> Layout
+              <i className={`bi bi-grid-fill me-1 ${activeTab === 'layout' ? 'text-primary' : 'text-muted'}`} /> Layout
             </button>
           </li>
           <li className="nav-item">
             <button
               type="button"
-              className={`nav-link py-1 px-3 fw-semibold ${activeTab === 'style' ? 'active bg-white text-primary border-bottom-0' : 'text-secondary border-0'}`}
+              className={`nav-link py-2 px-3 transition-all ${
+                activeTab === 'style'
+                  ? 'active bg-white text-dark fw-bold border-bottom-0 border-top border-3 border-primary shadow-xs'
+                  : 'text-secondary fw-semibold border-0'
+              }`}
+              style={{
+                color: activeTab === 'style' ? '#0f172a' : '#64748b',
+                fontWeight: activeTab === 'style' ? 700 : 500,
+                backgroundColor: activeTab === 'style' ? '#ffffff' : 'transparent',
+              }}
               onClick={() => setActiveTab('style')}
             >
-              <i className="bi bi-palette me-1" /> Style
+              <i className={`bi bi-palette me-1 ${activeTab === 'style' ? 'text-primary' : 'text-muted'}`} /> Style
             </button>
           </li>
           <li className="nav-item">
             <button
               type="button"
-              className={`nav-link py-1 px-3 fw-semibold ${activeTab === 'advanced' ? 'active bg-white text-primary border-bottom-0' : 'text-secondary border-0'}`}
+              className={`nav-link py-2 px-3 transition-all ${
+                activeTab === 'advanced'
+                  ? 'active bg-white text-dark fw-bold border-bottom-0 border-top border-3 border-primary shadow-xs'
+                  : 'text-secondary fw-semibold border-0'
+              }`}
+              style={{
+                color: activeTab === 'advanced' ? '#0f172a' : '#64748b',
+                fontWeight: activeTab === 'advanced' ? 700 : 500,
+                backgroundColor: activeTab === 'advanced' ? '#ffffff' : 'transparent',
+              }}
               onClick={() => setActiveTab('advanced')}
             >
-              <i className="bi bi-code-slash me-1" /> Advanced
+              <i className={`bi bi-code-slash me-1 ${activeTab === 'advanced' ? 'text-primary' : 'text-muted'}`} /> Advanced
             </button>
           </li>
         </ul>
@@ -1200,12 +1237,391 @@ export default function SectionPropertyEditor({ section, onChange, onSave, onCan
         )}
 
         {/* TAB 1: CONTENT */}
-        {activeTab === 'content' && renderEditorContent()}
+        {activeTab === 'content' && (
+          <div>
+            {/* If section has multi-column layout, show column switcher bar */}
+            {config.layout?.columns && config.layout.columns.length > 1 && (
+              <div className="card border-0 bg-light rounded-3 p-2 mb-3">
+                <div className="d-flex justify-content-between align-items-center mb-2 px-1">
+                  <span className="small fw-bold text-uppercase text-secondary" style={{ fontSize: '0.72rem' }}>
+                    <i className="bi bi-layout-three-columns me-1 text-primary" />
+                    Columns ({config.layout.columns.join(' / ')})
+                  </span>
+                  <span className="badge bg-primary text-white" style={{ fontSize: '0.65rem' }}>
+                    {config.layout.columns.length} Tracks
+                  </span>
+                </div>
+                <div className="btn-group btn-group-sm w-100">
+                  {config.layout.columns.map((span, idx) => {
+                    const isSlot = config.columnSlots?.[idx];
+                    const isSelected = selectedColIndex === idx;
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        className={`btn btn-sm ${isSelected ? 'btn-primary' : 'btn-outline-secondary bg-white text-dark'}`}
+                        onClick={() => setSelectedColIndex(idx)}
+                      >
+                        Col {idx + 1} ({span})
+                        {idx === 0 && !isSlot ? ' · Main' : isSlot ? ` · ${isSlot.type}` : ' · Empty'}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* When viewing Column 0 without custom slot override, render main section editor */}
+            {(!config.layout?.columns || config.layout.columns.length <= 1 || (selectedColIndex === 0 && !config.columnSlots?.[0])) && renderEditorContent()}
+
+            {/* When viewing a column slot (Col 2, Col 3... or custom Col 1) */}
+            {config.layout?.columns && config.layout.columns.length > 1 && (selectedColIndex > 0 || config.columnSlots?.[0]) && (
+              <div className="column-slot-editor">
+                {(() => {
+                  const currentSlot = config.columnSlots?.[selectedColIndex];
+                  const colSpan = config.layout.columns[selectedColIndex] || 4;
+
+                  const handleSlotTypeChange = (newType) => {
+                    const defaultConfigs = {
+                      rich_text: { eyebrow: '', title: 'Column Heading', body: 'Add column text here.', alignment: 'left' },
+                      image: { src: '', alt: 'Column Image', caption: '' },
+                      cta: { eyebrow: 'Action', title: 'Call to Action', description: 'Description', buttonLabel: 'Learn More', buttonHref: '#' },
+                      quote: { quote: 'Simplicity is the ultimate sophistication.', author: 'Leonardo da Vinci', role: 'Polymath' },
+                      metrics: { eyebrow: 'Metrics', title: 'Outcomes', metrics: [{ value: '10x', label: 'Improvement' }, { value: '99%', label: 'Adoption' }] },
+                      timeline: { eyebrow: 'Journey', title: 'Timeline', items: [{ year: '2024', title: 'Milestone 1', description: 'Concept' }] },
+                      button: { label: 'Click Here', href: '#', variant: 'primary' },
+                      heading: { eyebrow: 'Section', title: 'Heading', level: 'h3' },
+                    };
+                    const nextSlots = [...(config.columnSlots || [])];
+                    nextSlots[selectedColIndex] = {
+                      type: newType,
+                      config: defaultConfigs[newType] || {},
+                    };
+                    handleConfigChange({ ...config, columnSlots: nextSlots });
+                  };
+
+                  const handleUpdateSlot = (patch) => {
+                    const nextSlots = [...(config.columnSlots || [])];
+                    const existing = nextSlots[selectedColIndex] || { type: 'rich_text', config: {} };
+                    nextSlots[selectedColIndex] = {
+                      ...existing,
+                      config: {
+                        ...(existing.config || {}),
+                        ...patch,
+                      },
+                    };
+                    handleConfigChange({ ...config, columnSlots: nextSlots });
+                  };
+
+                  const handleClearSlot = () => {
+                    const nextSlots = [...(config.columnSlots || [])];
+                    delete nextSlots[selectedColIndex];
+                    handleConfigChange({ ...config, columnSlots: nextSlots });
+                  };
+
+                  if (!currentSlot) {
+                    return (
+                      <div className="card border-dashed p-4 text-center bg-white rounded-3 shadow-xs">
+                        <i className="bi bi-plus-circle text-primary fs-3 mb-2" />
+                        <h6 className="fw-bold mb-1">Column {selectedColIndex + 1} ({colSpan}/12) is Empty</h6>
+                        <p className="text-muted small mb-3" style={{ fontSize: '0.78rem' }}>
+                          Choose a component to insert into this column:
+                        </p>
+                        <div className="d-flex flex-wrap gap-2 justify-content-center">
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-primary rounded-pill px-3"
+                            onClick={() => handleSlotTypeChange('rich_text')}
+                          >
+                            <i className="bi bi-file-text me-1" /> Rich Text
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-primary rounded-pill px-3"
+                            onClick={() => handleSlotTypeChange('image')}
+                          >
+                            <i className="bi bi-image me-1" /> Image Block
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-primary rounded-pill px-3"
+                            onClick={() => handleSlotTypeChange('cta')}
+                          >
+                            <i className="bi bi-megaphone me-1" /> Call to Action
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-primary rounded-pill px-3"
+                            onClick={() => handleSlotTypeChange('quote')}
+                          >
+                            <i className="bi bi-quote me-1" /> Quote
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-primary rounded-pill px-3"
+                            onClick={() => handleSlotTypeChange('metrics')}
+                          >
+                            <i className="bi bi-bar-chart me-1" /> Key Metrics
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-primary rounded-pill px-3"
+                            onClick={() => handleSlotTypeChange('timeline')}
+                          >
+                            <i className="bi bi-clock-history me-1" /> Timeline
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  const slotCfg = currentSlot.config || {};
+
+                  return (
+                    <div className="card border-0 bg-light rounded-3 p-3 mb-3">
+                      <div className="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                        <div>
+                          <span className="badge bg-primary me-2">Col {selectedColIndex + 1} ({colSpan}/12)</span>
+                          <strong className="text-dark small text-uppercase">{currentSlot.type}</strong>
+                        </div>
+                        <div className="d-flex gap-2">
+                          <select
+                            className="form-select form-select-sm rounded-pill"
+                            style={{ fontSize: '0.72rem', width: 'auto' }}
+                            value={currentSlot.type}
+                            onChange={(e) => handleSlotTypeChange(e.target.value)}
+                          >
+                            <option value="rich_text">Rich Text</option>
+                            <option value="image">Image Block</option>
+                            <option value="cta">Call to Action</option>
+                            <option value="quote">Quote</option>
+                            <option value="metrics">Key Metrics</option>
+                            <option value="timeline">Timeline</option>
+                          </select>
+                          <button
+                            type="button"
+                            className="btn btn-xs btn-outline-danger rounded-pill px-2"
+                            style={{ fontSize: '0.7rem' }}
+                            onClick={handleClearSlot}
+                            title="Remove component from this column"
+                          >
+                            <i className="bi bi-trash" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Sub-Editor Fields per component type */}
+                      {currentSlot.type === 'rich_text' && (
+                        <div>
+                          <div className="mb-2">
+                            <label className="form-label small fw-semibold">Eyebrow</label>
+                            <input
+                              type="text"
+                              className="form-control form-control-sm rounded-3"
+                              value={slotCfg.eyebrow || ''}
+                              placeholder="e.g. SUBTITLE"
+                              onChange={(e) => handleUpdateSlot({ eyebrow: e.target.value })}
+                            />
+                          </div>
+                          <div className="mb-2">
+                            <label className="form-label small fw-semibold">Title</label>
+                            <input
+                              type="text"
+                              className="form-control form-control-sm rounded-3"
+                              value={slotCfg.title || ''}
+                              placeholder="Column title..."
+                              onChange={(e) => handleUpdateSlot({ title: e.target.value })}
+                            />
+                          </div>
+                          <div className="mb-2">
+                            <label className="form-label small fw-semibold">Body Content</label>
+                            <textarea
+                              className="form-control form-control-sm rounded-3 font-monospace"
+                              rows="4"
+                              value={slotCfg.body || ''}
+                              placeholder="Write column content here..."
+                              onChange={(e) => handleUpdateSlot({ body: e.target.value })}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {currentSlot.type === 'image' && (
+                        <div>
+                          <div className="mb-2">
+                            <label className="form-label small fw-semibold">Image Source</label>
+                            <MediaUploadField
+                              value={slotCfg.src || slotCfg.imageUrl || ''}
+                              folder="about"
+                              placeholder="https://... or upload"
+                              onChange={(url) => handleUpdateSlot({ src: url, imageUrl: url })}
+                            />
+                          </div>
+                          <div className="mb-2">
+                            <label className="form-label small fw-semibold">Alt Text</label>
+                            <input
+                              type="text"
+                              className="form-control form-control-sm rounded-3"
+                              value={slotCfg.alt || ''}
+                              placeholder="Descriptive alt text"
+                              onChange={(e) => handleUpdateSlot({ alt: e.target.value })}
+                            />
+                          </div>
+                          <div className="mb-2">
+                            <label className="form-label small fw-semibold">Caption</label>
+                            <input
+                              type="text"
+                              className="form-control form-control-sm rounded-3"
+                              value={slotCfg.caption || ''}
+                              placeholder="Optional image caption"
+                              onChange={(e) => handleUpdateSlot({ caption: e.target.value })}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {currentSlot.type === 'cta' && (
+                        <div>
+                          <div className="mb-2">
+                            <label className="form-label small fw-semibold">Title</label>
+                            <input
+                              type="text"
+                              className="form-control form-control-sm rounded-3"
+                              value={slotCfg.title || ''}
+                              placeholder="Action Headline"
+                              onChange={(e) => handleUpdateSlot({ title: e.target.value })}
+                            />
+                          </div>
+                          <div className="mb-2">
+                            <label className="form-label small fw-semibold">Description</label>
+                            <textarea
+                              className="form-control form-control-sm rounded-3"
+                              rows="2"
+                              value={slotCfg.description || ''}
+                              placeholder="Supporting description..."
+                              onChange={(e) => handleUpdateSlot({ description: e.target.value })}
+                            />
+                          </div>
+                          <div className="row g-2">
+                            <div className="col-6">
+                              <label className="form-label small fw-semibold">Button Label</label>
+                              <input
+                                type="text"
+                                className="form-control form-control-sm rounded-3"
+                                value={slotCfg.buttonLabel || ''}
+                                placeholder="Button Text"
+                                onChange={(e) => handleUpdateSlot({ buttonLabel: e.target.value })}
+                              />
+                            </div>
+                            <div className="col-6">
+                              <label className="form-label small fw-semibold">Button URL</label>
+                              <input
+                                type="text"
+                                className="form-control form-control-sm rounded-3"
+                                value={slotCfg.buttonHref || ''}
+                                placeholder="/work or https://..."
+                                onChange={(e) => handleUpdateSlot({ buttonHref: e.target.value })}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {currentSlot.type === 'quote' && (
+                        <div>
+                          <div className="mb-2">
+                            <label className="form-label small fw-semibold">Quote Text</label>
+                            <textarea
+                              className="form-control form-control-sm rounded-3"
+                              rows="3"
+                              value={slotCfg.quote || ''}
+                              placeholder="Quote..."
+                              onChange={(e) => handleUpdateSlot({ quote: e.target.value })}
+                            />
+                          </div>
+                          <div className="row g-2">
+                            <div className="col-6">
+                              <label className="form-label small fw-semibold">Author</label>
+                              <input
+                                type="text"
+                                className="form-control form-control-sm rounded-3"
+                                value={slotCfg.author || ''}
+                                placeholder="Author name"
+                                onChange={(e) => handleUpdateSlot({ author: e.target.value })}
+                              />
+                            </div>
+                            <div className="col-6">
+                              <label className="form-label small fw-semibold">Role / Title</label>
+                              <input
+                                type="text"
+                                className="form-control form-control-sm rounded-3"
+                                value={slotCfg.role || ''}
+                                placeholder="Role"
+                                onChange={(e) => handleUpdateSlot({ role: e.target.value })}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {currentSlot.type === 'metrics' && (
+                        <div>
+                          <div className="mb-2">
+                            <label className="form-label small fw-semibold">Metrics Title</label>
+                            <input
+                              type="text"
+                              className="form-control form-control-sm rounded-3"
+                              value={slotCfg.title || ''}
+                              placeholder="Impact Title"
+                              onChange={(e) => handleUpdateSlot({ title: e.target.value })}
+                            />
+                          </div>
+                          <label className="form-label small fw-semibold">Metric Items</label>
+                          {(slotCfg.metrics || [{ value: '', label: '' }]).map((m, mIdx) => (
+                            <div key={mIdx} className="d-flex gap-2 mb-2">
+                              <input
+                                type="text"
+                                className="form-control form-control-sm rounded-3 w-50"
+                                value={m.value || ''}
+                                placeholder="Value (e.g. 10x)"
+                                onChange={(e) => {
+                                  const updatedMetrics = [...(slotCfg.metrics || [])];
+                                  updatedMetrics[mIdx] = { ...(updatedMetrics[mIdx] || {}), value: e.target.value };
+                                  handleUpdateSlot({ metrics: updatedMetrics });
+                                }}
+                              />
+                              <input
+                                type="text"
+                                className="form-control form-control-sm rounded-3 w-50"
+                                value={m.label || ''}
+                                placeholder="Label"
+                                onChange={(e) => {
+                                  const updatedMetrics = [...(slotCfg.metrics || [])];
+                                  updatedMetrics[mIdx] = { ...(updatedMetrics[mIdx] || {}), label: e.target.value };
+                                  handleUpdateSlot({ metrics: updatedMetrics });
+                                }}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* TAB 2: LAYOUT */}
         {activeTab === 'layout' && (
           <LayoutInspector
             layout={config.layout}
+            columnSlots={config.columnSlots || []}
+            onSelectColumn={(colIdx) => {
+              setSelectedColIndex(colIdx);
+              setActiveTab('content');
+            }}
             onChange={(updatedLayout) =>
               handleConfigChange({
                 ...config,

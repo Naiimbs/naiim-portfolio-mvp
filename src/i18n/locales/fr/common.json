@@ -208,7 +208,51 @@
     "certificationsLabel": "CERTIFICATIONS",
     "certLine1": "PSM I",
     "certLine2": "Mendix Rapid Developer",
-    "certLine3": "Design — ISSAT Sousse"
+    "certLine3": "Design — ISSAT Sousse",
+    "heroEyebrow": "DESIGNER PRODUIT · BÂTISSEUR IA",
+    "heroHeadline": "JE CONÇOIS. JE BÂTIS. J'EXPÉRIMENTE.",
+    "heroLead": "Je transforme des problèmes complexes en produits numériques utilisables grâce au design produit, à l'IA, au low-code et à l'automatisation.",
+    "exploreWork": "Explorer mes réalisations",
+    "letsTalk": "Discutons",
+    "journeyEyebrow": "ÉVOLUTION PHARE",
+    "journeyTitle": "Du design mécanique à l'IA",
+    "journeySubtitle": "Une progression visuelle reliant l'ingénierie physique, le craft visuel, l'UX centré utilisateur, la livraison low-code et les systèmes autonomes d'IA.",
+    "stages": {
+      "1": { "title": "Conception mécanique & fabrication", "tag": "Ingénierie physique", "exp": "Apprendre comment les objets physiques sont conçus, fabriqués et perfectionnés sous des contraintes concrètes ; développer une démarche pragmatique et rigoureuse.", "lesson": "Les contraintes physiques vous apprennent que chaque millimètre compte avant la mise en production." },
+      "2": { "title": "Design graphique & visuel", "tag": "Communication visuelle", "exp": "Traduire des idées en communication visuelle et forger une intuition précise de la typographie, de la hiérarchie de composition et de la clarté.", "lesson": "La clarté est une forme d'empathie ; le design commence par la perception de l'information." },
+      "3": { "title": "UX/UI & Design produit", "tag": "Design centré humain", "exp": "Comprendre les modèles mentaux des utilisateurs, cartographier leurs parcours et concevoir des expériences numériques fluides et accessibles sur le web et mobile.", "lesson": "La meilleure interface est celle qui élimine toute friction entre l'humain et son objectif." },
+      "4": { "title": "Low-Code & Implémentation", "tag": "Mendix & OutSystems", "exp": "Relier les décisions de design au comportement réel des applications, aux structures de données et aux APIs — comblant le fossé entre la vision design et la production.", "lesson": "Un design n'a de valeur que s'il est fidèlement déployé et pérenne en production." },
+      "5": { "title": "Création de produits IA & Automatisation", "tag": "Agents & Orchestration", "exp": "Expérimenter avec les workflows agentiques, le Model Context Protocol (MCP), les automatisations API et l'orchestration de LLMs pour bâtir des écosystèmes numériques intelligents.", "lesson": "L'IA décuple la portée d'un bâtisseur, mais le discernement humain définit le goût et l'exigence de qualité." }
+    },
+    "philosophyEyebrow": "MA FAÇON DE PENSER",
+    "philosophyTitle": "Les principes avant les effets de mode.",
+    "philosophyIntro": "Les outils changent tous les mois, mais la manière d'aborder un problème demeure votre véritable métier. Voici comment je réfléchis avant de manipuler un outil.",
+    "principles": {
+      "1": { "title": "Comprendre avant de concevoir", "body": "Déconstruire le problème réel et son contexte opérationnel avant de décider quoi construire. Éviter de se précipiter vers une solution avant d'avoir cerné le besoin profond." },
+      "2": { "title": "Concevoir en pensant à l'implémentation", "body": "Un design doit intégrer les contraintes techniques réelles, les goulots d'étranglement de performance et les transitions d'état afin de préserver l'utilisabilité en production." },
+      "3": { "title": "Expérimenter pour apprendre", "body": "Valider les hypothèses par des prototypes fonctionnels rapides, observer les usages réels et itérer sans relâche plutôt que de supposer que la première idée est la meilleure." }
+    },
+    "expertiseEyebrow": "DOMAINES D'EXPERTISE",
+    "expertiseTitle": "Ce que j'apporte aux produits",
+    "expertise": {
+      "1": { "title": "Design Produit & UX/UI", "desc": "Concevoir des systèmes et des parcours humains de la découverte initiale aux composants testés." },
+      "2": { "title": "Livraison Produit en Low-Code", "desc": "Déployer des applications d'entreprise robustes avec une logique solide, des modèles de données fiables et une interface soignée." },
+      "3": { "title": "Création de produits IA & Automatisation", "desc": "Bâtir des workflows connectés et des interfaces agentiques autonomes." }
+    },
+    "proofEyebrow": "DES PREUVES, PAS DES PROMESSES",
+    "proofTitle": "Projets & réalisations sélectionnés",
+    "projects": {
+      "1": { "badge": "Concept & Identité physique", "desc": "Un écosystème d'identification d'objets physiques par QR/NFC, ne nécessitant aucun compte pour le trouveur tout en protégeant l'anonymat du propriétaire.", "role": "Concept produit · Form factor physique · Parcours de bout en bout" },
+      "2": { "badge": "Assistant IA & Laboratoire", "desc": "Un assistant conversationnel autonome et système d'intelligence de portfolio, conçu pour répondre aux questions et démontrer une orchestration IA en direct.", "role": "Architecture agentique · Conception de prompts · Interface utilisateur" },
+      "3": { "badge": "Projet client professionnel", "desc": "Services numériques bancaires et institutionnels hautement sécurisés, conçus selon des normes strictes de conformité, de confidentialité et de passage à l'échelle.", "role": "Architecture UX/UI · Bibliothèque de composants · Directives multiplateformes" },
+      "4": { "badge": "Expérimentation d'automatisation", "desc": "Pipelines d'automatisation réels connectant des LLMs, des webhooks et des processus métier avec des résultats tangibles et mesurés.", "role": "Architecture d'intégration · Pipelines n8n · Vérification des résultats" }
+    },
+    "shareEyebrow": "PARTAGE DE CONNAISSANCES",
+    "shareTitle": "Au-delà du portfolio",
+    "humanEyebrow": "LA PERSONNE DERRIÈRE",
+    "humanTitle": "La curiosité comme fil conducteur.",
+    "closingTitle": "Bâtissons quelque chose qui compte",
+    "closingDesc": "Je m'intéresse aux défis de produits ambitieux où le design, la technologie et l'IA se rencontrent. Que vous construisiez un système complexe ou exploriez l'automatisation, parlons-en."
   },
   "copilot": {
     "kicker": "ASSISTANT IA",

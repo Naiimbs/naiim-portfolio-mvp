@@ -1020,27 +1020,51 @@ export default function AdminPageEditor() {
                 {page.slug !== 'blog' && (
                   <li className="nav-item">
                     <button
-                      className={`nav-link small fw-semibold py-2 border-0 ${activeTab === 'section' ? 'active bg-white border-top border-primary' : ''}`}
+                      type="button"
+                      className={`nav-link small py-2 px-3 border-0 transition-all ${activeTab === 'section' ? 'active bg-white text-dark fw-bold shadow-xs' : 'text-secondary fw-semibold'}`}
+                      style={{
+                        color: activeTab === 'section' ? '#0f172a' : '#64748b',
+                        fontWeight: activeTab === 'section' ? 700 : 500,
+                        borderTop: activeTab === 'section' ? '3px solid #0d6efd' : '3px solid transparent',
+                        backgroundColor: activeTab === 'section' ? '#ffffff' : 'transparent',
+                      }}
                       onClick={() => setActiveTab('section')}
                     >
+                      <i className={`bi bi-sliders me-1 ${activeTab === 'section' ? 'text-primary' : 'text-muted'}`}></i>
                       Section Properties
                     </button>
                   </li>
                 )}
                 <li className="nav-item">
                   <button
-                    className={`nav-link small fw-semibold py-2 border-0 ${activeTab === 'page' ? 'active bg-white border-top border-primary' : ''}`}
+                    type="button"
+                    className={`nav-link small py-2 px-3 border-0 transition-all ${activeTab === 'page' ? 'active bg-white text-dark fw-bold shadow-xs' : 'text-secondary fw-semibold'}`}
+                    style={{
+                      color: activeTab === 'page' ? '#0f172a' : '#64748b',
+                      fontWeight: activeTab === 'page' ? 700 : 500,
+                      borderTop: activeTab === 'page' ? '3px solid #0d6efd' : '3px solid transparent',
+                      backgroundColor: activeTab === 'page' ? '#ffffff' : 'transparent',
+                    }}
                     onClick={() => setActiveTab('page')}
                   >
+                    <i className={`bi bi-file-earmark-text me-1 ${activeTab === 'page' ? 'text-primary' : 'text-muted'}`}></i>
                     {page.slug === 'about' ? 'About Content & SEO' : page.slug === 'blog' ? 'Blog Header & SEO' : 'Page Settings'}
                   </button>
                 </li>
                 <li className="nav-item">
                   <button
-                    className={`nav-link small fw-semibold py-2 border-0 ${activeTab === 'translations' ? 'active bg-white border-top border-primary' : ''}`}
+                    type="button"
+                    className={`nav-link small py-2 px-3 border-0 transition-all ${activeTab === 'translations' ? 'active bg-white text-dark fw-bold shadow-xs' : 'text-secondary fw-semibold'}`}
+                    style={{
+                      color: activeTab === 'translations' ? '#0f172a' : '#64748b',
+                      fontWeight: activeTab === 'translations' ? 700 : 500,
+                      borderTop: activeTab === 'translations' ? '3px solid #0d6efd' : '3px solid transparent',
+                      backgroundColor: activeTab === 'translations' ? '#ffffff' : 'transparent',
+                    }}
                     onClick={() => setActiveTab('translations')}
                   >
-                    <i className="bi bi-translate me-1"></i> Translations
+                    <i className={`bi bi-translate me-1 ${activeTab === 'translations' ? 'text-primary' : 'text-muted'}`}></i>
+                    Translations
                   </button>
                 </li>
               </ul>
@@ -1141,7 +1165,61 @@ export default function AdminPageEditor() {
                     {/* About Page Specific Translation Fields */}
                     {page.slug === 'about' && (
                       <div className="border-top pt-3 mt-3">
-                        <h6 className="fw-bold small mb-2 text-primary">About Page Content Translation</h6>
+                        <h6 className="fw-bold small mb-2 text-primary">About Page Hero & Editorial Translation</h6>
+                        <div className="mb-2">
+                          <label className="form-label small fw-semibold">Hero Eyebrow ({txLang.toUpperCase()})</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm rounded-3"
+                            value={txAbout.heroEyebrow || ''}
+                            onChange={(e) => setTxAboutField({ heroEyebrow: e.target.value })}
+                            placeholder="PRODUCT DESIGNER · AI BUILDER"
+                          />
+                        </div>
+                        <div className="mb-2">
+                          <label className="form-label small fw-semibold">Hero Headline ({txLang.toUpperCase()})</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm rounded-3"
+                            value={txAbout.heroHeadline || ''}
+                            onChange={(e) => setTxAboutField({ heroHeadline: e.target.value })}
+                            placeholder="JE CONÇOIS. JE BÂTIS. J'EXPÉRIMENTE."
+                          />
+                        </div>
+                        <div className="mb-2">
+                          <label className="form-label small fw-semibold">Hero Supporting Text ({txLang.toUpperCase()})</label>
+                          <textarea
+                            className="form-control form-control-sm rounded-3"
+                            rows="2"
+                            value={txAbout.heroLead || ''}
+                            onChange={(e) => setTxAboutField({ heroLead: e.target.value })}
+                            placeholder="Je transforme des problèmes complexes en produits numériques utilisables..."
+                          />
+                        </div>
+                        <div className="row g-2 mb-3">
+                          <div className="col-6">
+                            <label className="form-label small fw-semibold">CTA 1 Label ({txLang.toUpperCase()})</label>
+                            <input
+                              type="text"
+                              className="form-control form-control-sm rounded-3"
+                              value={txAbout.exploreCta || ''}
+                              onChange={(e) => setTxAboutField({ exploreCta: e.target.value })}
+                              placeholder="Explorer mon travail"
+                            />
+                          </div>
+                          <div className="col-6">
+                            <label className="form-label small fw-semibold">CTA 2 Label ({txLang.toUpperCase()})</label>
+                            <input
+                              type="text"
+                              className="form-control form-control-sm rounded-3"
+                              value={txAbout.talkCta || ''}
+                              onChange={(e) => setTxAboutField({ talkCta: e.target.value })}
+                              placeholder="Discutons"
+                            />
+                          </div>
+                        </div>
+
+                        <h6 className="fw-bold small mb-2 text-primary pt-2 border-top">Journey & Editorial Content</h6>
                         <div className="mb-2">
                           <label className="form-label small fw-semibold">Journey Eyebrow ({txLang.toUpperCase()})</label>
                           <input

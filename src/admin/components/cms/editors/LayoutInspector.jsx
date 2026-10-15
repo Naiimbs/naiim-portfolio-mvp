@@ -10,7 +10,7 @@ import {
   isViewportOverridden,
 } from '../../../../components/cms/layoutSystem';
 
-export default function LayoutInspector({ layout = {}, onChange }) {
+export default function LayoutInspector({ layout = {}, columnSlots = [], onSelectColumn, onChange }) {
   const [activeViewport, setActiveViewport] = useState('desktop'); // 'desktop' | 'tablet' | 'mobile'
   const normLayout = normalizeLayoutConfig(layout);
 
@@ -324,6 +324,45 @@ export default function LayoutInspector({ layout = {}, onChange }) {
             </div>
           )}
         </div>
+
+        {/* Multi-Column Slotted Components Overview */}
+        {activeColumns.length > 1 && (
+          <div className="mt-3 pt-3 border-top">
+            <div className="d-flex justify-content-between align-items-center mb-2">
+              <span className="small fw-bold text-uppercase text-dark" style={{ fontSize: '0.72rem' }}>
+                <i className="bi bi-layout-three-columns me-1 text-primary" />
+                Column Components ({activeColumns.length} Tracks)
+              </span>
+            </div>
+            <div className="d-flex flex-column gap-2">
+              {activeColumns.map((span, colIdx) => {
+                const slot = columnSlots?.[colIdx];
+                return (
+                  <div key={colIdx} className="d-flex justify-content-between align-items-center p-2 rounded-2 bg-white border small">
+                    <div className="d-flex align-items-center gap-2">
+                      <span className="badge bg-light text-dark border" style={{ fontSize: '0.7rem' }}>
+                        Col {colIdx + 1} ({span}/12)
+                      </span>
+                      <strong className="text-dark" style={{ fontSize: '0.78rem' }}>
+                        {colIdx === 0 && !slot ? 'Main Section' : slot ? slot.type : 'Empty'}
+                      </strong>
+                    </div>
+                    {onSelectColumn && (
+                      <button
+                        type="button"
+                        className="btn btn-xs btn-outline-primary py-0 px-2 rounded-pill"
+                        style={{ fontSize: '0.7rem' }}
+                        onClick={() => onSelectColumn(colIdx)}
+                      >
+                        {slot || (colIdx === 0 && !slot) ? 'Edit Content' : '+ Add Component'}
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 4. Gap & Alignment Controls */}

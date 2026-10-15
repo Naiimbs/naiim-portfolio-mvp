@@ -242,6 +242,34 @@ export const PAGE_SECTION_TYPES = {
       return { valid: errors.length === 0, errors, advisories };
     },
   },
+  columns: {
+    type: 'columns',
+    label: 'Multi-Column Grid (4/4/4, 6/6...)',
+    category: 'LAYOUT',
+    icon: 'bi-layout-three-columns',
+    description: 'Multi-column container layout with independent components per column.',
+    hasEditor: true,
+    defaultConfig: {
+      layout: {
+        presetId: '4:4:4',
+        columns: [4, 4, 4],
+        gap: 'md',
+        alignItems: 'stretch',
+        containerWidth: 'standard',
+        responsiveRules: {
+          desktop: [4, 4, 4],
+          tablet: [6, 6, 12],
+          mobile: [12, 12, 12],
+        },
+      },
+      columnSlots: [
+        { type: 'rich_text', config: { title: 'Column 1', body: 'Add your content or narrative for column 1 here.', alignment: 'left' } },
+        { type: 'rich_text', config: { title: 'Column 2', body: 'Add your content or narrative for column 2 here.', alignment: 'left' } },
+        { type: 'rich_text', config: { title: 'Column 3', body: 'Add your content or narrative for column 3 here.', alignment: 'left' } },
+      ],
+    },
+    validate: () => ({ valid: true, errors: [], advisories: [] }),
+  },
   timeline: {
     type: 'timeline',
     label: 'Experience Timeline',

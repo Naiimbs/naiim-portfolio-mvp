@@ -784,7 +784,7 @@ function LabBlock() {
 }
 
 function HomeAboutBlock() {
-  return <HomeAbout />;
+  return <HomeAbout variant="compact" />;
 }
 
 function HomeContactBlock() {
@@ -822,6 +822,7 @@ export const SECTION_REGISTRY = {
   tabs: TabsSectionComponent,
   accordion: AccordionSectionComponent,
   form: FormSectionComponent,
+  columns: () => null, // Multi-column layout is fully rendered with responsive grid tracks by PageRenderer
 
   // Composite homepage blocks (render the real live components)
   home_hero: HomeHeroBlock,

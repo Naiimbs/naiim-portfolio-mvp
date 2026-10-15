@@ -2,10 +2,16 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Timeline from './Timeline';
 import AboutCard from './AboutCard';
+import AboutMeProposal from './AboutMeProposal';
 
-export default function AboutSection({ pageData }) {
+export default function AboutSection({ pageData, variant = 'full' }) {
   const { t, i18n } = useTranslation();
   const currentLang = i18n?.language?.slice(0, 2) || 'en';
+
+  if (variant === 'full') {
+    return <AboutMeProposal pageData={pageData} />;
+  }
+
   const pageTx = (currentLang !== 'en' && (pageData?.metadata?.i18n?.[currentLang]?.about || pageData?.i18n?.[currentLang]?.about)) || {};
   const defAbout = pageData?.metadata?.about || {};
 
