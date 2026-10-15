@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import MainLayout from '../layouts/MainLayout';
 import SEO from '../components/common/SEO';
 import AgentDemoShell from '../components/agents/demo/AgentDemoShell';
@@ -9,15 +10,10 @@ import AgentDemoStatus from '../components/agents/demo/AgentDemoStatus';
 import { getPublishedAgentBySlug } from '../services/agents';
 import '../styles/agent-demo.css';
 
-const COPILOT_SUGGESTIONS = [
-  { text: "What are Naïm's strongest product design skills?", question: "What are Naïm's strongest skills?" },
-  { text: 'Which AI and n8n automation projects did he build?', question: 'What AI tools does he use?' },
-  { text: 'Show me Saudi digital government and banking work', question: 'Show me relevant projects.' },
-  { text: 'How does Naïm approach problem framing and design systems?', question: 'Why should I work with Naïm?' },
-];
-
 export default function AgentDemoPage() {
+  const { t } = useTranslation();
   const { slug } = useParams();
+  const COPILOT_SUGGESTIONS = t('agents.demo.suggestions', { returnObjects: true }) || [];
   const [agent, setAgent] = useState(null);
   const [loadingAgent, setLoadingAgent] = useState(true);
 
@@ -67,7 +63,7 @@ export default function AgentDemoPage() {
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        setError(data?.error || { message: 'Copilot is temporarily unavailable. Please try again later.' });
+        setError(data?.error || { message: t('agents.demo.unavailableError') });
         setStatus('error');
       } else {
         setResult(data.data);
@@ -76,7 +72,7 @@ export default function AgentDemoPage() {
     } catch (err) {
       setError({
         code: 'NETWORK_ERROR',
-        message: 'Unable to connect to the agent gateway. Please check your internet connection.',
+        message: t('agents.demo.gatewayError'),
       });
       setStatus('error');
     } finally {
@@ -96,7 +92,7 @@ export default function AgentDemoPage() {
       <MainLayout>
         <div className="d-flex align-items-center justify-content-center min-vh-100">
           <div className="spinner-border text-success" role="status">
-            <span className="visually-hidden">Loading Agent Demo...</span>
+            <span className="visually-hidden">{t('agents.demo.loading')}</span>
           </div>
         </div>
       </MainLayout>
@@ -107,10 +103,10 @@ export default function AgentDemoPage() {
     return (
       <MainLayout>
         <div className="container text-center py-5 my-5">
-          <h2>Agent Not Found</h2>
-          <p className="text-muted">The requested agent demo does not exist.</p>
+          <h2>{t('agents.demo.notFoundTitle')}</h2>
+          <p className="text-muted">{t('agents.demo.notFoundBody')}</p>
           <Link to="/agents" className="btn btn-dark rounded-pill px-4 mt-3">
-            Back to AI Agents
+            {t('agents.detail.back')}
           </Link>
         </div>
       </MainLayout>
@@ -149,7 +145,7 @@ export default function AgentDemoPage() {
                 onRun={handleRun}
                 loading={loading}
                 disabled={status === 'disabled'}
-                placeholder={`Ask ${agent.name} anything regarding projects, skills, or workflows...`}
+                placeholder={t('agents.demo.placeholder', { name: agent.name })}
                 suggestions={slug === 'naim-copilot' ? COPILOT_SUGGESTIONS : []}
                 maxLength={1000}
               />

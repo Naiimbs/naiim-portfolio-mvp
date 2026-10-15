@@ -267,6 +267,63 @@
     "exploreTitle": "Explorer les systèmes réalisés",
     "exploreLead": "Analyses d’architecture détaillées, prototypes en direct et arbres de décision de workflow.",
     "backToWork": "Retour aux projets",
-    "buildTogether": "Construisons un agent ensemble"
+    "buildTogether": "Construisons un agent ensemble",
+    "detail": {
+      "loading": "Chargement de l’étude de cas...",
+      "notFoundEyebrow": "404 — INTROUVABLE",
+      "notFoundTitle": "Agent IA introuvable",
+      "notFoundBody": "L’étude de cas de cet agent IA est introuvable.",
+      "back": "Retour aux agents IA",
+      "tryDemo": "Essayer la démo interactive",
+      "viewRepo": "Voir le dépôt"
+    },
+    "demo": {
+      "loading": "Chargement de la démo...",
+      "notFoundTitle": "Agent introuvable",
+      "notFoundBody": "La démo de cet agent n’existe pas.",
+      "placeholder": "Posez une question à {{name}} sur les projets, compétences ou workflows...",
+      "gatewayError": "Impossible de se connecter à la passerelle de l’agent. Vérifiez votre connexion internet.",
+      "unavailableError": "Le Copilot est momentanément indisponible. Réessayez plus tard.",
+      "promptLabel": "Invite / Requête :",
+      "inputPlaceholder": "Posez une question ou saisissez une tâche pour l’agent...",
+      "pressKey": "Appuyez sur",
+      "toRun": "pour exécuter,",
+      "forNewline": "pour un saut de ligne",
+      "executing": "Exécution de l’agent...",
+      "run": "Lancer l’agent",
+      "examples": "EXEMPLES DE REQUÊTES :",
+      "thinking": "L’agent réfléchit...",
+      "processing": "Traitement avec n8n & Gemini...",
+      "processingSub": "Interrogation de la mémoire vectorielle, exécution du raisonnement et préparation de la réponse.",
+      "response": "Réponse de l’agent",
+      "reset": "Réinitialiser",
+      "resetTitle": "Effacer la réponse et poser une autre question",
+      "backToCase": "Retour à l’étude de cas",
+      "interactiveDemo": "Démo interactive",
+      "inactiveTitle": "Démo en direct inactive",
+      "inactiveBody": "Cet agent fonctionne comme un pipeline autonome en arrière-plan et n’accepte pas pour l’instant de requêtes synchrones.",
+      "readCase": "Lire l’étude de cas",
+      "errorDefault": "La démo est momentanément indisponible. Réessayez dans quelques instants.",
+      "failedTitle": "Échec de l’exécution de l’agent",
+      "tryAgain": "Réessayer",
+      "viewCase": "Voir l’étude de cas",
+      "suggestions": [
+        "Quelles sont les meilleures compétences de Naïm en product design ?",
+        "Quels projets d’IA et d’automatisation n8n a-t-il construits ?",
+        "Montre-moi les projets gouvernementaux et bancaires saoudiens",
+        "Comment Naïm aborde-t-il le cadrage des problèmes et les design systems ?"
+      ],
+      "liveEyebrow": "DÉMO SYSTÈME IA EN DIRECT"
+    },
+    "card": {
+      "demoAvailable": "Démo disponible",
+      "caseOnly": "Étude de cas seulement",
+      "explore": "Explorer l’agent",
+      "category": "Agent IA",
+      "try": "Essayer"
+    },
+    "grid": {
+      "empty": "Aucun agent IA publié pour l’instant."
+    }
   }
 }

@@ -1,21 +1,23 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function AgentDemoResult({
   result,
   onReset,
   loading,
 }) {
+  const { t } = useTranslation();
   if (loading) {
     return (
       <div className="agent-demo-result-card loading-state text-center py-5">
         <div className="spinner-grow text-success mb-3" role="status">
-          <span className="visually-hidden">Agent thinking...</span>
+          <span className="visually-hidden">{t('agents.demo.thinking')}</span>
         </div>
         <h4 className="fs-5 fw-bold mb-1" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-          Processing with n8n & Gemini...
+          {t('agents.demo.processing')}
         </h4>
         <p className="text-muted small mb-0">
-          Querying vector memory, executing agent reasoning, and preparing response.
+          {t('agents.demo.processingSub')}
         </p>
       </div>
     );
@@ -29,7 +31,7 @@ export default function AgentDemoResult({
         <div className="d-flex align-items-center gap-2">
           <span className="result-dot">●</span>
           <strong className="fs-6" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-            Agent Response
+            {t('agents.demo.response')}
           </strong>
           {result.durationMs && (
             <span className="badge bg-light text-dark border ms-2 small font-monospace">
@@ -42,9 +44,9 @@ export default function AgentDemoResult({
           type="button"
           onClick={onReset}
           className="btn btn-sm btn-outline-secondary rounded-pill px-3"
-          title="Clear response and ask another question"
+          title={t('agents.demo.resetTitle')}
         >
-          <i className="bi bi-arrow-counterclockwise me-1"></i> Reset
+          <i className="bi bi-arrow-counterclockwise me-1"></i> {t('agents.demo.reset')}
         </button>
       </div>
 

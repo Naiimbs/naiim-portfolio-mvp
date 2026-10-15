@@ -267,6 +267,63 @@
     "exploreTitle": "Explore Built Systems",
     "exploreLead": "Detailed architecture breakdowns, live prototypes, and workflow decision trees.",
     "backToWork": "Back to selected work",
-    "buildTogether": "Build an Agent together"
+    "buildTogether": "Build an Agent together",
+    "detail": {
+      "loading": "Loading Agent Case Study...",
+      "notFoundEyebrow": "404 — NOT FOUND",
+      "notFoundTitle": "AI Agent Not Found",
+      "notFoundBody": "The requested AI agent case study could not be located.",
+      "back": "Back to AI Agents",
+      "tryDemo": "Try Interactive Demo",
+      "viewRepo": "View Repository"
+    },
+    "demo": {
+      "loading": "Loading Agent Demo...",
+      "notFoundTitle": "Agent Not Found",
+      "notFoundBody": "The requested agent demo does not exist.",
+      "placeholder": "Ask {{name}} anything regarding projects, skills, or workflows...",
+      "gatewayError": "Unable to connect to the agent gateway. Please check your internet connection.",
+      "unavailableError": "Copilot is temporarily unavailable. Please try again later.",
+      "promptLabel": "Prompt / Query:",
+      "inputPlaceholder": "Ask a question or enter a task for the agent...",
+      "pressKey": "Press",
+      "toRun": "to run,",
+      "forNewline": "for newline",
+      "executing": "Executing Agent...",
+      "run": "Run Agent",
+      "examples": "EXAMPLE QUERIES:",
+      "thinking": "Agent thinking...",
+      "processing": "Processing with n8n & Gemini...",
+      "processingSub": "Querying vector memory, executing agent reasoning, and preparing response.",
+      "response": "Agent Response",
+      "reset": "Reset",
+      "resetTitle": "Clear response and ask another question",
+      "backToCase": "Back to Case Study",
+      "interactiveDemo": "Interactive Demo",
+      "inactiveTitle": "Live Demo Inactive",
+      "inactiveBody": "This agent operates as an autonomous background pipeline and does not currently accept synchronous user prompts.",
+      "readCase": "Read Case Study",
+      "errorDefault": "The demo is temporarily unavailable. Please try again in a few moments.",
+      "failedTitle": "Agent Execution Failed",
+      "tryAgain": "Try Again",
+      "viewCase": "View Case Study",
+      "suggestions": [
+        "What are Naïm's strongest product design skills?",
+        "Which AI and n8n automation projects did he build?",
+        "Show me Saudi digital government and banking work",
+        "How does Naïm approach problem framing and design systems?"
+      ],
+      "liveEyebrow": "LIVE AI SYSTEM DEMO"
+    },
+    "card": {
+      "demoAvailable": "Demo Available",
+      "caseOnly": "Case Study Only",
+      "explore": "Explore Agent",
+      "category": "AI Agent",
+      "try": "Try"
+    },
+    "grid": {
+      "empty": "No AI Agents published yet."
+    }
   }
 }

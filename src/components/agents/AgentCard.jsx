@@ -1,7 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export default function AgentCard({ agent }) {
+  const { t } = useTranslation();
   const {
     slug,
     name,
@@ -32,10 +34,10 @@ export default function AgentCard({ agent }) {
 
       <div className="agent-card-body">
         <div className="agent-badge-row">
-          <span className="agent-category">{category || 'AI Agent'}</span>
+          <span className="agent-category">{category || t('agents.card.category')}</span>
           <span className={`agent-demo-badge ${hasDemo ? 'has-demo' : 'none'}`}>
             <i className={`bi ${hasDemo ? 'bi-play-fill' : 'bi-journal-text'}`}></i>
-            {hasDemo ? 'Demo Available' : 'Case Study Only'}
+            {hasDemo ? t('agents.card.demoAvailable') : t('agents.card.caseOnly')}
           </span>
         </div>
 
@@ -54,13 +56,13 @@ export default function AgentCard({ agent }) {
 
         <div className="agent-footer-links">
           <Link to={`/agents/${slug}`} className="agent-link">
-            <span>Explore Agent</span> <i className="bi bi-arrow-right"></i>
+            <span>{t('agents.card.explore')}</span> <i className="bi bi-arrow-right"></i>
           </Link>
 
           {hasDemo && (
             demo_type === 'internal' || demo_url.startsWith('/') ? (
               <Link to={demo_url} className="agent-demo-btn">
-                <i className="bi bi-lightning-charge-fill"></i> Try
+                <i className="bi bi-lightning-charge-fill"></i> {t('agents.card.try')}
               </Link>
             ) : (
               <a
@@ -69,7 +71,7 @@ export default function AgentCard({ agent }) {
                 rel="noopener noreferrer"
                 className="agent-demo-btn"
               >
-                <i className="bi bi-box-arrow-up-right"></i> Try
+                <i className="bi bi-box-arrow-up-right"></i> {t('agents.card.try')}
               </a>
             )
           )}
