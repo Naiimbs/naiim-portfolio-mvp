@@ -10,6 +10,7 @@ import {
   createPageSection,
   updatePageSection,
   deletePageSection,
+  publishPageSnapshot,
 } from '../../services/siteCms';
 import { getPagePublishingReadiness } from '../../utils/registryHealth';
 import { PAGE_SECTION_TYPES, validateSection, normalizeSectionConfig } from '../../components/cms/sectionSchemas';
@@ -249,18 +250,34 @@ export default function AdminPageEditor() {
       }
     }
 
-    const updated = { ...page, status: 'published' };
-    const res = await updatePage(id, updated);
-    if (res.error) {
-      setSaveError(res.error.message || 'Failed to publish page.');
-      setFeedback({ type: 'danger', message: res.error.message || 'Failed to publish page.' });
-    } else {
-      setPage(res.data || updated);
-      setIsPageDirty(false);
+    try {
+      // Flush pending edits so the published snapshot captures the latest
+      // working copy (page settings + any dirty sections).
+      if (isPageDirty && page) {
+        const pr = await updatePage(id, page);
+        if (pr.error) throw new Error(pr.error.message);
+        setIsPageDirty(false);
+      }
+      for (const sId of Array.from(dirtySectionIds)) {
+        const sec = sections.find((s) => s.id === sId);
+        if (sec) {
+          await updatePageSection(sec.id, { label: sec.label, section_type: sec.section_type, sort_order: sec.sort_order, is_visible: sec.is_visible, config: sec.config });
+        }
+      }
+      setDirtySectionIds(new Set());
+
+      // Freeze the working sections into the published snapshot (goes live).
+      const res = await publishPageSnapshot(id);
+      if (res.error) throw new Error(res.error.message);
+
+      setPage(res.data || { ...page, status: 'published' });
       setSavedJustNow(true);
       setTimeout(() => setSavedJustNow(false), 3000);
-      const publicUrl = page.slug === 'about' ? '/about' : `/p/${page.slug}`;
-      setFeedback({ type: 'success', message: `Page published successfully! Authoritative route: ${publicUrl}` });
+      const publicUrl = page.slug === 'home' ? '/' : page.slug === 'work' ? '/work' : page.slug === 'about' ? '/about' : `/p/${page.slug}`;
+      setFeedback({ type: 'success', message: `Published! The live site now shows this version at ${publicUrl}.` });
+    } catch (err) {
+      setSaveError(err.message);
+      setFeedback({ type: 'danger', message: `Failed to publish page: ${err.message}` });
     }
     setSavingPage(false);
   };
@@ -643,10 +660,15 @@ export default function AdminPageEditor() {
             className={`btn btn-sm ${page.status === 'published' ? 'btn-success' : 'btn-primary'} rounded-pill px-4 fw-semibold`}
             onClick={handlePublishPage}
             disabled={savingPage}
+            title="Freeze the current draft into the live site"
           >
-            {savingPage && page.status === 'published' ? 'Publishing…' : page.status === 'published' ? '✓ Published' : 'Publish Page'}
+            {savingPage && page.status === 'published' ? 'Publishing…' : page.status === 'published' ? 'Publish changes' : 'Publish Page'}
           </button>
         </div>
+      </div>
+
+      <div className="bg-light border-bottom text-muted small px-3 py-1" style={{ fontSize: '0.74rem' }}>
+        <i className="bi bi-info-circle me-1"></i> Your edits are saved as a <strong>draft</strong> — the live site keeps showing the last <strong>published</strong> version. Use <strong>Preview</strong> to see the draft, then <strong>Publish</strong> to push it live.
       </div>
 
       {feedback && <div className={`alert alert-${feedback.type} mb-0 py-2 rounded-0 small`}>{feedback.message}</div>}

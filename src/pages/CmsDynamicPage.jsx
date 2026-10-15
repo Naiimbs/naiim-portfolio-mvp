@@ -83,8 +83,15 @@ export default function CmsDynamicPage() {
 
       setPage(pageRes.data);
 
-      const secRes = await getPageSections(pageRes.data.id);
-      setSections(secRes.data || []);
+      // Live site renders the published snapshot (frozen at publish time);
+      // fall back to live sections for pages published before snapshots existed.
+      const snapshot = Array.isArray(pageRes.data.published_snapshot) ? pageRes.data.published_snapshot : null;
+      if (snapshot && snapshot.length > 0) {
+        setSections(snapshot);
+      } else {
+        const secRes = await getPageSections(pageRes.data.id);
+        setSections(secRes.data || []);
+      }
       setLoading(false);
     }
 
