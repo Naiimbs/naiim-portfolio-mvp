@@ -3,32 +3,26 @@ import { Link, useNavigate } from 'react-router-dom';
 import { getAdminPages, createPage, deletePage, getAllAdminPageSections, syncPageWithRegistry } from '../../services/siteCms';
 import { getPagePublishingReadiness, getPageRegistryConsistency, getPageContentIntegrity } from '../../utils/registryHealth';
 import { PAGE_SECTION_TYPES } from '../../components/cms/sectionSchemas';
-
-function resolvePageRoute(slug) {
-  if (!slug) return '/';
-  if (slug === 'home' || slug === 'index') return '/';
-  if (slug === 'about') return '/about';
-  if (slug === 'work') return '/work';
-  if (slug === 'agents') return '/agents';
-  if (slug === 'blog') return '/blog';
-  if (slug === 'copilot') return '/copilot';
-  if (slug === 'plugins') return '/plugins';
-  if (slug === 'case-studies') return '/work';
-  return `/p/${slug}`;
-}
+import {
+  resolvePageRoute,
+  isHiddenFromInventory,
+  isCodeOwnedSlug,
+  isPlaceholderSlug,
+  isSectionBuilderLive,
+} from '../utils/pageRoutes';
 
 function getPageClassification(p, pageSections = []) {
   if (p.isOrphanRegistry) {
     return { type: 'ORPHAN', label: 'ORPHAN', bg: 'bg-danger-subtle text-danger border-danger-subtle' };
   }
   const slug = p.slug?.toLowerCase();
-  if (slug === 'copilot' || slug === 'plugins') {
+  if (isPlaceholderSlug(slug)) {
     return { type: 'PLACEHOLDER', label: 'PLACEHOLDER', bg: 'bg-warning-subtle text-warning-emphasis border-warning-subtle' };
   }
   if (slug === 'case-studies') {
     return { type: 'REDIRECT', label: 'REDIRECT', bg: 'bg-secondary-subtle text-secondary border-secondary-subtle' };
   }
-  if (slug === 'home' || slug === 'index' || slug === 'work' || slug === 'agents' || slug === 'blog') {
+  if (isCodeOwnedSlug(slug)) {
     return { type: 'CODE', label: 'CODE OWNED', bg: 'bg-info-subtle text-info-emphasis border-info-subtle' };
   }
   if (slug === 'about') {
@@ -46,6 +40,7 @@ export default function AdminPages() {
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState('all'); // 'all' | 'published' | 'draft'
   const [searchQuery, setSearchQuery] = useState('');
+  const [showHidden, setShowHidden] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newSlug, setNewSlug] = useState('');
@@ -127,8 +122,14 @@ export default function AdminPages() {
     loadData();
   };
 
+  // Hidden system pages (placeholders + redirects) are kept out of the main
+  // inventory so the list reflects only pages that actually hold manageable
+  // content, unless the user opts to reveal them.
+  const hiddenPages = pages.filter((p) => isHiddenFromInventory(p.slug));
+  const inventoryPages = showHidden ? pages : pages.filter((p) => !isHiddenFromInventory(p.slug));
+
   // Filtered pages
-  const filteredPages = pages.filter((p) => {
+  const filteredPages = inventoryPages.filter((p) => {
     const matchesStatus = filterStatus === 'all' || p.status === filterStatus;
     const matchesSearch =
       !searchQuery.trim() ||
@@ -137,8 +138,8 @@ export default function AdminPages() {
     return matchesStatus && matchesSearch;
   });
 
-  const publishedCount = pages.filter((p) => p.status === 'published').length;
-  const draftCount = pages.filter((p) => p.status === 'draft').length;
+  const publishedCount = inventoryPages.filter((p) => p.status === 'published').length;
+  const draftCount = inventoryPages.filter((p) => p.status === 'draft').length;
 
   return (
     <div className="admin-pages-container p-4">
@@ -169,7 +170,7 @@ export default function AdminPages() {
             <span className="text-muted small text-uppercase fw-semibold" style={{ fontSize: '0.75rem', letterSpacing: '0.05em' }}>
               Total Pages
             </span>
-            <div className="h3 fw-bold mt-1 mb-0">{loading ? '—' : pages.length}</div>
+            <div className="h3 fw-bold mt-1 mb-0">{loading ? '—' : inventoryPages.length}</div>
           </div>
         </div>
         <div className="col-12 col-sm-6 col-lg-3">
@@ -207,7 +208,7 @@ export default function AdminPages() {
               className={`btn btn-sm rounded-pill px-3 me-2 ${filterStatus === 'all' ? 'btn-dark' : 'btn-outline-secondary'}`}
               onClick={() => setFilterStatus('all')}
             >
-              All ({pages.length})
+              All ({inventoryPages.length})
             </button>
             <button
               type="button"
@@ -225,17 +226,30 @@ export default function AdminPages() {
             </button>
           </div>
 
-          <div className="input-group" style={{ maxWidth: '300px' }}>
-            <span className="input-group-text bg-light border-end-0 rounded-start-pill ps-3">
-              <i className="bi bi-search text-muted"></i>
-            </span>
-            <input
-              type="text"
-              className="form-control bg-light border-start-0 rounded-end-pill py-1 small"
-              placeholder="Search by title or slug..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+          <div className="d-flex align-items-center gap-3">
+            {hiddenPages.length > 0 && (
+              <button
+                type="button"
+                className={`btn btn-sm rounded-pill px-3 ${showHidden ? 'btn-secondary' : 'btn-outline-secondary'}`}
+                onClick={() => setShowHidden((v) => !v)}
+                title="Placeholder and redirect routes are hidden by default — they hold no manageable content."
+              >
+                <i className={`bi ${showHidden ? 'bi-eye-slash' : 'bi-eye'} me-1`}></i>
+                {showHidden ? 'Hide system pages' : `Show system pages (${hiddenPages.length})`}
+              </button>
+            )}
+            <div className="input-group" style={{ maxWidth: '300px' }}>
+              <span className="input-group-text bg-light border-end-0 rounded-start-pill ps-3">
+                <i className="bi bi-search text-muted"></i>
+              </span>
+              <input
+                type="text"
+                className="form-control bg-light border-start-0 rounded-end-pill py-1 small"
+                placeholder="Search by title or slug..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
           </div>
         </div>
       </div>

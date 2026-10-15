@@ -1,5 +1,14 @@
 import { resolveAsset, DEFAULT_LOGO_MARKS } from '../services/assetRegistry.js';
-import { isPublicRouteImplemented, getPublicRouteStatus } from '../services/contentRouteResolver.js';
+import { isPublicRouteImplemented, getPublicRouteStatus, getCanonicalRoute } from '../services/contentRouteResolver.js';
+
+/**
+ * Canonical public route for a page slug, matching the real routes in
+ * src/App.jsx. Delegates to the single authoritative resolver so pages like
+ * home/work/blog/agents resolve to their dedicated routes, not /p/:slug.
+ */
+function canonicalPageRoute(slug) {
+  return getCanonicalRoute('page', slug);
+}
 
 /**
  * Computes a health report for a single content_registry entry.
@@ -596,7 +605,7 @@ export function getPageRegistryConsistency(page, registryEntry) {
   }
 
   // 5. Route check
-  const expectedRoute = page.slug === 'about' ? '/about' : `/p/${page.slug}`;
+  const expectedRoute = canonicalPageRoute(page.slug);
   if (registryEntry.public_route && registryEntry.public_route !== expectedRoute) {
     issues.push({
       code: 'ROUTE_MISMATCH',
@@ -723,7 +732,7 @@ export function getPageContentIntegrity(pageInput, registryInput = null, section
     }
 
     // 5. Canonical Route Mismatch
-    const canonicalRoute = pageSlug === 'about' ? '/about' : `/p/${pageSlug}`;
+    const canonicalRoute = canonicalPageRoute(pageSlug);
     if (registry.public_route && registry.public_route.trim() !== canonicalRoute) {
       issues.push({
         code: 'REGISTRY_ROUTE_MISMATCH',

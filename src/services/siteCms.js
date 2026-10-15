@@ -1,4 +1,5 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
+import { getCanonicalRoute } from './contentRouteResolver.js';
 
 /**
  * Service for Pages, Page Sections, Navigation Items, and Site Settings.
@@ -368,6 +369,45 @@ export async function updatePage(id, updates) {
   }
 }
 
+/**
+ * Publish a page by freezing its current working sections into
+ * pages.published_snapshot (what the public site renders) and marking it
+ * published. Editing page_sections afterwards does not affect the live site
+ * until this is called again.
+ */
+export async function publishPageSnapshot(id) {
+  if (!isSupabaseConfigured || !supabase) {
+    const idx = localPagesStore.findIndex((p) => p.id === id);
+    const secs = localSectionsStore.filter((s) => s.page_id === id).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+    if (idx !== -1) {
+      localPagesStore[idx] = { ...localPagesStore[idx], status: 'published', published_at: new Date().toISOString(), published_snapshot: secs };
+      return { data: localPagesStore[idx], error: null };
+    }
+    return { data: null, error: new Error('Page not found') };
+  }
+  try {
+    const { data: secs, error: secErr } = await supabase
+      .from('page_sections')
+      .select('*')
+      .eq('page_id', id)
+      .order('sort_order', { ascending: true });
+    if (secErr) return { data: null, error: secErr };
+
+    const { data, error } = await supabase
+      .from('pages')
+      .update({ status: 'published', published_at: new Date().toISOString(), published_snapshot: secs || [], updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) return { data: null, error };
+
+    await syncPageWithRegistry(data);
+    return { data, error: null };
+  } catch (err) {
+    return { data: null, error: err };
+  }
+}
+
 export async function deletePage(id) {
   if (!isSupabaseConfigured || !supabase) {
     localPagesStore = localPagesStore.filter((p) => p.id !== id);
@@ -407,7 +447,7 @@ export async function syncPageWithRegistry(page) {
       .maybeSingle();
 
     const isPublished = page.status === 'published';
-    const expectedRoute = page.slug === 'about' ? '/about' : `/p/${page.slug}`;
+    const expectedRoute = getCanonicalRoute('page', page.slug);
     const payload = {
       title: page.title || 'Untitled Page',
       slug: page.slug,
