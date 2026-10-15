@@ -1620,3 +1620,77 @@ html[lang="ar"] .text-uppercase {
   display: inline-block;
   transform: scaleX(-1);
 }
+
+/* ── Occasion editorial topbar (e.g. عيد الجلاء) ─────────────────────── */
+/* When active, offset the fixed navbar and page content by the banner height. */
+body.has-occasion-topbar { --topbar-h: 140px; }
+@media (max-width: 991.98px) { body.has-occasion-topbar { --topbar-h: 120px; } }
+@media (max-width: 575.98px) { body.has-occasion-topbar { --topbar-h: 104px; } }
+
+body.has-occasion-topbar .site-nav { top: var(--topbar-h, 0); }
+body.has-occasion-topbar main#top { padding-top: var(--topbar-h, 0); }
+html { scroll-padding-top: calc(var(--topbar-h, 0px) + 90px); }
+
+.occasion-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--topbar-h, 140px);
+  z-index: 1001; /* sits above the navbar (1000); they do not overlap */
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background-color: var(--paper);
+  /* Text sits on the physical left; the flag stays anchored on the physical
+     right. The gradient is opaque on the left for legibility and fades out
+     before the flag, regardless of text direction. */
+  background-image:
+    linear-gradient(90deg, rgba(248, 249, 246, 0.95) 0%, rgba(248, 249, 246, 0.72) 40%, rgba(248, 249, 246, 0) 68%),
+    var(--occasion-img);
+  background-repeat: no-repeat, no-repeat;
+  background-position: left center, right center;
+  background-size: cover, cover;
+  border-bottom: 1px solid var(--line);
+}
+
+.occasion-topbar-inner {
+  margin-inline-start: auto; /* push the text block away from the flag side */
+  padding-inline: clamp(16px, 5vw, 72px);
+  max-width: min(680px, 66%);
+  text-align: center;
+}
+
+.occasion-quote {
+  font-family: "Cairo", "Tajawal", sans-serif;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.5;
+  font-size: clamp(1.1rem, 2.4vw, 1.85rem);
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);
+}
+
+.occasion-label {
+  font-family: "Cairo", "Tajawal", sans-serif;
+  font-weight: 600;
+  color: var(--green-dark);
+  margin: 4px 0 0;
+  font-size: clamp(0.7rem, 1.2vw, 0.9rem);
+  letter-spacing: 0.02em;
+  opacity: 0.9;
+}
+
+@media (max-width: 575.98px) {
+  .occasion-topbar {
+    /* Stronger left gradient on narrow screens while keeping the flag visible. */
+    background-image:
+      linear-gradient(90deg, rgba(248, 249, 246, 0.97) 0%, rgba(248, 249, 246, 0.82) 48%, rgba(248, 249, 246, 0.1) 82%),
+      var(--occasion-img);
+  }
+  .occasion-topbar-inner {
+    max-width: 80%;
+    padding-inline: 14px;
+  }
+  .occasion-label { margin-top: 2px; }
+}
