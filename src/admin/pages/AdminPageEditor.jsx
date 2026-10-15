@@ -14,6 +14,7 @@ import {
 } from '../../services/siteCms';
 import { getPagePublishingReadiness } from '../../utils/registryHealth';
 import { PAGE_SECTION_TYPES, validateSection, normalizeSectionConfig } from '../../components/cms/sectionSchemas';
+import { resolvePageRoute, isSectionBuilderLive, isCodeOwnedSlug } from '../utils/pageRoutes';
 
 export default function AdminPageEditor() {
   const { id } = useParams();
@@ -273,7 +274,7 @@ export default function AdminPageEditor() {
       setPage(res.data || { ...page, status: 'published' });
       setSavedJustNow(true);
       setTimeout(() => setSavedJustNow(false), 3000);
-      const publicUrl = page.slug === 'home' ? '/' : page.slug === 'work' ? '/work' : page.slug === 'about' ? '/about' : `/p/${page.slug}`;
+      const publicUrl = resolvePageRoute(page.slug);
       setFeedback({ type: 'success', message: `Published! The live site now shows this version at ${publicUrl}.` });
     } catch (err) {
       setSaveError(err.message);
@@ -520,9 +521,11 @@ export default function AdminPageEditor() {
     ? (isPageDirty && dirtySectionIds.size === 0 ? 'Unsaved changes · Page settings' : 'Unsaved changes · 1 section')
     : `Unsaved changes · ${dirtyCount} sections`;
 
-  const canonicalRoute = (page.slug === 'home' || page.slug === 'index') ? '/' : page.slug === 'about' ? '/about' : `/p/${page.slug}`;
+  const canonicalRoute = resolvePageRoute(page.slug);
   const previewUrl = canonicalRoute === '/' ? '/?preview=true' : `${canonicalRoute}?preview=true`;
   const readiness = getPagePublishingReadiness(page, sections);
+  const sectionBuilderLive = isSectionBuilderLive(page.slug);
+  const codeOwned = isCodeOwnedSlug(page.slug);
 
   return (
     <div className="admin-visual-builder d-flex flex-column h-100 w-100 overflow-hidden">
@@ -667,9 +670,24 @@ export default function AdminPageEditor() {
         </div>
       </div>
 
-      <div className="bg-light border-bottom text-muted small px-3 py-1" style={{ fontSize: '0.74rem' }}>
-        <i className="bi bi-info-circle me-1"></i> Your edits are saved as a <strong>draft</strong> — the live site keeps showing the last <strong>published</strong> version. Use <strong>Preview</strong> to see the draft, then <strong>Publish</strong> to push it live.
-      </div>
+      {sectionBuilderLive ? (
+        <div className="bg-light border-bottom text-muted small px-3 py-1" style={{ fontSize: '0.74rem' }}>
+          <i className="bi bi-info-circle me-1"></i> Your edits are saved as a <strong>draft</strong> — the live site keeps showing the last <strong>published</strong> version. Use <strong>Preview</strong> to see the draft, then <strong>Publish</strong> to push it live.
+        </div>
+      ) : (
+        <div className="bg-info-subtle border-bottom border-info-subtle text-info-emphasis small px-3 py-2" style={{ fontSize: '0.78rem' }}>
+          <i className="bi bi-code-slash me-1"></i>{' '}
+          {codeOwned ? (
+            <>
+              <strong>Code-owned page.</strong> The live <code>{canonicalRoute}</code> page is built in the app’s code{page.slug === 'blog' ? ' and reads your published blog posts' : page.slug === 'agents' ? ' and reads the Content Registry' : ''}. Sections edited here are <strong>not shown to visitors</strong> and publishing will <strong>not</strong> change the live page — manage its content from {page.slug === 'blog' ? 'the Blog editor' : page.slug === 'agents' ? 'the Agents / Content Registry editors' : 'the relevant editor'}.
+            </>
+          ) : (
+            <>
+              <strong>This page is not managed by the section builder.</strong> Editing sections here will not change the live <code>{canonicalRoute}</code> route.
+            </>
+          )}
+        </div>
+      )}
 
       {feedback && <div className={`alert alert-${feedback.type} mb-0 py-2 rounded-0 small`}>{feedback.message}</div>}
 
