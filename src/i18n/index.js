@@ -17,21 +17,52 @@ const DIRECTIONS = {
   fr: 'ltr',
 };
 
+export const SUPPORTED_LANGUAGES = [
+  { code: 'en', label: 'EN', name: 'English' },
+  { code: 'fr', label: 'FR', name: 'Français' },
+  { code: 'ar', label: 'ع', name: 'العربية' },
+];
+
+const STORAGE_KEY = 'app_lang';
+
+/** Read the visitor's saved language preference (falls back to 'en'). */
+export const getSavedLanguage = () => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved && resources[saved]) return saved;
+  } catch (_) {
+    /* localStorage unavailable (private mode, SSR) — ignore */
+  }
+  return 'en';
+};
+
+export const getDirection = (lang) => DIRECTIONS[lang] || 'ltr';
+
 export const setAppLanguage = (lang) => {
   const targetLang = resources[lang] ? lang : 'en';
-  const dir = DIRECTIONS[targetLang] || 'ltr';
+  const dir = getDirection(targetLang);
 
   document.documentElement.lang = targetLang;
   document.documentElement.dir = dir;
+  // Expose on <body> too so CSS can target RTL without relying on <html>.
+  document.body?.setAttribute('dir', dir);
+
+  try {
+    localStorage.setItem(STORAGE_KEY, targetLang);
+  } catch (_) {
+    /* ignore persistence failures */
+  }
 
   i18n.changeLanguage(targetLang);
 };
+
+const initialLang = typeof window !== 'undefined' ? getSavedLanguage() : 'en';
 
 i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: 'en',
+    lng: initialLang,
     fallbackLng: 'en',
     defaultNS: 'common',
     interpolation: {
@@ -39,10 +70,10 @@ i18n
     },
   });
 
-// Set initial HTML attributes
+// Apply initial HTML attributes (lang + direction) from the saved preference.
 if (typeof document !== 'undefined') {
-  document.documentElement.lang = 'en';
-  document.documentElement.dir = 'ltr';
+  document.documentElement.lang = initialLang;
+  document.documentElement.dir = getDirection(initialLang);
 }
 
 export default i18n;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { getHeaderNavigation, getPublicSiteSettings, DEFAULT_HEADER_NAV } from '../../services/siteCms';
+import LanguageSwitcher from './LanguageSwitcher';
 
 export default function Navbar() {
   const [navItems, setNavItems] = useState(DEFAULT_HEADER_NAV);
@@ -254,7 +255,10 @@ export default function Navbar() {
               </li>
             ))}
           </ul>
-          {renderCtaButton()}
+          <div className="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+            <LanguageSwitcher />
+            {renderCtaButton()}
+          </div>
         </div>
       </div>
     </nav>

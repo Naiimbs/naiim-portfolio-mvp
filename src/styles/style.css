@@ -1559,3 +1559,22 @@ h1 em {
     top: 0%;
   }
 }
+
+/* ── Language switcher ──────────────────────────────────────────────── */
+.lang-switcher .dropdown-item-like:hover,
+.lang-switcher .dropdown-item-like:focus {
+  background-color: var(--bs-light, #f8f9fa) !important;
+}
+.lang-switcher ul {
+  animation: langFadeIn 0.12s ease-out;
+}
+@keyframes langFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Minimal RTL baseline (Phase 0; full RTL pass in Phase 2) ───────── */
+[dir="rtl"] .lang-switcher ul {
+  left: 0;
+  right: auto;
+}
