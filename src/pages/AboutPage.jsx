@@ -88,7 +88,7 @@ export default function AboutPage() {
       {hasCmsSections ? (
         <PageRenderer page={aboutPage} sections={sections} loading={loading} />
       ) : (
-        <AboutSection />
+        <AboutSection pageData={aboutPage} />
       )}
     </MainLayout>
   );

@@ -3,6 +3,8 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import PageRenderer from '../../components/cms/PageRenderer';
 import SectionPropertyEditor from '../components/cms/editors/SectionPropertyEditor';
 import AddSectionModal from '../components/cms/AddSectionModal';
+import BlogPageCanvasPreview from '../components/cms/BlogPageCanvasPreview';
+import AboutPageCanvasPreview from '../components/cms/AboutPageCanvasPreview';
 import {
   getAdminPages,
   updatePage,
@@ -23,7 +25,8 @@ export default function AdminPageEditor() {
   const [page, setPage] = useState(null);
   const [sections, setSections] = useState([]);
   const [activeSectionId, setActiveSectionId] = useState(null);
-  const [activeTab, setActiveTab] = useState('section'); // 'section' | 'page'
+  const [activeTab, setActiveTab] = useState('section'); // 'section' | 'page' | 'translations'
+  const [txLang, setTxLang] = useState('fr'); // 'fr' | 'ar'
 
   const [loading, setLoading] = useState(true);
   const [savingPage, setSavingPage] = useState(false);
@@ -80,11 +83,69 @@ export default function AdminPageEditor() {
     const loadedSecs = (secRes.data || []).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
     setSections(loadedSecs);
 
-    if (loadedSecs.length > 0 && !activeSectionId) {
-      setActiveSectionId(loadedSecs[0].id);
+    if (target.slug === 'blog' || target.slug === 'about') {
+      setActiveTab('page');
     }
     setLoading(false);
   }
+
+  const tx = page?.metadata?.i18n?.[txLang] || page?.i18n?.[txLang] || {};
+  const txAbout = tx.about || {};
+
+  const setTxField = (patch) => {
+    setPage((prev) => {
+      const curI18n = prev.metadata?.i18n || prev.i18n || {};
+      const curLangTx = curI18n[txLang] || {};
+      const updatedLangTx = { ...curLangTx, ...patch };
+      const updatedI18n = { ...curI18n, [txLang]: updatedLangTx };
+
+      return {
+        ...prev,
+        i18n: updatedI18n,
+        metadata: {
+          ...(prev.metadata || {}),
+          i18n: updatedI18n,
+        },
+      };
+    });
+    setIsPageDirty(true);
+  };
+
+  const setTxAboutField = (patch) => {
+    setPage((prev) => {
+      const curI18n = prev.metadata?.i18n || prev.i18n || {};
+      const curLangTx = curI18n[txLang] || {};
+      const curAbout = curLangTx.about || {};
+      const updatedAbout = { ...curAbout, ...patch };
+      const updatedLangTx = { ...curLangTx, about: updatedAbout };
+      const updatedI18n = { ...curI18n, [txLang]: updatedLangTx };
+
+      return {
+        ...prev,
+        i18n: updatedI18n,
+        metadata: {
+          ...(prev.metadata || {}),
+          i18n: updatedI18n,
+        },
+      };
+    });
+    setIsPageDirty(true);
+  };
+
+  const setAboutField = (patch) => {
+    setPage((prev) => {
+      const curAbout = prev.metadata?.about || {};
+      const updatedAbout = { ...curAbout, ...patch };
+      return {
+        ...prev,
+        metadata: {
+          ...(prev.metadata || {}),
+          about: updatedAbout,
+        },
+      };
+    });
+    setIsPageDirty(true);
+  };
 
   const activeSection = sections.find((s) => String(s.id) === String(activeSectionId)) || null;
 
@@ -896,20 +957,40 @@ export default function AdminPageEditor() {
             >
               {/* Renders center preview with live in-memory page & sections state */}
               <div className="p-3">
-                <PageRenderer
-                  page={page}
-                  sections={sections}
-                  loading={false}
-                  error={null}
-                  activeSectionId={activeSectionId}
-                  viewport={previewViewport}
-                  onSelectSection={handleSelectSection}
-                  onMoveSection={handleMoveSection}
-                  onToggleVisibility={handleToggleVisibility}
-                  onDuplicateSection={handleDuplicateSection}
-                  onDeleteSection={handleDeleteSection}
-                  onInsertSection={handleOpenAddModalAt}
-                />
+                {page.slug === 'blog' ? (
+                  <BlogPageCanvasPreview
+                    page={page}
+                    activeLang={activeTab === 'translations' ? txLang : 'en'}
+                    onSelectHeader={() => {
+                      setActiveTab('page');
+                      setRightPanelOpen(true);
+                    }}
+                  />
+                ) : page.slug === 'about' && sections.length === 0 ? (
+                  <AboutPageCanvasPreview
+                    page={page}
+                    activeLang={activeTab === 'translations' ? txLang : 'en'}
+                    onSelectBlock={() => {
+                      setActiveTab('page');
+                      setRightPanelOpen(true);
+                    }}
+                  />
+                ) : (
+                  <PageRenderer
+                    page={page}
+                    sections={sections}
+                    loading={false}
+                    error={null}
+                    activeSectionId={activeSectionId}
+                    viewport={previewViewport}
+                    onSelectSection={handleSelectSection}
+                    onMoveSection={handleMoveSection}
+                    onToggleVisibility={handleToggleVisibility}
+                    onDuplicateSection={handleDuplicateSection}
+                    onDeleteSection={handleDeleteSection}
+                    onInsertSection={handleOpenAddModalAt}
+                  />
+                )}
 
                 {/* Inline Add Section Button at the bottom of the canvas */}
                 <div className="text-center py-4 my-2 border border-2 border-dashed border-secondary border-opacity-25 rounded-4 bg-light">
@@ -936,20 +1017,30 @@ export default function AdminPageEditor() {
             {/* Header Tabs */}
             <div className="d-flex align-items-center justify-content-between border-bottom bg-light px-2 pt-2">
               <ul className="nav nav-tabs border-0 flex-grow-1">
-                <li className="nav-item">
-                  <button
-                    className={`nav-link small fw-semibold py-2 border-0 ${activeTab === 'section' ? 'active bg-white border-top border-primary' : ''}`}
-                    onClick={() => setActiveTab('section')}
-                  >
-                    Section Properties
-                  </button>
-                </li>
+                {page.slug !== 'blog' && (
+                  <li className="nav-item">
+                    <button
+                      className={`nav-link small fw-semibold py-2 border-0 ${activeTab === 'section' ? 'active bg-white border-top border-primary' : ''}`}
+                      onClick={() => setActiveTab('section')}
+                    >
+                      Section Properties
+                    </button>
+                  </li>
+                )}
                 <li className="nav-item">
                   <button
                     className={`nav-link small fw-semibold py-2 border-0 ${activeTab === 'page' ? 'active bg-white border-top border-primary' : ''}`}
                     onClick={() => setActiveTab('page')}
                   >
-                    Page Settings
+                    {page.slug === 'about' ? 'About Content & SEO' : page.slug === 'blog' ? 'Blog Header & SEO' : 'Page Settings'}
+                  </button>
+                </li>
+                <li className="nav-item">
+                  <button
+                    className={`nav-link small fw-semibold py-2 border-0 ${activeTab === 'translations' ? 'active bg-white border-top border-primary' : ''}`}
+                    onClick={() => setActiveTab('translations')}
+                  >
+                    <i className="bi bi-translate me-1"></i> Translations
                   </button>
                 </li>
               </ul>
@@ -970,6 +1061,204 @@ export default function AdminPageEditor() {
                   onSave={handleSaveActiveSection}
                   dirty={activeSection ? dirtySectionIds.has(activeSection.id) : false}
                 />
+              ) : activeTab === 'translations' ? (
+                <div className="p-3">
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h6 className="fw-bold mb-0">Page Translations</h6>
+                    <div className="btn-group btn-group-sm">
+                      <button
+                        type="button"
+                        className={`btn ${txLang === 'fr' ? 'btn-dark' : 'btn-outline-secondary'}`}
+                        onClick={() => setTxLang('fr')}
+                      >
+                        Français (FR)
+                      </button>
+                      <button
+                        type="button"
+                        className={`btn ${txLang === 'ar' ? 'btn-dark' : 'btn-outline-secondary'}`}
+                        onClick={() => setTxLang('ar')}
+                      >
+                        العربية (AR)
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="alert alert-light border rounded-3 p-2 small mb-3 text-muted">
+                    <i className="bi bi-info-circle me-1"></i> Enter the {txLang === 'fr' ? 'French' : 'Arabic'} version of this page. Any empty fields will fall back to the default (English) text.
+                  </div>
+
+                  <form onSubmit={handleSavePageMetadata} dir={txLang === 'ar' ? 'rtl' : 'ltr'}>
+                    <div className="mb-3">
+                      <label className="form-label small fw-semibold">Page Title ({txLang.toUpperCase()})</label>
+                      <input
+                        type="text"
+                        className="form-control form-control-sm rounded-3"
+                        value={tx.title || ''}
+                        onChange={(e) => setTxField({ title: e.target.value })}
+                        placeholder={page.title || ''}
+                      />
+                    </div>
+
+                    <div className="mb-3">
+                      <label className="form-label small fw-semibold">SEO Title ({txLang.toUpperCase()})</label>
+                      <input
+                        type="text"
+                        className="form-control form-control-sm rounded-3"
+                        value={tx.seo_title || ''}
+                        onChange={(e) => setTxField({ seo_title: e.target.value })}
+                        placeholder={page.seo_title || page.title || ''}
+                      />
+                    </div>
+
+                    <div className="mb-3">
+                      <label className="form-label small fw-semibold">SEO Description ({txLang.toUpperCase()})</label>
+                      <textarea
+                        className="form-control form-control-sm rounded-3"
+                        rows="2"
+                        value={tx.seo_description || tx.description || ''}
+                        onChange={(e) => setTxField({ seo_description: e.target.value, description: e.target.value })}
+                        placeholder={page.seo_description || ''}
+                      />
+                    </div>
+
+                    {/* Blog Page Specific Translation Fields */}
+                    {page.slug === 'blog' && (
+                      <div className="border-top pt-3 mt-3">
+                        <h6 className="fw-bold small mb-2 text-primary">Blog Header Translation</h6>
+                        <div className="mb-2">
+                          <label className="form-label small fw-semibold">Header Eyebrow ({txLang.toUpperCase()})</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm rounded-3"
+                            value={tx.eyebrow || ''}
+                            onChange={(e) => setTxField({ eyebrow: e.target.value })}
+                            placeholder={page.metadata?.eyebrow || 'WRITING & THOUGHTS'}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* About Page Specific Translation Fields */}
+                    {page.slug === 'about' && (
+                      <div className="border-top pt-3 mt-3">
+                        <h6 className="fw-bold small mb-2 text-primary">About Page Content Translation</h6>
+                        <div className="mb-2">
+                          <label className="form-label small fw-semibold">Journey Eyebrow ({txLang.toUpperCase()})</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm rounded-3"
+                            value={txAbout.eyebrow || ''}
+                            onChange={(e) => setTxAboutField({ eyebrow: e.target.value })}
+                            placeholder="LE PARCOURS"
+                          />
+                        </div>
+                        <div className="mb-2">
+                          <label className="form-label small fw-semibold">Headline Line 1 ({txLang.toUpperCase()})</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm rounded-3"
+                            value={txAbout.titleLine1 || ''}
+                            onChange={(e) => setTxAboutField({ titleLine1: e.target.value })}
+                            placeholder="De la création de mes propres mains"
+                          />
+                        </div>
+                        <div className="mb-2">
+                          <label className="form-label small fw-semibold">Headline Line 2 ({txLang.toUpperCase()})</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm rounded-3"
+                            value={txAbout.titleLine2 || ''}
+                            onChange={(e) => setTxAboutField({ titleLine2: e.target.value })}
+                            placeholder="à la conception de produits intelligents."
+                          />
+                        </div>
+
+                        <div className="mb-2">
+                          <label className="form-label small fw-semibold">Card Eyebrow ({txLang.toUpperCase()})</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm rounded-3"
+                            value={txAbout.cardEyebrow || ''}
+                            onChange={(e) => setTxAboutField({ cardEyebrow: e.target.value })}
+                            placeholder="À PROPOS DE MOI"
+                          />
+                        </div>
+                        <div className="mb-2">
+                          <label className="form-label small fw-semibold">Card Title Line 1 ({txLang.toUpperCase()})</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm rounded-3"
+                            value={txAbout.cardTitleLine1 || ''}
+                            onChange={(e) => setTxAboutField({ cardTitleLine1: e.target.value })}
+                            placeholder="Concevoir avec curiosité."
+                          />
+                        </div>
+                        <div className="mb-2">
+                          <label className="form-label small fw-semibold">Card Title Line 2 ({txLang.toUpperCase()})</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm rounded-3"
+                            value={txAbout.cardTitleLine2 || ''}
+                            onChange={(e) => setTxAboutField({ cardTitleLine2: e.target.value })}
+                            placeholder="Bâtir avec raison d'être."
+                          />
+                        </div>
+                        <div className="mb-2">
+                          <label className="form-label small fw-semibold">Biography ({txLang.toUpperCase()})</label>
+                          <textarea
+                            className="form-control form-control-sm rounded-3"
+                            rows="3"
+                            value={txAbout.bio || ''}
+                            onChange={(e) => setTxAboutField({ bio: e.target.value })}
+                            placeholder="Je m'appelle Naïm..."
+                          />
+                        </div>
+                        <div className="mb-2">
+                          <label className="form-label small fw-semibold">Skills (comma-separated) ({txLang.toUpperCase()})</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm rounded-3"
+                            value={Array.isArray(txAbout.skills) ? txAbout.skills.join(', ') : (txAbout.skills || '')}
+                            onChange={(e) =>
+                              setTxAboutField({
+                                skills: e.target.value.split(',').map((s) => s.trim()).filter(Boolean),
+                              })
+                            }
+                            placeholder="UX/UI, Product Design, IA, Low-Code, Design Systems, Automatisation"
+                          />
+                        </div>
+                        <div className="mb-2">
+                          <label className="form-label small fw-semibold">Languages ({txLang.toUpperCase()})</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm rounded-3"
+                            value={txAbout.languagesLine1 || ''}
+                            onChange={(e) => setTxAboutField({ languagesLine1: e.target.value })}
+                            placeholder="Arabe · Français · Anglais · Italien"
+                          />
+                        </div>
+                        <div className="mb-3">
+                          <label className="form-label small fw-semibold">Certifications ({txLang.toUpperCase()})</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm rounded-3"
+                            value={txAbout.certLine1 || ''}
+                            onChange={(e) => setTxAboutField({ certLine1: e.target.value })}
+                            placeholder="PSM I · Mendix Rapid Developer · Design ISSAT"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    <button
+                      type="submit"
+                      className="btn btn-sm btn-primary rounded-pill w-100 py-2 mt-2"
+                      disabled={savingPage}
+                    >
+                      {savingPage ? 'Saving...' : `Save ${txLang.toUpperCase()} Translations`}
+                    </button>
+                  </form>
+                </div>
               ) : (
                 <div className="p-3">
                   <h6 className="fw-bold mb-3">Page Metadata & SEO</h6>
@@ -1053,6 +1342,117 @@ export default function AdminPageEditor() {
                         }}
                       />
                     </div>
+
+                    {/* About Content in English */}
+                    {page.slug === 'about' && (
+                      <div className="border-top pt-3 mt-3">
+                        <h6 className="fw-bold small mb-2 text-primary">About Page Default Content</h6>
+                        <div className="mb-2">
+                          <label className="form-label small fw-semibold">Journey Eyebrow</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm rounded-3"
+                            value={page.metadata?.about?.eyebrow || ''}
+                            onChange={(e) => setAboutField({ eyebrow: e.target.value })}
+                            placeholder="THE JOURNEY"
+                          />
+                        </div>
+                        <div className="mb-2">
+                          <label className="form-label small fw-semibold">Headline Line 1</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm rounded-3"
+                            value={page.metadata?.about?.titleLine1 || ''}
+                            onChange={(e) => setAboutField({ titleLine1: e.target.value })}
+                            placeholder="From making things with my hands"
+                          />
+                        </div>
+                        <div className="mb-2">
+                          <label className="form-label small fw-semibold">Headline Line 2</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm rounded-3"
+                            value={page.metadata?.about?.titleLine2 || ''}
+                            onChange={(e) => setAboutField({ titleLine2: e.target.value })}
+                            placeholder="to building intelligent products."
+                          />
+                        </div>
+                        <div className="mb-2">
+                          <label className="form-label small fw-semibold">Card Eyebrow</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm rounded-3"
+                            value={page.metadata?.about?.cardEyebrow || ''}
+                            onChange={(e) => setAboutField({ cardEyebrow: e.target.value })}
+                            placeholder="ABOUT ME"
+                          />
+                        </div>
+                        <div className="mb-2">
+                          <label className="form-label small fw-semibold">Card Title Line 1</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm rounded-3"
+                            value={page.metadata?.about?.cardTitleLine1 || ''}
+                            onChange={(e) => setAboutField({ cardTitleLine1: e.target.value })}
+                            placeholder="Designing with curiosity."
+                          />
+                        </div>
+                        <div className="mb-2">
+                          <label className="form-label small fw-semibold">Card Title Line 2</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm rounded-3"
+                            value={page.metadata?.about?.cardTitleLine2 || ''}
+                            onChange={(e) => setAboutField({ cardTitleLine2: e.target.value })}
+                            placeholder="Building with purpose."
+                          />
+                        </div>
+                        <div className="mb-2">
+                          <label className="form-label small fw-semibold">Biography</label>
+                          <textarea
+                            className="form-control form-control-sm rounded-3"
+                            rows="3"
+                            value={page.metadata?.about?.bio || ''}
+                            onChange={(e) => setAboutField({ bio: e.target.value })}
+                            placeholder="I'm Naïm, a product designer and AI builder..."
+                          />
+                        </div>
+                        <div className="mb-2">
+                          <label className="form-label small fw-semibold">Skills (comma-separated)</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm rounded-3"
+                            value={Array.isArray(page.metadata?.about?.skills) ? page.metadata?.about?.skills.join(', ') : (page.metadata?.about?.skills || '')}
+                            onChange={(e) =>
+                              setAboutField({
+                                skills: e.target.value.split(',').map((s) => s.trim()).filter(Boolean),
+                              })
+                            }
+                            placeholder="UX/UI, Product Design, AI, Low-Code, Design Systems, Automation"
+                          />
+                        </div>
+                        <div className="mb-2">
+                          <label className="form-label small fw-semibold">Languages</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm rounded-3"
+                            value={page.metadata?.about?.languagesLine1 || ''}
+                            onChange={(e) => setAboutField({ languagesLine1: e.target.value })}
+                            placeholder="Arabic · French · English · Italian"
+                          />
+                        </div>
+                        <div className="mb-3">
+                          <label className="form-label small fw-semibold">Certifications</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm rounded-3"
+                            value={page.metadata?.about?.certLine1 || ''}
+                            onChange={(e) => setAboutField({ certLine1: e.target.value })}
+                            placeholder="PSM I · Mendix Rapid Developer · Design ISSAT"
+                          />
+                        </div>
+                      </div>
+                    )}
 
                     <button
                       type="submit"

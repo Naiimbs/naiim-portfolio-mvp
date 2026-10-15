@@ -6,23 +6,29 @@ import MainLayout from '../layouts/MainLayout';
 import AdSlot from '../components/monetization/AdSlot';
 import { getPublishedBlogPosts } from '../services/contentOperations';
 import { resolveAsset } from '../services/assetRegistry';
+import { getPageBySlug } from '../services/siteCms';
 
 export default function BlogPage() {
   const { t, i18n } = useTranslation();
   const dateLocale = i18n.language === 'fr' ? 'fr-FR' : i18n.language === 'ar' ? 'ar' : 'en-US';
   const [posts, setPosts] = useState([]);
+  const [blogPage, setBlogPage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('ALL');
 
   useEffect(() => {
-    async function loadPosts() {
+    async function loadData() {
       setLoading(true);
-      const res = await getPublishedBlogPosts();
-      setPosts(res.data || []);
+      const [postsRes, pageRes] = await Promise.all([
+        getPublishedBlogPosts(),
+        getPageBySlug('blog'),
+      ]);
+      setPosts(postsRes.data || []);
+      if (pageRes?.data) setBlogPage(pageRes.data);
       setLoading(false);
     }
-    loadPosts();
+    loadData();
   }, []);
 
   const categories = ['ALL', ...new Set(posts.map((p) => p.metadata?.category).filter(Boolean))];
@@ -42,13 +48,19 @@ export default function BlogPage() {
 
   const featuredPost = posts.find((p) => p.featured) || posts[0];
 
+  const currentLang = i18n.language?.slice(0, 2) || 'en';
+  const pageTx = (currentLang !== 'en' && (blogPage?.i18n?.[currentLang] || blogPage?.metadata?.i18n?.[currentLang])) || {};
+  const headerEyebrow = pageTx.eyebrow || blogPage?.metadata?.eyebrow || t('blogList.eyebrow');
+  const headerTitle = pageTx.title || blogPage?.title || t('blogList.title');
+  const headerLead = pageTx.description || blogPage?.seo_description || t('blogList.lead');
+
   return (
     <MainLayout>
       <Helmet>
-        <title>Blog & Writing — Naïm Bsili | Product Designer & AI Builder</title>
+        <title>{pageTx.seo_title || blogPage?.seo_title || 'Blog & Writing — Naïm Bsili | Product Designer & AI Builder'}</title>
         <meta
           name="description"
-          content="Articles, technical write-ups, and case studies on AI copilot architecture, design systems, and product automation."
+          content={pageTx.seo_description || blogPage?.seo_description || 'Articles, technical write-ups, and case studies on AI copilot architecture, design systems, and product automation.'}
         />
         <link rel="canonical" href="https://naiimbsili.com/blog" />
       </Helmet>
@@ -58,13 +70,13 @@ export default function BlogPage() {
           {/* Header */}
           <div className="text-center max-w-3xl mx-auto mb-5">
             <div className="eyebrow justify-content-center mb-2">
-              <span></span> {t('blogList.eyebrow')}
+              <span></span> {headerEyebrow}
             </div>
             <h1 className="display-4 fw-bold font-heading mb-3">
-              {t('blogList.title')}
+              {headerTitle}
             </h1>
             <p className="lead text-secondary">
-              {t('blogList.lead')}
+              {headerLead}
             </p>
           </div>
 

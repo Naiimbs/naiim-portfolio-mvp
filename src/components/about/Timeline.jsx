@@ -5,9 +5,10 @@ import { useTranslation } from 'react-i18next';
 const STEP_LABELS = ['01', '02', '03', '04', null];
 const ACTIVE_INDEX = 4;
 
-export default function Timeline() {
+export default function Timeline({ customTimeline }) {
   const { t } = useTranslation();
-  const steps = t('about.timeline', { returnObjects: true }) || [];
+  const defaultSteps = t('about.timeline', { returnObjects: true }) || [];
+  const steps = Array.isArray(customTimeline) && customTimeline.length > 0 ? customTimeline : defaultSteps;
 
   return (
     <div className="timeline mt-5">
