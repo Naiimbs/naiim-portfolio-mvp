@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import MainLayout from '../layouts/MainLayout';
 import SEO from '../components/common/SEO';
 import PageRenderer from '../components/cms/PageRenderer';
@@ -65,13 +66,16 @@ export default function AboutPage() {
     };
   }, [canPreviewDraft, authLoading]);
 
+  const { t, i18n } = useTranslation();
+  const currentLang = i18n?.language?.slice(0, 2) || 'en';
+  const pageTx = aboutPage?.i18n?.[currentLang] || aboutPage?.metadata?.i18n?.[currentLang] || {};
   const hasCmsSections = Boolean(sections && sections.length > 0);
 
   return (
     <MainLayout>
       <SEO
-        title={aboutPage?.seo_title || 'About — Naïm Bsili | Product Designer & AI Builder'}
-        description={aboutPage?.seo_description || 'Career journey, product design philosophy, and AI automation expertise of Naïm Bsili.'}
+        title={pageTx.seo_title || pageTx.title || aboutPage?.seo_title || t('about.seoTitle', 'About — Naïm Bsili | Product Designer & AI Builder')}
+        description={pageTx.seo_description || aboutPage?.seo_description || t('about.seoDesc', 'Career journey, product design philosophy, and AI automation expertise of Naïm Bsili.')}
         canonical="/about"
       />
 

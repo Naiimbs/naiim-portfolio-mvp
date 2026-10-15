@@ -397,5 +397,54 @@
     "backToResources": "Retour à toutes les ressources",
     "backToTop": "Haut de page",
     "license": "Licence"
+  },
+  "about": {
+    "eyebrow": "LE PARCOURS",
+    "titleLine1": "De la création de mes propres mains",
+    "titleLine2": "à la conception de produits intelligents.",
+    "nowLabel": "AUJOURD'HUI",
+    "timeline": [
+      {
+        "title": "Conception mécanique",
+        "subtitle": "& fabrication"
+      },
+      {
+        "title": "Environnements industriels",
+        "small": "Procédés & maintenance · industrie du chlore"
+      },
+      {
+        "title": "Injection plastique",
+        "small": "Moulage & fabrication"
+      },
+      {
+        "title": "Design numérique",
+        "subtitle": "& UX/UI"
+      },
+      {
+        "title": "Product Design",
+        "subtitle": "& Conception de produits IA"
+      }
+    ],
+    "cardEyebrow": "À PROPOS DE MOI",
+    "cardTitleLine1": "Concevoir avec curiosité.",
+    "cardTitleLine2": "Bâtir avec raison d'être.",
+    "bio": "Je m'appelle Naïm, product designer et créateur de solutions IA basé en Tunisie. J'aime prendre des idées complexes, leur donner une structure claire, en soigner l'expérience utilisateur et les concrétiser en produits tangibles et utiles au quotidien.",
+    "skills": [
+      "UX/UI",
+      "Product Design",
+      "IA",
+      "Low-Code",
+      "Design Systems",
+      "Automatisation"
+    ],
+    "languagesLabel": "LANGUES",
+    "languagesLine1": "Arabe · Français",
+    "languagesLine2": "Anglais · Italien",
+    "certificationsLabel": "CERTIFICATIONS",
+    "certLine1": "PSM I",
+    "certLine2": "Mendix Rapid Developer",
+    "certLine3": "Design — ISSAT Sousse",
+    "seoTitle": "À propos — Naïm Bsili | Product Designer & Créateur IA",
+    "seoDesc": "Parcours professionnel, philosophie de design produit et expertise en IA et automatisation de Naïm Bsili."
   }
 }

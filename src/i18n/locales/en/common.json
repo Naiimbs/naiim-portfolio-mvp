@@ -397,5 +397,54 @@
     "backToResources": "Back to all resources",
     "backToTop": "Back to top",
     "license": "License"
+  },
+  "about": {
+    "eyebrow": "THE JOURNEY",
+    "titleLine1": "From making things with my hands",
+    "titleLine2": "to building intelligent products.",
+    "nowLabel": "NOW",
+    "timeline": [
+      {
+        "title": "Mechanical design",
+        "subtitle": "& fabrication"
+      },
+      {
+        "title": "Industrial environments",
+        "small": "Process & maintenance · chlorine industry"
+      },
+      {
+        "title": "Plastic injection",
+        "small": "Moulding & manufacturing"
+      },
+      {
+        "title": "Digital design",
+        "subtitle": "& UX/UI"
+      },
+      {
+        "title": "Product Design",
+        "subtitle": "& AI Product Building"
+      }
+    ],
+    "cardEyebrow": "ABOUT ME",
+    "cardTitleLine1": "Designing with curiosity.",
+    "cardTitleLine2": "Building with purpose.",
+    "bio": "I'm Naïm, a product designer and AI builder based in Tunisia. I enjoy taking ambiguous ideas, giving them structure, designing the experience, and turning them into something people can actually use.",
+    "skills": [
+      "UX/UI",
+      "Product Design",
+      "AI",
+      "Low-Code",
+      "Design Systems",
+      "Automation"
+    ],
+    "languagesLabel": "LANGUAGES",
+    "languagesLine1": "Arabic · French",
+    "languagesLine2": "English · Italian",
+    "certificationsLabel": "CERTIFICATIONS",
+    "certLine1": "PSM I",
+    "certLine2": "Mendix Rapid Developer",
+    "certLine3": "Design — ISSAT Sousse",
+    "seoTitle": "About — Naïm Bsili | Product Designer & AI Builder",
+    "seoDesc": "Career journey, product design philosophy, and AI automation expertise of Naïm Bsili."
   }
 }
