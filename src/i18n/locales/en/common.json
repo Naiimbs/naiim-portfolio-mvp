@@ -235,5 +235,37 @@
         "span": "How design met technology."
       }
     ]
+  },
+  "resources": {
+    "eyebrow": "RESOURCES & SKILLS LIBRARY",
+    "title": "Skills, tools & systems I use to think, design and build.",
+    "lead": "Autonomous agent capability bundles, heuristic audit playbooks, design system templates, and downloadable reference artifacts.",
+    "all": "All Resources",
+    "searchPlaceholder": "Search resources & tags...",
+    "loading": "Loading resources...",
+    "loadingSub": "Loading curated resources...",
+    "errorTitle": "Unable to load resources",
+    "errorBody": "There was a temporary problem retrieving the resource directory.",
+    "retry": "Retry Connection",
+    "emptyTitle": "No resources match your selection",
+    "emptyBody": "Try adjusting your search query or selecting a different category filter.",
+    "resetFilters": "Reset Filters",
+    "featured": "Featured",
+    "assets_one": "{{count}} asset included",
+    "assets_other": "{{count}} assets included",
+    "explore": "Explore",
+    "backToWork": "Back to selected work",
+    "requestCustom": "Request a custom Skill or Tool"
+  },
+  "agents": {
+    "eyebrow": "AI AGENTS & AUTOMATION LAB",
+    "title": "Autonomous Agents & Workflow Systems",
+    "lead": "Small systems that turn repetitive work into useful actions. Combining conversational reasoning, vector memory, n8n orchestration, and custom tool integrations.",
+    "loading": "Loading AI Agents...",
+    "activeEyebrow": "ACTIVE AGENTS",
+    "exploreTitle": "Explore Built Systems",
+    "exploreLead": "Detailed architecture breakdowns, live prototypes, and workflow decision trees.",
+    "backToWork": "Back to selected work",
+    "buildTogether": "Build an Agent together"
   }
 }

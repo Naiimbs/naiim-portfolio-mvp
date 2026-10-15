@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import MainLayout from '../layouts/MainLayout';
 import SEO from '../components/common/SEO';
 import { getResources } from '../services/resources';
@@ -7,6 +8,7 @@ import { RESOURCE_TYPES, RESOURCE_TYPE_LIST } from '../config/resourceTypes';
 import '../styles/resources.css';
 
 export default function ResourcesPage() {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeType = searchParams.get('type') || 'all';
   const [searchQuery, setSearchQuery] = useState('');
@@ -71,13 +73,13 @@ export default function ResourcesPage() {
         <section className="resources-hero">
           <div className="container">
             <div className="eyebrow mb-2">
-              <span></span> RESOURCES &amp; SKILLS LIBRARY
+              <span></span> {t('resources.eyebrow')}
             </div>
             <h1 className="display-4 fw-bold font-heading mb-3">
-              Skills, tools &amp; systems I use to think, design and build.
+              {t('resources.title')}
             </h1>
             <p className="lead text-secondary" style={{ maxWidth: '700px' }}>
-              Autonomous agent capability bundles, heuristic audit playbooks, design system templates, and downloadable reference artifacts.
+              {t('resources.lead')}
             </p>
           </div>
         </section>
@@ -95,17 +97,17 @@ export default function ResourcesPage() {
                   onClick={() => handleTypeSelect('all')}
                 >
                   <i className="bi bi-grid-fill"></i>
-                  <span>All Resources</span>
+                  <span>{t('resources.all')}</span>
                 </button>
-                {RESOURCE_TYPE_LIST.map((t) => (
+                {RESOURCE_TYPE_LIST.map((rt) => (
                   <button
-                    key={t.id}
+                    key={rt.id}
                     type="button"
-                    className={`resource-filter-btn ${activeType === t.id ? 'active' : ''}`}
-                    onClick={() => handleTypeSelect(t.id)}
+                    className={`resource-filter-btn ${activeType === rt.id ? 'active' : ''}`}
+                    onClick={() => handleTypeSelect(rt.id)}
                   >
-                    <i className={`bi ${t.icon}`}></i>
-                    <span>{t.pluralLabel}</span>
+                    <i className={`bi ${rt.icon}`}></i>
+                    <span>{rt.pluralLabel}</span>
                   </button>
                 ))}
               </div>
@@ -116,7 +118,7 @@ export default function ResourcesPage() {
                 <input
                   type="text"
                   className="resource-search-input"
-                  placeholder="Search resources & tags..."
+                  placeholder={t('resources.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -137,31 +139,31 @@ export default function ResourcesPage() {
             {loading ? (
               <div className="text-center py-5" style={{ minHeight: '35vh' }}>
                 <div className="spinner-border text-success" role="status" style={{ color: 'var(--green)' }}>
-                  <span className="visually-hidden">Loading resources...</span>
+                  <span className="visually-hidden">{t('resources.loading')}</span>
                 </div>
-                <div className="text-muted small mt-2">Loading curated resources...</div>
+                <div className="text-muted small mt-2">{t('resources.loadingSub')}</div>
               </div>
             ) : error ? (
               <div className="text-center py-5 bg-white rounded-4 border p-5 shadow-xs">
                 <i className="bi bi-exclamation-triangle text-danger display-4 mb-3"></i>
-                <h3 className="fw-bold mb-2">Unable to load resources</h3>
+                <h3 className="fw-bold mb-2">{t('resources.errorTitle')}</h3>
                 <p className="text-secondary small mb-4">
-                  There was a temporary problem retrieving the resource directory.
+                  {t('resources.errorBody')}
                 </p>
                 <button
                   type="button"
                   className="btn btn-primary-custom rounded-pill px-4"
                   onClick={() => window.location.reload()}
                 >
-                  Retry Connection
+                  {t('resources.retry')}
                 </button>
               </div>
             ) : resources.length === 0 ? (
               <div className="text-center py-5 bg-white rounded-4 border p-5 shadow-xs">
                 <i className="bi bi-inbox text-muted display-4 mb-3 d-block"></i>
-                <h3 className="fw-bold mb-2">No resources match your selection</h3>
+                <h3 className="fw-bold mb-2">{t('resources.emptyTitle')}</h3>
                 <p className="text-secondary small mb-4">
-                  Try adjusting your search query or selecting a different category filter.
+                  {t('resources.emptyBody')}
                 </p>
                 <button
                   type="button"
@@ -171,7 +173,7 @@ export default function ResourcesPage() {
                     setSearchQuery('');
                   }}
                 >
-                  <i className="bi bi-arrow-counterclockwise me-1"></i> Reset Filters
+                  <i className="bi bi-arrow-counterclockwise me-1"></i> {t('resources.resetFilters')}
                 </button>
               </div>
             ) : (
@@ -196,7 +198,7 @@ export default function ResourcesPage() {
                             <div className="d-flex align-items-center gap-1">
                               {resource.featured && (
                                 <span className="resource-featured-pill">
-                                  <i className="bi bi-star-fill text-[9px]"></i> Featured
+                                  <i className="bi bi-star-fill text-[9px]"></i> {t('resources.featured')}
                                 </span>
                               )}
                               {resource.version && (
@@ -235,13 +237,13 @@ export default function ResourcesPage() {
                         <div className="resource-card-footer">
                           <span className="resource-assets-count">
                             <i className="bi bi-paperclip"></i>
-                            <span>{assetCount} {assetCount === 1 ? 'asset included' : 'assets included'}</span>
+                            <span>{t('resources.assets', { count: assetCount })}</span>
                           </span>
                           <Link
                             to={`/resources/${resource.slug}`}
                             className="resource-explore-link"
                           >
-                            <span>Explore</span>
+                            <span>{t('resources.explore')}</span>
                             <i className="bi bi-arrow-right"></i>
                           </Link>
                         </div>
@@ -258,10 +260,10 @@ export default function ResourcesPage() {
         <section className="case-nav mt-5">
           <div className="container d-flex justify-content-between align-items-center">
             <Link to="/work" className="text-link">
-              <i className="bi bi-arrow-left"></i> Back to selected work
+              <i className="bi bi-arrow-left"></i> {t('resources.backToWork')}
             </Link>
             <a href="#contact" className="text-link">
-              Request a custom Skill or Tool <i className="bi bi-arrow-up-right"></i>
+              {t('resources.requestCustom')} <i className="bi bi-arrow-up-right"></i>
             </a>
           </div>
         </section>

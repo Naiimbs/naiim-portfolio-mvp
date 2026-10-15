@@ -235,5 +235,37 @@
         "span": "Comment le design a rencontré la technologie."
       }
     ]
+  },
+  "resources": {
+    "eyebrow": "BIBLIOTHÈQUE DE RESSOURCES & SKILLS",
+    "title": "Compétences, outils & systèmes que j’utilise pour penser, concevoir et construire.",
+    "lead": "Bundles de capacités d’agents autonomes, playbooks d’audits heuristiques, templates de design systems et artefacts de référence téléchargeables.",
+    "all": "Toutes les ressources",
+    "searchPlaceholder": "Rechercher ressources & tags...",
+    "loading": "Chargement des ressources...",
+    "loadingSub": "Chargement des ressources sélectionnées...",
+    "errorTitle": "Impossible de charger les ressources",
+    "errorBody": "Un problème temporaire est survenu lors de la récupération du répertoire.",
+    "retry": "Réessayer la connexion",
+    "emptyTitle": "Aucune ressource ne correspond à votre sélection",
+    "emptyBody": "Essayez d’ajuster votre recherche ou de choisir une autre catégorie.",
+    "resetFilters": "Réinitialiser les filtres",
+    "featured": "En vedette",
+    "assets_one": "{{count}} fichier inclus",
+    "assets_other": "{{count}} fichiers inclus",
+    "explore": "Explorer",
+    "backToWork": "Retour aux projets",
+    "requestCustom": "Demander un Skill ou un outil sur mesure"
+  },
+  "agents": {
+    "eyebrow": "LAB AGENTS IA & AUTOMATISATION",
+    "title": "Agents autonomes & systèmes de workflow",
+    "lead": "De petits systèmes qui transforment le travail répétitif en actions utiles. Alliant raisonnement conversationnel, mémoire vectorielle, orchestration n8n et intégrations d’outils sur mesure.",
+    "loading": "Chargement des agents IA...",
+    "activeEyebrow": "AGENTS ACTIFS",
+    "exploreTitle": "Explorer les systèmes réalisés",
+    "exploreLead": "Analyses d’architecture détaillées, prototypes en direct et arbres de décision de workflow.",
+    "backToWork": "Retour aux projets",
+    "buildTogether": "Construisons un agent ensemble"
   }
 }

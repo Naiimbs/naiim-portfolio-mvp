@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import MainLayout from '../layouts/MainLayout';
 import SEO from '../components/common/SEO';
 import AgentGrid from '../components/agents/AgentGrid';
@@ -7,6 +8,7 @@ import { siteConfig } from '../config/site';
 import '../styles/agents.css';
 
 export default function AgentsPage() {
+  const { t } = useTranslation();
   const [agentsList, setAgentsList] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -49,13 +51,10 @@ export default function AgentsPage() {
       <section className="agents-hero">
         <div className="container">
           <div className="eyebrow">
-            <span></span> AI AGENTS & AUTOMATION LAB
+            <span></span> {t('agents.eyebrow')}
           </div>
-          <h1>Autonomous Agents & Workflow Systems</h1>
-          <p>
-            Small systems that turn repetitive work into useful actions. Combining conversational reasoning,
-            vector memory, n8n orchestration, and custom tool integrations.
-          </p>
+          <h1>{t('agents.title')}</h1>
+          <p>{t('agents.lead')}</p>
         </div>
       </section>
 
@@ -65,17 +64,17 @@ export default function AgentsPage() {
           {loading ? (
             <div className="text-center py-5">
               <div className="spinner-border text-success" role="status">
-                <span className="visually-hidden">Loading AI Agents...</span>
+                <span className="visually-hidden">{t('agents.loading')}</span>
               </div>
             </div>
           ) : (
             <>
               <div className="section-heading mb-4">
                 <div className="eyebrow">
-                  <span></span> ACTIVE AGENTS
+                  <span></span> {t('agents.activeEyebrow')}
                 </div>
-                <h2>Explore Built Systems</h2>
-                <p>Detailed architecture breakdowns, live prototypes, and workflow decision trees.</p>
+                <h2>{t('agents.exploreTitle')}</h2>
+                <p>{t('agents.exploreLead')}</p>
               </div>
 
               <AgentGrid agents={allAgents} />
@@ -88,10 +87,10 @@ export default function AgentsPage() {
       <section className="case-nav">
         <div className="container d-flex justify-content-between align-items-center">
           <a href="/#work" className="text-link">
-            <i className="bi bi-arrow-left"></i> Back to selected work
+            <i className="bi bi-arrow-left"></i> {t('agents.backToWork')}
           </a>
           <a href="#contact" className="text-link">
-            Build an Agent together <i className="bi bi-arrow-up-right"></i>
+            {t('agents.buildTogether')} <i className="bi bi-arrow-up-right"></i>
           </a>
         </div>
       </section>
