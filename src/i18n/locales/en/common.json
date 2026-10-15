@@ -325,5 +325,42 @@
     "grid": {
       "empty": "No AI Agents published yet."
     }
+  },
+  "resourceDetail": {
+    "loadingBundle": "Loading resource bundle...",
+    "loadingDetails": "Loading resource details...",
+    "notFoundSeo": "Resource Not Found — Naïm Bsili",
+    "notFoundDesc": "The requested resource could not be found.",
+    "notFoundTitle": "Resource Not Found",
+    "notFoundBody": "The resource “{{slug}}” could not be located or may have been archived.",
+    "backToCatalog": "Back to Resources Catalog",
+    "freeDownload": "Free download",
+    "downloadBundle": "Download Free Bundle",
+    "readSkill": "Read Skill",
+    "instantDownload": "Instant download · No credit card required",
+    "overview": "Overview & Purpose",
+    "whenToUse": "When to Use",
+    "whenNotToUse": "When NOT to Use",
+    "howToUse": "How to Use & Autonomous Pipeline",
+    "copyPrompt": "Copy Prompt",
+    "exampleOutput": "Example Output & Responsive Evidence",
+    "exampleOutputSub": "Real examples of the resource in action across desktop, tablet and mobile contexts.",
+    "captureFallback": "Capture",
+    "captureProof": "Heuristic audit capture proof",
+    "blankTemplates": "Blank Templates & Workbooks",
+    "blankTemplatesSub": "Reusable starter workbooks to accompany this skill. Free download with structured findings sheets.",
+    "sourceLinks": "Source & Documentation Links",
+    "officialSource": "Official Source Link",
+    "docLink": "Documentation Link",
+    "compatibility": "Compatibility",
+    "verified": "✓ Verified",
+    "compatible": "Compatible",
+    "installPaths": "Installation Paths",
+    "globalPath": "Global Skill Path:",
+    "workspacePath": "Workspace Skill Path:",
+    "setupInstructions": "Setup Instructions:",
+    "tagsClassification": "Tags & Classification",
+    "backToResources": "Back to all resources",
+    "backToTop": "Back to top"
   }
 }

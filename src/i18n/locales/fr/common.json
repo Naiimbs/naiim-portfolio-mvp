@@ -325,5 +325,42 @@
     "grid": {
       "empty": "Aucun agent IA publié pour l’instant."
     }
+  },
+  "resourceDetail": {
+    "loadingBundle": "Chargement du bundle...",
+    "loadingDetails": "Chargement des détails...",
+    "notFoundSeo": "Ressource introuvable — Naïm Bsili",
+    "notFoundDesc": "La ressource demandée est introuvable.",
+    "notFoundTitle": "Ressource introuvable",
+    "notFoundBody": "La ressource « {{slug}} » est introuvable ou a peut-être été archivée.",
+    "backToCatalog": "Retour au catalogue des ressources",
+    "freeDownload": "Téléchargement gratuit",
+    "downloadBundle": "Télécharger le bundle gratuit",
+    "readSkill": "Lire le Skill",
+    "instantDownload": "Téléchargement immédiat · Sans carte bancaire",
+    "overview": "Aperçu & objectif",
+    "whenToUse": "Quand l’utiliser",
+    "whenNotToUse": "Quand NE PAS l’utiliser",
+    "howToUse": "Utilisation & pipeline autonome",
+    "copyPrompt": "Copier le prompt",
+    "exampleOutput": "Exemples de résultats & preuves responsives",
+    "exampleOutputSub": "Exemples réels de la ressource en action sur desktop, tablette et mobile.",
+    "captureFallback": "Capture",
+    "captureProof": "Preuve de capture d’audit heuristique",
+    "blankTemplates": "Templates & classeurs vierges",
+    "blankTemplatesSub": "Classeurs de départ réutilisables pour accompagner ce skill. Téléchargement gratuit avec feuilles de résultats structurées.",
+    "sourceLinks": "Liens source & documentation",
+    "officialSource": "Lien source officiel",
+    "docLink": "Lien de documentation",
+    "compatibility": "Compatibilité",
+    "verified": "✓ Vérifié",
+    "compatible": "Compatible",
+    "installPaths": "Chemins d’installation",
+    "globalPath": "Chemin du Skill global :",
+    "workspacePath": "Chemin du Skill workspace :",
+    "setupInstructions": "Instructions d’installation :",
+    "tagsClassification": "Tags & classification",
+    "backToResources": "Retour à toutes les ressources",
+    "backToTop": "Haut de page"
   }
 }

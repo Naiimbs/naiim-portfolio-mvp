@@ -322,5 +322,42 @@
     "grid": {
       "empty": "لا توجد وكلاء ذكاء اصطناعي منشورة بعد."
     }
+  },
+  "resourceDetail": {
+    "loadingBundle": "جارٍ تحميل الحزمة...",
+    "loadingDetails": "جارٍ تحميل التفاصيل...",
+    "notFoundSeo": "المورد غير موجود — Naïm Bsili",
+    "notFoundDesc": "المورد المطلوب غير موجود.",
+    "notFoundTitle": "المورد غير موجود",
+    "notFoundBody": "المورد «{{slug}}» غير موجود أو ربما تمت أرشفته.",
+    "backToCatalog": "العودة إلى كتالوج الموارد",
+    "freeDownload": "تنزيل مجاني",
+    "downloadBundle": "تنزيل الحزمة مجانًا",
+    "readSkill": "اقرأ الـ Skill",
+    "instantDownload": "تنزيل فوري · بدون بطاقة ائتمان",
+    "overview": "نظرة عامة والهدف",
+    "whenToUse": "متى تستخدمه",
+    "whenNotToUse": "متى لا تستخدمه",
+    "howToUse": "طريقة الاستخدام والخط المستقل",
+    "copyPrompt": "نسخ الطلب",
+    "exampleOutput": "أمثلة النتائج والأدلة المتجاوبة",
+    "exampleOutputSub": "أمثلة واقعية للمورد أثناء العمل على الحاسوب واللوحي والجوال.",
+    "captureFallback": "لقطة",
+    "captureProof": "دليل لقطة تدقيق استدلالي",
+    "blankTemplates": "قوالب ودفاتر عمل فارغة",
+    "blankTemplatesSub": "دفاتر عمل أولية قابلة لإعادة الاستخدام ترافق هذا الـ skill. تنزيل مجاني مع أوراق نتائج منظّمة.",
+    "sourceLinks": "روابط المصدر والتوثيق",
+    "officialSource": "رابط المصدر الرسمي",
+    "docLink": "رابط التوثيق",
+    "compatibility": "التوافق",
+    "verified": "✓ موثّق",
+    "compatible": "متوافق",
+    "installPaths": "مسارات التثبيت",
+    "globalPath": "مسار الـ Skill العام:",
+    "workspacePath": "مسار الـ Skill لمساحة العمل:",
+    "setupInstructions": "تعليمات الإعداد:",
+    "tagsClassification": "الوسوم والتصنيف",
+    "backToResources": "العودة إلى جميع الموارد",
+    "backToTop": "العودة إلى الأعلى"
   }
 }
