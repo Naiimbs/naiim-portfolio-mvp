@@ -45,6 +45,50 @@ export async function getPostRatingSummary(slug) {
   }
 }
 
+// ---- Admin reads (require an authenticated admin session via RLS) ----
+
+export async function getAllFeedback(limit = 500) {
+  if (!isSupabaseConfigured || !supabase) return { data: [], error: null };
+  try {
+    const { data, error } = await supabase
+      .from('post_feedback')
+      .select('id, slug, rating, comment, created_at')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+    return { data: data || [], error };
+  } catch (err) {
+    return { data: [], error: err };
+  }
+}
+
+export async function getBlogTitles() {
+  if (!isSupabaseConfigured || !supabase) return {};
+  try {
+    const { data } = await supabase
+      .from('content_registry')
+      .select('slug, title')
+      .eq('content_type', 'blog');
+    const map = {};
+    (data || []).forEach((r) => { map[r.slug] = r.title; });
+    return map;
+  } catch {
+    return {};
+  }
+}
+
+export async function getAllViews() {
+  if (!isSupabaseConfigured || !supabase) return { data: [], error: null };
+  try {
+    const { data, error } = await supabase
+      .from('post_views')
+      .select('slug, views, updated_at')
+      .order('views', { ascending: false });
+    return { data: data || [], error };
+  } catch (err) {
+    return { data: [], error: err };
+  }
+}
+
 export async function submitPostRating(slug, rating, comment = '') {
   if (!slug || !isSupabaseConfigured || !supabase) {
     return { data: null, error: { message: 'Feedback is unavailable right now.' } };

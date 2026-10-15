@@ -52,6 +52,7 @@ const AdminMarketingLeads = lazy(() => import('./admin/pages/AdminMarketingLeads
 const AdminMarketingDownloads = lazy(() => import('./admin/pages/AdminMarketingDownloads'));
 const AdminMarketingSupporters = lazy(() => import('./admin/pages/AdminMarketingSupporters'));
 const AdminMarketingCampaigns = lazy(() => import('./admin/pages/AdminMarketingCampaigns'));
+const AdminFeedback = lazy(() => import('./admin/pages/AdminFeedback'));
 
 // Lazy: Admin Documentation
 const AdminDocs = lazy(() => import('./admin/pages/AdminDocs'));
@@ -145,6 +146,7 @@ export default function App() {
               <Route path="marketing/leads" element={<AdminMarketingLeads />} />
               <Route path="marketing/downloads" element={<AdminMarketingDownloads />} />
               <Route path="marketing/supporters" element={<AdminMarketingSupporters />} />
+              <Route path="marketing/feedback" element={<AdminFeedback />} />
               <Route path="marketing/campaigns" element={<AdminMarketingCampaigns />} />
 
               {/* Media & Pages */}
