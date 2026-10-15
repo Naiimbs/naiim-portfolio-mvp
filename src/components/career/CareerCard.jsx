@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import portraitPhoto from '../../assets/images/naim-portrait.jpg';
+import portraitPhoto from '../../assets/images/naim-portrait.webp';
 
 const TARGET_TAGS = [
   'Senior Product Designer',

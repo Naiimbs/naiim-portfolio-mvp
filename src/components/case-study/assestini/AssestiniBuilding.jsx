@@ -1,5 +1,5 @@
 import React from 'react';
-import decisionAgentImg from '../../../assets/images/décision-assistace-agent.png';
+import decisionAgentImg from '../../../assets/images/décision-assistace-agent.webp';
 
 export default function AssestiniBuilding() {
   const layers = [

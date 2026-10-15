@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import audioSrc from '../../assets/audio/naim-intro-placeholder.mp3';
-import portraitImg from '../../assets/images/naim-portrait.jpg';
+import portraitImg from '../../assets/images/naim-portrait.webp';
 
 const WAVEFORM_HEIGHTS = [
   12, 22, 15, 29, 19, 11, 25, 17, 31, 20, 14, 27, 18, 23, 12, 30, 17, 25, 14,

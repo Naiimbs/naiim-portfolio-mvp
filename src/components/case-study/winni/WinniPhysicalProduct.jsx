@@ -1,7 +1,7 @@
 import React from 'react';
-import winniCarTagImg from '../../../assets/images/winni-car-tag-detail-hero.jpg';
-import winniMotoTagImg from '../../../assets/images/winni-moto-tag.jpg';
-import winniLuggageTagImg from '../../../assets/images/winni-luggage-tag.jpg';
+import winniCarTagImg from '../../../assets/images/winni-car-tag-detail-hero.webp';
+import winniMotoTagImg from '../../../assets/images/winni-moto-tag.webp';
+import winniLuggageTagImg from '../../../assets/images/winni-luggage-tag.webp';
 
 export default function WinniPhysicalProduct() {
   const products = [

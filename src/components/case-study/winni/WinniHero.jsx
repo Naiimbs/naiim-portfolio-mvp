@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import winniHeroPageImg from '../../../assets/images/winni-hero-page.png';
+import winniHeroPageImg from '../../../assets/images/winni-hero-page.webp';
 
 export default function WinniHero() {
   const metadata = [

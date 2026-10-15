@@ -1,6 +1,6 @@
-import copilotCoverImg from '../assets/images/cover-copilot-naim.png';
-import copilotEvidenceImg from '../assets/images/The-work-behind-the-interface.png';
-import dailyJobsearchCoverImg from '../assets/images/daily-jobsearch-os-cover.png';
+import copilotCoverImg from '../assets/images/cover-copilot-naim.webp';
+import copilotEvidenceImg from '../assets/images/The-work-behind-the-interface.webp';
+import dailyJobsearchCoverImg from '../assets/images/daily-jobsearch-os-cover.webp';
 
 /**
  * Local verified AI Agents dataset (Safety net / Fallback layer).

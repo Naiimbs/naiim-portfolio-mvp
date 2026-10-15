@@ -1,6 +1,6 @@
 import React from 'react';
-import assestiniEstimatorImg from '../../../assets/images/Assestini-estimator.png';
-import modelesWbsImg from '../../../assets/images/modeles-wbs.png';
+import assestiniEstimatorImg from '../../../assets/images/Assestini-estimator.webp';
+import modelesWbsImg from '../../../assets/images/modeles-wbs.webp';
 
 export default function AssestiniWorkflow() {
   return (

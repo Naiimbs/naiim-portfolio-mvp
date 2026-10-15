@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import homeAssestiniImg from '../../../assets/images/home-assestini.png';
+import homeAssestiniImg from '../../../assets/images/home-assestini.webp';
 
 export default function AssestiniHero() {
   const metadata = [

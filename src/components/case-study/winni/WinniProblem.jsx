@@ -1,5 +1,5 @@
 import React from 'react';
-import winniObjectFamilyImg from '../../../assets/images/winni-object-family.jpg';
+import winniObjectFamilyImg from '../../../assets/images/winni-object-family.webp';
 
 export default function WinniProblem() {
   const objectCards = [

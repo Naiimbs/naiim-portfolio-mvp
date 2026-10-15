@@ -1,5 +1,5 @@
 import React from 'react';
-import kanbanProjectLifeImg from '../../../assets/images/brainstorming-kanban-project-life.png';
+import kanbanProjectLifeImg from '../../../assets/images/brainstorming-kanban-project-life.webp';
 
 export default function AssestiniIntelligence() {
   const featureTags = [

@@ -1,20 +1,20 @@
-import winniStickerImg from '../assets/images/winni-sticker-real.png';
-import assestiniControlCenterImg from '../assets/images/assestini-control-center.png';
-import cha9a9aLogoImg from '../assets/images/cha9a9a-logo.png';
-import copilotCoverImg from '../assets/images/cover-copilot-naim.png';
-import dailyJobsearchCoverImg from '../assets/images/daily-jobsearch-os-cover.png';
-import dgaGovHeroImg from '../assets/images/dga_government_services_case_hero_skeleton.png';
-import dgaBankingHeroImg from '../assets/images/dga_antifraud_case_hero_skeleton_v2.png';
-import dgaDigitalHeroImg from '../assets/images/dga_digital_government_case_hero_skeleton.png';
-import dgaRegHeroImg from '../assets/images/dga_regulatory_healthcare_case_hero_skeleton.png';
+import winniStickerImg from '../assets/images/winni-sticker-real.webp';
+import assestiniControlCenterImg from '../assets/images/assestini-control-center.webp';
+import cha9a9aLogoImg from '../assets/images/cha9a9a-logo.webp';
+import copilotCoverImg from '../assets/images/cover-copilot-naim.webp';
+import dailyJobsearchCoverImg from '../assets/images/daily-jobsearch-os-cover.webp';
+import dgaGovHeroImg from '../assets/images/dga_government_services_case_hero_skeleton.webp';
+import dgaBankingHeroImg from '../assets/images/dga_antifraud_case_hero_skeleton_v2.webp';
+import dgaDigitalHeroImg from '../assets/images/dga_digital_government_case_hero_skeleton.webp';
+import dgaRegHeroImg from '../assets/images/dga_regulatory_healthcare_case_hero_skeleton.webp';
 
 // Case Study Evidence Images
-import cha9a9aReferenceImg from '../assets/images/cha9a9a-homepage-reference.png';
-import copilotEvidenceImg from '../assets/images/The-work-behind-the-interface.png';
-import dgaGovEvidenceImg from '../assets/images/dga_government_services_case_evidence_skeleton.png';
-import dgaBankingEvidenceImg from '../assets/images/dga_antifraud_case_evidence_skeleton_v2.png';
-import dgaDigitalEvidenceImg from '../assets/images/dga_digital_government_case_evidence_skeleton.png';
-import dgaRegEvidenceImg from '../assets/images/dga_regulatory_healthcare_case_evidence_skeleton.png';
+import cha9a9aReferenceImg from '../assets/images/cha9a9a-homepage-reference.webp';
+import copilotEvidenceImg from '../assets/images/The-work-behind-the-interface.webp';
+import dgaGovEvidenceImg from '../assets/images/dga_government_services_case_evidence_skeleton.webp';
+import dgaBankingEvidenceImg from '../assets/images/dga_antifraud_case_evidence_skeleton_v2.webp';
+import dgaDigitalEvidenceImg from '../assets/images/dga_digital_government_case_evidence_skeleton.webp';
+import dgaRegEvidenceImg from '../assets/images/dga_regulatory_healthcare_case_evidence_skeleton.webp';
 
 /**
  * Static Asset Dictionary for Portfolio Presentation Assets.

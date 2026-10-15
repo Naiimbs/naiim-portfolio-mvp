@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import VoicePlayer from './VoicePlayer';
 import MotionHero from '../../motion/MotionHero';
-import portraitCutout from '../../assets/images/naim-portrait.png';
+import portraitCutout from '../../assets/images/naim-portrait.webp';
 import { HERO_DEFAULTS } from './heroDefaults';
 
 /**
