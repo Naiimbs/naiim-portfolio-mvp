@@ -52,5 +52,20 @@
     "related": "Related Content & Case Studies",
     "explore": "Explore {{type}}",
     "viewAll": "View All Blog Articles"
+  },
+  "blogList": {
+    "eyebrow": "EDITORIAL & WRITING",
+    "title": "Design, AI & Digital Craft.",
+    "lead": "Thoughts, architecture breakdowns, and systems design notes on building at the intersection of AI, low-code, and UX.",
+    "allArticles": "All Articles",
+    "searchPlaceholder": "Search articles & tags…",
+    "loading": "Loading articles...",
+    "excerptFallback": "Read the full editorial breakdown.",
+    "readArticle": "Read Article",
+    "datePublished": "Published",
+    "emptyTitle": "No articles found",
+    "emptyMatch": "No published articles match “{{search}}”. Try clearing your search.",
+    "emptyNone": "No published articles in this category yet. Check back soon!",
+    "clearFilters": "Clear Filters"
   }
 }

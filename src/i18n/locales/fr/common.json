@@ -52,5 +52,20 @@
     "related": "Contenu lié & études de cas",
     "explore": "Découvrir {{type}}",
     "viewAll": "Voir tous les articles"
+  },
+  "blogList": {
+    "eyebrow": "ÉDITORIAL & ÉCRITURE",
+    "title": "Design, IA & Artisanat numérique.",
+    "lead": "Réflexions, analyses d’architecture et notes de conception de systèmes, à l’intersection de l’IA, du low-code et de l’UX.",
+    "allArticles": "Tous les articles",
+    "searchPlaceholder": "Rechercher articles & tags…",
+    "loading": "Chargement des articles...",
+    "excerptFallback": "Lire l’analyse éditoriale complète.",
+    "readArticle": "Lire l’article",
+    "datePublished": "Publié",
+    "emptyTitle": "Aucun article trouvé",
+    "emptyMatch": "Aucun article publié ne correspond à « {{search}} ». Essayez d’effacer votre recherche.",
+    "emptyNone": "Aucun article publié dans cette catégorie pour l’instant. Revenez bientôt !",
+    "clearFilters": "Effacer les filtres"
   }
 }
