@@ -35,5 +35,20 @@
     "errorGeneric": "تعذّر إرسال ملاحظاتك. يرجى المحاولة مرة أخرى.",
     "ratingAria": "التقييم",
     "starAria": "قيّم {{n}} من 5"
+  },
+  "blog": {
+    "notFoundTitle": "المقال غير موجود",
+    "notFoundBody": "المقال المطلوب «{{slug}}» غير موجود أو لم يُنشر بعد.",
+    "backToCatalog": "العودة إلى مدونة المقالات",
+    "previewBanner": "وضع المعاينة: عرض المحتوى المحفوظ لـ«{{title}}» (الحالة: {{status}}).",
+    "categoryFallback": "مقال",
+    "views_other": "{{count}} مشاهدة",
+    "readingFallback": "٤ دقائق قراءة",
+    "words_other": "{{count}} كلمة",
+    "draftPreview": "معاينة المسودة",
+    "tags": "الوسوم:",
+    "related": "محتوى ذو صلة ودراسات حالة",
+    "explore": "استكشاف {{type}}",
+    "viewAll": "عرض جميع المقالات"
   }
 }

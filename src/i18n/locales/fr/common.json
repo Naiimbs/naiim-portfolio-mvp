@@ -35,5 +35,22 @@
     "errorGeneric": "Impossible d'envoyer votre retour. Veuillez réessayer.",
     "ratingAria": "Note",
     "starAria": "Noter {{n}} sur 5"
+  },
+  "blog": {
+    "notFoundTitle": "Article introuvable",
+    "notFoundBody": "L’article demandé « {{slug}} » n’existe pas ou n’a pas encore été publié.",
+    "backToCatalog": "Retour au catalogue du blog",
+    "previewBanner": "Mode aperçu : affichage du contenu enregistré pour « {{title}} » (statut : {{status}}).",
+    "categoryFallback": "Article",
+    "views_one": "{{count}} vue",
+    "views_other": "{{count}} vues",
+    "readingFallback": "4 min de lecture",
+    "words_one": "{{count}} mot",
+    "words_other": "{{count}} mots",
+    "draftPreview": "Aperçu brouillon",
+    "tags": "Tags :",
+    "related": "Contenu lié & études de cas",
+    "explore": "Découvrir {{type}}",
+    "viewAll": "Voir tous les articles"
   }
 }

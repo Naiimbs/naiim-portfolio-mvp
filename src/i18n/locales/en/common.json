@@ -35,5 +35,22 @@
     "errorGeneric": "Could not send your feedback. Please try again.",
     "ratingAria": "Rating",
     "starAria": "Rate {{n}} out of 5"
+  },
+  "blog": {
+    "notFoundTitle": "Article Not Found",
+    "notFoundBody": "The requested article “{{slug}}” either does not exist or has not been published yet.",
+    "backToCatalog": "Back to Blog Catalog",
+    "previewBanner": "Preview Mode: Displaying saved content for “{{title}}” (Status: {{status}}).",
+    "categoryFallback": "Article",
+    "views_one": "{{count}} view",
+    "views_other": "{{count}} views",
+    "readingFallback": "4 min read",
+    "words_one": "{{count}} word",
+    "words_other": "{{count}} words",
+    "draftPreview": "Draft Preview",
+    "tags": "Tags:",
+    "related": "Related Content & Case Studies",
+    "explore": "Explore {{type}}",
+    "viewAll": "View All Blog Articles"
   }
 }
