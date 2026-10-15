@@ -5,6 +5,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import PlaceholderPage from './pages/PlaceholderPage';
 import LegacyCaseStudyRedirect from './components/common/LegacyCaseStudyRedirect';
+import GlobalThemeApplier from './components/common/GlobalThemeApplier';
 import { AuthProvider } from './admin/context/AuthContext';
 
 // Lazy: secondary public pages (loaded on navigation, not on first paint)
@@ -86,6 +87,7 @@ function RouteFallback() {
 export default function App() {
   return (
     <AuthProvider>
+      <GlobalThemeApplier />
       <Suspense fallback={<RouteFallback />}>
         <Routes>
           {/* Public Routes */}

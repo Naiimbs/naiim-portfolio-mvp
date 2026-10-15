@@ -192,6 +192,8 @@ export default function AdminProjectEditor() {
           <i className="bi bi-check-circle-fill"></i>
           <div>{successMsg}</div>
         </div>
+      )}
+
       {/* Navigation Tabs */}
       <ul className="nav nav-tabs border-bottom mb-4 gap-1" style={{ fontSize: '0.85rem' }}>
         <li className="nav-item">

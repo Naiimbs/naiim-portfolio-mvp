@@ -159,6 +159,19 @@ export function resolveThemeCssVariables(themeConfig = {}) {
     '--bs-body-color': t.colors.textPrimary,
     '--bs-body-bg': t.colors.surfaceMuted,
     '--bs-heading-color': t.colors.textPrimary,
+
+    // Public website design system variables (used in style.css, winni.css, etc.)
+    '--green': t.colors.brandPrimary,
+    '--green-dark': t.colors.brandPrimaryHover,
+    '--green-soft': `${t.colors.brandPrimary}18`,
+    '--paper': t.colors.surfaceMuted,
+    '--ink': t.colors.textPrimary,
+    '--ink-soft': t.colors.textSecondary,
+    '--muted': t.colors.textMuted,
+    '--line': t.colors.border,
+    '--yellow': t.colors.accent,
+    '--navy': t.colors.surfaceDark,
+    '--white': t.colors.surface,
   };
 }
 

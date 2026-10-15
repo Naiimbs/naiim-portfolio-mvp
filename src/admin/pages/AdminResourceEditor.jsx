@@ -223,14 +223,6 @@ export default function AdminResourceEditor() {
     }
   };
 
-  const tx = translations[txLang] || {};
-  const setTxField = (patch) => {
-    setTranslations((prev) => ({
-      ...prev,
-      [txLang]: { ...(prev[txLang] || {}), ...patch },
-    }));
-  };
-
   // Asset Management Helpers
   const openNewAssetModal = () => {
     setEditingAsset({
