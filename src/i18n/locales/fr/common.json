@@ -43,6 +43,7 @@
     "backToCatalog": "Retour au catalogue du blog",
     "previewBanner": "Mode aperçu : affichage du contenu enregistré pour « {{title}} » (statut : {{status}}).",
     "categoryFallback": "Article",
+    "views": "{{count}} vues",
     "views_one": "{{count}} vue",
     "views_other": "{{count}} vues",
     "readingFallback": "4 min de lecture",
@@ -52,7 +53,9 @@
     "tags": "Tags :",
     "related": "Contenu lié & études de cas",
     "explore": "Découvrir {{type}}",
-    "viewAll": "Voir tous les articles"
+    "viewAll": "Voir tous les articles",
+    "loading": "Chargement de l'article...",
+    "noContent": "Aucun contenu disponible pour cet article."
   },
   "blogList": {
     "eyebrow": "ÉDITORIAL & ÉCRITURE",
@@ -212,7 +215,16 @@
     "loading": "Chargement des projets...",
     "unavailable": "Les projets sélectionnés sont momentanément indisponibles.",
     "empty": "Aucun projet publié pour l’instant.",
-    "loadError": "Impossible de charger les projets pour le moment. Veuillez réessayer sous peu."
+    "loadError": "Impossible de charger les projets pour le moment. Veuillez réessayer sous peu.",
+    "readCaseStudy": "Voir l'étude de cas"
+  },
+  "caseStudy": {
+    "myRole": "MON RÔLE",
+    "context": "CONTEXTE",
+    "backToWork": "Retour aux projets sélectionnés",
+    "notFoundLabel": "INTROUVABLE",
+    "notFoundTitle": "Étude de cas introuvable",
+    "notFoundBody": "Aucune étude de cas ne correspond à l'URL /work/{{slug}}."
   },
   "caseStrip": {
     "eyebrow": "ÉTUDES DE CAS",

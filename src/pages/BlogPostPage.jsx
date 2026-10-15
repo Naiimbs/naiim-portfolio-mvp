@@ -55,7 +55,7 @@ export default function BlogPostPage() {
       <MainLayout>
         <div className="min-vh-50 d-flex align-items-center justify-content-center py-5">
           <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading article...</span>
+            <span className="visually-hidden">{t('blog.loading')}</span>
           </div>
         </div>
       </MainLayout>
@@ -182,7 +182,7 @@ export default function BlogPostPage() {
               />
             ) : (
               <div className="cms-prose py-4 text-secondary">
-                <p>{meta.content || meta.body || 'No extended content available for this article.'}</p>
+                <p>{meta.content || meta.body || t('blog.noContent')}</p>
               </div>
             )}
             <AdSlot placement="article_bottom" />

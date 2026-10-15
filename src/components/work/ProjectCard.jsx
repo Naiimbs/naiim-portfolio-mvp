@@ -1,18 +1,27 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 /**
  * ProjectCard — Featured project card for catalog presentation.
  * Authoritative source: Content Registry metadata via normalized project object.
  */
 export default function ProjectCard({ project }) {
+  const { t, i18n } = useTranslation();
   if (!project) return null;
+
+  const currentLang = i18n.language?.startsWith('fr')
+    ? 'fr'
+    : (i18n.language?.startsWith('ar') ? 'ar' : 'en');
+
+  const tx = project.i18n?.[currentLang] || project.metadata?.i18n?.[currentLang] || {};
 
   const {
     title,
     badge,
     kicker,
     description,
+    short_description,
     tags,
     heroImage,
     heroImageAlt,
@@ -22,10 +31,10 @@ export default function ProjectCard({ project }) {
     card,
   } = project;
 
-  const displayTitle = title || card?.title || '';
-  const displayBadge = badge || card?.badge || '';
-  const displayKicker = kicker || card?.kicker || '';
-  const displayDescription = description || card?.description || '';
+  const displayTitle = tx.title || title || card?.title || '';
+  const displayBadge = tx.badge || badge || card?.badge || '';
+  const displayKicker = tx.kicker || kicker || card?.kicker || '';
+  const displayDescription = tx.description || tx.short_description || description || short_description || card?.description || '';
   const displayTags = tags || card?.tags || [];
   const displayLogoMark = logoMark || card?.logoMark || null;
   const route = public_route || `/work/${slug}`;
@@ -59,7 +68,7 @@ export default function ProjectCard({ project }) {
           </div>
         )}
         <Link className="card-link" to={route}>
-          Read case study <i className="bi bi-arrow-right"></i>
+          {t('work.readCaseStudy')} <i className="bi bi-arrow-right"></i>
         </Link>
       </div>
     </article>

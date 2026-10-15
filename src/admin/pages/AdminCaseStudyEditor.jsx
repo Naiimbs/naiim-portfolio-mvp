@@ -29,6 +29,8 @@ export default function AdminCaseStudyEditor() {
     status: 'published',
   });
   const [sections, setSections] = useState([]);
+  const [translations, setTranslations] = useState({});
+  const [txLang, setTxLang] = useState('fr');
 
   // Modals / Drawer state
   const [isAddSectionOpen, setIsAddSectionOpen] = useState(false);
@@ -70,6 +72,7 @@ export default function AdminCaseStudyEditor() {
           status: cs.status || 'published',
         });
         setSections(cs.sections || []);
+        setTranslations(cs.i18n || cs.metadata?.i18n || {});
       } else {
         setError(res.error?.message || 'Case study not found');
       }
@@ -145,16 +148,29 @@ export default function AdminCaseStudyEditor() {
     }
   };
 
-  const handleSave = async (targetStatus = formData.status) => {
-    setSaving(true);
-    setSaveStatus('saving');
-    setError(null);
+    const cleanTranslations = {};
+    for (const [lng, tx] of Object.entries(translations || {})) {
+      if (!tx) continue;
+      const hasContent = (tx.title && tx.title.trim()) || (tx.subtitle && tx.subtitle.trim()) || (tx.seo_title && tx.seo_title.trim()) || (tx.seo_description && tx.seo_description.trim());
+      if (!hasContent) continue;
+      cleanTranslations[lng] = {
+        ...(tx.title && tx.title.trim() ? { title: tx.title.trim() } : {}),
+        ...(tx.subtitle && tx.subtitle.trim() ? { subtitle: tx.subtitle.trim() } : {}),
+        ...(tx.seo_title && tx.seo_title.trim() ? { seo_title: tx.seo_title.trim() } : {}),
+        ...(tx.seo_description && tx.seo_description.trim() ? { seo_description: tx.seo_description.trim() } : {}),
+      };
+    }
 
     const payload = {
       ...caseStudy,
       ...formData,
       status: targetStatus,
       sections,
+      i18n: cleanTranslations,
+      metadata: {
+        ...(caseStudy?.metadata || {}),
+        i18n: cleanTranslations,
+      },
     };
 
     const res = await saveFullCaseStudy(caseStudy.id || id, payload);
@@ -169,6 +185,16 @@ export default function AdminCaseStudyEditor() {
       setTimeout(() => setSaveStatus(null), 4000);
     }
     setSaving(false);
+  };
+
+  const tx = translations[txLang] || {};
+  const setTxField = (patch) => {
+    setTranslations((prev) => ({
+      ...prev,
+      [txLang]: { ...(prev[txLang] || {}), ...patch },
+    }));
+    setIsDirty(true);
+    setSaveStatus(null);
   };
 
   if (loading) {
@@ -390,6 +416,86 @@ export default function AdminCaseStudyEditor() {
                 value={formData.seo_description}
                 onChange={handleFieldChange}
                 placeholder="Brief summary for Google search snippets and social sharing."
+              ></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Translations (Second Language) Card */}
+      <div className="admin-card mb-4">
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h3 className="fs-6 fw-bold mb-0 text-uppercase text-muted" style={{ fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '0.08em' }}>
+            <i className="bi bi-translate me-2 text-success"></i> Case Study Translations ({txLang === 'fr' ? 'Français' : 'العربية'})
+          </h3>
+          <div className="btn-group btn-group-sm" role="group">
+            <button
+              type="button"
+              className={`btn ${txLang === 'fr' ? 'btn-dark' : 'btn-outline-secondary'}`}
+              onClick={() => setTxLang('fr')}
+            >
+              Français
+            </button>
+            <button
+              type="button"
+              className={`btn ${txLang === 'ar' ? 'btn-dark' : 'btn-outline-secondary'}`}
+              onClick={() => setTxLang('ar')}
+            >
+              العربية
+            </button>
+          </div>
+        </div>
+
+        <div className="alert alert-light border small mb-3">
+          <i className="bi bi-info-circle me-1"></i> Enter the {txLang === 'fr' ? 'French' : 'Arabic'} version of this case study. Leave any field empty to fall back to the default (English) text.
+        </div>
+
+        <div className="row g-3" dir={txLang === 'ar' ? 'rtl' : 'ltr'}>
+          <div className="col-md-6">
+            <div className="admin-form-group">
+              <label className="admin-form-label">Case Study Title ({txLang.toUpperCase()})</label>
+              <input
+                type="text"
+                className="admin-form-input"
+                value={tx.title || ''}
+                placeholder={formData.title}
+                onChange={(e) => setTxField({ title: e.target.value })}
+              />
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="admin-form-group">
+              <label className="admin-form-label">Subtitle / Lead ({txLang.toUpperCase()})</label>
+              <input
+                type="text"
+                className="admin-form-input"
+                value={tx.subtitle || ''}
+                placeholder={formData.subtitle}
+                onChange={(e) => setTxField({ subtitle: e.target.value })}
+              />
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="admin-form-group">
+              <label className="admin-form-label">SEO Meta Title ({txLang.toUpperCase()})</label>
+              <input
+                type="text"
+                className="admin-form-input"
+                value={tx.seo_title || ''}
+                placeholder={formData.seo_title}
+                onChange={(e) => setTxField({ seo_title: e.target.value })}
+              />
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="admin-form-group">
+              <label className="admin-form-label">SEO Meta Description ({txLang.toUpperCase()})</label>
+              <textarea
+                className="admin-form-textarea"
+                rows="2"
+                value={tx.seo_description || ''}
+                placeholder={formData.seo_description}
+                onChange={(e) => setTxField({ seo_description: e.target.value })}
               ></textarea>
             </div>
           </div>

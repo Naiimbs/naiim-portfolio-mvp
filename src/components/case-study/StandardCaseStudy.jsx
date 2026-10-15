@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import MainLayout from '../../layouts/MainLayout';
 import SEO from '../common/SEO';
 import { getCaseStudySchema } from '../../lib/schema';
 
 export default function StandardCaseStudy({ data }) {
+  const { t } = useTranslation();
   const { slug, hero = {}, challenge = {}, contribution = {}, evidence = {}, technology = {} } = data;
 
   const caseSchema = getCaseStudySchema({
@@ -27,9 +29,9 @@ export default function StandardCaseStudy({ data }) {
             <p className="case-copy">{challenge.copy}</p>
           </div>
           <aside className="case-role">
-            <small>MY ROLE</small>
+            <small>{t('caseStudy.myRole')}</small>
             <strong>{challenge.role}</strong>
-            <small className="d-block mt-4">CONTEXT</small>
+            <small className="d-block mt-4">{t('caseStudy.context')}</small>
             <strong>{challenge.context}</strong>
           </aside>
         </div>
@@ -151,7 +153,7 @@ export default function StandardCaseStudy({ data }) {
         <section className="case-hero">
           <div className="container">
             <Link className="text-link" to="/#work">
-              <i className="bi bi-arrow-left"></i> Back to selected work
+              <i className="bi bi-arrow-left"></i> {t('caseStudy.backToWork')}
             </Link>
             <div className="eyebrow mt-4">
               <span></span> {hero.eyebrow}
@@ -185,7 +187,7 @@ export default function StandardCaseStudy({ data }) {
       <section className="case-nav">
         <div className="container d-flex justify-content-between">
           <Link to="/#work">
-            <i className="bi bi-arrow-left"></i> Back to selected work
+            <i className="bi bi-arrow-left"></i> {t('caseStudy.backToWork')}
           </Link>
           <a href="/#contact">
             Let's talk <i className="bi bi-arrow-up-right"></i>

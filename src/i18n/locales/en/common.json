@@ -43,6 +43,7 @@
     "backToCatalog": "Back to Blog Catalog",
     "previewBanner": "Preview Mode: Displaying saved content for “{{title}}” (Status: {{status}}).",
     "categoryFallback": "Article",
+    "views": "{{count}} views",
     "views_one": "{{count}} view",
     "views_other": "{{count}} views",
     "readingFallback": "4 min read",
@@ -52,7 +53,9 @@
     "tags": "Tags:",
     "related": "Related Content & Case Studies",
     "explore": "Explore {{type}}",
-    "viewAll": "View All Blog Articles"
+    "viewAll": "View All Blog Articles",
+    "loading": "Loading article...",
+    "noContent": "No extended content available for this article."
   },
   "blogList": {
     "eyebrow": "EDITORIAL & WRITING",
@@ -212,7 +215,16 @@
     "loading": "Loading work...",
     "unavailable": "Selected work is temporarily unavailable.",
     "empty": "No published work items yet.",
-    "loadError": "Unable to load the work registry right now. Please try again shortly."
+    "loadError": "Unable to load the work registry right now. Please try again shortly.",
+    "readCaseStudy": "Read case study"
+  },
+  "caseStudy": {
+    "myRole": "MY ROLE",
+    "context": "CONTEXT",
+    "backToWork": "Back to selected work",
+    "notFoundLabel": "NOT FOUND",
+    "notFoundTitle": "Case Study Not Found",
+    "notFoundBody": "No project case study matches the URL /work/{{slug}}."
   },
   "caseStrip": {
     "eyebrow": "CASE STUDIES",

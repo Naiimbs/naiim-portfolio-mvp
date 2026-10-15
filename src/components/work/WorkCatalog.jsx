@@ -15,17 +15,11 @@ import { isPublicRouteImplemented } from '../../services/contentRouteResolver';
  * previous hardcoded page. Used both as the WorkPage fallback and as the
  * `work_catalog` CMS section.
  */
-export const WORK_CATALOG_DEFAULTS = {
-  eyebrow: 'SELECTED WORK',
-  title: 'Products, systems & digital experiences',
-  intro: 'From startup products and AI systems to Saudi digital services and front-end implementation.',
-};
-
 export default function WorkCatalog({ config = {} }) {
   const { t } = useTranslation();
-  const eyebrow = config.eyebrow !== undefined ? config.eyebrow : WORK_CATALOG_DEFAULTS.eyebrow;
-  const title = config.title !== undefined ? config.title : WORK_CATALOG_DEFAULTS.title;
-  const intro = config.intro !== undefined ? config.intro : WORK_CATALOG_DEFAULTS.intro;
+  const eyebrow = config.eyebrow !== undefined ? config.eyebrow : t('work.eyebrow');
+  const title   = config.title   !== undefined ? config.title   : t('work.title');
+  const intro   = config.intro   !== undefined ? config.intro   : t('work.subtitle');
 
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);

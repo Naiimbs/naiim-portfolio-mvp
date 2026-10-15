@@ -347,6 +347,10 @@ export default function AdminRegistryEntry() {
   // Case Study Content state (Phase 14)
   const [caseStudy, setCaseStudy] = useState(null);
 
+  // Translations / Second Language state
+  const [translations, setTranslations] = useState({});
+  const [txLang, setTxLang] = useState('fr');
+
   // UI state
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
@@ -403,6 +407,7 @@ export default function AdminRegistryEntry() {
     setHeroImageAlt(meta.heroImageAlt || '');
     setLogoLetter(meta.logoMark?.letter || '');
     setLogoClass(meta.logoMark?.className || '');
+    setTranslations(data.i18n || meta.i18n || {});
 
     // Initialize caseStudy content state
     const initialCaseStudy = meta.caseStudy || (data.content_type === 'case-study' ? {
@@ -539,8 +544,36 @@ export default function AdminRegistryEntry() {
     if (contentType === 'case-study' && caseStudy) {
       metadata.caseStudy = caseStudy;
     }
+
+    const cleanTranslations = {};
+    for (const [lng, t] of Object.entries(translations || {})) {
+      if (!t) continue;
+      const hasContent = (t.title && t.title.trim()) || (t.kicker && t.kicker.trim()) || (t.description && t.description.trim()) || (t.subtitle && t.subtitle.trim());
+      if (!hasContent) continue;
+      cleanTranslations[lng] = {
+        ...(t.title && t.title.trim() ? { title: t.title.trim() } : {}),
+        ...(t.kicker && t.kicker.trim() ? { kicker: t.kicker.trim() } : {}),
+        ...(t.description && t.description.trim() ? { description: t.description.trim() } : {}),
+        ...(t.subtitle && t.subtitle.trim() ? { subtitle: t.subtitle.trim() } : {}),
+      };
+    }
+    if (Object.keys(cleanTranslations).length) {
+      metadata.i18n = cleanTranslations;
+    } else {
+      delete metadata.i18n;
+    }
+
     return metadata;
   }
+
+  const tx = translations[txLang] || {};
+  const setTxField = (patch) => {
+    setTranslations((prev) => ({
+      ...prev,
+      [txLang]: { ...(prev[txLang] || {}), ...patch },
+    }));
+    setIsDirty(true);
+  };
 
   // ── Save ──────────────────────────────────────────────────────────────────
   async function handleSave(e) {
@@ -899,6 +932,88 @@ export default function AdminRegistryEntry() {
                   <div className="col-md-6">
                     <FormField label="Year (Optional)">
                       <input type="number" className="form-control form-control-sm" value={year} onChange={(e) => setYear(e.target.value)} placeholder="e.g. 2026" disabled={saving} />
+                    </FormField>
+                  </div>
+                </div>
+
+                {/* Second Language / Translations Sub-section */}
+                <div className="border-top pt-3 mt-3">
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <div className="small fw-bold text-muted text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.05em' }}>
+                      <i className="bi bi-translate text-success me-1"></i> Translations ({txLang === 'fr' ? 'Français' : 'العربية'})
+                    </div>
+                    <div className="btn-group btn-group-sm" role="group">
+                      <button
+                        type="button"
+                        className={`btn btn-sm ${txLang === 'fr' ? 'btn-dark' : 'btn-outline-secondary'} py-0 px-2`}
+                        onClick={() => setTxLang('fr')}
+                        style={{ fontSize: '0.72rem' }}
+                      >
+                        Français
+                      </button>
+                      <button
+                        type="button"
+                        className={`btn btn-sm ${txLang === 'ar' ? 'btn-dark' : 'btn-outline-secondary'} py-0 px-2`}
+                        onClick={() => setTxLang('ar')}
+                        style={{ fontSize: '0.72rem' }}
+                      >
+                        العربية
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="text-muted small mb-2" style={{ fontSize: '0.73rem' }}>
+                    Leave any field empty to fall back to English. These show when a visitor views the site in {txLang === 'fr' ? 'French' : 'Arabic'}.
+                  </div>
+
+                  <div dir={txLang === 'ar' ? 'rtl' : 'ltr'}>
+                    <div className="row g-2 mb-2">
+                      <div className="col-md-8">
+                        <FormField label={`Title (${txLang.toUpperCase()})`}>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm"
+                            value={tx.title || ''}
+                            onChange={(e) => setTxField({ title: e.target.value })}
+                            placeholder={title}
+                            disabled={saving}
+                          />
+                        </FormField>
+                      </div>
+                      <div className="col-md-4">
+                        <FormField label={`Kicker (${txLang.toUpperCase()})`}>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm"
+                            value={tx.kicker || ''}
+                            onChange={(e) => setTxField({ kicker: e.target.value })}
+                            placeholder={kicker}
+                            disabled={saving}
+                          />
+                        </FormField>
+                      </div>
+                    </div>
+
+                    <FormField label={`Description (${txLang.toUpperCase()})`}>
+                      <textarea
+                        className="form-control form-control-sm"
+                        rows="2"
+                        value={tx.description || ''}
+                        onChange={(e) => setTxField({ description: e.target.value })}
+                        placeholder={description}
+                        disabled={saving}
+                      />
+                    </FormField>
+
+                    <FormField label={`Subtitle (${txLang.toUpperCase()})`}>
+                      <input
+                        type="text"
+                        className="form-control form-control-sm"
+                        value={tx.subtitle || ''}
+                        onChange={(e) => setTxField({ subtitle: e.target.value })}
+                        placeholder={subtitle}
+                        disabled={saving}
+                      />
                     </FormField>
                   </div>
                 </div>

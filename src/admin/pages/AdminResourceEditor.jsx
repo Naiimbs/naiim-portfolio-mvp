@@ -20,6 +20,9 @@ export default function AdminResourceEditor() {
   const [draftPrompt, setDraftPrompt] = useState(null);
   const draftKey = `draft_resource_${isNew ? 'new' : id}`;
 
+  const [translations, setTranslations] = useState({});
+  const [txLang, setTxLang] = useState('fr');
+
   // Form State
   const [formData, setFormData] = useState({
     title: '',
@@ -103,6 +106,7 @@ export default function AdminResourceEditor() {
             compatibility: Array.isArray(data.compatibility) ? data.compatibility : [],
             assets: Array.isArray(data.assets) ? data.assets : [],
           });
+          setTranslations(data.i18n || data.metadata?.i18n || {});
         }
         setLoading(false);
       }
@@ -162,6 +166,20 @@ export default function AdminResourceEditor() {
     setSaving(true);
     setFeedback(null);
 
+    const cleanTranslations = {};
+    for (const [lng, tx] of Object.entries(translations || {})) {
+      if (!tx) continue;
+      const hasContent = (tx.title && tx.title.trim()) || (tx.short_description && tx.short_description.trim()) || (tx.description && tx.description.trim()) || (tx.purpose && tx.purpose.trim()) || (tx.how_to_use && tx.how_to_use.trim());
+      if (!hasContent) continue;
+      cleanTranslations[lng] = {
+        ...(tx.title && tx.title.trim() ? { title: tx.title.trim() } : {}),
+        ...(tx.short_description && tx.short_description.trim() ? { short_description: tx.short_description.trim() } : {}),
+        ...(tx.description && tx.description.trim() ? { description: tx.description.trim() } : {}),
+        ...(tx.purpose && tx.purpose.trim() ? { purpose: tx.purpose.trim() } : {}),
+        ...(tx.how_to_use && tx.how_to_use.trim() ? { how_to_use: tx.how_to_use.trim() } : {}),
+      };
+    }
+
     const payload = {
       ...formData,
       when_to_use: formData.when_to_use.split('\n').map((s) => s.trim()).filter(Boolean),
@@ -169,6 +187,11 @@ export default function AdminResourceEditor() {
       tags: formData.tags.split(',').map((s) => s.trim()).filter(Boolean),
       related_projects: formData.related_projects.split(',').map((s) => s.trim()).filter(Boolean),
       related_agents: formData.related_agents.split(',').map((s) => s.trim()).filter(Boolean),
+      i18n: cleanTranslations,
+      metadata: {
+        ...(formData.metadata || {}),
+        i18n: cleanTranslations,
+      },
     };
 
     try {
@@ -189,6 +212,14 @@ export default function AdminResourceEditor() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const tx = translations[txLang] || {};
+  const setTxField = (patch) => {
+    setTranslations((prev) => ({
+      ...prev,
+      [txLang]: { ...(prev[txLang] || {}), ...patch },
+    }));
   };
 
   // Asset Management Helpers
@@ -1128,6 +1159,95 @@ export default function AdminResourceEditor() {
             </div>
           </div>
 
+        </div>
+      )}
+
+      {/* Tab: Translations (Second Language) */}
+      {activeTab === 'translations' && (
+        <div className="card border-0 shadow-sm p-4 rounded-3" style={{ backgroundColor: '#ffffff' }}>
+          <div className="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+            <h5 className="fw-bold mb-0">
+              <i className="bi bi-translate text-success me-2"></i>
+              Resource Translations ({txLang === 'fr' ? 'Français' : 'العربية'})
+            </h5>
+            <div className="btn-group btn-group-sm" role="group">
+              <button
+                type="button"
+                className={`btn ${txLang === 'fr' ? 'btn-dark' : 'btn-outline-secondary'}`}
+                onClick={() => setTxLang('fr')}
+              >
+                Français
+              </button>
+              <button
+                type="button"
+                className={`btn ${txLang === 'ar' ? 'btn-dark' : 'btn-outline-secondary'}`}
+                onClick={() => setTxLang('ar')}
+              >
+                العربية
+              </button>
+            </div>
+          </div>
+
+          <div className="alert alert-light border small mb-4">
+            <i className="bi bi-info-circle me-1"></i> Enter the {txLang === 'fr' ? 'French' : 'Arabic'} version of this resource. Leave any field empty to fall back to the default (English) text.
+          </div>
+
+          <div className="row g-3" dir={txLang === 'ar' ? 'rtl' : 'ltr'}>
+            <div className="col-12">
+              <label className="form-label fw-bold small">Title ({txLang.toUpperCase()})</label>
+              <input
+                type="text"
+                className="form-control"
+                placeholder={formData.title}
+                value={tx.title || ''}
+                onChange={(e) => setTxField({ title: e.target.value })}
+              />
+            </div>
+
+            <div className="col-12">
+              <label className="form-label fw-bold small">Short Description ({txLang.toUpperCase()})</label>
+              <textarea
+                className="form-control"
+                rows={2}
+                placeholder={formData.short_description}
+                value={tx.short_description || ''}
+                onChange={(e) => setTxField({ short_description: e.target.value })}
+              />
+            </div>
+
+            <div className="col-12">
+              <label className="form-label fw-bold small">Full Description / Overview ({txLang.toUpperCase()})</label>
+              <textarea
+                className="form-control font-monospace"
+                rows={6}
+                placeholder={formData.description}
+                value={tx.description || ''}
+                onChange={(e) => setTxField({ description: e.target.value })}
+              />
+            </div>
+
+            <div className="col-12">
+              <label className="form-label fw-bold small">Primary Purpose ({txLang.toUpperCase()})</label>
+              <input
+                type="text"
+                className="form-control"
+                placeholder={formData.purpose}
+                value={tx.purpose || ''}
+                onChange={(e) => setTxField({ purpose: e.target.value })}
+              />
+            </div>
+
+            <div className="col-12">
+              <label className="form-label fw-bold small">How to Use ({txLang.toUpperCase()})</label>
+              <textarea
+                className="form-control font-monospace"
+                rows={5}
+                placeholder={formData.how_to_use}
+                value={tx.how_to_use || ''}
+                onChange={(e) => setTxField({ how_to_use: e.target.value })}
+              />
+            </div>
+          </div>
         </div>
       )}
 

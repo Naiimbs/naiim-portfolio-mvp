@@ -21,6 +21,10 @@ export default function AdminProjectEditor() {
     status: 'draft',
   });
 
+  const [rawProject, setRawProject] = useState(null);
+  const [translations, setTranslations] = useState({});
+  const [txLang, setTxLang] = useState('fr');
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -36,6 +40,7 @@ export default function AdminProjectEditor() {
       const res = await getAdminProjectById(id);
       if (res.data) {
         const p = res.data;
+        setRawProject(p);
         setFormData({
           title: p.title || '',
           slug: p.slug || '',
@@ -49,6 +54,7 @@ export default function AdminProjectEditor() {
           sort_order: p.sort_order || p.order || 0,
           status: p.status || 'published',
         });
+        setTranslations(p.i18n || p.metadata?.i18n || {});
       } else if (res.error) {
         setError(res.error.message || 'Project not found');
       }
@@ -77,6 +83,18 @@ export default function AdminProjectEditor() {
       return;
     }
 
+    const cleanTranslations = {};
+    for (const [lng, tx] of Object.entries(translations || {})) {
+      if (!tx) continue;
+      const hasContent = (tx.title && tx.title.trim()) || (tx.kicker && tx.kicker.trim()) || (tx.short_description && tx.short_description.trim()) || (tx.description && tx.description.trim());
+      if (!hasContent) continue;
+      cleanTranslations[lng] = {
+        ...(tx.title && tx.title.trim() ? { title: tx.title.trim() } : {}),
+        ...(tx.kicker && tx.kicker.trim() ? { kicker: tx.kicker.trim() } : {}),
+        ...(tx.short_description && tx.short_description.trim() ? { short_description: tx.short_description.trim(), description: tx.short_description.trim() } : {}),
+      };
+    }
+
     const payload = {
       title: formData.title,
       slug: formData.slug,
@@ -89,6 +107,11 @@ export default function AdminProjectEditor() {
       is_featured: formData.is_featured,
       sort_order: parseInt(formData.sort_order, 10),
       status: formData.status,
+      i18n: cleanTranslations,
+      metadata: {
+        ...(rawProject?.metadata || {}),
+        i18n: cleanTranslations,
+      },
     };
 
     const res = await updateProject(id, payload);
@@ -98,6 +121,14 @@ export default function AdminProjectEditor() {
       setSuccessMsg('Project saved successfully!');
     }
     setSaving(false);
+  };
+
+  const tx = translations[txLang] || {};
+  const setTxField = (patch) => {
+    setTranslations((prev) => ({
+      ...prev,
+      [txLang]: { ...(prev[txLang] || {}), ...patch },
+    }));
   };
 
   if (loading) {
@@ -319,6 +350,76 @@ export default function AdminProjectEditor() {
           </div>
         </div>
       </form>
+
+      {/* Translations (Second Language) Card */}
+      <div className="admin-card mt-4">
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h3 className="fs-6 fw-bold mb-0 text-uppercase text-muted" style={{ fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '0.08em' }}>
+            <i className="bi bi-translate me-2 text-success"></i> Translations ({txLang === 'fr' ? 'Français' : 'العربية'})
+          </h3>
+          <div className="btn-group btn-group-sm" role="group">
+            <button
+              type="button"
+              className={`btn ${txLang === 'fr' ? 'btn-dark' : 'btn-outline-secondary'}`}
+              onClick={() => setTxLang('fr')}
+            >
+              Français
+            </button>
+            <button
+              type="button"
+              className={`btn ${txLang === 'ar' ? 'btn-dark' : 'btn-outline-secondary'}`}
+              onClick={() => setTxLang('ar')}
+            >
+              العربية
+            </button>
+          </div>
+        </div>
+
+        <div className="alert alert-light border small mb-3">
+          <i className="bi bi-info-circle me-1"></i> Enter the {txLang === 'fr' ? 'French' : 'Arabic'} version of this project. Leave any field empty to fall back to the default (English) text.
+        </div>
+
+        <div className="row g-3" dir={txLang === 'ar' ? 'rtl' : 'ltr'}>
+          <div className="col-md-8">
+            <div className="admin-form-group">
+              <label className="admin-form-label">Project Title ({txLang.toUpperCase()})</label>
+              <input
+                type="text"
+                className="admin-form-input"
+                value={tx.title || ''}
+                placeholder={formData.title}
+                onChange={(e) => setTxField({ title: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div className="col-md-4">
+            <div className="admin-form-group">
+              <label className="admin-form-label">Kicker / Tagline ({txLang.toUpperCase()})</label>
+              <input
+                type="text"
+                className="admin-form-input"
+                value={tx.kicker || ''}
+                placeholder={formData.kicker}
+                onChange={(e) => setTxField({ kicker: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div className="col-12">
+            <div className="admin-form-group">
+              <label className="admin-form-label">Short Description ({txLang.toUpperCase()})</label>
+              <textarea
+                className="admin-form-textarea"
+                rows="3"
+                value={tx.short_description || tx.description || ''}
+                placeholder={formData.short_description}
+                onChange={(e) => setTxField({ short_description: e.target.value, description: e.target.value })}
+              ></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

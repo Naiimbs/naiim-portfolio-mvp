@@ -43,14 +43,19 @@
     "backToCatalog": "العودة إلى مدونة المقالات",
     "previewBanner": "وضع المعاينة: عرض المحتوى المحفوظ لـ«{{title}}» (الحالة: {{status}}).",
     "categoryFallback": "مقال",
+    "views": "{{count}} مشاهدة",
+    "views_one": "مشاهدة واحدة",
     "views_other": "{{count}} مشاهدة",
     "readingFallback": "٤ دقائق قراءة",
+    "words_one": "كلمة واحدة",
     "words_other": "{{count}} كلمة",
     "draftPreview": "معاينة المسودة",
     "tags": "الوسوم:",
     "related": "محتوى ذو صلة ودراسات حالة",
     "explore": "استكشاف {{type}}",
-    "viewAll": "عرض جميع المقالات"
+    "viewAll": "عرض جميع المقالات",
+    "loading": "جارٍ تحميل المقال...",
+    "noContent": "لا يوجد محتوى موسّع لهذا المقال."
   },
   "blogList": {
     "eyebrow": "التحرير والكتابة",
@@ -113,7 +118,7 @@
     "role": "مصمم منتجات وباني ذكاء اصطناعي",
     "openTo": "متاح لـ السعودية · الإمارات · أوروبا · عن بعد",
     "targetLabel": "الهدف",
-    "targetValue": "Senior / Lead Product Designer",
+    "targetValue": "مصمم منتجات أول / رئيسي",
     "marketsLabel": "الأسواق",
     "marketsValue": "السعودية · الإمارات · أوروبا · عن بعد",
     "focusLabel": "التركيز",
@@ -210,7 +215,16 @@
     "loading": "جارٍ تحميل الأعمال...",
     "unavailable": "الأعمال المختارة غير متاحة مؤقتًا.",
     "empty": "لا توجد أعمال منشورة بعد.",
-    "loadError": "تعذّر تحميل الأعمال الآن. يرجى المحاولة بعد قليل."
+    "loadError": "تعذّر تحميل الأعمال الآن. يرجى المحاولة بعد قليل.",
+    "readCaseStudy": "قراءة دراسة الحالة"
+  },
+  "caseStudy": {
+    "myRole": "دوري",
+    "context": "السياق",
+    "backToWork": "العودة إلى الأعمال المختارة",
+    "notFoundLabel": "غير موجود",
+    "notFoundTitle": "دراسة الحالة غير موجودة",
+    "notFoundBody": "لا توجد دراسة حالة تطابق الرابط /work/{{slug}}."
   },
   "caseStrip": {
     "eyebrow": "دراسات حالة",
@@ -250,6 +264,7 @@
     "emptyBody": "حاول تعديل بحثك أو اختيار فئة أخرى.",
     "resetFilters": "إعادة ضبط التصفية",
     "featured": "مميّز",
+    "assets_one": "ملف مُرفق واحد",
     "assets_other": "{{count}} ملف مُرفق",
     "explore": "استكشاف",
     "backToWork": "العودة إلى الأعمال",

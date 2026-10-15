@@ -7,6 +7,16 @@ export const plugins = [
     linkText: 'Open plugin',
     url: 'https://www.figma.com/community/plugin/1626027415249638040/structdown',
     order: 1,
+    i18n: {
+      fr: {
+        description: 'Documentation de design system structurée ↔ Markdown dans Figma.',
+        linkText: 'Ouvrir le plugin',
+      },
+      ar: {
+        description: 'توثيق منظم لأنظمة التصميم ↔ Markdown داخل Figma.',
+        linkText: 'فتح الإضافة',
+      },
+    },
   },
   {
     id: 'sparty-smart-components',
@@ -16,6 +26,16 @@ export const plugins = [
     linkText: 'Find on Figma Community',
     url: 'https://www.figma.com/community/plugins?query=Sparty%20Smart%20Components',
     order: 2,
+    i18n: {
+      fr: {
+        description: 'Composants réutilisables et personnalisables pour accélérer le travail d’interface.',
+        linkText: 'Trouver sur la communauté Figma',
+      },
+      ar: {
+        description: 'مكونات قابلة لإعادة الاستخدام والتخصيص مصممة لتسريع تصميم واجهات المستخدم.',
+        linkText: 'استعراض في مجتمع Figma',
+      },
+    },
   },
   {
     id: 'exportily',
@@ -25,5 +45,15 @@ export const plugins = [
     linkText: 'View plugin record',
     url: 'https://fig-stats.com/plugins/1491936597340385342',
     order: 3,
+    i18n: {
+      fr: {
+        description: 'Un utilitaire Figma conçu par Naïm pour exporter les informations de design.',
+        linkText: 'Voir la fiche du plugin',
+      },
+      ar: {
+        description: 'أداة Figma طوّرها نعيم لتصدير بيانات ومعلومات التصميم.',
+        linkText: 'عرض سجل الإضافة',
+      },
+    },
   },
 ];
