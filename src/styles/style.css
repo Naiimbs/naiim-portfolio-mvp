@@ -491,7 +491,7 @@ h1 em {
   margin: 3px 0 0;
 }
 .online-dot {
-  margin-left: auto;
+  margin-inline-start: auto;
   font-size: 0.65rem;
   color: var(--green);
   white-space: nowrap;
@@ -570,7 +570,7 @@ h1 em {
   letter-spacing: 0.1em;
 }
 .suggestions button {
-  text-align: left;
+  text-align: start;
   border: 1px solid var(--line);
   background: #fff;
   border-radius: 12px;
@@ -731,8 +731,8 @@ h1 em {
 }
 
 .about-card {
-  border-left: 1px solid var(--line);
-  padding-left: 45px;
+  border-inline-start: 1px solid var(--line);
+  padding-inline-start: 45px;
 }
 .about-card h3 {
   font-size: 2rem;
@@ -865,8 +865,8 @@ h1 em {
     right: 6%;
   }
   .about-card {
-    border-left: 0;
-    padding-left: 0;
+    border-inline-start: 0;
+    padding-inline-start: 0;
   }
 }
 @media (max-width: 767.98px) {
@@ -1273,7 +1273,7 @@ h1 em {
   font-size: 1.05rem;
   font-weight: 700;
   transform: rotate(-3deg);
-  margin-left: 77px;
+  margin-inline-start: 77px;
   margin-top: -45px;
   white-space: nowrap;
 }
@@ -1603,4 +1603,20 @@ html[lang="ar"] body {
 html[lang="ar"] .eyebrow,
 html[lang="ar"] .text-uppercase {
   letter-spacing: normal;
+}
+
+/* ── Phase 2: targeted RTL position flips for card decorations ───────── */
+[dir="rtl"] .project-badge { left: auto; right: 15px; }
+[dir="rtl"] .coming-pill { right: auto; left: 15px; }
+[dir="rtl"] .mini-project-card i { right: auto; left: 17px; }
+[dir="rtl"] .listen-note { right: auto; left: 27px; }
+/* Mirror directional arrow icons in RTL so they point the natural way. */
+[dir="rtl"] .bi-arrow-right,
+[dir="rtl"] .bi-arrow-left,
+[dir="rtl"] .bi-arrow-up-right,
+[dir="rtl"] .bi-arrow-return-left,
+[dir="rtl"] .bi-chevron-right,
+[dir="rtl"] .bi-chevron-left {
+  display: inline-block;
+  transform: scaleX(-1);
 }

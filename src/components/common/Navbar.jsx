@@ -134,6 +134,7 @@ export default function Navbar() {
   const NAV_LABEL_KEYS = {
     '/work': 'nav.work',
     '/about': 'nav.about',
+    '/blog': 'nav.blog',
     '#copilot': 'nav.copilot',
     '/#copilot': 'nav.copilot',
     '#career': 'nav.career',

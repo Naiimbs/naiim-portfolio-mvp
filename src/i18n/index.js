@@ -38,6 +38,18 @@ export const getSavedLanguage = () => {
 
 export const getDirection = (lang) => DIRECTIONS[lang] || 'ltr';
 
+const BOOTSTRAP_LTR = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css';
+const BOOTSTRAP_RTL = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css';
+
+/** Swap the Bootstrap stylesheet between LTR and RTL builds. */
+const applyBootstrapDirection = (dir) => {
+  if (typeof document === 'undefined') return;
+  const link = document.getElementById('bootstrap-stylesheet');
+  if (!link) return;
+  const target = dir === 'rtl' ? BOOTSTRAP_RTL : BOOTSTRAP_LTR;
+  if (link.getAttribute('href') !== target) link.setAttribute('href', target);
+};
+
 export const setAppLanguage = (lang) => {
   const targetLang = resources[lang] ? lang : 'en';
   const dir = getDirection(targetLang);
@@ -46,6 +58,7 @@ export const setAppLanguage = (lang) => {
   document.documentElement.dir = dir;
   // Expose on <body> too so CSS can target RTL without relying on <html>.
   document.body?.setAttribute('dir', dir);
+  applyBootstrapDirection(dir);
 
   try {
     localStorage.setItem(STORAGE_KEY, targetLang);
@@ -72,8 +85,11 @@ i18n
 
 // Apply initial HTML attributes (lang + direction) from the saved preference.
 if (typeof document !== 'undefined') {
+  const initialDir = getDirection(initialLang);
   document.documentElement.lang = initialLang;
-  document.documentElement.dir = getDirection(initialLang);
+  document.documentElement.dir = initialDir;
+  document.body?.setAttribute('dir', initialDir);
+  applyBootstrapDirection(initialDir);
 }
 
 export default i18n;
