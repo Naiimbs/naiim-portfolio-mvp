@@ -86,7 +86,14 @@ export default function BlogPostPage() {
   const seo = resolveContentSeo(post);
   const cover = meta.featuredImage ? resolveAsset(meta.featuredImage) : null;
   const relationships = Array.isArray(meta.relationships) ? meta.relationships : [];
-  const sections = Array.isArray(meta.sections) ? meta.sections : [];
+
+  // Phase 3 — localized article content (falls back to default English).
+  const tx = (i18n.language && i18n.language !== 'en' && meta.i18n) ? meta.i18n[i18n.language] : null;
+  const displayTitle = (tx && tx.title) || post.title;
+  const displayExcerpt = (tx && tx.excerpt) || meta.excerpt;
+  const sections = (tx && Array.isArray(tx.sections) && tx.sections.length)
+    ? tx.sections
+    : (Array.isArray(meta.sections) ? meta.sections : []);
 
   const dateStr = meta.publishedAt
     ? new Date(meta.publishedAt).toLocaleDateString(dateLocale, { month: 'long', day: 'numeric', year: 'numeric' })
@@ -133,13 +140,13 @@ export default function BlogPostPage() {
 
             {/* Article Headline */}
             <h1 className="display-4 fw-bold font-heading mb-3 text-dark">
-              {post.title}
+              {displayTitle}
             </h1>
 
             {/* Excerpt Lead */}
-            {meta.excerpt && (
+            {displayExcerpt && (
               <p className="lead text-secondary mb-4">
-                {meta.excerpt}
+                {displayExcerpt}
               </p>
             )}
 
@@ -160,7 +167,7 @@ export default function BlogPostPage() {
           {/* Featured Hero Cover Image */}
           {cover && (
             <div className="max-w-4xl mx-auto mb-5 rounded-4 overflow-hidden shadow-sm">
-              <img src={cover} alt={post.title} className="w-100 object-fit-cover" style={{ maxHeight: '460px' }} />
+              <img src={cover} alt={displayTitle} className="w-100 object-fit-cover" style={{ maxHeight: '460px' }} />
             </div>
           )}
 
@@ -169,7 +176,7 @@ export default function BlogPostPage() {
             <AdSlot placement="article_top" />
             {sections.length > 0 ? (
               <PageRenderer
-                page={{ title: post.title, template: 'default' }}
+                page={{ title: displayTitle, template: 'default' }}
                 sections={sections}
                 loading={false}
               />
@@ -183,7 +190,7 @@ export default function BlogPostPage() {
 
           {/* Share */}
           <div className="max-w-4xl mx-auto pt-4 mt-4 border-top">
-            <ShareButtons title={post.title} />
+            <ShareButtons title={displayTitle} />
           </div>
 
           {/* Tags */}

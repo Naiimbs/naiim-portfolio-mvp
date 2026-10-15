@@ -122,6 +122,9 @@ export default function BlogPage() {
             <div className="row g-4">
               {filteredPosts.map((post) => {
                 const meta = post.metadata || {};
+                const ptx = (i18n.language && i18n.language !== 'en' && meta.i18n) ? meta.i18n[i18n.language] : null;
+                const cardTitle = (ptx && ptx.title) || post.title;
+                const cardExcerpt = (ptx && ptx.excerpt) || meta.excerpt;
                 const cover = meta.featuredImage ? resolveAsset(meta.featuredImage) : null;
                 const dateStr = meta.publishedAt
                   ? new Date(meta.publishedAt).toLocaleDateString(dateLocale, { month: 'short', day: 'numeric', year: 'numeric' })
@@ -134,7 +137,7 @@ export default function BlogPage() {
                         <Link to={`/blog/${post.slug}`} className="d-block overflow-hidden" style={{ maxHeight: '220px' }}>
                           <img
                             src={cover}
-                            alt={post.title}
+                            alt={cardTitle}
                             className="w-100 object-fit-cover transition-transform"
                             style={{ height: '220px' }}
                           />
@@ -153,12 +156,12 @@ export default function BlogPage() {
 
                         <h5 className="card-title fw-bold mb-2 font-heading">
                           <Link to={`/blog/${post.slug}`} className="text-dark text-decoration-none hover-text-primary">
-                            {post.title}
+                            {cardTitle}
                           </Link>
                         </h5>
 
                         <p className="card-text text-secondary small flex-grow-1 line-clamp-3">
-                          {meta.excerpt || t('blogList.excerptFallback')}
+                          {cardExcerpt || t('blogList.excerptFallback')}
                         </p>
 
                         <div className="pt-3 border-top mt-3 d-flex justify-content-between align-items-center">

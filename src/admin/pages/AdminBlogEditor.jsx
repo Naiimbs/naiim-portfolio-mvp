@@ -58,6 +58,10 @@ export default function AdminBlogEditor() {
   const [initialStatus, setInitialStatus] = useState('draft'); // last persisted status (for transition rules)
   const [publishedAt, setPublishedAt] = useState(null); // preserved across saves
 
+  // Phase 3 — per-language translations: { fr: {title, excerpt, bodyMarkdown, sections}, ar: {...} }
+  const [translations, setTranslations] = useState({});
+  const [txLang, setTxLang] = useState('fr');
+
   // Visual Page Builder State & Handlers
   const [activeSectionId, setActiveSectionId] = useState(null);
   const [showAddSectionModal, setShowAddSectionModal] = useState(false);
@@ -98,6 +102,7 @@ export default function AdminBlogEditor() {
         setOgDesc(meta.social?.ogDescription || '');
         setOgImage(meta.social?.ogImage || '');
         setRelationships(Array.isArray(meta.relationships) ? meta.relationships : []);
+        setTranslations(meta.i18n && typeof meta.i18n === 'object' ? meta.i18n : {});
       }
       setLoading(false);
     }
@@ -325,6 +330,20 @@ export default function AdminBlogEditor() {
       return;
     }
 
+    // Keep only languages that actually carry a translation.
+    const cleanTranslations = {};
+    for (const [lng, tx] of Object.entries(translations || {})) {
+      if (!tx) continue;
+      const hasContent = (tx.title && tx.title.trim()) || (tx.excerpt && tx.excerpt.trim()) || (Array.isArray(tx.sections) && tx.sections.length > 0);
+      if (!hasContent) continue;
+      cleanTranslations[lng] = {
+        ...(tx.title && tx.title.trim() ? { title: tx.title.trim() } : {}),
+        ...(tx.excerpt && tx.excerpt.trim() ? { excerpt: tx.excerpt.trim() } : {}),
+        ...(Array.isArray(tx.sections) && tx.sections.length ? { sections: tx.sections } : {}),
+        ...(tx.bodyMarkdown ? { bodyMarkdown: tx.bodyMarkdown } : {}),
+      };
+    }
+
     const payload = {
       title: title.trim(),
       slug: cleanSlug,
@@ -335,6 +354,7 @@ export default function AdminBlogEditor() {
       public_route: `/blog/${cleanSlug}`,
       metadata: {
         excerpt: excerpt.trim(),
+        i18n: cleanTranslations,
         author: author.trim(),
         category: category.trim(),
         tags,
@@ -568,6 +588,19 @@ export default function AdminBlogEditor() {
 
   const previewUrl = `/blog/${normalizeSlug(slug || title || 'draft')}?preview=true`;
 
+  // ── Translation tab helpers ────────────────────────────────────────────
+  const tx = translations[txLang] || {};
+  const setTxField = (patch) => {
+    setTranslations({ ...translations, [txLang]: { ...tx, ...patch } });
+    setDirty(true);
+  };
+  const applyTxMarkdown = () => {
+    const md = (tx.bodyMarkdown || '').trim();
+    const secs = md ? buildBodySections(md, (md.match(/^##\s+/gm) || []).length > 1) : [];
+    setTxField({ sections: secs });
+    setFeedback({ type: 'success', message: `Applied ${secs.length} translated section(s) for ${txLang.toUpperCase()}.` });
+  };
+
   return (
     <div
       className="admin-blog-editor p-4 position-relative"
@@ -736,6 +769,15 @@ export default function AdminBlogEditor() {
             onClick={() => setActiveTab('quality')}
           >
             <i className="bi bi-shield-check me-1"></i> Quality &amp; Safety
+          </button>
+        </li>
+        <li className="nav-item">
+          <button
+            type="button"
+            className={`nav-link py-2 px-3 fw-semibold ${activeTab === 'translations' ? 'active bg-white text-primary border-bottom-0' : 'text-secondary border-0'}`}
+            onClick={() => setActiveTab('translations')}
+          >
+            <i className="bi bi-translate me-1"></i> Translations
           </button>
         </li>
       </ul>
@@ -1423,6 +1465,48 @@ export default function AdminBlogEditor() {
                   <li key={p.code}>{p.message}</li>
                 ))}
               </ul>
+            </div>
+          </div>
+        )}
+
+        {/* TAB: TRANSLATIONS */}
+        {activeTab === 'translations' && (
+          <div className="card border-0 bg-white rounded-4 shadow-sm p-4">
+            <div className="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+              <h6 className="fw-bold mb-0"><i className="bi bi-translate me-1"></i> Article Translations</h6>
+              <div className="btn-group btn-group-sm" role="group">
+                <button type="button" className={`btn ${txLang === 'fr' ? 'btn-dark' : 'btn-outline-secondary'}`} onClick={() => setTxLang('fr')}>Français</button>
+                <button type="button" className={`btn ${txLang === 'ar' ? 'btn-dark' : 'btn-outline-secondary'}`} onClick={() => setTxLang('ar')}>العربية</button>
+              </div>
+            </div>
+
+            <div className="alert alert-light border small mb-3">
+              <i className="bi bi-info-circle me-1"></i> Enter the {txLang === 'fr' ? 'French' : 'Arabic'} version of the article. Leave the title or excerpt empty to fall back to the default (English). The body is pasted as Markdown and split into sections when you click <strong>Apply body</strong>. Translations show when a visitor switches the site to {txLang === 'fr' ? 'French' : 'Arabic'}.
+            </div>
+
+            <div className="mb-3" dir={txLang === 'ar' ? 'rtl' : 'ltr'}>
+              <label className="form-label small fw-semibold">Title ({txLang.toUpperCase()})</label>
+              <input type="text" className="form-control rounded-3" value={tx.title || ''} placeholder={title} onChange={(e) => setTxField({ title: e.target.value })} />
+            </div>
+
+            <div className="mb-3" dir={txLang === 'ar' ? 'rtl' : 'ltr'}>
+              <label className="form-label small fw-semibold">Excerpt ({txLang.toUpperCase()})</label>
+              <textarea className="form-control rounded-3" rows="2" value={tx.excerpt || ''} placeholder={excerpt} onChange={(e) => setTxField({ excerpt: e.target.value })} />
+            </div>
+
+            <div className="mb-2" dir={txLang === 'ar' ? 'rtl' : 'ltr'}>
+              <label className="form-label small fw-semibold">Body — Markdown ({txLang.toUpperCase()})</label>
+              <textarea className="form-control rounded-3 font-monospace" rows="12" style={{ fontSize: '0.85rem' }} value={tx.bodyMarkdown || ''} placeholder={'## Heading\n\nTranslated paragraph…'} onChange={(e) => setTxField({ bodyMarkdown: e.target.value })} />
+            </div>
+            <div className="d-flex align-items-center gap-2">
+              <button type="button" className="btn btn-sm btn-primary rounded-pill px-3" onClick={applyTxMarkdown}>
+                <i className="bi bi-arrow-repeat me-1"></i> Apply body
+              </button>
+              <span className="small text-muted">
+                {Array.isArray(tx.sections) && tx.sections.length > 0
+                  ? `${tx.sections.length} translated section(s) stored.`
+                  : 'No translated body yet.'}
+              </span>
             </div>
           </div>
         )}
