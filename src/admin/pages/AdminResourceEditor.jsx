@@ -156,6 +156,14 @@ export default function AdminResourceEditor() {
     });
   };
 
+  const tx = translations[txLang] || {};
+  const setTxField = (patch) => {
+    setTranslations((prev) => ({
+      ...prev,
+      [txLang]: { ...(prev[txLang] || {}), ...patch },
+    }));
+  };
+
   const handleSave = async (e) => {
     if (e) e.preventDefault();
     if (!formData.title.trim()) {
@@ -177,6 +185,7 @@ export default function AdminResourceEditor() {
         ...(tx.description && tx.description.trim() ? { description: tx.description.trim() } : {}),
         ...(tx.purpose && tx.purpose.trim() ? { purpose: tx.purpose.trim() } : {}),
         ...(tx.how_to_use && tx.how_to_use.trim() ? { how_to_use: tx.how_to_use.trim() } : {}),
+        ...(tx.when_to_use && tx.when_to_use.trim() ? { when_to_use: tx.when_to_use.trim() } : {}),
       };
     }
 
@@ -1245,6 +1254,17 @@ export default function AdminResourceEditor() {
                 placeholder={formData.how_to_use}
                 value={tx.how_to_use || ''}
                 onChange={(e) => setTxField({ how_to_use: e.target.value })}
+              />
+            </div>
+
+            <div className="col-12">
+              <label className="form-label fw-bold small">When to Use ({txLang.toUpperCase()})</label>
+              <textarea
+                className="form-control font-monospace"
+                rows={3}
+                placeholder={formData.when_to_use}
+                value={tx.when_to_use || ''}
+                onChange={(e) => setTxField({ when_to_use: e.target.value })}
               />
             </div>
           </div>

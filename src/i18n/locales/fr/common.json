@@ -6,7 +6,29 @@
     "lab": "Lab",
     "about": "À propos",
     "talk": "Discutons",
-    "blog": "Blog"
+    "blog": "Blog",
+    "agents": "Agents",
+    "resources": "Ressources"
+  },
+  "hero": {
+    "eyebrow": "DESIGNER UX/UI SENIOR · BÂTISSEUR DE PRODUITS IA",
+    "titleLines": [
+      "JE CONÇOIS.",
+      "JE CONSTRUIS.",
+      "J'EXPÉRIMENTE."
+    ],
+    "lead": "Je transforme des problèmes complexes en produits numériques intuitifs, à l'intersection du ",
+    "leadStrong": "design de produit, de l'IA, du low-code et de l'automatisation.",
+    "exploreWork": "Découvrir mes projets",
+    "talkCopilot": "Parler à Naïm Copilot",
+    "currentlyBuilding": "EN COURS DE CRÉATION",
+    "roleSubtitle": "Designer Produit & Bâtisseur IA",
+    "listenToMe": "Écoutez-moi",
+    "motionSequence": "Séquence animée (24s)",
+    "portraitAudio": "Portrait & Audio",
+    "noteDesign": "Design",
+    "noteTech": "Technologie",
+    "noteImpact": "Impact"
   },
   "footer": {
     "rights": "© 2026 Naïm Bsili. Tous droits réservés."
@@ -373,6 +395,7 @@
     "setupInstructions": "Instructions d’installation :",
     "tagsClassification": "Tags & classification",
     "backToResources": "Retour à toutes les ressources",
-    "backToTop": "Haut de page"
+    "backToTop": "Haut de page",
+    "license": "Licence"
   }
 }

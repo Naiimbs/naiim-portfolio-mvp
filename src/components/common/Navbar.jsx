@@ -80,7 +80,9 @@ export default function Navbar() {
   const isHome = location.pathname === '/';
 
   const brandName = siteSettings?.site_name || 'NAÏM BSILI';
-  const ctaLabel = siteSettings?.contact_cta_label || t('nav.talk');
+  const ctaLabel = (!siteSettings?.contact_cta_label || siteSettings.contact_cta_label === "Let's Talk")
+    ? t('nav.talk')
+    : siteSettings.contact_cta_label;
   const rawCtaHref = typeof siteSettings?.contact_cta_href === 'string' ? siteSettings.contact_cta_href.trim() : '#contact';
   const ctaHref = rawCtaHref || '#contact';
 
@@ -133,8 +135,12 @@ export default function Navbar() {
   // Localized label for known default routes; custom CMS items keep their label.
   const NAV_LABEL_KEYS = {
     '/work': 'nav.work',
+    '#work': 'nav.work',
+    '/#work': 'nav.work',
     '/about': 'nav.about',
     '/blog': 'nav.blog',
+    '/agents': 'nav.agents',
+    '/resources': 'nav.resources',
     '#copilot': 'nav.copilot',
     '/#copilot': 'nav.copilot',
     '#career': 'nav.career',
@@ -145,7 +151,10 @@ export default function Navbar() {
   const navLabel = (item) => {
     const href = typeof item.href === 'string' ? item.href.trim() : '';
     const key = NAV_LABEL_KEYS[href];
-    return key ? t(key) : (item.label || 'Link');
+    if (key) return t(key);
+    const labelKey = `nav.${String(item.label || '').toLowerCase().replace(/[^a-z0-9]/g, '')}`;
+    const translated = t(labelKey);
+    return (translated && translated !== labelKey) ? translated : (item.label || 'Link');
   };
 
   const renderNavLink = (item) => {

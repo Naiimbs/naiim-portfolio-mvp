@@ -13,28 +13,38 @@ const SUGGESTION_QUESTIONS = [
 ];
 
 export default function CopilotWidget() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const suggestionTexts = t('copilot.suggestions', { returnObjects: true }) || [];
   const [userMsg, setUserMsg] = useState(t('copilot.defaultUser'));
   const [aiMsg, setAiMsg] = useState(t('copilot.defaultAi'));
   const [inputValue, setInputValue] = useState('');
+  const [hasInteracted, setHasInteracted] = useState(false);
 
-  const handleAsk = (question) => {
-    const clean = question.trim();
-    if (!clean) return;
+  // Sync default welcome messages if the user hasn't started their own conversation
+  React.useEffect(() => {
+    if (!hasInteracted) {
+      setUserMsg(t('copilot.defaultUser'));
+      setAiMsg(t('copilot.defaultAi'));
+    }
+  }, [i18n.language, hasInteracted, t]);
 
-    setUserMsg(clean);
+  const handleAsk = (displayQuestion, lookupKey) => {
+    const cleanDisplay = (displayQuestion || '').trim();
+    if (!cleanDisplay) return;
+
+    setHasInteracted(true);
+    setUserMsg(cleanDisplay);
     setAiMsg(t('copilot.thinking'));
     setInputValue('');
 
     setTimeout(() => {
-      setAiMsg(answerFor(clean));
+      setAiMsg(answerFor(lookupKey || cleanDisplay, i18n.language));
     }, 350);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    handleAsk(inputValue);
+    handleAsk(inputValue, inputValue);
   };
 
   return (
@@ -79,16 +89,19 @@ export default function CopilotWidget() {
 
         <div className="suggestions">
           <small>{t('copilot.tryAsking')}</small>
-          {SUGGESTION_QUESTIONS.map((question, index) => (
-            <button
-              key={index}
-              type="button"
-              data-question={question}
-              onClick={() => handleAsk(question)}
-            >
-              {suggestionTexts[index] || question}
-            </button>
-          ))}
+          {SUGGESTION_QUESTIONS.map((question, index) => {
+            const label = suggestionTexts[index] || question;
+            return (
+              <button
+                key={index}
+                type="button"
+                data-question={question}
+                onClick={() => handleAsk(label, question)}
+              >
+                {label}
+              </button>
+            );
+          })}
         </div>
       </div>
 

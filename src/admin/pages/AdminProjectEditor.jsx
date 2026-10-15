@@ -24,6 +24,7 @@ export default function AdminProjectEditor() {
   const [rawProject, setRawProject] = useState(null);
   const [translations, setTranslations] = useState({});
   const [txLang, setTxLang] = useState('fr');
+  const [activeTab, setActiveTab] = useState('details'); // 'details' | 'translations'
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -191,8 +192,29 @@ export default function AdminProjectEditor() {
           <i className="bi bi-check-circle-fill"></i>
           <div>{successMsg}</div>
         </div>
-      )}
+      {/* Navigation Tabs */}
+      <ul className="nav nav-tabs border-bottom mb-4 gap-1" style={{ fontSize: '0.85rem' }}>
+        <li className="nav-item">
+          <button
+            type="button"
+            className={`nav-link py-2 px-3 fw-semibold ${activeTab === 'details' ? 'active bg-white text-primary border-bottom-0' : 'text-secondary border-0'}`}
+            onClick={() => setActiveTab('details')}
+          >
+            <i className="bi bi-card-heading me-1"></i> Project Details
+          </button>
+        </li>
+        <li className="nav-item">
+          <button
+            type="button"
+            className={`nav-link py-2 px-3 fw-semibold ${activeTab === 'translations' ? 'active bg-white text-primary border-bottom-0' : 'text-secondary border-0'}`}
+            onClick={() => setActiveTab('translations')}
+          >
+            <i className="bi bi-translate me-1"></i> Translations
+          </button>
+        </li>
+      </ul>
 
+      {activeTab === 'details' && (
       <form onSubmit={handleSave} className="admin-card">
         <div className="row g-3">
           <div className="col-md-8">
@@ -350,9 +372,11 @@ export default function AdminProjectEditor() {
           </div>
         </div>
       </form>
+      )}
 
       {/* Translations (Second Language) Card */}
-      <div className="admin-card mt-4">
+      {activeTab === 'translations' && (
+      <div className="admin-card">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h3 className="fs-6 fw-bold mb-0 text-uppercase text-muted" style={{ fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '0.08em' }}>
             <i className="bi bi-translate me-2 text-success"></i> Translations ({txLang === 'fr' ? 'Français' : 'العربية'})
@@ -420,6 +444,7 @@ export default function AdminProjectEditor() {
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 }

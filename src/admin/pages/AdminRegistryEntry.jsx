@@ -350,6 +350,7 @@ export default function AdminRegistryEntry() {
   // Translations / Second Language state
   const [translations, setTranslations] = useState({});
   const [txLang, setTxLang] = useState('fr');
+  const [activeTab, setActiveTab] = useState('details'); // 'details' | 'casestudy' | 'translations'
 
   // UI state
   const [saving, setSaving] = useState(false);
@@ -548,13 +549,15 @@ export default function AdminRegistryEntry() {
     const cleanTranslations = {};
     for (const [lng, t] of Object.entries(translations || {})) {
       if (!t) continue;
-      const hasContent = (t.title && t.title.trim()) || (t.kicker && t.kicker.trim()) || (t.description && t.description.trim()) || (t.subtitle && t.subtitle.trim());
+      const hasCase = t.caseStudy && typeof t.caseStudy === 'object' && Object.keys(t.caseStudy).length > 0;
+      const hasContent = (t.title && t.title.trim()) || (t.kicker && t.kicker.trim()) || (t.description && t.description.trim()) || (t.subtitle && t.subtitle.trim()) || hasCase;
       if (!hasContent) continue;
       cleanTranslations[lng] = {
         ...(t.title && t.title.trim() ? { title: t.title.trim() } : {}),
         ...(t.kicker && t.kicker.trim() ? { kicker: t.kicker.trim() } : {}),
         ...(t.description && t.description.trim() ? { description: t.description.trim() } : {}),
         ...(t.subtitle && t.subtitle.trim() ? { subtitle: t.subtitle.trim() } : {}),
+        ...(hasCase ? { caseStudy: t.caseStudy } : {}),
       };
     }
     if (Object.keys(cleanTranslations).length) {
@@ -567,11 +570,35 @@ export default function AdminRegistryEntry() {
   }
 
   const tx = translations[txLang] || {};
+  const txCase = tx.caseStudy || {};
+
   const setTxField = (patch) => {
     setTranslations((prev) => ({
       ...prev,
       [txLang]: { ...(prev[txLang] || {}), ...patch },
     }));
+    setIsDirty(true);
+  };
+
+  const setTxCaseStudyField = (sectionKey, patch) => {
+    setTranslations((prev) => {
+      const curTx = prev[txLang] || {};
+      const curCase = curTx.caseStudy || {};
+      const curSec = curCase[sectionKey] || {};
+      return {
+        ...prev,
+        [txLang]: {
+          ...curTx,
+          caseStudy: {
+            ...curCase,
+            [sectionKey]: {
+              ...curSec,
+              ...patch,
+            },
+          },
+        },
+      };
+    });
     setIsDirty(true);
   };
 
@@ -850,241 +877,244 @@ export default function AdminRegistryEntry() {
 
       {/* 2-column layout */}
       <form onSubmit={handleSave} noValidate>
+        {/* Navigation Tabs */}
+        <ul className="nav nav-tabs border-bottom mb-4 gap-1" style={{ fontSize: '0.85rem' }}>
+          <li className="nav-item">
+            <button
+              type="button"
+              className={`nav-link py-2 px-3 fw-semibold ${activeTab === 'details' ? 'active bg-white text-primary border-bottom-0' : 'text-secondary border-0'}`}
+              onClick={() => setActiveTab('details')}
+            >
+              <i className="bi bi-card-heading me-1"></i> Entry Details &amp; Assets
+            </button>
+          </li>
+          {contentType === 'case-study' && (
+            <li className="nav-item">
+              <button
+                type="button"
+                className={`nav-link py-2 px-3 fw-semibold ${activeTab === 'casestudy' ? 'active bg-white text-primary border-bottom-0' : 'text-secondary border-0'}`}
+                onClick={() => setActiveTab('casestudy')}
+              >
+                <i className="bi bi-file-earmark-text me-1"></i> Case Study Content
+              </button>
+            </li>
+          )}
+          <li className="nav-item">
+            <button
+              type="button"
+              className={`nav-link py-2 px-3 fw-semibold ${activeTab === 'translations' ? 'active bg-white text-primary border-bottom-0' : 'text-secondary border-0'}`}
+              onClick={() => setActiveTab('translations')}
+            >
+              <i className="bi bi-translate me-1"></i> Translations
+            </button>
+          </li>
+        </ul>
+
         <div className="row g-4">
 
           {/* Left column — Content + Presentation */}
           <div className="col-lg-8">
 
-            {/* SECTION 1: Content */}
-            <div className="admin-card mb-4">
-              <SectionTitle icon="bi-type">1 — Content</SectionTitle>
+            {/* TAB: DETAILS & ASSETS */}
+            {activeTab === 'details' && (
+              <>
+                {/* SECTION 1: Content */}
+                <div className="admin-card mb-4">
+                  <SectionTitle icon="bi-type">1 — Content</SectionTitle>
 
-              <FormField label="Title" required error={errors.title}>
-                <input
-                  type="text"
-                  className={`form-control ${errors.title ? 'is-invalid' : ''}`}
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. WINNI — Smart Object Recovery"
-                  disabled={saving}
-                />
-              </FormField>
-
-              <div className="row g-3">
-                <div className="col-md-5">
-                  <FormField label="Content Type" required error={errors.contentType}>
-                    <select className="form-select" value={contentType} onChange={(e) => setContentType(e.target.value)} disabled={saving}>
-                      {CONTENT_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-                    </select>
-                  </FormField>
-                </div>
-                <div className="col-md-7">
-                  <FormField label="Slug" required hint="Kebab-case only — changing the slug affects all public links." error={errors.slug}>
-                    <div className="input-group">
-                      <span className="input-group-text bg-light text-muted small">/</span>
-                      <input
-                        type="text"
-                        className={`form-control ${errors.slug ? 'is-invalid' : ''}`}
-                        value={slug}
-                        onChange={(e) => handleSlugChange(e.target.value)}
-                        placeholder="winni"
-                        disabled={saving}
-                      />
-                    </div>
-                  </FormField>
-                </div>
-              </div>
-
-              <div className="border-top pt-3 mt-1">
-                <div className="small fw-bold text-muted text-uppercase mb-3" style={{ fontSize: '0.68rem', letterSpacing: '0.05em' }}>Presentation Metadata</div>
-
-                <div className="row g-3">
-                  <div className="col-md-3">
-                    <FormField label="Badge" hint="e.g. 01">
-                      <input type="text" className="form-control form-control-sm" value={badge} onChange={(e) => setBadge(e.target.value)} placeholder="01" disabled={saving} />
-                    </FormField>
-                  </div>
-                  <div className="col-md-9">
-                    <FormField label="Kicker" hint="Short descriptor shown above the title on cards">
-                      <input type="text" className="form-control form-control-sm" value={kicker} onChange={(e) => setKicker(e.target.value)} placeholder="PRODUCT · QR · LOST & FOUND" disabled={saving} />
-                    </FormField>
-                  </div>
-                </div>
-
-                <FormField label="Description" hint="Primary copy on project cards and catalog listings">
-                  <textarea className="form-control form-control-sm" rows="2" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="A concise summary for cards and catalog listings…" disabled={saving} />
-                </FormField>
-
-                <FormField label="Subtitle" hint="Secondary copy — shorter alternative where needed">
-                  <input type="text" className="form-control form-control-sm" value={subtitle} onChange={(e) => setSubtitle(e.target.value)} placeholder="Short supporting line…" disabled={saving} />
-                </FormField>
-
-                <FormField label="Tags" hint="Comma-separated. e.g. Product Design, UX/UI, AI">
-                  <input type="text" className="form-control form-control-sm" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="Product Design, UX/UI, AI" disabled={saving} />
-                </FormField>
-
-                <div className="row g-3">
-                  <div className="col-md-6">
-                    <FormField label="Category (Optional)">
-                      <input type="text" className="form-control form-control-sm" value={category} onChange={(e) => setCategory(e.target.value)} placeholder="e.g. Product Design" disabled={saving} />
-                    </FormField>
-                  </div>
-                  <div className="col-md-6">
-                    <FormField label="Year (Optional)">
-                      <input type="number" className="form-control form-control-sm" value={year} onChange={(e) => setYear(e.target.value)} placeholder="e.g. 2026" disabled={saving} />
-                    </FormField>
-                  </div>
-                </div>
-
-                {/* Second Language / Translations Sub-section */}
-                <div className="border-top pt-3 mt-3">
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <div className="small fw-bold text-muted text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.05em' }}>
-                      <i className="bi bi-translate text-success me-1"></i> Translations ({txLang === 'fr' ? 'Français' : 'العربية'})
-                    </div>
-                    <div className="btn-group btn-group-sm" role="group">
-                      <button
-                        type="button"
-                        className={`btn btn-sm ${txLang === 'fr' ? 'btn-dark' : 'btn-outline-secondary'} py-0 px-2`}
-                        onClick={() => setTxLang('fr')}
-                        style={{ fontSize: '0.72rem' }}
-                      >
-                        Français
-                      </button>
-                      <button
-                        type="button"
-                        className={`btn btn-sm ${txLang === 'ar' ? 'btn-dark' : 'btn-outline-secondary'} py-0 px-2`}
-                        onClick={() => setTxLang('ar')}
-                        style={{ fontSize: '0.72rem' }}
-                      >
-                        العربية
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="text-muted small mb-2" style={{ fontSize: '0.73rem' }}>
-                    Leave any field empty to fall back to English. These show when a visitor views the site in {txLang === 'fr' ? 'French' : 'Arabic'}.
-                  </div>
-
-                  <div dir={txLang === 'ar' ? 'rtl' : 'ltr'}>
-                    <div className="row g-2 mb-2">
-                      <div className="col-md-8">
-                        <FormField label={`Title (${txLang.toUpperCase()})`}>
-                          <input
-                            type="text"
-                            className="form-control form-control-sm"
-                            value={tx.title || ''}
-                            onChange={(e) => setTxField({ title: e.target.value })}
-                            placeholder={title}
-                            disabled={saving}
-                          />
-                        </FormField>
-                      </div>
-                      <div className="col-md-4">
-                        <FormField label={`Kicker (${txLang.toUpperCase()})`}>
-                          <input
-                            type="text"
-                            className="form-control form-control-sm"
-                            value={tx.kicker || ''}
-                            onChange={(e) => setTxField({ kicker: e.target.value })}
-                            placeholder={kicker}
-                            disabled={saving}
-                          />
-                        </FormField>
-                      </div>
-                    </div>
-
-                    <FormField label={`Description (${txLang.toUpperCase()})`}>
-                      <textarea
-                        className="form-control form-control-sm"
-                        rows="2"
-                        value={tx.description || ''}
-                        onChange={(e) => setTxField({ description: e.target.value })}
-                        placeholder={description}
-                        disabled={saving}
-                      />
-                    </FormField>
-
-                    <FormField label={`Subtitle (${txLang.toUpperCase()})`}>
-                      <input
-                        type="text"
-                        className="form-control form-control-sm"
-                        value={tx.subtitle || ''}
-                        onChange={(e) => setTxField({ subtitle: e.target.value })}
-                        placeholder={subtitle}
-                        disabled={saving}
-                      />
-                    </FormField>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* SECTION 2: Presentation Assets */}
-            <div className="admin-card mb-4">
-              <SectionTitle icon="bi-image">2 — Presentation Assets</SectionTitle>
-
-              <div className="row g-3 mb-3">
-                <div className="col-md-6">
-                  <FormField label="Hero Image Reference" hint="Bundled filename or external https:// URL. Leave blank to use the registered asset for this slug." error={errors.heroImage}>
+                  <FormField label="Title" required error={errors.title}>
                     <input
                       type="text"
-                      className={`form-control form-control-sm ${errors.heroImage ? 'is-invalid' : ''}`}
-                      value={heroImage}
-                      onChange={(e) => { setHeroImage(e.target.value); setImageLoadError(false); }}
-                      placeholder="winni-sticker-real.png"
+                      className={`form-control ${errors.title ? 'is-invalid' : ''}`}
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      placeholder="e.g. WINNI — Smart Object Recovery"
                       disabled={saving}
                     />
                   </FormField>
-                </div>
-                <div className="col-md-6">
-                  <FormField label="Hero Image Alt Text">
-                    <input type="text" className="form-control form-control-sm" value={heroImageAlt} onChange={(e) => setHeroImageAlt(e.target.value)} placeholder="e.g. WINNI QR sticker on a car" disabled={saving} />
-                  </FormField>
-                </div>
-              </div>
 
-              <div className="row g-3 mb-3">
-                <div className="col-md-3">
-                  <FormField label="Logo Letter" error={errors.logoLetter}>
-                    <input type="text" className={`form-control form-control-sm ${errors.logoLetter ? 'is-invalid' : ''}`} maxLength="2" value={logoLetter} onChange={(e) => setLogoLetter(e.target.value)} placeholder="W" disabled={saving} />
-                  </FormField>
-                </div>
-                <div className="col-md-9">
-                  <FormField label="Logo Style Class" hint="e.g. winni, copilot, saudi, assestini" error={errors.logoClass}>
-                    <input type="text" className={`form-control form-control-sm ${errors.logoClass ? 'is-invalid' : ''}`} value={logoClass} onChange={(e) => setLogoClass(e.target.value)} placeholder="winni" disabled={saving} />
-                  </FormField>
-                </div>
-              </div>
-
-              {/* Live preview */}
-              <div className="p-3 rounded border" style={{ background: '#f8fafc', borderColor: '#e2e8f0' }}>
-                <div className="small fw-bold text-muted text-uppercase mb-2" style={{ fontSize: '0.68rem', letterSpacing: '0.04em' }}>
-                  <i className="bi bi-eye me-1 text-primary" /> Live Asset Preview
-                </div>
-                <div className="d-flex align-items-center gap-3 flex-wrap">
-                  <div style={{ width: '160px', height: '90px', borderRadius: '8px', background: '#0c1a1e', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #cbd5e1', flexShrink: 0 }}>
-                    {resolvedHero && !imageLoadError ? (
-                      <img src={resolvedHero} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={() => setImageLoadError(true)} />
-                    ) : (
-                      <span className="text-muted small text-center px-1" style={{ fontSize: '0.65rem' }}>
-                        <i className="bi bi-image d-block fs-5 text-secondary mb-1" />No Image
-                      </span>
-                    )}
+                  <div className="row g-3">
+                    <div className="col-md-5">
+                      <FormField label="Content Type" required error={errors.contentType}>
+                        <select className="form-select" value={contentType} onChange={(e) => setContentType(e.target.value)} disabled={saving}>
+                          {CONTENT_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                        </select>
+                      </FormField>
+                    </div>
+                    <div className="col-md-7">
+                      <FormField label="Slug" required hint="Kebab-case only — changing the slug affects all public links." error={errors.slug}>
+                        <div className="input-group">
+                          <span className="input-group-text bg-light text-muted small">/</span>
+                          <input
+                            type="text"
+                            className={`form-control ${errors.slug ? 'is-invalid' : ''}`}
+                            value={slug}
+                            onChange={(e) => handleSlugChange(e.target.value)}
+                            placeholder="winni"
+                            disabled={saving}
+                          />
+                        </div>
+                      </FormField>
+                    </div>
                   </div>
-                  <div className="d-flex align-items-center gap-2">
-                    <span className={`logo-mark ${previewLogoClass}`} style={{ width: '40px', height: '40px', flexShrink: 0 }}>{previewLogoLetter}</span>
-                    <div className="small text-muted" style={{ fontSize: '0.75rem', lineHeight: 1.4 }}>
-                      <div><strong>Letter:</strong> <code>{previewLogoLetter}</code></div>
-                      <div><strong>Class:</strong> <code>.{previewLogoClass}</code></div>
+
+                  <div className="border-top pt-3 mt-1">
+                    <div className="small fw-bold text-muted text-uppercase mb-3" style={{ fontSize: '0.68rem', letterSpacing: '0.05em' }}>Presentation Metadata</div>
+
+                    <div className="row g-3">
+                      <div className="col-md-3">
+                        <FormField label="Badge" hint="e.g. 01">
+                          <input type="text" className="form-control form-control-sm" value={badge} onChange={(e) => setBadge(e.target.value)} placeholder="01" disabled={saving} />
+                        </FormField>
+                      </div>
+                      <div className="col-md-9">
+                        <FormField label="Kicker" hint="Short descriptor shown above the title on cards">
+                          <input type="text" className="form-control form-control-sm" value={kicker} onChange={(e) => setKicker(e.target.value)} placeholder="PRODUCT · QR · LOST & FOUND" disabled={saving} />
+                        </FormField>
+                      </div>
+                    </div>
+
+                    <FormField label="Description" hint="Primary copy on project cards and catalog listings">
+                      <textarea className="form-control form-control-sm" rows="2" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="A concise summary for cards and catalog listings…" disabled={saving} />
+                    </FormField>
+
+                    <FormField label="Subtitle" hint="Secondary copy — shorter alternative where needed">
+                      <input type="text" className="form-control form-control-sm" value={subtitle} onChange={(e) => setSubtitle(e.target.value)} placeholder="Short supporting line…" disabled={saving} />
+                    </FormField>
+
+                    <FormField label="Tags" hint="Comma-separated. e.g. Product Design, UX/UI, AI">
+                      <input type="text" className="form-control form-control-sm" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="Product Design, UX/UI, AI" disabled={saving} />
+                    </FormField>
+
+                    <div className="row g-3">
+                      <div className="col-md-6">
+                        <FormField label="Category (Optional)">
+                          <input type="text" className="form-control form-control-sm" value={category} onChange={(e) => setCategory(e.target.value)} placeholder="e.g. Product Design" disabled={saving} />
+                        </FormField>
+                      </div>
+                      <div className="col-md-6">
+                        <FormField label="Year (Optional)">
+                          <input type="number" className="form-control form-control-sm" value={year} onChange={(e) => setYear(e.target.value)} placeholder="e.g. 2026" disabled={saving} />
+                        </FormField>
+                      </div>
+                    </div>
+
+                    <div className="border-top pt-3 mt-3 d-flex justify-content-between align-items-center">
+                      <span className="text-muted small" style={{ fontSize: '0.75rem' }}>
+                        <i className="bi bi-translate text-success me-1"></i> Multilingual translations available for French and Arabic.
+                      </span>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-primary rounded-pill px-3"
+                        style={{ fontSize: '0.75rem' }}
+                        onClick={() => setActiveTab('translations')}
+                      >
+                        <i className="bi bi-translate me-1"></i> Manage Translations →
+                      </button>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
 
-            {/* SECTION: Case Study Content (Phase 14) */}
-            {contentType === 'case-study' && (
+                {/* SECTION 2: Presentation Assets */}
+                <div className="admin-card mb-4">
+                  <SectionTitle icon="bi-image">2 — Presentation Assets</SectionTitle>
+
+                  <div className="row g-3 mb-3">
+                    <div className="col-md-6">
+                      <FormField label="Hero Image Reference" hint="Bundled filename or external https:// URL. Leave blank to use the registered asset for this slug." error={errors.heroImage}>
+                        <input
+                          type="text"
+                          className={`form-control form-control-sm ${errors.heroImage ? 'is-invalid' : ''}`}
+                          value={heroImage}
+                          onChange={(e) => { setHeroImage(e.target.value); setImageLoadError(false); }}
+                          placeholder="winni-sticker-real.png"
+                          disabled={saving}
+                        />
+                      </FormField>
+                    </div>
+                    <div className="col-md-6">
+                      <FormField label="Hero Image Alt Text">
+                        <input type="text" className="form-control form-control-sm" value={heroImageAlt} onChange={(e) => setHeroImageAlt(e.target.value)} placeholder="e.g. WINNI QR sticker on a car" disabled={saving} />
+                      </FormField>
+                    </div>
+                  </div>
+
+                  <div className="row g-3 mb-3">
+                    <div className="col-md-3">
+                      <FormField label="Logo Letter" error={errors.logoLetter}>
+                        <input type="text" className={`form-control form-control-sm ${errors.logoLetter ? 'is-invalid' : ''}`} maxLength="2" value={logoLetter} onChange={(e) => setLogoLetter(e.target.value)} placeholder="W" disabled={saving} />
+                      </FormField>
+                    </div>
+                    <div className="col-md-9">
+                      <FormField label="Logo Style Class" hint="e.g. winni, copilot, saudi, assestini" error={errors.logoClass}>
+                        <input type="text" className={`form-control form-control-sm ${errors.logoClass ? 'is-invalid' : ''}`} value={logoClass} onChange={(e) => setLogoClass(e.target.value)} placeholder="winni" disabled={saving} />
+                      </FormField>
+                    </div>
+                  </div>
+
+                  {/* Live preview */}
+                  <div className="p-3 rounded border" style={{ background: '#f8fafc', borderColor: '#e2e8f0' }}>
+                    <div className="small fw-bold text-muted text-uppercase mb-2" style={{ fontSize: '0.68rem', letterSpacing: '0.04em' }}>
+                      <i className="bi bi-eye me-1 text-primary" /> Live Asset Preview
+                    </div>
+                    <div className="d-flex align-items-center gap-3 flex-wrap">
+                      <div style={{ width: '160px', height: '90px', borderRadius: '8px', background: '#0c1a1e', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #cbd5e1', flexShrink: 0 }}>
+                        {resolvedHero && !imageLoadError ? (
+                          <img src={resolvedHero} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={() => setImageLoadError(true)} />
+                        ) : (
+                          <span className="text-muted small text-center px-1" style={{ fontSize: '0.65rem' }}>
+                            <i className="bi bi-image d-block fs-5 text-secondary mb-1" />No Image
+                          </span>
+                        )}
+                      </div>
+                      <div className="d-flex align-items-center gap-2">
+                        <span className={`logo-mark ${previewLogoClass}`} style={{ width: '40px', height: '40px', flexShrink: 0 }}>{previewLogoLetter}</span>
+                        <div className="small text-muted" style={{ fontSize: '0.75rem', lineHeight: 1.4 }}>
+                          <div><strong>Letter:</strong> <code>{previewLogoLetter}</code></div>
+                          <div><strong>Class:</strong> <code>.{previewLogoClass}</code></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* SECTION: Page Builder Content Integration (Phase 16.1) */}
+                {contentType === 'page' && (
+                  <div className="admin-card mb-4">
+                    <div className="d-flex justify-content-between align-items-center mb-3">
+                      <div className="fw-bold small text-uppercase text-dark" style={{ letterSpacing: '0.04em', fontSize: '0.74rem' }}>
+                        <i className="bi bi-layout-text-window-reverse me-1 text-primary" /> Page Content &amp; Section Layout
+                      </div>
+                      <span className="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1" style={{ fontSize: '0.68rem' }}>
+                        Page Builder Backed
+                      </span>
+                    </div>
+                    <p className="text-muted small mb-3" style={{ fontSize: '0.8rem' }}>
+                      This page uses the composable Page Builder. Edit sections, blocks, layout hierarchy, and live styling in the dedicated Visual Page Builder.
+                    </p>
+                    <div className="d-flex align-items-center gap-2">
+                      <Link
+                        to={`/admin/pages/${entry?.metadata?.pageId || id}`}
+                        className="btn btn-sm btn-primary rounded-pill px-3"
+                      >
+                        <i className="bi bi-pencil-square me-1" /> Open in Visual Page Builder
+                      </Link>
+                      <a
+                        href={slug === 'about' ? '/about?preview=true' : `/p/${slug}?preview=true`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                      >
+                        <i className="bi bi-box-arrow-up-right me-1" /> Preview Page
+                      </a>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* TAB: CASE STUDY CONTENT */}
+            {activeTab === 'casestudy' && contentType === 'case-study' && (
               <CaseStudyContentEditor
                 caseStudy={caseStudy}
                 onChange={(updated) => setCaseStudy(updated)}
@@ -1094,36 +1124,242 @@ export default function AdminRegistryEntry() {
               />
             )}
 
-            {/* SECTION: Page Builder Content Integration (Phase 16.1) */}
-            {contentType === 'page' && (
+            {/* TAB: TRANSLATIONS WORKSPACE */}
+            {activeTab === 'translations' && (
               <div className="admin-card mb-4">
-                <div className="d-flex justify-content-between align-items-center mb-3">
-                  <div className="fw-bold small text-uppercase text-dark" style={{ letterSpacing: '0.04em', fontSize: '0.74rem' }}>
-                    <i className="bi bi-layout-text-window-reverse me-1 text-primary" /> Page Content & Section Layout
+                <div className="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                  <h6 className="fw-bold mb-0">
+                    <i className="bi bi-translate text-success me-2"></i>
+                    Translations ({txLang === 'fr' ? 'Français' : 'العربية'})
+                  </h6>
+                  <div className="btn-group btn-group-sm" role="group">
+                    <button
+                      type="button"
+                      className={`btn ${txLang === 'fr' ? 'btn-dark' : 'btn-outline-secondary'}`}
+                      onClick={() => setTxLang('fr')}
+                    >
+                      Français
+                    </button>
+                    <button
+                      type="button"
+                      className={`btn ${txLang === 'ar' ? 'btn-dark' : 'btn-outline-secondary'}`}
+                      onClick={() => setTxLang('ar')}
+                    >
+                      العربية
+                    </button>
                   </div>
-                  <span className="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1" style={{ fontSize: '0.68rem' }}>
-                    Page Builder Backed
-                  </span>
                 </div>
-                <p className="text-muted small mb-3" style={{ fontSize: '0.8rem' }}>
-                  This page uses the composable Page Builder. Edit sections, blocks, layout hierarchy, and live styling in the dedicated Visual Page Builder.
-                </p>
-                <div className="d-flex align-items-center gap-2">
-                  <Link
-                    to={`/admin/pages/${entry?.metadata?.pageId || id}`}
-                    className="btn btn-sm btn-primary rounded-pill px-3"
-                  >
-                    <i className="bi bi-pencil-square me-1" /> Open in Visual Page Builder
-                  </Link>
-                  <a
-                    href={slug === 'about' ? '/about?preview=true' : `/p/${slug}?preview=true`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="btn btn-sm btn-outline-secondary rounded-pill px-3"
-                  >
-                    <i className="bi bi-box-arrow-up-right me-1" /> Preview Page
-                  </a>
+
+                <div className="alert alert-light border small mb-4">
+                  <i className="bi bi-info-circle me-1"></i> Enter the {txLang === 'fr' ? 'French' : 'Arabic'} translation for this project and case study. Any field left empty will gracefully fall back to the default (English) text.
                 </div>
+
+                {/* 1. Project / Work Card Translation */}
+                <div className="border rounded-3 p-3 bg-light mb-4" dir={txLang === 'ar' ? 'rtl' : 'ltr'}>
+                  <div className="small fw-bold text-uppercase text-muted mb-3" style={{ fontSize: '0.72rem', letterSpacing: '0.05em' }}>
+                    <i className="bi bi-card-text me-1 text-primary"></i> 1 — Catalog &amp; Work Card
+                  </div>
+                  <div className="row g-3">
+                    <div className="col-md-8">
+                      <FormField label={`Title (${txLang.toUpperCase()})`}>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={tx.title || ''}
+                          onChange={(e) => setTxField({ title: e.target.value })}
+                          placeholder={title}
+                          disabled={saving}
+                        />
+                      </FormField>
+                    </div>
+                    <div className="col-md-4">
+                      <FormField label={`Kicker (${txLang.toUpperCase()})`}>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={tx.kicker || ''}
+                          onChange={(e) => setTxField({ kicker: e.target.value })}
+                          placeholder={kicker}
+                          disabled={saving}
+                        />
+                      </FormField>
+                    </div>
+                    <div className="col-12">
+                      <FormField label={`Description (${txLang.toUpperCase()})`}>
+                        <textarea
+                          className="form-control"
+                          rows="3"
+                          value={tx.description || ''}
+                          onChange={(e) => setTxField({ description: e.target.value })}
+                          placeholder={description}
+                          disabled={saving}
+                        />
+                      </FormField>
+                    </div>
+                    <div className="col-12">
+                      <FormField label={`Subtitle (${txLang.toUpperCase()})`}>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={tx.subtitle || ''}
+                          onChange={(e) => setTxField({ subtitle: e.target.value })}
+                          placeholder={subtitle}
+                          disabled={saving}
+                        />
+                      </FormField>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Case Study Content Translation */}
+                {contentType === 'case-study' && (
+                  <div className="border rounded-3 p-3 bg-light" dir={txLang === 'ar' ? 'rtl' : 'ltr'}>
+                    <div className="small fw-bold text-uppercase text-muted mb-3" style={{ fontSize: '0.72rem', letterSpacing: '0.05em' }}>
+                      <i className="bi bi-file-earmark-richtext me-1 text-success"></i> 2 — Case Study Narrative &amp; Sections
+                    </div>
+
+                    {/* Hero */}
+                    <div className="row g-3 mb-3">
+                      <div className="col-md-6">
+                        <label className="form-label fw-bold small text-dark">Hero Eyebrow ({txLang.toUpperCase()})</label>
+                        <input
+                          type="text"
+                          className="form-control form-control-sm"
+                          value={txCase.hero?.eyebrow || ''}
+                          onChange={(e) => setTxCaseStudyField('hero', { eyebrow: e.target.value })}
+                          placeholder={caseStudy?.hero?.eyebrow || kicker}
+                          disabled={saving}
+                        />
+                      </div>
+                      <div className="col-md-6">
+                        <label className="form-label fw-bold small text-dark">Hero Title ({txLang.toUpperCase()})</label>
+                        <input
+                          type="text"
+                          className="form-control form-control-sm"
+                          value={txCase.hero?.title || ''}
+                          onChange={(e) => setTxCaseStudyField('hero', { title: e.target.value })}
+                          placeholder={caseStudy?.hero?.title || title}
+                          disabled={saving}
+                        />
+                      </div>
+                      <div className="col-12">
+                        <label className="form-label fw-bold small text-dark">Hero Lead / Intro ({txLang.toUpperCase()})</label>
+                        <textarea
+                          className="form-control"
+                          rows="2"
+                          value={txCase.hero?.lead || ''}
+                          onChange={(e) => setTxCaseStudyField('hero', { lead: e.target.value })}
+                          placeholder={caseStudy?.hero?.lead || description}
+                          disabled={saving}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Challenge */}
+                    <div className="row g-3 mb-3">
+                      <div className="col-md-6">
+                        <label className="form-label fw-bold small text-dark">Challenge Title ({txLang.toUpperCase()})</label>
+                        <input
+                          type="text"
+                          className="form-control form-control-sm"
+                          value={txCase.challenge?.title || ''}
+                          onChange={(e) => setTxCaseStudyField('challenge', { title: e.target.value })}
+                          placeholder={caseStudy?.challenge?.title || 'The Challenge'}
+                          disabled={saving}
+                        />
+                      </div>
+                      <div className="col-md-6">
+                        <label className="form-label fw-bold small text-dark">Role &amp; Context ({txLang.toUpperCase()})</label>
+                        <input
+                          type="text"
+                          className="form-control form-control-sm"
+                          value={txCase.challenge?.role || ''}
+                          onChange={(e) => setTxCaseStudyField('challenge', { role: e.target.value })}
+                          placeholder={caseStudy?.challenge?.role || 'Lead Product Designer'}
+                          disabled={saving}
+                        />
+                      </div>
+                      <div className="col-12">
+                        <label className="form-label fw-bold small text-dark">Challenge Narrative / Problem Copy ({txLang.toUpperCase()})</label>
+                        <textarea
+                          className="form-control font-monospace"
+                          rows="4"
+                          value={txCase.challenge?.copy || ''}
+                          onChange={(e) => setTxCaseStudyField('challenge', { copy: e.target.value })}
+                          placeholder={caseStudy?.challenge?.copy || 'Detail the problem and operational constraints…'}
+                          disabled={saving}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Contribution */}
+                    <div className="row g-3 mb-3">
+                      <div className="col-md-6">
+                        <label className="form-label fw-bold small text-dark">Contribution Title ({txLang.toUpperCase()})</label>
+                        <input
+                          type="text"
+                          className="form-control form-control-sm"
+                          value={txCase.contribution?.title || ''}
+                          onChange={(e) => setTxCaseStudyField('contribution', { title: e.target.value })}
+                          placeholder={caseStudy?.contribution?.title || 'What I Did & Shipped'}
+                          disabled={saving}
+                        />
+                      </div>
+                      <div className="col-12">
+                        <label className="form-label fw-bold small text-dark">Contribution Key Points (one per line) ({txLang.toUpperCase()})</label>
+                        <textarea
+                          className="form-control font-monospace"
+                          rows="4"
+                          value={Array.isArray(txCase.contribution?.items) ? txCase.contribution.items.join('\n') : (txCase.contribution?.items || '')}
+                          onChange={(e) => setTxCaseStudyField('contribution', { items: e.target.value.split('\n').filter(Boolean) })}
+                          placeholder="Point 1&#10;Point 2&#10;Point 3"
+                          disabled={saving}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Evidence */}
+                    <div className="row g-3 mb-3">
+                      <div className="col-md-6">
+                        <label className="form-label fw-bold small text-dark">Evidence Title ({txLang.toUpperCase()})</label>
+                        <input
+                          type="text"
+                          className="form-control form-control-sm"
+                          value={txCase.evidence?.title || ''}
+                          onChange={(e) => setTxCaseStudyField('evidence', { title: e.target.value })}
+                          placeholder={caseStudy?.evidence?.title || 'Proof & Results'}
+                          disabled={saving}
+                        />
+                      </div>
+                      <div className="col-md-6">
+                        <label className="form-label fw-bold small text-dark">Evidence Caption ({txLang.toUpperCase()})</label>
+                        <input
+                          type="text"
+                          className="form-control form-control-sm"
+                          value={txCase.evidence?.caption || ''}
+                          onChange={(e) => setTxCaseStudyField('evidence', { caption: e.target.value })}
+                          placeholder={caseStudy?.evidence?.caption || 'Supporting visual documentation'}
+                          disabled={saving}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Technology */}
+                    <div className="row g-3">
+                      <div className="col-md-12">
+                        <label className="form-label fw-bold small text-dark">Technology / Stack Title ({txLang.toUpperCase()})</label>
+                        <input
+                          type="text"
+                          className="form-control form-control-sm"
+                          value={txCase.technology?.title || ''}
+                          onChange={(e) => setTxCaseStudyField('technology', { title: e.target.value })}
+                          placeholder={caseStudy?.technology?.title || 'Stack & Tooling'}
+                          disabled={saving}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

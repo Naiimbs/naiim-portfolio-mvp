@@ -6,8 +6,56 @@ import SEO from '../common/SEO';
 import { getCaseStudySchema } from '../../lib/schema';
 
 export default function StandardCaseStudy({ data }) {
-  const { t } = useTranslation();
-  const { slug, hero = {}, challenge = {}, contribution = {}, evidence = {}, technology = {} } = data;
+  const { t, i18n } = useTranslation();
+  const currentLang = i18n?.language?.slice(0, 2) || 'en';
+  const tx = data?.i18n?.[currentLang] || data?.metadata?.i18n?.[currentLang] || {};
+  const txCase = tx?.caseStudy || {};
+
+  const { slug } = data;
+  const rawHero = data.hero || {};
+  const rawChallenge = data.challenge || {};
+  const rawContribution = data.contribution || {};
+  const rawEvidence = data.evidence || {};
+  const rawTechnology = data.technology || {};
+
+  const hero = {
+    ...rawHero,
+    eyebrow: txCase.hero?.eyebrow || rawHero.eyebrow,
+    title: txCase.hero?.title || tx.title || rawHero.title,
+    lead: txCase.hero?.lead || tx.description || rawHero.lead,
+    caption: txCase.hero?.caption || rawHero.caption,
+  };
+
+  const challenge = {
+    ...rawChallenge,
+    eyebrow: txCase.challenge?.eyebrow || rawChallenge.eyebrow,
+    title: txCase.challenge?.title || rawChallenge.title,
+    copy: txCase.challenge?.copy || rawChallenge.copy,
+    role: txCase.challenge?.role || rawChallenge.role,
+    context: txCase.challenge?.context || rawChallenge.context,
+  };
+
+  const contribution = {
+    ...rawContribution,
+    eyebrow: txCase.contribution?.eyebrow || rawContribution.eyebrow,
+    title: txCase.contribution?.title || rawContribution.title,
+    items: Array.isArray(txCase.contribution?.items) && txCase.contribution.items.length > 0
+      ? txCase.contribution.items
+      : rawContribution.items,
+  };
+
+  const evidence = {
+    ...rawEvidence,
+    eyebrow: txCase.evidence?.eyebrow || rawEvidence.eyebrow,
+    title: txCase.evidence?.title || rawEvidence.title,
+    caption: txCase.evidence?.caption || rawEvidence.caption,
+  };
+
+  const technology = {
+    ...rawTechnology,
+    eyebrow: txCase.technology?.eyebrow || rawTechnology.eyebrow,
+    title: txCase.technology?.title || rawTechnology.title,
+  };
 
   const caseSchema = getCaseStudySchema({
     title: hero.title,
@@ -190,7 +238,7 @@ export default function StandardCaseStudy({ data }) {
             <i className="bi bi-arrow-left"></i> {t('caseStudy.backToWork')}
           </Link>
           <a href="/#contact">
-            Let's talk <i className="bi bi-arrow-up-right"></i>
+            {t('navbar.letsTalk', "Let's talk")} <i className="bi bi-arrow-up-right"></i>
           </a>
         </div>
       </section>

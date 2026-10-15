@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import VoicePlayer from './VoicePlayer';
 import MotionHero from '../../motion/MotionHero';
 import portraitCutout from '../../assets/images/naim-portrait.webp';
@@ -9,18 +10,60 @@ import { HERO_DEFAULTS } from './heroDefaults';
  *
  * Content (left column: eyebrow, title, lead, CTAs, "currently building")
  * is driven by `config` when rendered as the `home_hero` CMS section, and
- * falls back to HERO_DEFAULTS field-by-field so an empty config renders the
- * original hero verbatim. The right column (Motion / Portrait + audio) is
- * presentation and stays as-is.
+ * falls back to i18n translations (and then HERO_DEFAULTS) so an empty or
+ * default config renders localized content in EN, FR, and AR. The right
+ * column (Motion / Portrait + audio) is presentation and stays as-is.
  */
 export default function HeroSection({ config = {} }) {
+  const { t } = useTranslation();
   const [heroMode, setHeroMode] = useState('motion'); // 'motion' | 'portrait'
 
   const cfg = { ...HERO_DEFAULTS, ...(config || {}) };
-  const titleLines = Array.isArray(cfg.titleLines) && cfg.titleLines.length ? cfg.titleLines : HERO_DEFAULTS.titleLines;
+
+  // Localized fallbacks
+  const eyebrow = (!config?.eyebrow || config.eyebrow === HERO_DEFAULTS.eyebrow)
+    ? t('hero.eyebrow')
+    : config.eyebrow;
+
+  const isDefaultTitleLines = !config?.titleLines || (
+    Array.isArray(config.titleLines) &&
+    config.titleLines.length === HERO_DEFAULTS.titleLines.length &&
+    config.titleLines.every((l, idx) => l === HERO_DEFAULTS.titleLines[idx])
+  );
+  const localizedTitleLines = t('hero.titleLines', { returnObjects: true });
+  const titleLines = isDefaultTitleLines && Array.isArray(localizedTitleLines) && localizedTitleLines.length
+    ? localizedTitleLines
+    : (Array.isArray(config?.titleLines) && config.titleLines.length ? config.titleLines : HERO_DEFAULTS.titleLines);
+
+  const lead = (!config?.lead || config.lead === HERO_DEFAULTS.lead)
+    ? t('hero.lead')
+    : config.lead;
+
+  const leadStrong = (!config?.leadStrong || config.leadStrong === HERO_DEFAULTS.leadStrong)
+    ? t('hero.leadStrong')
+    : config.leadStrong;
+
+  const primaryCta = {
+    ...HERO_DEFAULTS.primaryCta,
+    ...(cfg.primaryCta || {}),
+    label: (!config?.primaryCta?.label || config.primaryCta.label === HERO_DEFAULTS.primaryCta.label)
+      ? t('hero.exploreWork')
+      : config.primaryCta.label,
+  };
+
+  const secondaryCta = {
+    ...HERO_DEFAULTS.secondaryCta,
+    ...(cfg.secondaryCta || {}),
+    label: (!config?.secondaryCta?.label || config.secondaryCta.label === HERO_DEFAULTS.secondaryCta.label)
+      ? t('hero.talkCopilot')
+      : config.secondaryCta.label,
+  };
+
+  const buildingLabel = (!config?.buildingLabel || config.buildingLabel === HERO_DEFAULTS.buildingLabel)
+    ? t('hero.currentlyBuilding')
+    : config.buildingLabel;
+
   const buildingItems = Array.isArray(cfg.buildingItems) && cfg.buildingItems.length ? cfg.buildingItems : HERO_DEFAULTS.buildingItems;
-  const primaryCta = { ...HERO_DEFAULTS.primaryCta, ...(cfg.primaryCta || {}) };
-  const secondaryCta = { ...HERO_DEFAULTS.secondaryCta, ...(cfg.secondaryCta || {}) };
 
   // Right-column visual controls
   const showVisual = cfg.showVisual !== false;
@@ -35,9 +78,9 @@ export default function HeroSection({ config = {} }) {
       <div className="container">
         <div className="row align-items-center g-5">
           <div className="col-lg-6 hero-copy">
-            {cfg.eyebrow && (
+            {eyebrow && (
               <div className="eyebrow">
-                <span></span> {cfg.eyebrow}
+                <span></span> {eyebrow}
               </div>
             )}
 
@@ -53,10 +96,10 @@ export default function HeroSection({ config = {} }) {
               })}
             </h1>
 
-            {(cfg.lead || cfg.leadStrong) && (
+            {(lead || leadStrong) && (
               <p className="hero-lead">
-                {cfg.lead}
-                {cfg.leadStrong && <strong>{cfg.leadStrong}</strong>}
+                {lead}
+                {leadStrong && <strong>{leadStrong}</strong>}
               </p>
             )}
 
@@ -73,7 +116,7 @@ export default function HeroSection({ config = {} }) {
               )}
             </div>
 
-            {cfg.buildingLabel && <div className="building-label">{cfg.buildingLabel}</div>}
+            {buildingLabel && <div className="building-label">{buildingLabel}</div>}
             {buildingItems.length > 0 && (
               <div className="building-list">
                 {buildingItems.map((item, i) => (
@@ -103,7 +146,7 @@ export default function HeroSection({ config = {} }) {
                 style={{ fontSize: '0.75rem', fontWeight: 600 }}
                 onClick={() => setHeroMode('motion')}
               >
-                <i className="bi bi-play-circle-fill me-1"></i> Motion Sequence (24s)
+                <i className="bi bi-play-circle-fill me-1"></i> {t('hero.motionSequence', 'Motion Sequence (24s)')}
               </button>
               )}
               {showPortrait && (
@@ -117,7 +160,7 @@ export default function HeroSection({ config = {} }) {
                 style={{ fontSize: '0.75rem', fontWeight: 600 }}
                 onClick={() => setHeroMode('portrait')}
               >
-                <i className="bi bi-person-fill me-1"></i> Portrait & Audio
+                <i className="bi bi-person-fill me-1"></i> {t('hero.portraitAudio', 'Portrait & Audio')}
               </button>
               )}
             </div>
@@ -131,14 +174,14 @@ export default function HeroSection({ config = {} }) {
                   <img src={portraitCutout} alt="Naïm Bsili" className="hero-photo" />
                 </div>
                 <div className="hero-note">
-                  Design<br />
-                  Technology<br />
-                  <strong>Impact</strong>
+                  {t('hero.noteDesign', 'Design')}<br />
+                  {t('hero.noteTech', 'Technology')}<br />
+                  <strong>{t('hero.noteImpact', 'Impact')}</strong>
                 </div>
 
                 <VoicePlayer />
 
-                <div className="listen-note" aria-label="Listen to Naïm introduction">
+                <div className="listen-note" aria-label={t('hero.listenToMe', 'Listen to me')}>
                   <svg
                     viewBox="0 0 190 100"
                     role="img"
@@ -160,7 +203,7 @@ export default function HeroSection({ config = {} }) {
                       strokeLinejoin="round"
                     />
                   </svg>
-                  <span>Listen to me</span>
+                  <span>{t('hero.listenToMe', 'Listen to me')}</span>
                 </div>
 
                 <div className="shape shape-one"></div>

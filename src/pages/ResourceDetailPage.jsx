@@ -12,7 +12,7 @@ import ResourceSupportCard from '../components/resources/ResourceSupportCard';
 import '../styles/resources.css';
 
 export default function ResourceDetailPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { slug } = useParams();
   const [resource, setResource] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -118,11 +118,18 @@ export default function ResourceDetailPage() {
   const validDocUrl = showDocLinks && resource.documentation_url && resource.documentation_url.startsWith('http') ? resource.documentation_url : null;
   const hasValidSource = showSourceSection && Boolean(validSourceUrl || validDocUrl);
 
+  const currentLang = i18n.language?.startsWith('fr')
+    ? 'fr'
+    : (i18n.language?.startsWith('ar') ? 'ar' : 'en');
+  const tx = resource?.i18n?.[currentLang] || resource?.metadata?.i18n?.[currentLang] || {};
+  const displayTitle = tx.title || resource.title;
+  const displayDesc = tx.short_description || tx.description || resource.short_description || resource.description;
+
   return (
     <MainLayout>
       <SEO
-        title={`${resource.title} — Resources & Skills`}
-        description={resource.short_description || resource.description}
+        title={`${displayTitle} — Resources & Skills`}
+        description={displayDesc}
         canonical={`/resources/${resource.slug}`}
       />
 
@@ -131,7 +138,7 @@ export default function ResourceDetailPage() {
           {/* Breadcrumb Navigation */}
           <div className="d-flex align-items-center gap-2 small text-muted mb-4">
             <Link to="/resources" className="text-decoration-none text-secondary hover-text-primary">
-              Resources
+              {t('nav.resources', 'Resources')}
             </Link>
             <i className="bi bi-chevron-right" style={{ fontSize: '0.65rem' }}></i>
             <span
@@ -142,10 +149,10 @@ export default function ResourceDetailPage() {
               {typeCfg.label}
             </span>
             <i className="bi bi-chevron-right" style={{ fontSize: '0.65rem' }}></i>
-            <span className="text-dark fw-semibold text-truncate">{resource.title}</span>
+            <span className="text-dark fw-semibold text-truncate">{displayTitle}</span>
           </div>
 
-          {/* 1. SIMPLIFIED HERO BLOCK (Requirement 2) */}
+          {/* 1. SIMPLIFIED HERO BLOCK */}
           <div className="resource-detail-hero">
             <div className="row g-4 align-items-center">
               <div className="col-12 col-lg-8">
@@ -159,20 +166,20 @@ export default function ResourceDetailPage() {
                   </span>
                   {resource.featured && (
                     <span className="resource-featured-pill">
-                      <i className="bi bi-star-fill text-[9px]"></i> Featured
+                      <i className="bi bi-star-fill text-[9px]"></i> {t('resources.featured', 'Featured')}
                     </span>
                   )}
                   {resource.license && (
                     <span className="badge bg-light text-muted border" style={{ fontSize: '0.72rem' }}>
-                      License: {resource.license}
+                      {t('resourceDetail.license', 'License')}: {resource.license}
                     </span>
                   )}
                 </div>
 
-                <h1 className="resource-detail-title">{resource.title}</h1>
+                <h1 className="resource-detail-title">{displayTitle}</h1>
 
                 <p className="resource-detail-lead mb-4">
-                  {resource.short_description || resource.description}
+                  {displayDesc}
                 </p>
 
                 {/* Clear meta badge line */}

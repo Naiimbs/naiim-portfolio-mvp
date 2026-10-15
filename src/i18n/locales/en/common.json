@@ -6,7 +6,29 @@
     "lab": "Lab",
     "about": "About",
     "talk": "Let's Talk",
-    "blog": "Blog"
+    "blog": "Blog",
+    "agents": "Agents",
+    "resources": "Resources"
+  },
+  "hero": {
+    "eyebrow": "SENIOR UX/UI DESIGNER · AI PRODUCT BUILDER",
+    "titleLines": [
+      "I DESIGN.",
+      "I BUILD.",
+      "I EXPERIMENT."
+    ],
+    "lead": "I turn ambiguous problems into usable digital products at the intersection of ",
+    "leadStrong": "product design, AI, low-code and automation.",
+    "exploreWork": "Explore my work",
+    "talkCopilot": "Talk to Naïm Copilot",
+    "currentlyBuilding": "CURRENTLY BUILDING",
+    "roleSubtitle": "Product Designer & AI Builder",
+    "listenToMe": "Listen to me",
+    "motionSequence": "Motion Sequence (24s)",
+    "portraitAudio": "Portrait & Audio",
+    "noteDesign": "Design",
+    "noteTech": "Technology",
+    "noteImpact": "Impact"
   },
   "footer": {
     "rights": "© 2026 Naïm Bsili. All rights reserved."
@@ -373,6 +395,7 @@
     "setupInstructions": "Setup Instructions:",
     "tagsClassification": "Tags & Classification",
     "backToResources": "Back to all resources",
-    "backToTop": "Back to top"
+    "backToTop": "Back to top",
+    "license": "License"
   }
 }

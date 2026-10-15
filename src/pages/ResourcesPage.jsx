@@ -181,6 +181,12 @@ export default function ResourcesPage() {
                 {resources.map((resource) => {
                   const typeCfg = RESOURCE_TYPES[resource.resource_type] || RESOURCE_TYPES.file;
                   const assetCount = Array.isArray(resource.assets) ? resource.assets.length : 0;
+                  const currentLang = i18n.language?.startsWith('fr')
+                    ? 'fr'
+                    : (i18n.language?.startsWith('ar') ? 'ar' : 'en');
+                  const tx = resource.i18n?.[currentLang] || resource.metadata?.i18n?.[currentLang] || {};
+                  const displayTitle = tx.title || resource.title;
+                  const displayDesc = tx.short_description || tx.description || resource.short_description || resource.description;
 
                   return (
                     <div key={resource.id} className="col-12 col-md-6 col-lg-4">
@@ -212,13 +218,13 @@ export default function ResourcesPage() {
                           {/* Title */}
                           <h2 className="resource-card-title">
                             <Link to={`/resources/${resource.slug}`}>
-                              {resource.title}
+                              {displayTitle}
                             </Link>
                           </h2>
 
                           {/* Description */}
                           <p className="resource-card-desc">
-                            {resource.short_description || resource.description}
+                            {displayDesc}
                           </p>
 
                           {/* Tags */}

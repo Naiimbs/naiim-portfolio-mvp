@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import audioSrc from '../../assets/audio/naim-intro-placeholder.mp3';
 import portraitImg from '../../assets/images/naim-portrait.webp';
 
@@ -18,6 +19,7 @@ function formatTime(seconds) {
 }
 
 export default function VoicePlayer() {
+  const { t } = useTranslation();
   const [isPlaying, setIsPlaying] = useState(false);
   const [timeDisplay, setTimeDisplay] = useState('0:47');
   const audioRef = useRef(null);
@@ -76,7 +78,7 @@ export default function VoicePlayer() {
       <img src={portraitImg} alt="Naïm portrait used for the hero audio introduction" />
       <div className="audio-card-copy">
         <strong>Naïm</strong>
-        <span>Product Designer & AI Builder</span>
+        <span>{t('hero.roleSubtitle')}</span>
         <div className={`voice-player ${isPlaying ? 'is-playing' : ''}`} id="voicePlayer">
           <button
             className="voice-play"
