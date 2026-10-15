@@ -4,7 +4,6 @@ import PageRenderer from '../../components/cms/PageRenderer';
 import SectionPropertyEditor from '../components/cms/editors/SectionPropertyEditor';
 import AddSectionModal from '../components/cms/AddSectionModal';
 import BlogPageCanvasPreview from '../components/cms/BlogPageCanvasPreview';
-import AboutPageCanvasPreview from '../components/cms/AboutPageCanvasPreview';
 import {
   getAdminPages,
   updatePage,
@@ -13,6 +12,7 @@ import {
   updatePageSection,
   deletePageSection,
   publishPageSnapshot,
+  ABOUT_PROPOSAL_SECTIONS,
 } from '../../services/siteCms';
 import { getPagePublishingReadiness } from '../../utils/registryHealth';
 import { PAGE_SECTION_TYPES, validateSection, normalizeSectionConfig } from '../../components/cms/sectionSchemas';
@@ -80,14 +80,46 @@ export default function AdminPageEditor() {
     setPage(target);
 
     const secRes = await getAdminPageSections(target.id);
-    const loadedSecs = (secRes.data || []).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+    let loadedSecs = (secRes.data || []).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+    if (target.slug === 'about') {
+      const isLegacy = loadedSecs.length > 0 && loadedSecs.every((s) => ['hero', 'rich_text', 'timeline', 'workflow', 'cta'].includes(s.section_type));
+      if (loadedSecs.length === 0 || isLegacy) {
+        loadedSecs = ABOUT_PROPOSAL_SECTIONS.map((s, idx) => ({
+          ...s,
+          id: `sec-about-${s.section_type}-${Date.now()}-${idx}`,
+          page_id: target.id,
+        }));
+      }
+    }
     setSections(loadedSecs);
 
-    if (target.slug === 'blog' || target.slug === 'about') {
+    if (target.slug === 'blog') {
       setActiveTab('page');
+    } else if (target.slug === 'about' && loadedSecs.length > 0) {
+      setActiveSectionId(loadedSecs[0].id);
+      setActiveTab('section');
     }
     setLoading(false);
   }
+
+  const handleSyncAboutProposal = () => {
+    if (!page) return;
+    const synced = ABOUT_PROPOSAL_SECTIONS.map((s, idx) => ({
+      ...s,
+      page_id: page.id,
+      id: `sec-about-${s.section_type}-${Date.now()}-${idx}`,
+    }));
+    setSections(synced);
+    setDirtySectionIds(new Set(synced.map((s) => s.id)));
+    if (synced.length > 0) {
+      setActiveSectionId(synced[0].id);
+      setActiveTab('section');
+    }
+    setFeedback({
+      type: 'success',
+      message: 'Synchronized with 9 authoritative Proposal sections (Hero, Journey, Philosophy, Expertise, Proof, Share, Building, Human, Closing). Remember to click "Save All Changes" to persist.',
+    });
+  };
 
   const tx = page?.metadata?.i18n?.[txLang] || page?.i18n?.[txLang] || {};
   const txAbout = tx.about || {};
@@ -766,6 +798,17 @@ export default function AdminPageEditor() {
                 <small className="text-muted">{sections.length} {sections.length === 1 ? 'section' : 'sections'}</small>
               </div>
               <div className="d-flex align-items-center gap-1">
+                {page?.slug === 'about' && (
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline-primary rounded-pill py-1 px-2 fw-semibold"
+                    style={{ fontSize: '0.75rem' }}
+                    onClick={handleSyncAboutProposal}
+                    title="Synchronize all 9 sections from docs/about-me-page-proposal.md"
+                  >
+                    <i className="bi bi-arrow-repeat me-1"></i> Sync Proposal
+                  </button>
+                )}
                 <button
                   className="btn btn-sm btn-primary rounded-pill py-1 px-3 shadow-sm"
                   onClick={() => setShowAddSectionModal(true)}
@@ -967,14 +1010,22 @@ export default function AdminPageEditor() {
                     }}
                   />
                 ) : page.slug === 'about' && sections.length === 0 ? (
-                  <AboutPageCanvasPreview
-                    page={page}
-                    activeLang={activeTab === 'translations' ? txLang : 'en'}
-                    onSelectBlock={() => {
-                      setActiveTab('page');
-                      setRightPanelOpen(true);
-                    }}
-                  />
+                  <div className="text-center py-5 bg-white rounded-4 border shadow-sm p-4 my-3">
+                    <div className="rounded-circle bg-primary bg-opacity-10 text-primary p-3 d-inline-flex align-items-center justify-content-center mb-3" style={{ width: '64px', height: '64px' }}>
+                      <i className="bi bi-layout-text-window-reverse fs-2" />
+                    </div>
+                    <h5 className="fw-bold text-dark mb-2">Editorial About Me Proposal</h5>
+                    <p className="text-muted small mx-auto mb-4" style={{ maxWidth: '480px' }}>
+                      Populate all 9 modular sections (Hero, Journey, Philosophy, Expertise, Proof, Share, Building, Human, Closing) into this page to customize each block.
+                    </p>
+                    <button
+                      type="button"
+                      className="btn btn-primary rounded-pill px-4 py-2 fw-semibold shadow-sm"
+                      onClick={handleSyncAboutProposal}
+                    >
+                      <i className="bi bi-magic me-2" /> Populate 9 Proposal Sections
+                    </button>
+                  </div>
                 ) : (
                   <PageRenderer
                     page={page}

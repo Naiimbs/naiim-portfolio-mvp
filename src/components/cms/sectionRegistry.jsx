@@ -39,6 +39,17 @@ import HomeLab from '../lab/LabSection';
 import HomeAbout from '../about/AboutSection';
 import HomeContact from '../common/ContactSection';
 import WorkCatalog from '../work/WorkCatalog';
+import {
+  AboutHeroSection,
+  AboutJourneySection,
+  AboutPhilosophySection,
+  AboutExpertiseSection,
+  AboutProofSection,
+  AboutShareSection,
+  AboutBuildingSection,
+  AboutHumanSection,
+  AboutClosingSection,
+} from '../about/proposalSections';
 
 // 1. Hero Section
 function HeroSection({ config = {} }) {
@@ -833,6 +844,17 @@ export const SECTION_REGISTRY = {
   home_about: HomeAboutBlock,
   home_contact: HomeContactBlock,
   work_catalog: WorkCatalogBlock,
+
+  // Editorial About Me sections (docs/about-me-page-proposal.md)
+  about_hero: AboutHeroSection,
+  about_journey: AboutJourneySection,
+  about_philosophy: AboutPhilosophySection,
+  about_expertise: AboutExpertiseSection,
+  about_proof: AboutProofSection,
+  about_share: AboutShareSection,
+  about_building: AboutBuildingSection,
+  about_human: AboutHumanSection,
+  about_closing: AboutClosingSection,
 };
 
 /**

@@ -123,7 +123,7 @@ export default function HomePage() {
           </section>
 
           <LabSection />
-          <AboutSection />
+          <AboutSection variant="compact" />
           <ContactSection />
         </>
       )}

@@ -84,80 +84,137 @@ export const DEFAULT_FOOTER_NAV = [
 
 export const FALLBACK_NAVIGATION = [...DEFAULT_HEADER_NAV, ...DEFAULT_FOOTER_NAV];
 
-export const FALLBACK_SECTIONS = [
+export const ABOUT_PROPOSAL_SECTIONS = [
   {
-    id: 'sec-about-1',
+    id: 'sec-about-hero',
     page_id: 'page-about',
-    section_type: 'hero',
-    label: 'Hero Banner',
+    section_type: 'about_hero',
+    label: 'About · 01 Hero — Beyond a Job Title',
     sort_order: 10,
     is_visible: true,
     config: {
-      title: 'I DESIGN. I BUILD. I EXPERIMENT.',
-      description: 'I turn ambiguous problems into usable digital products at the intersection of product design, AI, low-code and automation.',
-      primaryCta: { label: 'Explore my work', href: '/work' },
-      secondaryCta: { label: 'Get in Touch', href: 'mailto:contact@naiimbsili.com' },
+      eyebrow: 'PRODUCT DESIGNER · AI BUILDER',
+      headline: 'I DESIGN. I BUILD. I EXPERIMENT.',
+      lead: 'I turn complex problems into usable digital products through product design, AI, low-code, and automation.',
+      exploreCta: { label: 'Explore My Work', href: '/work' },
+      talkCta: { label: "Let's Talk", href: '/about#contact' },
+      buildingNote: 'WINNI Identity Ecosystem · Naïm Copilot · AI Agent Protocols',
+      portraitUrl: '',
     },
   },
   {
-    id: 'sec-about-2',
+    id: 'sec-about-journey',
     page_id: 'page-about',
-    section_type: 'rich_text',
-    label: 'Philosophy & Narrative',
+    section_type: 'about_journey',
+    label: 'About · 02 My Journey — From Mechanical to AI',
     sort_order: 20,
     is_visible: true,
     config: {
-      eyebrow: 'PHILOSOPHY',
-      title: 'Designing with Purpose',
-      body: 'Leading product designer with deep expertise in design systems and AI integrations.',
+      eyebrow: 'SIGNATURE EVOLUTION',
+      title: 'From Mechanical Design to AI',
+      subtitle: 'A visual progression connecting physical engineering, visual craft, human-centered UX, low-code delivery, and autonomous AI systems.',
     },
   },
   {
-    id: 'sec-about-3',
+    id: 'sec-about-philosophy',
     page_id: 'page-about',
-    section_type: 'timeline',
-    label: 'Experience Timeline',
+    section_type: 'about_philosophy',
+    label: 'About · 03 How I Think — Philosophy',
     sort_order: 30,
     is_visible: true,
     config: {
-      title: 'Career Milestones',
-      items: [
-        { year: '2026', title: 'Lead Product Designer', description: 'Designing AI-native product workflows.' },
-        { year: '2024', title: 'Senior UX Designer', description: 'Design system engineering.' },
-      ],
+      eyebrow: 'HOW I THINK',
+      title: 'Principles over trends.',
+      intro: 'Tools evolve every month, but how you approach problems remains your true craft. Here is how I think before touching any tool.',
+      signatureStatement: '"I think. I design. I experiment."',
     },
   },
   {
-    id: 'sec-about-4',
+    id: 'sec-about-expertise',
     page_id: 'page-about',
-    section_type: 'workflow',
-    label: 'Process Framework',
+    section_type: 'about_expertise',
+    label: 'About · 04 What I Do — Expertise',
     sort_order: 40,
     is_visible: true,
     config: {
-      title: 'Process Framework',
-      steps: [
-        { title: 'Understand & Frame', description: 'Deconstruct complex business problems.' },
-        { title: 'Design & Systematize', description: 'Architect intuitive user flows.' },
-        { title: 'Build & Automate', description: 'Implement with web tech and AI.' },
-      ],
+      eyebrow: 'AREAS OF EXPERTISE',
+      title: 'What I Bring to Products',
+      subtitle: 'Structured capability groups reflecting proven hands-on delivery.',
     },
   },
   {
-    id: 'sec-about-5',
+    id: 'sec-about-proof',
     page_id: 'page-about',
-    section_type: 'cta',
-    label: 'Collaboration CTA',
+    section_type: 'about_proof',
+    label: 'About · 05 Selected Work — Proof, Not Claims',
     sort_order: 50,
     is_visible: true,
     config: {
-      eyebrow: 'GET IN TOUCH',
-      title: 'Ready to collaborate on your next product?',
-      description: 'Let’s build scalable design systems and AI experiences together.',
-      buttonLabel: 'Send an Email',
-      buttonHref: 'mailto:contact@naiimbsili.com',
+      eyebrow: 'PROOF, NOT CLAIMS',
+      title: 'Selected Work & Artifacts',
     },
   },
+  {
+    id: 'sec-about-share',
+    page_id: 'page-about',
+    section_type: 'about_share',
+    label: 'About · 06 Beyond Portfolio — What I Share',
+    sort_order: 60,
+    is_visible: true,
+    config: {
+      eyebrow: 'KNOWLEDGE SHARING',
+      title: 'Beyond the Portfolio',
+      hours: '1,200+',
+      learners: '300+',
+      articles: '20+',
+    },
+  },
+  {
+    id: 'sec-about-building',
+    page_id: 'page-about',
+    section_type: 'about_building',
+    label: 'About · 07 Currently Building — Spotlight',
+    sort_order: 70,
+    is_visible: true,
+    config: {
+      title: 'WINNI Identity & Autonomous Agent Protocols',
+      stage: 'ACTIVE DEVELOPMENT',
+      description: 'Refining the physical-to-digital QR/NFC recovery flow and experimenting with autonomous agent orchestration via Model Context Protocol (MCP) to make physical objects interact with intelligent workflows.',
+      link: '/#lab',
+    },
+  },
+  {
+    id: 'sec-about-human',
+    page_id: 'page-about',
+    section_type: 'about_human',
+    label: 'About · 08 Beyond Work — The Person',
+    sort_order: 80,
+    is_visible: true,
+    config: {
+      eyebrow: 'THE PERSON BEHIND',
+      title: 'Curiosity as the continuous thread.',
+      story: 'Behind every design system and agentic workflow is a deep curiosity about how things work. Whether dismantling a mechanical mechanism, observing how people handle friction in everyday tasks, or writing automation logic, the common thread is transforming ideas into something tangible and useful.',
+    },
+  },
+  {
+    id: 'sec-about-closing',
+    page_id: 'page-about',
+    section_type: 'about_closing',
+    label: "About · 09 Let's Build Something Meaningful",
+    sort_order: 90,
+    is_visible: true,
+    config: {
+      eyebrow: 'GET IN TOUCH',
+      title: "Let's Build Something Meaningful",
+      description: "I'm interested in meaningful product challenges where design, technology, and AI come together. Whether you are building an ambitious system or exploring workflow automation, let's talk.",
+      exploreLabel: 'Explore My Work',
+      email: 'contact@naiimbsili.com',
+    },
+  },
+];
+
+export const FALLBACK_SECTIONS = [
+  ...ABOUT_PROPOSAL_SECTIONS,
   {
     id: 'sec-blog-1',
     page_id: 'page-blog',
@@ -520,6 +577,17 @@ export async function getPageSections(pageId) {
         .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
       return { data: fallback, error, source: 'local_fallback' };
     }
+
+    const isAboutPage = pageId === 'b458c42a-8e8e-4629-b6cd-9eae47ccbb79' || pageId === 'page-about';
+    const hasLegacyAboutOnly = isAboutPage && data && data.length > 0 && data.every((s) => ['hero', 'rich_text', 'timeline', 'workflow', 'cta'].includes(s.section_type));
+    if (isAboutPage && (!data || data.length === 0 || hasLegacyAboutOnly)) {
+      const fallback = localSectionsStore
+        .filter((s) => s.page_id === 'page-about' || s.page_id === pageId)
+        .filter((s) => s.is_visible)
+        .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+      return { data: fallback, error: null, source: 'proposal_fallback' };
+    }
+
     return { data: data || [], error: null, source: 'supabase' };
   } catch (err) {
     const fallback = localSectionsStore
@@ -550,6 +618,16 @@ export async function getAdminPageSections(pageId) {
         .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
       return { data: fallback, error, source: 'local_fallback' };
     }
+
+    const isAboutPage = pageId === 'b458c42a-8e8e-4629-b6cd-9eae47ccbb79' || pageId === 'page-about';
+    const hasLegacyAboutOnly = isAboutPage && data && data.length > 0 && data.every((s) => ['hero', 'rich_text', 'timeline', 'workflow', 'cta'].includes(s.section_type));
+    if (isAboutPage && (!data || data.length === 0 || hasLegacyAboutOnly)) {
+      const fallback = localSectionsStore
+        .filter((s) => s.page_id === 'page-about' || s.page_id === pageId)
+        .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+      return { data: fallback, error: null, source: 'proposal_fallback' };
+    }
+
     return { data: data || [], error: null, source: 'supabase' };
   } catch (err) {
     const fallback = localSectionsStore

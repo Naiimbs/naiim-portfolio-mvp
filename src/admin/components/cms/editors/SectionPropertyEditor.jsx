@@ -1104,6 +1104,480 @@ export default function SectionPropertyEditor({ section, onChange, onSave, onCan
           </div>
         );
 
+      // -----------------------------------------------------------------------
+      // 1. About · Hero
+      // -----------------------------------------------------------------------
+      case 'about_hero':
+        return (
+          <div className="card border-0 bg-light rounded-3 p-3 mb-3">
+            <h6 className="fw-bold mb-3 small text-uppercase">About Hero Properties</h6>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Eyebrow</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.eyebrow ?? config.heroEyebrow ?? 'PRODUCT DESIGNER · AI BUILDER'}
+                onChange={(e) => handleConfigChange({ ...config, eyebrow: e.target.value, heroEyebrow: e.target.value })}
+                placeholder="PRODUCT DESIGNER · AI BUILDER"
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Headline</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.headline ?? config.heroHeadline ?? 'I DESIGN. I BUILD. I EXPERIMENT.'}
+                onChange={(e) => handleConfigChange({ ...config, headline: e.target.value, heroHeadline: e.target.value })}
+                placeholder="I DESIGN. I BUILD. I EXPERIMENT."
+              />
+              <small className="text-muted d-block mt-1" style={{ fontSize: '0.72rem' }}>
+                Note: Periods (.) separate headline lines. The 3rd segment receives the italic serif accent.
+              </small>
+            </div>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Lead Description</label>
+              <textarea
+                className="form-control form-control-sm rounded-3"
+                rows="3"
+                value={config.lead ?? config.heroLead ?? ''}
+                onChange={(e) => handleConfigChange({ ...config, lead: e.target.value, heroLead: e.target.value })}
+                placeholder="I turn complex problems into usable digital products through product design, AI, low-code, and automation."
+              />
+            </div>
+            <div className="row g-2 mb-3">
+              <div className="col-6">
+                <label className="form-label small fw-semibold">Primary CTA Label</label>
+                <input
+                  type="text"
+                  className="form-control form-control-sm rounded-3"
+                  value={config.exploreCta?.label ?? 'Explore My Work'}
+                  onChange={(e) => handleConfigChange({
+                    ...config,
+                    exploreCta: { ...(config.exploreCta || {}), label: e.target.value, href: config.exploreCta?.href || '/work' },
+                  })}
+                />
+              </div>
+              <div className="col-6">
+                <label className="form-label small fw-semibold">Primary CTA Href</label>
+                <input
+                  type="text"
+                  className="form-control form-control-sm rounded-3 font-monospace"
+                  value={config.exploreCta?.href ?? '/work'}
+                  onChange={(e) => handleConfigChange({
+                    ...config,
+                    exploreCta: { ...(config.exploreCta || {}), href: e.target.value, label: config.exploreCta?.label || 'Explore My Work' },
+                  })}
+                />
+              </div>
+            </div>
+            <div className="row g-2 mb-3">
+              <div className="col-6">
+                <label className="form-label small fw-semibold">Secondary CTA Label</label>
+                <input
+                  type="text"
+                  className="form-control form-control-sm rounded-3"
+                  value={config.talkCta?.label ?? "Let's Talk"}
+                  onChange={(e) => handleConfigChange({
+                    ...config,
+                    talkCta: { ...(config.talkCta || {}), label: e.target.value, href: config.talkCta?.href || '/about#contact' },
+                  })}
+                />
+              </div>
+              <div className="col-6">
+                <label className="form-label small fw-semibold">Secondary CTA Href</label>
+                <input
+                  type="text"
+                  className="form-control form-control-sm rounded-3 font-monospace"
+                  value={config.talkCta?.href ?? '/about#contact'}
+                  onChange={(e) => handleConfigChange({
+                    ...config,
+                    talkCta: { ...(config.talkCta || {}), href: e.target.value, label: config.talkCta?.label || "Let's Talk" },
+                  })}
+                />
+              </div>
+            </div>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Currently Building Note</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.buildingNote ?? 'WINNI Identity Ecosystem · Naïm Copilot · AI Agent Protocols'}
+                onChange={(e) => handleConfigChange({ ...config, buildingNote: e.target.value })}
+                placeholder="WINNI Identity Ecosystem · Naïm Copilot · AI Agent Protocols"
+              />
+            </div>
+            <div className="mb-2">
+              <label className="form-label small fw-semibold">Portrait Image URL (Optional)</label>
+              <MediaPickerInput
+                value={config.portraitUrl || ''}
+                placeholder="Leave blank for default portrait, or paste URL"
+                onChange={(url) => handleConfigChange({ ...config, portraitUrl: url })}
+              />
+            </div>
+          </div>
+        );
+
+      // -----------------------------------------------------------------------
+      // 2. About · My Journey
+      // -----------------------------------------------------------------------
+      case 'about_journey':
+        return (
+          <div className="card border-0 bg-light rounded-3 p-3 mb-3">
+            <h6 className="fw-bold mb-3 small text-uppercase">My Journey Properties</h6>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Eyebrow</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.eyebrow ?? 'SIGNATURE EVOLUTION'}
+                onChange={(e) => handleConfigChange({ ...config, eyebrow: e.target.value })}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Title</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.title ?? 'From Mechanical Design to AI'}
+                onChange={(e) => handleConfigChange({ ...config, title: e.target.value })}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Subtitle / Summary</label>
+              <textarea
+                className="form-control form-control-sm rounded-3"
+                rows="3"
+                value={config.subtitle ?? 'A visual progression connecting physical engineering, visual craft, human-centered UX, low-code delivery, and autonomous AI systems.'}
+                onChange={(e) => handleConfigChange({ ...config, subtitle: e.target.value })}
+              />
+            </div>
+            <div className="alert alert-info border-0 rounded-3 p-2 small mb-0">
+              <i className="bi bi-info-circle me-1"></i>
+              The 5 milestone stages (Mechanical, Visual Craft, UX/UI, Low-Code, AI Product Building) are rendered with interactive stage tabs and key lessons on the canvas.
+            </div>
+          </div>
+        );
+
+      // -----------------------------------------------------------------------
+      // 3. About · How I Think
+      // -----------------------------------------------------------------------
+      case 'about_philosophy':
+        return (
+          <div className="card border-0 bg-light rounded-3 p-3 mb-3">
+            <h6 className="fw-bold mb-3 small text-uppercase">How I Think Properties</h6>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Eyebrow</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.eyebrow ?? 'HOW I THINK'}
+                onChange={(e) => handleConfigChange({ ...config, eyebrow: e.target.value })}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Title</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.title ?? 'Principles over trends.'}
+                onChange={(e) => handleConfigChange({ ...config, title: e.target.value })}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Intro</label>
+              <textarea
+                className="form-control form-control-sm rounded-3"
+                rows="3"
+                value={config.intro ?? 'Tools evolve every month, but how you approach problems remains your true craft. Here is how I think before touching any tool.'}
+                onChange={(e) => handleConfigChange({ ...config, intro: e.target.value })}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Signature Statement</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3 font-serif"
+                value={config.signatureStatement ?? '"I think. I design. I experiment."'}
+                onChange={(e) => handleConfigChange({ ...config, signatureStatement: e.target.value })}
+              />
+            </div>
+          </div>
+        );
+
+      // -----------------------------------------------------------------------
+      // 4. About · What I Do
+      // -----------------------------------------------------------------------
+      case 'about_expertise':
+        return (
+          <div className="card border-0 bg-light rounded-3 p-3 mb-3">
+            <h6 className="fw-bold mb-3 small text-uppercase">Areas of Expertise Properties</h6>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Eyebrow</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.eyebrow ?? 'AREAS OF EXPERTISE'}
+                onChange={(e) => handleConfigChange({ ...config, eyebrow: e.target.value })}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Title</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.title ?? 'What I Bring to Products'}
+                onChange={(e) => handleConfigChange({ ...config, title: e.target.value })}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Subtitle</label>
+              <textarea
+                className="form-control form-control-sm rounded-3"
+                rows="2"
+                value={config.subtitle ?? 'Structured capability groups reflecting proven hands-on delivery.'}
+                onChange={(e) => handleConfigChange({ ...config, subtitle: e.target.value })}
+              />
+            </div>
+            <div className="alert alert-info border-0 rounded-3 p-2 small mb-0">
+              <i className="bi bi-info-circle me-1"></i>
+              Renders 3 capability clusters: Product & UX/UI Design, Low-Code Product Delivery (Mendix/OutSystems), and AI Product Building & Automation (n8n/MCP).
+            </div>
+          </div>
+        );
+
+      // -----------------------------------------------------------------------
+      // 5. About · Selected Work
+      // -----------------------------------------------------------------------
+      case 'about_proof':
+        return (
+          <div className="card border-0 bg-light rounded-3 p-3 mb-3">
+            <h6 className="fw-bold mb-3 small text-uppercase">Selected Work (Proof) Properties</h6>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Eyebrow</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.eyebrow ?? 'PROOF, NOT CLAIMS'}
+                onChange={(e) => handleConfigChange({ ...config, eyebrow: e.target.value })}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Title</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.title ?? 'Selected Work & Artifacts'}
+                onChange={(e) => handleConfigChange({ ...config, title: e.target.value })}
+              />
+            </div>
+            <div className="alert alert-info border-0 rounded-3 p-2 small mb-0">
+              <i className="bi bi-info-circle me-1"></i>
+              Renders proof cards for WINNI, Naïm Copilot, Enterprise Product Design, and AI & Automation Lab with direct links to case studies.
+            </div>
+          </div>
+        );
+
+      // -----------------------------------------------------------------------
+      // 6. About · Beyond the Portfolio
+      // -----------------------------------------------------------------------
+      case 'about_share':
+        return (
+          <div className="card border-0 bg-light rounded-3 p-3 mb-3">
+            <h6 className="fw-bold mb-3 small text-uppercase">Beyond the Portfolio Properties</h6>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Eyebrow</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.eyebrow ?? 'KNOWLEDGE SHARING'}
+                onChange={(e) => handleConfigChange({ ...config, eyebrow: e.target.value })}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Title</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.title ?? 'Beyond the Portfolio'}
+                onChange={(e) => handleConfigChange({ ...config, title: e.target.value })}
+              />
+            </div>
+            <div className="row g-2 mb-3">
+              <div className="col-4">
+                <label className="form-label small fw-semibold">Hours</label>
+                <input
+                  type="text"
+                  className="form-control form-control-sm rounded-3"
+                  value={config.hours ?? '1,200+'}
+                  onChange={(e) => handleConfigChange({ ...config, hours: e.target.value })}
+                />
+              </div>
+              <div className="col-4">
+                <label className="form-label small fw-semibold">Learners</label>
+                <input
+                  type="text"
+                  className="form-control form-control-sm rounded-3"
+                  value={config.learners ?? '300+'}
+                  onChange={(e) => handleConfigChange({ ...config, learners: e.target.value })}
+                />
+              </div>
+              <div className="col-4">
+                <label className="form-label small fw-semibold">Articles</label>
+                <input
+                  type="text"
+                  className="form-control form-control-sm rounded-3"
+                  value={config.articles ?? '20+'}
+                  onChange={(e) => handleConfigChange({ ...config, articles: e.target.value })}
+                />
+              </div>
+            </div>
+          </div>
+        );
+
+      // -----------------------------------------------------------------------
+      // 7. About · Currently Building
+      // -----------------------------------------------------------------------
+      case 'about_building':
+        return (
+          <div className="card border-0 bg-light rounded-3 p-3 mb-3">
+            <h6 className="fw-bold mb-3 small text-uppercase">Currently Building Spotlight</h6>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Status Badge</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.stage ?? 'ACTIVE DEVELOPMENT'}
+                onChange={(e) => handleConfigChange({ ...config, stage: e.target.value })}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Project Title</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.title ?? 'WINNI Identity & Autonomous Agent Protocols'}
+                onChange={(e) => handleConfigChange({ ...config, title: e.target.value })}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Description</label>
+              <textarea
+                className="form-control form-control-sm rounded-3"
+                rows="3"
+                value={config.description ?? 'Refining the physical-to-digital QR/NFC recovery flow and experimenting with autonomous agent orchestration via Model Context Protocol (MCP) to make physical objects interact with intelligent workflows.'}
+                onChange={(e) => handleConfigChange({ ...config, description: e.target.value })}
+              />
+            </div>
+            <div className="mb-2">
+              <label className="form-label small fw-semibold">Destination Link</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3 font-monospace"
+                value={config.link ?? '/#lab'}
+                onChange={(e) => handleConfigChange({ ...config, link: e.target.value })}
+              />
+            </div>
+          </div>
+        );
+
+      // -----------------------------------------------------------------------
+      // 8. About · Beyond Work (The Person)
+      // -----------------------------------------------------------------------
+      case 'about_human':
+        return (
+          <div className="card border-0 bg-light rounded-3 p-3 mb-3">
+            <h6 className="fw-bold mb-3 small text-uppercase">Beyond Work (The Person)</h6>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Eyebrow</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.eyebrow ?? 'THE PERSON BEHIND'}
+                onChange={(e) => handleConfigChange({ ...config, eyebrow: e.target.value })}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Title</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.title ?? 'Curiosity as the continuous thread.'}
+                onChange={(e) => handleConfigChange({ ...config, title: e.target.value })}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Story / Narrative</label>
+              <textarea
+                className="form-control form-control-sm rounded-3"
+                rows="4"
+                value={config.story ?? 'Behind every design system and agentic workflow is a deep curiosity about how things work. Whether dismantling a mechanical mechanism, observing how people handle friction in everyday tasks, or writing automation logic, the common thread is transforming ideas into something tangible and useful.'}
+                onChange={(e) => handleConfigChange({ ...config, story: e.target.value })}
+              />
+            </div>
+            <div className="alert alert-info border-0 rounded-3 p-2 small mb-0">
+              <i className="bi bi-info-circle me-1"></i>
+              Renders spoken languages (Arabic, French, English, Italian), certifications (PSM I, ISSAT Design), and core design beliefs.
+            </div>
+          </div>
+        );
+
+      // -----------------------------------------------------------------------
+      // 9. About · Closing CTA
+      // -----------------------------------------------------------------------
+      case 'about_closing':
+        return (
+          <div className="card border-0 bg-light rounded-3 p-3 mb-3">
+            <h6 className="fw-bold mb-3 small text-uppercase">Closing CTA Properties</h6>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Eyebrow</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.eyebrow ?? 'GET IN TOUCH'}
+                onChange={(e) => handleConfigChange({ ...config, eyebrow: e.target.value })}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Title</label>
+              <input
+                type="text"
+                className="form-control form-control-sm rounded-3"
+                value={config.title ?? "Let's Build Something Meaningful"}
+                onChange={(e) => handleConfigChange({ ...config, title: e.target.value })}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Description</label>
+              <textarea
+                className="form-control form-control-sm rounded-3"
+                rows="3"
+                value={config.description ?? "I'm interested in meaningful product challenges where design, technology, and AI come together. Whether you are building an ambitious system or exploring workflow automation, let's talk."}
+                onChange={(e) => handleConfigChange({ ...config, description: e.target.value })}
+              />
+            </div>
+            <div className="row g-2 mb-3">
+              <div className="col-6">
+                <label className="form-label small fw-semibold">Button Label</label>
+                <input
+                  type="text"
+                  className="form-control form-control-sm rounded-3"
+                  value={config.exploreLabel ?? 'Explore My Work'}
+                  onChange={(e) => handleConfigChange({ ...config, exploreLabel: e.target.value })}
+                />
+              </div>
+              <div className="col-6">
+                <label className="form-label small fw-semibold">Contact Email</label>
+                <input
+                  type="email"
+                  className="form-control form-control-sm rounded-3"
+                  value={config.email ?? 'contact@naiimbsili.com'}
+                  onChange={(e) => handleConfigChange({ ...config, email: e.target.value })}
+                />
+              </div>
+            </div>
+          </div>
+        );
+
       default:
         return (
           <div className="alert alert-secondary text-center py-4 rounded-3 border-0 my-3">

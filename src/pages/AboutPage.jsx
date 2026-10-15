@@ -52,9 +52,15 @@ export default function AboutPage() {
 
         if (isRegistryAllowed && isPagePublished) {
           setAboutPage(pageRes.data);
-          const secRes = await getPageSections(pageRes.data.id);
-          if (secRes.data && secRes.data.length > 0) {
-            setSections(secRes.data);
+          const snapshot = Array.isArray(pageRes.data.published_snapshot) ? pageRes.data.published_snapshot : null;
+          const isLegacySnapshot = snapshot && snapshot.length > 0 && snapshot.every((s) => ['hero', 'rich_text', 'timeline', 'workflow', 'cta'].includes(s.section_type));
+          if (snapshot && snapshot.length > 0 && !isLegacySnapshot) {
+            setSections(snapshot);
+          } else {
+            const secRes = await getPageSections(pageRes.data.id);
+            if (secRes.data && secRes.data.length > 0) {
+              setSections(secRes.data);
+            }
           }
         }
         setLoading(false);
