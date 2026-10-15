@@ -17,7 +17,7 @@ WITH ordered AS (
           WHEN 'blog' THEN 2
           ELSE 3
         END,
-        COALESCE(published_at, created_at) ASC NULLS LAST,
+        created_at ASC NULLS LAST,
         title ASC
     ) * 10 AS new_order
   FROM public.content_registry
