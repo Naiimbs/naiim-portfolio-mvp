@@ -1,50 +1,41 @@
 import React from 'react';
-
-const SKILLS = [
-  'UX/UI',
-  'Product Design',
-  'AI',
-  'Low-Code',
-  'Design Systems',
-  'Automation',
-];
+import { useTranslation } from 'react-i18next';
 
 export default function AboutCard() {
+  const { t } = useTranslation();
+  const skills = t('about.skills', { returnObjects: true }) || [];
+
   return (
     <div className="about-card">
       <div className="eyebrow">
-        <span></span> ABOUT ME
+        <span></span> {t('about.cardEyebrow')}
       </div>
       <h3>
-        Designing with curiosity.<br />
-        Building with purpose.
+        {t('about.cardTitleLine1')}<br />
+        {t('about.cardTitleLine2')}
       </h3>
-      <p>
-        I'm Naïm, a product designer and AI builder based in Tunisia. I enjoy taking ambiguous ideas,
-        giving them structure, designing the experience, and turning them into something people can actually
-        use.
-      </p>
+      <p>{t('about.bio')}</p>
 
       <div className="skill-cloud">
-        {SKILLS.map((skill, index) => (
+        {skills.map((skill, index) => (
           <span key={index}>{skill}</span>
         ))}
       </div>
 
       <div className="about-grid">
         <div>
-          <small>LANGUAGES</small>
+          <small>{t('about.languagesLabel')}</small>
           <p>
-            Arabic · French<br />
-            English · Italian
+            {t('about.languagesLine1')}<br />
+            {t('about.languagesLine2')}
           </p>
         </div>
         <div>
-          <small>CERTIFICATIONS</small>
+          <small>{t('about.certificationsLabel')}</small>
           <p>
-            PSM I<br />
-            Mendix Rapid Developer<br />
-            Design — ISSAT Sousse
+            {t('about.certLine1')}<br />
+            {t('about.certLine2')}<br />
+            {t('about.certLine3')}
           </p>
         </div>
       </div>

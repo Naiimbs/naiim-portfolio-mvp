@@ -131,5 +131,76 @@
       "Design Systems",
       "Remote"
     ]
+  },
+  "about": {
+    "eyebrow": "THE JOURNEY",
+    "titleLine1": "From making things with my hands",
+    "titleLine2": "to building intelligent products.",
+    "nowLabel": "NOW",
+    "timeline": [
+      {
+        "title": "Mechanical design",
+        "subtitle": "& fabrication",
+        "small": null
+      },
+      {
+        "title": "Industrial environments",
+        "subtitle": null,
+        "small": "Process & maintenance · chlorine industry"
+      },
+      {
+        "title": "Plastic injection",
+        "subtitle": null,
+        "small": "Moulding & manufacturing"
+      },
+      {
+        "title": "Digital design",
+        "subtitle": "& UX/UI",
+        "small": null
+      },
+      {
+        "title": "Product Design",
+        "subtitle": "& AI Product Building",
+        "small": null
+      }
+    ],
+    "cardEyebrow": "ABOUT ME",
+    "cardTitleLine1": "Designing with curiosity.",
+    "cardTitleLine2": "Building with purpose.",
+    "bio": "I'm Naïm, a product designer and AI builder based in Tunisia. I enjoy taking ambiguous ideas, giving them structure, designing the experience, and turning them into something people can actually use.",
+    "skills": [
+      "UX/UI",
+      "Product Design",
+      "AI",
+      "Low-Code",
+      "Design Systems",
+      "Automation"
+    ],
+    "languagesLabel": "LANGUAGES",
+    "languagesLine1": "Arabic · French",
+    "languagesLine2": "English · Italian",
+    "certificationsLabel": "CERTIFICATIONS",
+    "certLine1": "PSM I",
+    "certLine2": "Mendix Rapid Developer",
+    "certLine3": "Design — ISSAT Sousse"
+  },
+  "copilot": {
+    "kicker": "AI ASSISTANT",
+    "subtitle": "Ask about my work, projects, skills and professional journey.",
+    "online": "Online",
+    "defaultUser": "What kind of products does Naïm build?",
+    "defaultAi": "Naïm builds digital products combining design, technology and AI, with a focus on usable experiences and real business impact. His work spans UX/UI, Product Design, AI-driven solutions, Low-Code and Product Operations.",
+    "thinking": "Thinking…",
+    "inputPlaceholder": "Ask another question...",
+    "send": "Send",
+    "tryAsking": "TRY ASKING:",
+    "poweredNote": "Prototype UI · ready to connect to n8n",
+    "suggestions": [
+      "What are Naïm's strongest skills?",
+      "Show me relevant projects",
+      "What AI tools does he use?",
+      "Is he available for a project?",
+      "Why should I work with Naïm?"
+    ]
   }
 }

@@ -131,5 +131,76 @@
       "Design Systems",
       "Remote"
     ]
+  },
+  "about": {
+    "eyebrow": "LE PARCOURS",
+    "titleLine1": "De la fabrication manuelle",
+    "titleLine2": "à la création de produits intelligents.",
+    "nowLabel": "AUJOURD’HUI",
+    "timeline": [
+      {
+        "title": "Conception mécanique",
+        "subtitle": "& fabrication",
+        "small": null
+      },
+      {
+        "title": "Environnements industriels",
+        "subtitle": null,
+        "small": "Procédés & maintenance · industrie du chlore"
+      },
+      {
+        "title": "Injection plastique",
+        "subtitle": null,
+        "small": "Moulage & fabrication"
+      },
+      {
+        "title": "Design numérique",
+        "subtitle": "& UX/UI",
+        "small": null
+      },
+      {
+        "title": "Product Design",
+        "subtitle": "& création de produits IA",
+        "small": null
+      }
+    ],
+    "cardEyebrow": "À PROPOS",
+    "cardTitleLine1": "Concevoir avec curiosité.",
+    "cardTitleLine2": "Bâtir avec intention.",
+    "bio": "Je suis Naïm, product designer et bâtisseur IA basé en Tunisie. J’aime prendre des idées floues, leur donner une structure, concevoir l’expérience et les transformer en quelque chose de réellement utilisable.",
+    "skills": [
+      "UX/UI",
+      "Product Design",
+      "IA",
+      "Low-Code",
+      "Design Systems",
+      "Automatisation"
+    ],
+    "languagesLabel": "LANGUES",
+    "languagesLine1": "Arabe · Français",
+    "languagesLine2": "Anglais · Italien",
+    "certificationsLabel": "CERTIFICATIONS",
+    "certLine1": "PSM I",
+    "certLine2": "Mendix Rapid Developer",
+    "certLine3": "Design — ISSAT Sousse"
+  },
+  "copilot": {
+    "kicker": "ASSISTANT IA",
+    "subtitle": "Posez des questions sur mon travail, mes projets, mes compétences et mon parcours.",
+    "online": "En ligne",
+    "defaultUser": "Quel type de produits Naïm conçoit-il ?",
+    "defaultAi": "Naïm conçoit des produits numériques mêlant design, technologie et IA, avec un accent sur des expériences utilisables et un impact métier réel. Son travail couvre l’UX/UI, le Product Design, les solutions basées sur l’IA, le Low-Code et les Product Operations.",
+    "thinking": "Réflexion…",
+    "inputPlaceholder": "Posez une autre question...",
+    "send": "Envoyer",
+    "tryAsking": "ESSAYEZ DE DEMANDER :",
+    "poweredNote": "UI prototype · prêt à être connecté à n8n",
+    "suggestions": [
+      "Quelles sont les meilleures compétences de Naïm ?",
+      "Montre-moi des projets pertinents",
+      "Quels outils IA utilise-t-il ?",
+      "Est-il disponible pour un projet ?",
+      "Pourquoi travailler avec Naïm ?"
+    ]
   }
 }
