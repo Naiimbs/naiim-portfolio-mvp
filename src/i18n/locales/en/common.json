@@ -210,7 +210,8 @@
     "talk": "Let's talk",
     "loading": "Loading work...",
     "unavailable": "Selected work is temporarily unavailable.",
-    "empty": "No published work items yet."
+    "empty": "No published work items yet.",
+    "loadError": "Unable to load the work registry right now. Please try again shortly."
   },
   "caseStrip": {
     "eyebrow": "CASE STUDIES",

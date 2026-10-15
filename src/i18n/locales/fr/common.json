@@ -210,7 +210,8 @@
     "talk": "Discutons",
     "loading": "Chargement des projets...",
     "unavailable": "Les projets sélectionnés sont momentanément indisponibles.",
-    "empty": "Aucun projet publié pour l’instant."
+    "empty": "Aucun projet publié pour l’instant.",
+    "loadError": "Impossible de charger les projets pour le moment. Veuillez réessayer sous peu."
   },
   "caseStrip": {
     "eyebrow": "ÉTUDES DE CAS",
