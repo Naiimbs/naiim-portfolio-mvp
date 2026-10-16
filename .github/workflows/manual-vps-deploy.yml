@@ -59,18 +59,21 @@ jobs:
             --output="$RUNNER_TEMP/naim-portfolio-${GITHUB_SHA}.tar.gz" \
             "$GITHUB_SHA"
 
-      - name: Prepare SSH credentials
+      - name: Start SSH agent with the passphrase-protected deploy key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+          passphrase: ${{ secrets.VPS_SSH_PASSPHRASE }}
+
+      - name: Prepare SSH host verification
         env:
-          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
           VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
         run: |
           set -euo pipefail
-          : "${VPS_SSH_KEY:?Add the production environment secret VPS_SSH_KEY.}"
           : "${VPS_KNOWN_HOSTS:?Add the production environment secret VPS_KNOWN_HOSTS.}"
           install -m 700 -d "$HOME/.ssh"
-          printf '%s\n' "$VPS_SSH_KEY" > "$HOME/.ssh/deploy_key"
           printf '%s\n' "$VPS_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
-          chmod 600 "$HOME/.ssh/deploy_key" "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/known_hosts"
 
       - name: Upload source archive to the VPS
         env:
@@ -81,9 +84,7 @@ jobs:
           : "${VPS_HOST:?Add the production environment secret VPS_HOST.}"
           : "${VPS_USER:?Add the production environment secret VPS_USER.}"
           scp \
-            -i "$HOME/.ssh/deploy_key" \
             -o BatchMode=yes \
-            -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=yes \
             -o UserKnownHostsFile="$HOME/.ssh/known_hosts" \
             "$RUNNER_TEMP/naim-portfolio-${GITHUB_SHA}.tar.gz" \
@@ -98,9 +99,7 @@ jobs:
         run: |
           set -euo pipefail
           ssh \
-            -i "$HOME/.ssh/deploy_key" \
             -o BatchMode=yes \
-            -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=yes \
             -o UserKnownHostsFile="$HOME/.ssh/known_hosts" \
             "${VPS_USER}@${VPS_HOST}" \
