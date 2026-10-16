@@ -21,8 +21,11 @@ export function formatCssCode(rawCss = '') {
     return `___CSS_COMMENT_${comments.length - 1}___`;
   });
 
-  // 2. Normalize whitespace around structural tokens: { } ;
-  let normalized = withProtectedComments
+  // 2. Ensure missing final semicolon before closing brace is restored
+  let normalized = withProtectedComments.replace(/([^;{}\s]+(?:\s+[^;{}\s]+)*)\s*\}/g, '$1;\n}');
+
+  // 3. Normalize whitespace around structural tokens: { } ;
+  normalized = normalized
     .replace(/\s*\{\s*/g, ' {\n')
     .replace(/\s*\}\s*/g, '\n}\n')
     .replace(/;\s*/g, ';\n');
@@ -34,12 +37,20 @@ export function formatCssCode(rawCss = '') {
   const getIndent = (lvl) => '  '.repeat(Math.max(0, lvl));
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
+    let line = lines[i].trim();
     if (!line) continue;
 
     // Handle closing brace: un-indent first
     if (line.startsWith('}')) {
       indentLevel = Math.max(0, indentLevel - 1);
+    }
+
+    // Format declaration spacing: ensure space after colon (if property: value)
+    if (line.includes(':') && !line.startsWith('@') && !line.startsWith('/*')) {
+      const colonIndex = line.indexOf(':');
+      const prop = line.substring(0, colonIndex).trim();
+      const val = line.substring(colonIndex + 1).trim();
+      line = `${prop}: ${val}`;
     }
 
     // Format line with current indent
