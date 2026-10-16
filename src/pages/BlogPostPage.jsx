@@ -259,7 +259,7 @@ export default function BlogPostPage() {
           )}
 
           {/* Reader feedback (ratings) */}
-          {!isPreview && (
+          {!isAuthorizedPreview && (
             <div className="max-w-4xl mx-auto mt-5 pt-4 border-top">
               <PostFeedback slug={slug} />
             </div>
