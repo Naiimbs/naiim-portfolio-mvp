@@ -264,17 +264,25 @@ export function computeSectionStyleObject(styleConfig, viewport = 'desktop') {
 /**
  * Validates Custom CSS string:
  * - Checks for unclosed braces
- * - Warns against global tags (body, html, :root, nav, header, footer)
+ * - Checks for unclosed comments
+ * - Checks for disallowed HTML breakout tags (<script>, </style>, etc.)
+ * - Checks for legacy active execution vectors (expression(), javascript: URIs)
+ * - Warns against global tags when in section mode (isGlobal: false)
  * - Returns syntax errors and safety warnings
+ *
+ * NOTE: Regex and token checks catch common syntax errors and crude injection attempts,
+ * but cannot guarantee full safety for arbitrary CSS. True isolation must be enforced
+ * structurally (e.g. scoping, sandboxed iframe, disabling on admin routes).
  */
-export function validateCustomCss(rawCss = '') {
+export function validateCustomCss(rawCss = '', options = {}) {
   const css = String(rawCss || '').trim();
   if (!css) return { valid: true, errors: [], warnings: [] };
 
+  const isGlobal = Boolean(options.isGlobal || options.scope === 'global');
   const errors = [];
   const warnings = [];
 
-  // Check balanced braces
+  // 1. Check balanced braces
   let braceCount = 0;
   for (let i = 0; i < css.length; i++) {
     if (css[i] === '{') braceCount++;
@@ -288,21 +296,52 @@ export function validateCustomCss(rawCss = '') {
     errors.push(`Unclosed open brace: ${braceCount} unclosed brace(s).`);
   }
 
-  // Check for dangerous global root selectors
-  const dangerousPatterns = [
-    { pattern: /\bbody\b/i, name: 'body' },
-    { pattern: /\bhtml\b/i, name: 'html' },
-    { pattern: /:root\b/i, name: ':root' },
-    { pattern: /\bnav\b/i, name: 'nav' },
-    { pattern: /\bheader\b/i, name: 'header' },
-    { pattern: /\bfooter\b/i, name: 'footer' },
-  ];
+  // 2. Check unclosed comments
+  const openComments = (css.match(/\/\*/g) || []).length;
+  const closeComments = (css.match(/\*\//g) || []).length;
+  if (openComments > closeComments) {
+    errors.push(`Unclosed CSS comment: ${openComments - closeComments} unclosed comment(s).`);
+  }
 
-  dangerousPatterns.forEach(({ pattern, name }) => {
-    if (pattern.test(css)) {
-      warnings.push(`Selector references global element "${name}". Custom CSS should be scoped to this section.`);
+  // 3. Check for HTML tag breakout attempts
+  if (/<(?:\/)?(?:style|script|link|iframe|html|head|body|svg)\b/i.test(css)) {
+    errors.push('CSS cannot contain HTML tags or closing </style> tags.');
+  }
+
+  // 4. Check for legacy dangerous active execution syntax
+  if (/\bexpression\s*\(/i.test(css)) {
+    errors.push('CSS expressions ("expression(...)") are disallowed for security.');
+  }
+  if (/url\s*\(\s*['"]?\s*javascript:/i.test(css)) {
+    errors.push('JavaScript URIs in url() are disallowed for security.');
+  }
+  if (/-moz-binding\s*:/i.test(css)) {
+    errors.push('-moz-binding rules are disallowed for security.');
+  }
+
+  // 5. Scoped vs Global warnings
+  if (!isGlobal) {
+    // Section-scoped custom CSS warnings (existing behavior preserved)
+    const dangerousPatterns = [
+      { pattern: /\bbody\b/i, name: 'body' },
+      { pattern: /\bhtml\b/i, name: 'html' },
+      { pattern: /:root\b/i, name: ':root' },
+      { pattern: /\bnav\b/i, name: 'nav' },
+      { pattern: /\bheader\b/i, name: 'header' },
+      { pattern: /\bfooter\b/i, name: 'footer' },
+    ];
+
+    dangerousPatterns.forEach(({ pattern, name }) => {
+      if (pattern.test(css)) {
+        warnings.push(`Selector references global element "${name}". Custom CSS should be scoped to this section.`);
+      }
+    });
+  } else {
+    // Global custom CSS advisory warnings
+    if (/\.admin-|\badmin-layout\b/i.test(css)) {
+      warnings.push('Custom CSS targets admin selectors. Global Custom CSS is automatically isolated and disabled on /admin routes.');
     }
-  });
+  }
 
   return {
     valid: errors.length === 0,

@@ -71,10 +71,6 @@ export default function SEO({
         </script>
       )}
 
-      {/* Global Custom CSS Injection */}
-      {cmsSettings?.custom_css && (
-        <style id="cms-custom-css">{cmsSettings.custom_css}</style>
-      )}
     </Helmet>
   );
 }

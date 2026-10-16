@@ -918,6 +918,7 @@ export const DEFAULT_SITE_SETTINGS = {
   default_seo_title: 'Naïm Bsili — Product Designer & AI Builder',
   default_seo_description: 'Naïm Bsili — Product Designer & AI Builder. UX/UI, Product Design, AI, Low-Code and Product Operations.',
   default_og_image: '/assets/images/naim-portrait.jpg',
+  custom_css: '',
 };
 export const DEFAULT_SETTINGS = DEFAULT_SITE_SETTINGS;
 

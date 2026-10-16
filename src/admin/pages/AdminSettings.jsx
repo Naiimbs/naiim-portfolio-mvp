@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { getAdminSiteSettings, updateMultipleSiteSettings } from '../../services/siteCms';
+import { validateCustomCss } from '../../components/cms/styleSystem';
+import { CUSTOM_CSS_UPDATE_EVENT } from '../../components/common/GlobalThemeApplier';
 import MediaPickerModal from '../components/cms/MediaPickerModal';
+import CustomCssLivePreview from '../components/cms/CustomCssLivePreview';
+import CustomCssCodeEditor from '../components/cms/CustomCssCodeEditor';
 
 export default function AdminSettings() {
   const [settings, setSettings] = useState({
@@ -21,8 +25,10 @@ export default function AdminSettings() {
     default_seo_title: '',
     default_seo_description: '',
     default_og_image: '',
+    custom_css: '',
   });
 
+  const [savedCustomCss, setSavedCustomCss] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
@@ -53,6 +59,7 @@ export default function AdminSettings() {
     const res = await getAdminSiteSettings();
     if (res.data) {
       setSettings((prev) => ({ ...prev, ...res.data }));
+      setSavedCustomCss(res.data.custom_css || '');
     }
     setIsDirty(false);
     setLoading(false);
@@ -65,6 +72,11 @@ export default function AdminSettings() {
       setErrors((prev) => ({ ...prev, [key]: null }));
     }
   };
+
+  // Live CSS validation calculation for inline diagnostics
+  const cssValidation = useMemo(() => {
+    return validateCustomCss(settings.custom_css || '', { isGlobal: true });
+  }, [settings.custom_css]);
 
   const validate = () => {
     const newErrors = {};
@@ -88,6 +100,13 @@ export default function AdminSettings() {
       }
     });
 
+    // Global Custom CSS validation
+    if (settings.custom_css && settings.custom_css.trim() !== '') {
+      if (!cssValidation.valid) {
+        newErrors.custom_css = cssValidation.errors.join(' ');
+      }
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -109,7 +128,19 @@ export default function AdminSettings() {
       setFeedback({ type: 'danger', message: res.error.message || 'Failed to save site settings.' });
     } else {
       setIsDirty(false);
+      setSavedCustomCss(settings.custom_css || '');
       setFeedback({ type: 'success', message: 'Site settings saved successfully!' });
+      // Notify GlobalThemeApplier and synchronize local cache
+      if (typeof window !== 'undefined') {
+        try {
+          if (settings.custom_css && settings.custom_css.trim()) {
+            localStorage.setItem('cms_custom_css_cache', settings.custom_css);
+          } else {
+            localStorage.removeItem('cms_custom_css_cache');
+          }
+        } catch (e) {}
+        window.dispatchEvent(new CustomEvent(CUSTOM_CSS_UPDATE_EVENT, { detail: settings.custom_css || '' }));
+      }
       setTimeout(() => setFeedback(null), 4000);
     }
   };
@@ -417,29 +448,58 @@ export default function AdminSettings() {
             </div>
           </div>
 
-          {/* 6. GLOBAL CUSTOM CSS CODE EDITOR */}
+          {/* 6. GLOBAL CUSTOM CSS CODE EDITOR & LIVE PREVIEW */}
           <div className="card border-0 shadow-sm rounded-4 mb-4">
             <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
-              <h5 className="card-title fw-bold mb-1">
-                <i className="bi bi-code-slash me-2 text-danger"></i> Global Custom CSS Editor
-              </h5>
-              <p className="text-muted small mb-0">Write custom CSS rules injected globally across public CMS pages and section class overrides.</p>
+              <div className="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div>
+                  <h5 className="card-title fw-bold mb-1 font-heading">
+                    <i className="bi bi-code-slash me-2 text-danger"></i> Global Custom CSS Editor &amp; Live Preview
+                  </h5>
+                  <p className="text-muted small mb-0">Write custom CSS rules injected globally across public CMS pages with real-time isolated preview.</p>
+                </div>
+                <div className="d-flex align-items-center gap-2">
+                  <span className="badge bg-secondary bg-opacity-10 text-secondary border">
+                    <i className="bi bi-shield-check me-1"></i> Admin Isolated
+                  </span>
+                  <span className="badge bg-primary-subtle text-primary border border-primary-subtle">
+                    <i className="bi bi-eye me-1"></i> Sandboxed Preview
+                  </span>
+                </div>
+              </div>
             </div>
             <div className="card-body p-4">
-              <div className="mb-2">
-                <label className="form-label fw-semibold">Custom CSS Code</label>
-                <textarea
-                  rows={8}
-                  className="form-control font-monospace rounded-3 bg-dark text-light p-3"
-                  placeholder={`/* Example custom CSS classes */\n.my-custom-section {\n  background: rgba(255, 255, 255, 0.05);\n  backdrop-filter: blur(12px);\n  border-radius: 1rem;\n}\n\n.hero-badge-glow {\n  box-shadow: 0 0 20px rgba(13, 110, 253, 0.4);\n}`}
-                  value={settings.custom_css || ''}
-                  onChange={(e) => handleChange('custom_css', e.target.value)}
-                  style={{ fontSize: '0.85rem', lineHeight: '1.4' }}
-                />
+              <div className="row g-4 align-items-stretch">
+                {/* Left Column: Enhanced Code Editor with Line Numbers & Formatting */}
+                <div className="col-xl-6 d-flex flex-column">
+                  <CustomCssCodeEditor
+                    value={settings.custom_css || ''}
+                    onChange={(newVal) => handleChange('custom_css', newVal)}
+                    error={errors.custom_css}
+                    warnings={cssValidation.warnings}
+                    disabled={saving}
+                  />
+
+                  <div className="d-flex flex-column gap-1 mt-2">
+                    <small className="text-muted">
+                      <i className="bi bi-info-circle me-1"></i> Custom CSS is dynamically injected into the <code>&lt;head&gt;</code> of all public pages, and is strictly disabled on all <code>/admin</code> routes to safeguard the Admin CMS.
+                    </small>
+                    <small className="text-secondary" style={{ fontSize: '0.75rem' }}>
+                      <i className="bi bi-shield-lock me-1"></i> Note: Syntax validation checks structure and disallows HTML breakouts, but always test styles before publishing.
+                    </small>
+                  </div>
+                </div>
+
+                {/* Right Column: Live Isolated Sandboxed Preview */}
+                <div className="col-xl-6 d-flex flex-column">
+                  <CustomCssLivePreview
+                    customCss={settings.custom_css || ''}
+                    savedCss={savedCustomCss}
+                    onRevert={() => handleChange('custom_css', savedCustomCss)}
+                    validationResult={cssValidation}
+                  />
+                </div>
               </div>
-              <small className="text-muted">
-                <i className="bi bi-info-circle me-1"></i> Custom CSS is dynamically injected into the <code>&lt;head&gt;</code> of all public pages.
-              </small>
             </div>
           </div>
 
