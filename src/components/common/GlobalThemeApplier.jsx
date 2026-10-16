@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { getPublicSiteSettings } from '../../services/siteCms';
 import { validateAndNormalizeTheme, applyThemeToDom } from '../../ui/theme/themeResolver';
+import { THEME_DEFAULTS } from '../../ui/theme/themeDefaults';
 
 const CACHE_KEY_THEME = 'cms_theme_tokens_cache';
 const CACHE_KEY_CSS = 'cms_custom_css_cache';
@@ -13,12 +14,14 @@ const CACHE_KEY_CSS = 'cms_custom_css_cache';
  */
 export default function GlobalThemeApplier() {
   useEffect(() => {
-    // 1. Immediately apply cached theme tokens and custom CSS (no flash)
+    // 1. Immediately apply cached theme tokens or default tokens (no flash)
     try {
       const cachedTheme = localStorage.getItem(CACHE_KEY_THEME);
       if (cachedTheme) {
         const parsed = JSON.parse(cachedTheme);
         applyThemeToDom(validateAndNormalizeTheme(parsed));
+      } else {
+        applyThemeToDom(THEME_DEFAULTS);
       }
       const cachedCss = localStorage.getItem(CACHE_KEY_CSS);
       if (cachedCss) {

@@ -7,12 +7,14 @@ dist
 .env
 .env.*
 *.env
+.deploy.env
 server/.secrets.env
 server/.connections.json
 services/gmail-mcp/.env
 services/gmail-mcp/.env.*
 !.env.example
 !**/.env.example
+!.deploy.env.example
 
 # Development scratch directory
 scratch/

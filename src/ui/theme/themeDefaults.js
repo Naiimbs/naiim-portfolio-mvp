@@ -16,6 +16,7 @@ export const THEME_DEFAULTS = {
     textMuted: '#718187',
     textInverse: '#ffffff',
 
+    bodyBg: '#ffffff',
     surface: '#ffffff',
     surfaceElevated: '#ffffff',
     surfaceMuted: '#f8f9f6',
@@ -56,5 +57,10 @@ export const THEME_DEFAULTS = {
     secondaryBg: '#10242a',
     secondaryText: '#ffffff',
     borderRadius: '9999px',
+  },
+  layout: {
+    mode: 'contained',
+    containerMaxWidth: '1320px',
+    containerPaddingX: '1.5rem',
   },
 };

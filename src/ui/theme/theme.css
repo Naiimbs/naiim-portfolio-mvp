@@ -22,6 +22,7 @@
   --color-text-inverse: #ffffff;
 
   /* Surface */
+  --color-body-bg: #ffffff;
   --color-surface: #ffffff;
   --color-surface-elevated: #ffffff;
   --color-surface-muted: #f8f9f6;
@@ -46,6 +47,11 @@
   /* Spacing */
   --space-unit: 4px;
 
+  /* Global Layout & Container Tokens */
+  --layout-mode: contained;
+  --layout-container-max-width: 1320px;
+  --layout-container-padding-x: 1.5rem;
+
   /* Bootstrap 5 Primary Overrides */
   --bs-primary: #087f66;
   --bs-primary-rgb: 8, 127, 102;
@@ -53,7 +59,7 @@
   --bs-link-hover-color: #075b4b;
   --bs-border-color: #dfe7e4;
   --bs-body-color: #10242a;
-  --bs-body-bg: #f8f9f6;
+  --bs-body-bg: #ffffff;
   --bs-heading-color: #10242a;
   --bs-focus-ring-color: rgba(8, 127, 102, 0.25);
 }
@@ -65,11 +71,34 @@ h1, h2, h3, h4, h5, h6,
   color: var(--color-text-primary);
 }
 
+html {
+  background-color: var(--color-body-bg, #ffffff);
+  color: var(--color-text-primary, #10242a);
+}
+
 body,
 .font-body {
   font-family: var(--font-body);
   color: var(--color-text-primary);
-  background-color: var(--color-surface-muted);
+  background-color: var(--color-body-bg, #ffffff);
+}
+
+#root {
+  background-color: var(--color-body-bg, #ffffff);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main#top,
+.cms-page-wrapper {
+  background-color: var(--color-body-bg, #ffffff);
+  flex-grow: 1;
+}
+
+.footer {
+  background-color: var(--color-body-bg, #ffffff);
+  border-top-color: var(--color-border, #dfe7e4);
 }
 
 /* Bootstrap Primary Button Override */
@@ -201,3 +230,98 @@ body,
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
+/* ==============================================================================
+   Global Layout & Container System (Phase 2)
+   Binds .container, public layouts, Navbar, and Footer to layout tokens.
+   ============================================================================== */
+
+/* 1. Public Container Gutter & Horizontal Padding */
+:root:not(.admin-layout) .container,
+body:not(.admin-layout) .container {
+  --bs-gutter-x: calc(var(--layout-container-padding-x, 1.5rem) * 2);
+  padding-left: var(--layout-container-padding-x, 1.5rem) !important;
+  padding-right: var(--layout-container-padding-x, 1.5rem) !important;
+}
+
+/* 2. Responsive Clamp for Narrow Viewports */
+@media (max-width: 575.98px) {
+  :root:not(.admin-layout) .container,
+  body:not(.admin-layout) .container {
+    padding-left: clamp(1rem, var(--layout-container-padding-x, 1.5rem), 1.5rem) !important;
+    padding-right: clamp(1rem, var(--layout-container-padding-x, 1.5rem), 1.5rem) !important;
+  }
+}
+
+/* 3. Contained Mode (Default) - Responsive Breakpoints */
+@media (min-width: 576px) {
+  :root[data-layout-mode="contained"] .container,
+  :root:not([data-layout-mode="full-width"]) .container {
+    max-width: min(540px, var(--layout-container-max-width, 1320px));
+  }
+}
+
+@media (min-width: 768px) {
+  :root[data-layout-mode="contained"] .container,
+  :root:not([data-layout-mode="full-width"]) .container {
+    max-width: min(720px, var(--layout-container-max-width, 1320px));
+  }
+}
+
+@media (min-width: 992px) {
+  :root[data-layout-mode="contained"] .container,
+  :root:not([data-layout-mode="full-width"]) .container {
+    max-width: min(960px, var(--layout-container-max-width, 1320px));
+  }
+}
+
+@media (min-width: 1200px) {
+  :root[data-layout-mode="contained"] .container,
+  :root:not([data-layout-mode="full-width"]) .container {
+    max-width: min(1140px, var(--layout-container-max-width, 1320px));
+  }
+}
+
+@media (min-width: 1400px) {
+  :root[data-layout-mode="contained"] .container,
+  :root:not([data-layout-mode="full-width"]) .container {
+    max-width: var(--layout-container-max-width, 1320px) !important;
+  }
+}
+
+/* 4. Full-Width Mode Across Public Pages, Navbar, and Footer */
+:root[data-layout-mode="full-width"] .container,
+[data-layout-mode="full-width"] body:not(.admin-layout) .container {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+:root[data-layout-mode="full-width"] .site-nav .container,
+:root[data-layout-mode="full-width"] .footer .container {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+/* 5. Reading & Content Measure Protection */
+/* Prevents full-width from stretching text and article bodies across giant screens */
+.max-w-xl { max-width: 36rem !important; margin-left: auto; margin-right: auto; }
+.max-w-2xl { max-width: 42rem !important; margin-left: auto; margin-right: auto; }
+.max-w-3xl { max-width: 48rem !important; margin-left: auto; margin-right: auto; }
+.max-w-4xl { max-width: 56rem !important; margin-left: auto; margin-right: auto; }
+.max-w-5xl { max-width: 64rem !important; margin-left: auto; margin-right: auto; }
+.max-w-700 { max-width: 700px !important; margin-left: auto; margin-right: auto; }
+
+/* When article is a container itself (e.g. BlogPostPage) */
+:root[data-layout-mode="full-width"] article.container,
+:root[data-layout-mode="full-width"] .article-reading-container {
+  max-width: 1140px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* 6. Admin Layout Isolation (Never Alter Admin CMS via Global Layout) */
+.admin-layout .container,
+.admin-layout .container-fluid {
+  max-width: 100% !important;
+  padding-left: 1.5rem !important;
+  padding-right: 1.5rem !important;
+}

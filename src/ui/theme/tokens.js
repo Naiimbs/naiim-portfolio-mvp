@@ -17,6 +17,7 @@ export const THEME_TOKEN_NAMES = {
   TEXT_INVERSE: '--color-text-inverse',
 
   // Surface Colors
+  BODY_BG: '--color-body-bg',
   SURFACE: '--color-surface',
   SURFACE_ELEVATED: '--color-surface-elevated',
   SURFACE_MUTED: '--color-surface-muted',
@@ -44,4 +45,9 @@ export const THEME_TOKEN_NAMES = {
 
   // Spacing
   SPACE_UNIT: '--space-unit',
+
+  // Layout & Container Tokens
+  LAYOUT_MODE: '--layout-mode',
+  CONTAINER_MAX_WIDTH: '--layout-container-max-width',
+  CONTAINER_PADDING_X: '--layout-container-padding-x',
 };

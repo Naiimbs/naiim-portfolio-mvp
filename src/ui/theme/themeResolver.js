@@ -1,5 +1,5 @@
-import { THEME_DEFAULTS } from './themeDefaults';
-import { THEME_TOKEN_NAMES } from './tokens';
+import { THEME_DEFAULTS } from './themeDefaults.js';
+import { THEME_TOKEN_NAMES } from './tokens.js';
 
 /**
  * Validates a CSS color string.
@@ -31,6 +31,36 @@ export function isValidCssDimension(val) {
   if (typeof val !== 'string') return false;
   const trimmed = val.trim();
   return /^\d+(\.\d+)?(px|rem|em|%|vh|vw)$/.test(trimmed) || trimmed === '0';
+}
+
+/**
+ * Validates layout mode.
+ * Supports 'contained' and 'full-width'.
+ */
+export function isValidLayoutMode(mode) {
+  if (typeof mode !== 'string') return false;
+  const trimmed = mode.trim();
+  return trimmed === 'contained' || trimmed === 'full-width';
+}
+
+/**
+ * Validates container max width.
+ * Supports standard dimensions (px, rem, %, etc.), 'none', or '100%'.
+ */
+export function isValidContainerMaxWidth(val) {
+  if (typeof val !== 'string') return false;
+  const trimmed = val.trim();
+  if (trimmed === 'none' || trimmed === '100%') return true;
+  return isValidCssDimension(trimmed);
+}
+
+/**
+ * Validates container horizontal padding.
+ * Must be a valid CSS dimension (e.g. '1.5rem', '24px', '0', '0px').
+ */
+export function isValidContainerPaddingX(val) {
+  if (typeof val !== 'string') return false;
+  return isValidCssDimension(val.trim());
 }
 
 /**
@@ -105,6 +135,19 @@ export function validateAndNormalizeTheme(inputTheme = {}) {
     borderRadius: isValidCssDimension(inputButtons.borderRadius) ? inputButtons.borderRadius : THEME_DEFAULTS.buttons.borderRadius,
   };
 
+  const inputLayout = (inputTheme && typeof inputTheme === 'object' && inputTheme.layout) || {};
+  merged.layout = {
+    mode: isValidLayoutMode(inputLayout.mode)
+      ? inputLayout.mode.trim()
+      : THEME_DEFAULTS.layout.mode,
+    containerMaxWidth: isValidContainerMaxWidth(inputLayout.containerMaxWidth)
+      ? inputLayout.containerMaxWidth.trim()
+      : THEME_DEFAULTS.layout.containerMaxWidth,
+    containerPaddingX: isValidContainerPaddingX(inputLayout.containerPaddingX)
+      ? inputLayout.containerPaddingX.trim()
+      : THEME_DEFAULTS.layout.containerPaddingX,
+  };
+
   return merged;
 }
 
@@ -127,6 +170,7 @@ export function resolveThemeCssVariables(themeConfig = {}) {
     [THEME_TOKEN_NAMES.TEXT_MUTED]: t.colors.textMuted,
     [THEME_TOKEN_NAMES.TEXT_INVERSE]: t.colors.textInverse,
 
+    [THEME_TOKEN_NAMES.BODY_BG]: t.colors.bodyBg,
     [THEME_TOKEN_NAMES.SURFACE]: t.colors.surface,
     [THEME_TOKEN_NAMES.SURFACE_ELEVATED]: t.colors.surfaceElevated,
     [THEME_TOKEN_NAMES.SURFACE_MUTED]: t.colors.surfaceMuted,
@@ -150,6 +194,11 @@ export function resolveThemeCssVariables(themeConfig = {}) {
 
     [THEME_TOKEN_NAMES.SPACE_UNIT]: t.spacing.baseUnit,
 
+    // Global Layout & Container Tokens
+    [THEME_TOKEN_NAMES.LAYOUT_MODE]: t.layout.mode,
+    [THEME_TOKEN_NAMES.CONTAINER_MAX_WIDTH]: t.layout.mode === 'full-width' ? '100%' : t.layout.containerMaxWidth,
+    [THEME_TOKEN_NAMES.CONTAINER_PADDING_X]: t.layout.containerPaddingX,
+
     // Bootstrap 5 semantic alignment
     '--bs-primary': t.colors.brandPrimary,
     '--bs-primary-rgb': primaryRgb,
@@ -157,14 +206,15 @@ export function resolveThemeCssVariables(themeConfig = {}) {
     '--bs-link-hover-color': t.colors.brandPrimaryHover,
     '--bs-border-color': t.colors.border,
     '--bs-body-color': t.colors.textPrimary,
-    '--bs-body-bg': t.colors.surfaceMuted,
+    '--bs-body-bg': t.colors.bodyBg,
     '--bs-heading-color': t.colors.textPrimary,
 
     // Public website design system variables (used in style.css, winni.css, etc.)
     '--green': t.colors.brandPrimary,
     '--green-dark': t.colors.brandPrimaryHover,
     '--green-soft': `${t.colors.brandPrimary}18`,
-    '--paper': t.colors.surfaceMuted,
+    '--paper': t.colors.bodyBg,
+    '--color-body-bg': t.colors.bodyBg,
     '--ink': t.colors.textPrimary,
     '--ink-soft': t.colors.textSecondary,
     '--muted': t.colors.textMuted,
@@ -180,9 +230,13 @@ export function resolveThemeCssVariables(themeConfig = {}) {
  */
 export function applyThemeToDom(themeConfig = {}) {
   if (typeof document === 'undefined') return;
+  const t = validateAndNormalizeTheme(themeConfig);
   const cssVars = resolveThemeCssVariables(themeConfig);
   const root = document.documentElement;
   for (const [key, val] of Object.entries(cssVars)) {
     root.style.setProperty(key, val);
+  }
+  if (t.layout?.mode) {
+    root.setAttribute('data-layout-mode', t.layout.mode);
   }
 }

@@ -10,12 +10,15 @@ import { resolveAsset } from '../services/assetRegistry';
 import { recordPostView } from '../services/engagement';
 import ShareButtons from '../components/blog/ShareButtons';
 import PostFeedback from '../components/blog/PostFeedback';
+import { useAuth } from '../admin/context/AuthContext';
 
 export default function BlogPostPage() {
   const { t, i18n } = useTranslation();
   const { slug } = useParams();
   const [searchParams] = useSearchParams();
-  const isPreview = searchParams.get('preview') === 'true';
+  const { isEditor, loading: authLoading } = useAuth();
+  const isPreviewRequested = searchParams.get('preview') === 'true';
+  const isAuthorizedPreview = !authLoading && Boolean(isEditor) && isPreviewRequested;
   const dateLocale = i18n.language === 'fr' ? 'fr-FR' : i18n.language === 'ar' ? 'ar' : 'en-US';
 
   const [post, setPost] = useState(null);
@@ -24,10 +27,23 @@ export default function BlogPostPage() {
   const [views, setViews] = useState(null);
 
   useEffect(() => {
+    // If preview is requested, wait until auth state is resolved so editor privileges are known
+    if (isPreviewRequested && authLoading) {
+      return;
+    }
+
+    let isMounted = true;
+
     async function loadPost() {
       setLoading(true);
       setNotFound(false);
-      const res = await getBlogPostBySlug(slug, { isPreview });
+      const res = await getBlogPostBySlug(slug, {
+        isPreview: isPreviewRequested,
+        isEditor: Boolean(isEditor),
+      });
+
+      if (!isMounted) return;
+
       const foundPost = res?.data || res;
       if (foundPost && (foundPost.id || foundPost.title || foundPost.slug)) {
         setPost(foundPost);
@@ -36,19 +52,24 @@ export default function BlogPostPage() {
       }
       setLoading(false);
     }
+
     loadPost();
-  }, [slug, isPreview]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [slug, isPreviewRequested, isEditor, authLoading]);
 
   // Count a view once the published article is loaded (skipped in preview mode).
   useEffect(() => {
-    if (isPreview || !post || notFound) return undefined;
+    if (isAuthorizedPreview || !post || notFound) return undefined;
     let mounted = true;
     (async () => {
       const res = await recordPostView(slug);
       if (mounted && typeof res.data === 'number') setViews(res.data);
     })();
     return () => { mounted = false; };
-  }, [post, isPreview, notFound, slug]);
+  }, [post, isAuthorizedPreview, notFound, slug]);
 
   if (loading) {
     return (
@@ -112,7 +133,7 @@ export default function BlogPostPage() {
       </Helmet>
 
       {/* Preview Notification Banner */}
-      {isPreview && (
+      {isAuthorizedPreview && (
         <div className="bg-warning bg-opacity-25 border-bottom border-warning py-2 text-center text-dark small fw-semibold">
           <i className="bi bi-eye-fill me-1"></i> {t('blog.previewBanner', { title: post.title, status: post.status })}
         </div>

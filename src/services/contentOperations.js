@@ -537,8 +537,27 @@ export function getPublishedBlogPosts() {
 /**
  * Fetch a single blog post by slug with preview support (supports Supabase & Local Fallbacks)
  */
-export function getBlogPostBySlug(slug, optionsOrPreview = {}) {
-  const isPreview = typeof optionsOrPreview === 'boolean' ? optionsOrPreview : Boolean(optionsOrPreview?.isPreview);
+export async function getBlogPostBySlug(slug, optionsOrPreview = {}) {
+  let isPreview = false;
+  if (typeof optionsOrPreview === 'object' && optionsOrPreview !== null) {
+    const isPreviewRequested = Boolean(optionsOrPreview.isPreview);
+    // Reuse project's established role pattern: admin or editor
+    const role =
+      optionsOrPreview.profile?.role ||
+      optionsOrPreview.role ||
+      optionsOrPreview.user?.app_metadata?.role;
+    const isEditor = Boolean(
+      optionsOrPreview.isEditor ||
+      optionsOrPreview.isAuthorized ||
+      role === 'editor' ||
+      role === 'admin'
+    );
+    isPreview = isPreviewRequested && isEditor;
+  } else if (typeof optionsOrPreview === 'boolean') {
+    // Raw booleans cannot bypass editor authorization requirements
+    isPreview = false;
+  }
+
   if (!slug) {
     return null;
   }
@@ -548,15 +567,22 @@ export function getBlogPostBySlug(slug, optionsOrPreview = {}) {
   // 1. In preview mode, first check for active editor draft saved in sessionStorage
   if (isPreview && typeof window !== 'undefined') {
     try {
-      const stored = sessionStorage.getItem(`cms_preview_blog_${cleanSlug}`) ||
-                     sessionStorage.getItem('cms_preview_blog_latest');
+      const stored =
+        sessionStorage.getItem(`cms_preview_blog_${cleanSlug}`) ||
+        sessionStorage.getItem('cms_preview_blog_latest');
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (parsed && (normalizeSlug(parsed.slug) === cleanSlug || !parsed.slug || cleanSlug === 'draft')) {
-          const res = { ...parsed, data: parsed, error: null, notFound: false, source: 'session_preview' };
-          const p = Promise.resolve(res);
-          Object.assign(p, res);
-          return p;
+        if (
+          parsed &&
+          (normalizeSlug(parsed.slug) === cleanSlug || !parsed.slug || cleanSlug === 'draft')
+        ) {
+          return {
+            ...parsed,
+            data: parsed,
+            error: null,
+            notFound: false,
+            source: 'session_preview',
+          };
         }
       }
     } catch {
@@ -564,51 +590,72 @@ export function getBlogPostBySlug(slug, optionsOrPreview = {}) {
     }
   }
 
-  // 2. Check local fallback store
+  // Determine active Supabase client (supports injected client for tests/SSR)
+  const activeClient =
+    (typeof optionsOrPreview === 'object' &&
+      optionsOrPreview !== null &&
+      (optionsOrPreview.supabaseClient || optionsOrPreview.client)) ||
+    (isSupabaseConfigured && supabase ? supabase : null);
+
+  // 2. Query Supabase if configured: authoritative database of record
+  if (activeClient) {
+    try {
+      let query = activeClient
+        .from('content_registry')
+        .select('*')
+        .eq('content_type', 'blog')
+        .eq('slug', cleanSlug);
+
+      if (!isPreview) {
+        query = query.eq('status', 'published');
+      }
+
+      const { data, error } = await query.maybeSingle();
+
+      if (error) {
+        console.warn(
+          `[contentOperations] Supabase error querying blog slug "${cleanSlug}":`,
+          error.message || error
+        );
+        return {
+          data: null,
+          error,
+          notFound: false,
+          source: 'error',
+        };
+      }
+
+      if (data) {
+        return {
+          ...data,
+          data,
+          error: null,
+          notFound: false,
+          source: 'supabase',
+        };
+      }
+
+      // Genuine not-found (query succeeded, no matching row in Supabase)
+      return null;
+    } catch (err) {
+      console.warn(
+        `[contentOperations] Network exception querying blog slug "${cleanSlug}":`,
+        err.message || err
+      );
+      return {
+        data: null,
+        error: err,
+        notFound: false,
+        source: 'error',
+      };
+    }
+  }
+
+  // 3. Supabase unconfigured: use local fallback store for offline development
   const fallback = localEditorialStore.find(
     (p) => normalizeSlug(p.slug) === cleanSlug || String(p.id) === String(slug)
   );
 
-  // 3. Query Supabase if configured
-  if (isSupabaseConfigured && supabase) {
-    const promise = (async () => {
-      try {
-        let query = supabase
-          .from('content_registry')
-          .select('*')
-          .eq('content_type', 'blog')
-          .eq('slug', cleanSlug);
-
-        if (!isPreview) {
-          query = query.eq('status', 'published');
-        }
-
-        const { data, error } = await query.maybeSingle();
-        if (!error && data) {
-          const res = { ...data, data, error: null, notFound: false, source: 'supabase' };
-          return res;
-        }
-      } catch {
-        // Fall back to local editorial store on error
-      }
-
-      if (fallback && (fallback.status === 'published' || isPreview)) {
-        return { ...fallback, data: fallback, error: null, notFound: false, source: 'local_fallback' };
-      }
-      return null;
-    })();
-
-    const syncFound = fallback && (fallback.status === 'published' || isPreview)
-      ? { ...fallback, data: fallback, error: null, notFound: false, source: 'local_fallback' }
-      : null;
-
-    if (syncFound) {
-      Object.assign(promise, syncFound);
-    }
-    return promise;
-  }
-
-  // 4. Supabase unconfigured: use local fallback store
   if (!fallback) {
     return null;
   }
@@ -617,10 +664,13 @@ export function getBlogPostBySlug(slug, optionsOrPreview = {}) {
     return null;
   }
 
-  const result = { ...fallback, data: fallback, error: null, notFound: false, source: 'local_fallback' };
-  const p = Promise.resolve(result);
-  Object.assign(p, result);
-  return p;
+  return {
+    ...fallback,
+    data: fallback,
+    error: null,
+    notFound: false,
+    source: 'local_fallback',
+  };
 }
 
 /**

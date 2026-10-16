@@ -5,6 +5,9 @@ import {
   validateAndNormalizeTheme,
   isValidCssColor,
   isValidCssDimension,
+  isValidLayoutMode,
+  isValidContainerMaxWidth,
+  isValidContainerPaddingX,
   applyThemeToDom,
 } from '../../ui/theme/themeResolver';
 import { getThemeSettings, updateThemeSettings } from '../../services/siteCms';
@@ -89,17 +92,44 @@ export default function AdminThemeSettings() {
     setIsDirty(true);
   };
 
+  const handleLayoutChange = (key, val) => {
+    const updated = {
+      ...theme,
+      layout: {
+        ...(theme.layout || THEME_DEFAULTS.layout),
+        [key]: val,
+      },
+    };
+    setTheme(updated);
+    setIsDirty(true);
+    applyThemeToDom(updated);
+
+    if (validationErrors[`layout_${key}`]) {
+      setValidationErrors((prev) => ({ ...prev, [`layout_${key}`]: null }));
+    }
+  };
+
   const validate = () => {
     const errors = {};
-    for (const [key, val] of Object.entries(theme.colors)) {
+    for (const [key, val] of Object.entries(theme.colors || {})) {
       if (!isValidCssColor(val)) {
         errors[key] = `Invalid CSS color: "${val}"`;
       }
     }
-    for (const [key, val] of Object.entries(theme.radius)) {
+    for (const [key, val] of Object.entries(theme.radius || {})) {
       if (!isValidCssDimension(val)) {
         errors[`radius_${key}`] = `Invalid dimension (e.g. 8px, 1rem): "${val}"`;
       }
+    }
+    const currentLayout = theme.layout || THEME_DEFAULTS.layout;
+    if (!isValidLayoutMode(currentLayout.mode)) {
+      errors.layout_mode = `Invalid layout mode: "${currentLayout.mode}". Must be "contained" or "full-width".`;
+    }
+    if (!isValidContainerMaxWidth(currentLayout.containerMaxWidth)) {
+      errors.layout_containerMaxWidth = `Invalid container max-width: "${currentLayout.containerMaxWidth}". Use e.g. 1320px, 1440px, or 100%.`;
+    }
+    if (!isValidContainerPaddingX(currentLayout.containerPaddingX)) {
+      errors.layout_containerPaddingX = `Invalid container horizontal padding: "${currentLayout.containerPaddingX}". Use e.g. 16px, 24px, 1.5rem.`;
     }
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
@@ -146,6 +176,8 @@ export default function AdminThemeSettings() {
     applyThemeToDom(initialTheme);
   };
 
+  const layout = theme.layout || THEME_DEFAULTS.layout;
+
   return (
     <div className="container-fluid py-4 max-w-5xl mx-auto">
       {/* Header */}
@@ -159,7 +191,7 @@ export default function AdminThemeSettings() {
             <span className="small text-muted">Theme Tokens</span>
           </div>
           <h1 className="h3 mb-1 fw-bold font-heading">Theme &amp; Design Tokens</h1>
-          <p className="text-muted small mb-0">Control brand palette, semantic colors, typography, and button primitives safely.</p>
+          <p className="text-muted small mb-0">Control brand palette, global layout, semantic colors, typography, and button primitives safely.</p>
         </div>
         <div className="d-flex align-items-center gap-2">
           {isDirty ? (
@@ -289,8 +321,27 @@ export default function AdminThemeSettings() {
                     </div>
                   </div>
 
-                  <div className="col-md-6">
-                    <label className="form-label small fw-semibold">Light Background (Paper)</label>
+                  <div className="col-md-4">
+                    <label className="form-label small fw-semibold">Global Body Background</label>
+                    <div className="input-group input-group-sm">
+                      <input
+                        type="color"
+                        className="form-control form-control-color"
+                        value={theme.colors.bodyBg || '#ffffff'}
+                        onChange={(e) => handleColorChange('bodyBg', e.target.value)}
+                        title="Choose body background color"
+                      />
+                      <input
+                        type="text"
+                        className={`form-control font-monospace ${validationErrors.bodyBg ? 'is-invalid' : ''}`}
+                        value={theme.colors.bodyBg || '#ffffff'}
+                        onChange={(e) => handleColorChange('bodyBg', e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-4">
+                    <label className="form-label small fw-semibold">Surface Muted (Cards / Chips)</label>
                     <div className="input-group input-group-sm">
                       <input
                         type="color"
@@ -307,8 +358,8 @@ export default function AdminThemeSettings() {
                     </div>
                   </div>
 
-                  <div className="col-md-6">
-                    <label className="form-label small fw-semibold">Surface Card Color</label>
+                  <div className="col-md-4">
+                    <label className="form-label small fw-semibold">Surface Card Color (Elevated)</label>
                     <div className="input-group input-group-sm">
                       <input
                         type="color"
@@ -382,7 +433,186 @@ export default function AdminThemeSettings() {
               </div>
             </div>
 
-            {/* 2. TYPOGRAPHY */}
+            {/* 2. GLOBAL LAYOUT & CONTAINER */}
+            <div className="card border-0 shadow-sm rounded-4 mb-4">
+              <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
+                <div className="d-flex align-items-center justify-content-between">
+                  <div>
+                    <h5 className="card-title fw-bold mb-1 font-heading">
+                      <i className="bi bi-aspect-ratio me-2 text-primary"></i> Global Layout &amp; Container
+                    </h5>
+                    <p className="text-muted small mb-0">Control website layout mode, maximum container width, and horizontal gutter padding.</p>
+                  </div>
+                  <span className="badge bg-light text-secondary border px-2 py-1 small text-uppercase">
+                    {layout.mode === 'full-width' ? 'Full-Width' : 'Contained'}
+                  </span>
+                </div>
+              </div>
+              <div className="card-body p-4">
+                <div className="row g-4">
+                  {/* Layout Mode */}
+                  <div className="col-12">
+                    <label className="form-label small fw-semibold d-block mb-2">Layout Mode</label>
+                    <div className="row g-2">
+                      <div className="col-sm-6">
+                        <div
+                          className={`p-3 rounded-3 border h-100 transition-all ${
+                            layout.mode === 'contained'
+                              ? 'border-primary bg-primary-subtle text-primary-emphasis shadow-sm'
+                              : 'border-light-subtle bg-light'
+                          }`}
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => handleLayoutChange('mode', 'contained')}
+                        >
+                          <div className="form-check m-0">
+                            <input
+                              className="form-check-input"
+                              type="radio"
+                              name="layoutMode"
+                              id="layoutModeContained"
+                              checked={layout.mode === 'contained'}
+                              onChange={() => handleLayoutChange('mode', 'contained')}
+                            />
+                            <label className="form-check-label fw-bold" htmlFor="layoutModeContained" style={{ cursor: 'pointer' }}>
+                              Contained
+                            </label>
+                          </div>
+                          <p className="small text-muted mt-2 mb-0 ps-4">
+                            Centers page content inside a responsive maximum width with balanced side gutters.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="col-sm-6">
+                        <div
+                          className={`p-3 rounded-3 border h-100 transition-all ${
+                            layout.mode === 'full-width'
+                              ? 'border-primary bg-primary-subtle text-primary-emphasis shadow-sm'
+                              : 'border-light-subtle bg-light'
+                          }`}
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => handleLayoutChange('mode', 'full-width')}
+                        >
+                          <div className="form-check m-0">
+                            <input
+                              className="form-check-input"
+                              type="radio"
+                              name="layoutMode"
+                              id="layoutModeFullWidth"
+                              checked={layout.mode === 'full-width'}
+                              onChange={() => handleLayoutChange('mode', 'full-width')}
+                            />
+                            <label className="form-check-label fw-bold" htmlFor="layoutModeFullWidth" style={{ cursor: 'pointer' }}>
+                              Full-Width
+                            </label>
+                          </div>
+                          <p className="small text-muted mt-2 mb-0 ps-4">
+                            Expands page containers across 100% of the viewport width while preserving comfortable horizontal padding.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    {validationErrors.layout_mode && (
+                      <div className="text-danger small mt-1">{validationErrors.layout_mode}</div>
+                    )}
+                  </div>
+
+                  {/* Container Max-Width */}
+                  <div className="col-md-6">
+                    <div className="d-flex justify-content-between align-items-center mb-1">
+                      <label className="form-label small fw-semibold mb-0">Container Max-Width</label>
+                      <span className="small text-muted font-monospace">{layout.containerMaxWidth}</span>
+                    </div>
+                    <div className="d-flex flex-wrap gap-1 mb-2">
+                      {['1140px', '1280px', '1320px', '1440px', '1600px'].map((preset) => (
+                        <button
+                          key={preset}
+                          type="button"
+                          className={`btn btn-xs px-2 py-1 rounded-pill small ${
+                            layout.containerMaxWidth === preset
+                              ? 'btn-primary'
+                              : 'btn-outline-secondary'
+                          }`}
+                          style={{ fontSize: '0.75rem' }}
+                          onClick={() => handleLayoutChange('containerMaxWidth', preset)}
+                        >
+                          {preset}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="input-group input-group-sm">
+                      <span className="input-group-text bg-light text-muted">
+                        <i className="bi bi-arrows-expand"></i>
+                      </span>
+                      <input
+                        type="text"
+                        className={`form-control font-monospace ${validationErrors.layout_containerMaxWidth ? 'is-invalid' : ''}`}
+                        value={layout.containerMaxWidth}
+                        onChange={(e) => handleLayoutChange('containerMaxWidth', e.target.value)}
+                        placeholder="1320px"
+                      />
+                      {validationErrors.layout_containerMaxWidth && (
+                        <div className="invalid-feedback">{validationErrors.layout_containerMaxWidth}</div>
+                      )}
+                    </div>
+                    <div className="form-text small text-muted">
+                      Applied when Contained mode is active. Presets: 1140px, 1280px, 1320px, 1440px, 1600px.
+                    </div>
+                  </div>
+
+                  {/* Horizontal Padding */}
+                  <div className="col-md-6">
+                    <div className="d-flex justify-content-between align-items-center mb-1">
+                      <label className="form-label small fw-semibold mb-0">Horizontal Padding</label>
+                      <span className="small text-muted font-monospace">{layout.containerPaddingX}</span>
+                    </div>
+                    <div className="d-flex flex-wrap gap-1 mb-2">
+                      {[
+                        { label: '16px', val: '16px', alt: '1rem' },
+                        { label: '24px', val: '24px', alt: '1.5rem' },
+                        { label: '32px', val: '32px', alt: '2rem' },
+                      ].map((preset) => {
+                        const isSelected = layout.containerPaddingX === preset.val || layout.containerPaddingX === preset.alt;
+                        return (
+                          <button
+                            key={preset.val}
+                            type="button"
+                            className={`btn btn-xs px-2 py-1 rounded-pill small ${
+                              isSelected
+                                ? 'btn-primary'
+                                : 'btn-outline-secondary'
+                            }`}
+                            style={{ fontSize: '0.75rem' }}
+                            onClick={() => handleLayoutChange('containerPaddingX', preset.val)}
+                          >
+                            {preset.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div className="input-group input-group-sm">
+                      <span className="input-group-text bg-light text-muted">
+                        <i className="bi bi-layout-three-columns"></i>
+                      </span>
+                      <input
+                        type="text"
+                        className={`form-control font-monospace ${validationErrors.layout_containerPaddingX ? 'is-invalid' : ''}`}
+                        value={layout.containerPaddingX}
+                        onChange={(e) => handleLayoutChange('containerPaddingX', e.target.value)}
+                        placeholder="24px or 1.5rem"
+                      />
+                      {validationErrors.layout_containerPaddingX && (
+                        <div className="invalid-feedback">{validationErrors.layout_containerPaddingX}</div>
+                      )}
+                    </div>
+                    <div className="form-text small text-muted">
+                      Side gutter padding for public pages. Presets: 16px, 24px, 32px.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. TYPOGRAPHY */}
             <div className="card border-0 shadow-sm rounded-4 mb-4">
               <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
                 <h5 className="card-title fw-bold mb-1 font-heading">
@@ -414,7 +644,7 @@ export default function AdminThemeSettings() {
               </div>
             </div>
 
-            {/* 3. RADII & BUTTONS */}
+            {/* 4. RADII & BUTTONS */}
             <div className="card border-0 shadow-sm rounded-4 mb-4">
               <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
                 <h5 className="card-title fw-bold mb-1 font-heading">
@@ -502,79 +732,135 @@ export default function AdminThemeSettings() {
           <div className="col-lg-4">
             <div className="card border-0 shadow-sm rounded-4 sticky-top" style={{ top: '80px' }}>
               <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
-                <h6 className="card-title fw-bold mb-1 font-heading text-uppercase small text-muted">
-                  <i className="bi bi-eye me-1 text-primary"></i> Live Token Preview
-                </h6>
+                <div className="d-flex align-items-center justify-content-between mb-1">
+                  <h6 className="card-title fw-bold mb-0 font-heading text-uppercase small text-muted">
+                    <i className="bi bi-eye me-1 text-primary"></i> Live Token Preview
+                  </h6>
+                  <span className="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-0.5 rounded-pill small">
+                    {layout.mode === 'full-width' ? 'Full-Width' : 'Contained'}
+                  </span>
+                </div>
               </div>
               <div className="card-body p-4">
+                {/* Miniature Viewport & Layout Simulation */}
+                <div className="mb-3 p-2 bg-light rounded-3 border">
+                  <div className="d-flex justify-content-between align-items-center text-muted small mb-1 px-1" style={{ fontSize: '0.7rem' }}>
+                    <span><i className="bi bi-display me-1"></i>Viewport Simulation</span>
+                    <span className="font-monospace">{layout.mode === 'full-width' ? '100% Edge-to-Edge' : `Max: ${layout.containerMaxWidth}`}</span>
+                  </div>
+                  <div
+                    className="p-1 rounded-2 border bg-white"
+                    style={{
+                      height: '36px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <div
+                      className="h-100 rounded-1 d-flex align-items-center justify-content-center text-white small text-center"
+                      style={{
+                        width: layout.mode === 'full-width' ? '100%' : '76%',
+                        backgroundColor: theme.colors.brandPrimary,
+                        fontSize: '0.65rem',
+                        letterSpacing: '0.5px',
+                        padding: `0 ${layout.containerPaddingX === '32px' || layout.containerPaddingX === '2rem' ? '12px' : layout.containerPaddingX === '16px' || layout.containerPaddingX === '1rem' ? '4px' : '8px'}`,
+                        transition: 'width 0.25s ease, padding 0.25s ease',
+                      }}
+                    >
+                      <span>{layout.mode === 'full-width' ? 'Full-Width Container' : 'Contained Center'}</span>
+                    </div>
+                  </div>
+                </div>
+
                 <div
-                  className="p-3 rounded-4 mb-3 border"
+                  className="rounded-4 mb-3 border shadow-sm"
                   style={{
-                    backgroundColor: theme.colors.surfaceMuted,
-                    color: theme.colors.textPrimary,
+                    backgroundColor: theme.colors.bodyBg || '#ffffff',
+                    padding: layout.containerPaddingX || '1.5rem',
+                    transition: 'background-color 0.2s ease, padding 0.2s ease',
                   }}
                 >
                   <div
-                    className="fw-bold fs-5 mb-1"
-                    style={{ fontFamily: theme.typography.fontHeading, color: theme.colors.textPrimary }}
+                    className="p-3 rounded-3 border"
+                    style={{
+                      backgroundColor: theme.colors.surfaceMuted,
+                      color: theme.colors.textPrimary,
+                    }}
                   >
-                    I DESIGN. I BUILD.
-                  </div>
-                  <p
-                    className="small mb-3"
-                    style={{ fontFamily: theme.typography.fontBody, color: theme.colors.textSecondary }}
-                  >
-                    This live card previews the active theme colors, fonts, and button primitives.
-                  </p>
+                    <div
+                      className="fw-bold fs-5 mb-1"
+                      style={{ fontFamily: theme.typography.fontHeading, color: theme.colors.textPrimary }}
+                    >
+                      I DESIGN. I BUILD.
+                    </div>
+                    <p
+                      className="small mb-3"
+                      style={{ fontFamily: theme.typography.fontBody, color: theme.colors.textSecondary }}
+                    >
+                      This live card previews active layout mode, container padding, colors, fonts, and button primitives against the body background.
+                    </p>
 
-                  <div className="d-flex flex-wrap gap-2 mb-3">
-                    <button
-                      type="button"
-                      className="btn btn-sm px-3 shadow-sm fw-semibold"
-                      style={{
-                        backgroundColor: theme.buttons.primaryBg,
-                        color: theme.buttons.primaryText,
-                        borderRadius: theme.buttons.borderRadius,
-                        border: 'none',
-                      }}
-                    >
-                      Primary Action
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-sm px-3 fw-semibold"
-                      style={{
-                        backgroundColor: theme.colors.brandSecondary,
-                        color: '#ffffff',
-                        borderRadius: theme.buttons.borderRadius,
-                        border: 'none',
-                      }}
-                    >
-                      Secondary
-                    </button>
-                  </div>
+                    <div className="d-flex flex-wrap gap-2 mb-3">
+                      <button
+                        type="button"
+                        className="btn btn-sm px-3 shadow-sm fw-semibold"
+                        style={{
+                          backgroundColor: theme.buttons.primaryBg,
+                          color: theme.buttons.primaryText,
+                          borderRadius: theme.buttons.borderRadius,
+                          border: 'none',
+                        }}
+                      >
+                        Primary Action
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-sm px-3 fw-semibold"
+                        style={{
+                          backgroundColor: theme.colors.brandSecondary,
+                          color: '#ffffff',
+                          borderRadius: theme.buttons.borderRadius,
+                          border: 'none',
+                        }}
+                      >
+                        Secondary
+                      </button>
+                    </div>
 
-                  <div className="d-flex align-items-center gap-2">
-                    <span
-                      className="badge px-2 py-1 small"
-                      style={{ backgroundColor: theme.colors.accent, color: theme.colors.brandSecondary }}
-                    >
-                      Accent Pill
-                    </span>
-                    <span
-                      className="badge px-2 py-1 small"
-                      style={{ backgroundColor: theme.colors.brandPrimary, color: '#ffffff' }}
-                    >
-                      Brand Pill
-                    </span>
+                    <div className="d-flex align-items-center gap-2">
+                      <span
+                        className="badge px-2 py-1 small"
+                        style={{ backgroundColor: theme.colors.accent, color: theme.colors.brandSecondary }}
+                      >
+                        Accent Pill
+                      </span>
+                      <span
+                        className="badge px-2 py-1 small"
+                        style={{ backgroundColor: theme.colors.brandPrimary, color: '#ffffff' }}
+                      >
+                        Brand Pill
+                      </span>
+                    </div>
                   </div>
                 </div>
 
                 <div className="small text-muted border-top pt-3">
-                  <div>Primary: <code>{theme.colors.brandPrimary}</code></div>
-                  <div>Secondary: <code>{theme.colors.brandSecondary}</code></div>
+                  <div className="fw-semibold text-dark mb-1 small text-uppercase" style={{ fontSize: '0.7rem', letterSpacing: '0.5px' }}>
+                    Layout &amp; Container
+                  </div>
+                  <div>Mode: <code className="text-primary">{layout.mode}</code></div>
+                  <div>Container Max-Width: <code>{layout.containerMaxWidth}</code></div>
+                  <div>Container Gutter: <code>{layout.containerPaddingX}</code></div>
+
+                  <div className="fw-semibold text-dark mt-2 mb-1 small text-uppercase" style={{ fontSize: '0.7rem', letterSpacing: '0.5px' }}>
+                    Colors &amp; Primitives
+                  </div>
+                  <div>Body Background: <code>{theme.colors.bodyBg || '#ffffff'}</code></div>
+                  <div>Surface Muted: <code>{theme.colors.surfaceMuted}</code></div>
+                  <div>Primary Brand: <code>{theme.colors.brandPrimary}</code></div>
                   <div>Accent: <code>{theme.colors.accent}</code></div>
-                  <div>Background: <code>{theme.colors.surfaceMuted}</code></div>
                 </div>
               </div>
             </div>
