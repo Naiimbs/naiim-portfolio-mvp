@@ -1,0 +1,193 @@
+name: Manual production VPS deploy
+
+run-name: Manual production deploy (${{ github.sha }})
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_deployment:
+        description: Confirm that you want to replace the live website container.
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-vps-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to production VPS
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 30
+
+    steps:
+      - name: Require the production branch
+        env:
+          SELECTED_REF: ${{ github.ref }}
+        run: |
+          set -euo pipefail
+          if [[ "$SELECTED_REF" != "refs/heads/migration/react-phase-1" ]]; then
+            echo "::error::Run this workflow from migration/react-phase-1 only."
+            exit 1
+          fi
+
+      - name: Require explicit production confirmation
+        env:
+          CONFIRM_DEPLOYMENT: ${{ inputs.confirm_deployment }}
+        run: |
+          set -euo pipefail
+          if [[ "$CONFIRM_DEPLOYMENT" != "true" ]]; then
+            echo "::error::Check the production deployment confirmation before running this workflow."
+            exit 1
+          fi
+
+      - name: Check out the exact selected commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Package the selected source revision
+        run: |
+          set -euo pipefail
+          git archive --format=tar.gz \
+            --output="$RUNNER_TEMP/naim-portfolio-${GITHUB_SHA}.tar.gz" \
+            "$GITHUB_SHA"
+
+      - name: Prepare SSH credentials
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          : "${VPS_SSH_KEY:?Add the production environment secret VPS_SSH_KEY.}"
+          : "${VPS_KNOWN_HOSTS:?Add the production environment secret VPS_KNOWN_HOSTS.}"
+          install -m 700 -d "$HOME/.ssh"
+          printf '%s\n' "$VPS_SSH_KEY" > "$HOME/.ssh/deploy_key"
+          printf '%s\n' "$VPS_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/deploy_key" "$HOME/.ssh/known_hosts"
+
+      - name: Upload source archive to the VPS
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          set -euo pipefail
+          : "${VPS_HOST:?Add the production environment secret VPS_HOST.}"
+          : "${VPS_USER:?Add the production environment secret VPS_USER.}"
+          scp \
+            -i "$HOME/.ssh/deploy_key" \
+            -o BatchMode=yes \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile="$HOME/.ssh/known_hosts" \
+            "$RUNNER_TEMP/naim-portfolio-${GITHUB_SHA}.tar.gz" \
+            "${VPS_USER}@${VPS_HOST}:/tmp/naim-portfolio-${GITHUB_SHA}.tar.gz"
+
+      - name: Build, restart, and health-check the live container
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_PROJECT_PATH: /srv/projects/naiimbsili/app
+          DEPLOY_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          ssh \
+            -i "$HOME/.ssh/deploy_key" \
+            -o BatchMode=yes \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile="$HOME/.ssh/known_hosts" \
+            "${VPS_USER}@${VPS_HOST}" \
+            "bash -se -- '${DEPLOY_SHA}' '${VPS_PROJECT_PATH}'" <<'REMOTE'
+          set -euo pipefail
+
+          DEPLOY_SHA="$1"
+          VPS_PROJECT_PATH="$2"
+          REMOTE_ARCHIVE="/tmp/naim-portfolio-${DEPLOY_SHA}.tar.gz"
+          BUILD_DIR="$(mktemp -d /tmp/naim-portfolio-build.XXXXXX)"
+          CONTAINER_NAME="naim-portfolio"
+          IMAGE_TAG="naim-portfolio:${DEPLOY_SHA}"
+
+          cleanup() {
+            rm -rf "$BUILD_DIR"
+            rm -f "$REMOTE_ARCHIVE"
+          }
+          trap cleanup EXIT
+
+          test -f "$REMOTE_ARCHIVE"
+          test -f "$VPS_PROJECT_PATH/.env"
+          tar -xzf "$REMOTE_ARCHIVE" -C "$BUILD_DIR"
+          test -f "$BUILD_DIR/Dockerfile"
+
+          # The existing deployment keeps Vite's public Supabase settings in the VPS .env.
+          source "$VPS_PROJECT_PATH/.env"
+          : "${VITE_SUPABASE_URL:?VITE_SUPABASE_URL is missing from the VPS .env.}"
+          : "${VITE_SUPABASE_ANON_KEY:?VITE_SUPABASE_ANON_KEY is missing from the VPS .env.}"
+
+          DOCKER=(docker)
+          if ! docker ps >/dev/null 2>&1; then
+            if sudo -n docker ps >/dev/null 2>&1; then
+              DOCKER=(sudo -n docker)
+            else
+              echo "Docker is unavailable without an interactive password; grant this SSH user Docker access before deploying." >&2
+              exit 1
+            fi
+          fi
+
+          OLD_IMAGE_ID="$("${DOCKER[@]}" inspect --format='{{.Image}}' "$CONTAINER_NAME" 2>/dev/null || true)"
+          "${DOCKER[@]}" build \
+            --build-arg "VITE_SUPABASE_URL=${VITE_SUPABASE_URL}" \
+            --build-arg "VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}" \
+            -t "$IMAGE_TAG" \
+            "$BUILD_DIR"
+
+          rollback() {
+            "${DOCKER[@]}" stop "$CONTAINER_NAME" >/dev/null 2>&1 || true
+            "${DOCKER[@]}" rm "$CONTAINER_NAME" >/dev/null 2>&1 || true
+            if [[ -n "$OLD_IMAGE_ID" ]]; then
+              "${DOCKER[@]}" run -d \
+                --name "$CONTAINER_NAME" \
+                --restart unless-stopped \
+                -p 80:80 \
+                "$OLD_IMAGE_ID" >/dev/null || true
+            fi
+          }
+
+          "${DOCKER[@]}" stop "$CONTAINER_NAME" >/dev/null 2>&1 || true
+          "${DOCKER[@]}" rm "$CONTAINER_NAME" >/dev/null 2>&1 || true
+          if ! "${DOCKER[@]}" run -d \
+            --name "$CONTAINER_NAME" \
+            --restart unless-stopped \
+            -p 80:80 \
+            "$IMAGE_TAG"; then
+            echo "New container failed to start; restoring the previous image if available." >&2
+            rollback
+            exit 1
+          fi
+
+          HEALTHY=false
+          for attempt in {1..20}; do
+            if curl -fsS --max-time 3 \
+              "http://127.0.0.1/blog/from-designing-interfaces-to-designing-systems-how-i-think-about-digital-products" \
+              >/dev/null; then
+              HEALTHY=true
+              break
+            fi
+            sleep 2
+          done
+
+          if [[ "$HEALTHY" != "true" ]]; then
+            "${DOCKER[@]}" logs --tail 100 "$CONTAINER_NAME" || true
+            echo "Health check failed; restoring the previous image if available." >&2
+            rollback
+            exit 1
+          fi
+
+          echo "Deployment healthy for commit ${DEPLOY_SHA}."
+          REMOTE
