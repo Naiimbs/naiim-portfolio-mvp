@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import MainLayout from '../layouts/MainLayout';
@@ -11,6 +11,9 @@ export default function ResourcesPage() {
   const { t, i18n } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeType = searchParams.get('type') || 'all';
+  const activePlatform = searchParams.get('platform') || 'all';
+  const activeUseCase = searchParams.get('usecase') || 'all';
+  const activeSort = searchParams.get('sort') || 'recommended';
   const [searchQuery, setSearchQuery] = useState('');
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,10 +29,8 @@ export default function ResourcesPage() {
       setError(null);
       try {
         const { data, error: fetchErr } = await getResources({
-          type: activeType,
           status: 'published',
           visibility: 'public',
-          search: searchQuery,
         });
         if (fetchErr) {
           setError(fetchErr);
@@ -44,19 +45,83 @@ export default function ResourcesPage() {
       }
     }
     load();
-  }, [activeType, searchQuery]);
+  }, []);
 
   const handleTypeSelect = (typeId) => {
+    handleFilterChange('type', typeId);
+  };
+
+  const handleFilterChange = (key, value) => {
     const params = new URLSearchParams(searchParams);
-    if (typeId === 'all') {
-      params.delete('type');
+    if (value === 'all' || value === 'recommended') {
+      params.delete(key);
     } else {
-      params.set('type', typeId);
+      params.set(key, value);
     }
     setSearchParams(params);
   };
 
   const handleClearSearch = () => {
+    setSearchQuery('');
+  };
+
+  const platformOptions = useMemo(() => [...new Set(resources.flatMap((resource) => (
+    Array.isArray(resource.compatibility)
+      ? resource.compatibility.map((item) => (item && typeof item === 'object' ? item.name : item)).filter(Boolean)
+      : []
+  )))].sort((a, b) => a.localeCompare(b)), [resources]);
+
+  const useCaseOptions = useMemo(() => [...new Set(resources.flatMap((resource) => (
+    Array.isArray(resource.tags) ? resource.tags.filter(Boolean) : []
+  )))].sort((a, b) => a.localeCompare(b)), [resources]);
+
+  const filteredResources = useMemo(() => {
+    const query = searchQuery.trim().toLocaleLowerCase();
+    const filtered = resources.filter((resource) => {
+      if (activeType !== 'all' && resource.resource_type !== activeType) return false;
+      if (activePlatform !== 'all') {
+        const names = (resource.compatibility || []).map((item) => (
+          item && typeof item === 'object' ? item.name : item
+        ));
+        if (!names.some((name) => name?.toLocaleLowerCase() === activePlatform.toLocaleLowerCase())) return false;
+      }
+      if (activeUseCase !== 'all' && !(resource.tags || []).some((tag) => tag === activeUseCase)) return false;
+      if (query) {
+        const searchable = [
+          resource.title,
+          resource.slug,
+          resource.short_description,
+          resource.description,
+          ...(resource.tags || []),
+          ...(resource.when_to_use || []),
+          ...(resource.compatibility || []).map((item) => (item && typeof item === 'object' ? item.name : item)),
+        ].filter(Boolean).join(' ').toLocaleLowerCase();
+        if (!searchable.includes(query)) return false;
+      }
+      return true;
+    });
+
+    const dateValue = (resource) => {
+      const date = Date.parse(resource.last_updated || resource.created_at || '');
+      return Number.isFinite(date) ? date : 0;
+    };
+
+    return filtered.sort((a, b) => {
+      if (activeSort === 'newest') {
+        return dateValue(b) - dateValue(a) || (a.sort_order ?? 0) - (b.sort_order ?? 0);
+      }
+      if (activeSort === 'featured') {
+        return Number(Boolean(b.featured)) - Number(Boolean(a.featured))
+          || (a.sort_order ?? 0) - (b.sort_order ?? 0);
+      }
+      return (a.sort_order ?? 0) - (b.sort_order ?? 0);
+    });
+  }, [resources, activeType, activePlatform, activeUseCase, activeSort, searchQuery]);
+
+  const handleResetFilters = () => {
+    const params = new URLSearchParams(searchParams);
+    ['type', 'platform', 'usecase', 'sort'].forEach((key) => params.delete(key));
+    setSearchParams(params);
     setSearchQuery('');
   };
 
@@ -88,7 +153,8 @@ export default function ResourcesPage() {
         <section className="pb-5">
           <div className="container">
             {/* Filter & Search Toolbar */}
-            <div className="resources-filter-toolbar d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-5">
+            <div className="resources-filter-toolbar d-flex flex-column gap-3 mb-5">
+              <div className="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
               {/* Category Pills */}
               <div className="filter-btn-group d-flex gap-2 align-items-center">
                 <button
@@ -133,6 +199,35 @@ export default function ResourcesPage() {
                   </button>
                 )}
               </div>
+              </div>
+
+              <div className="resource-refinement-filters" aria-label={t('resources.refineLabel')}>
+                <label className="resource-refinement-field">
+                  <span>{t('resources.platform')}</span>
+                  <select className="form-select form-select-sm resource-filter-select" value={activePlatform} onChange={(event) => handleFilterChange('platform', event.target.value)}>
+                    <option value="all">{t('resources.allPlatforms')}</option>
+                    {platformOptions.map((platform) => <option key={platform} value={platform}>{platform}</option>)}
+                  </select>
+                </label>
+                <label className="resource-refinement-field">
+                  <span>{t('resources.useCase')}</span>
+                  <select className="form-select form-select-sm resource-filter-select" value={activeUseCase} onChange={(event) => handleFilterChange('usecase', event.target.value)}>
+                    <option value="all">{t('resources.allUseCases')}</option>
+                    {useCaseOptions.map((useCase) => <option key={useCase} value={useCase}>{useCase}</option>)}
+                  </select>
+                </label>
+                <label className="resource-refinement-field">
+                  <span>{t('resources.sortBy')}</span>
+                  <select className="form-select form-select-sm resource-filter-select" value={activeSort} onChange={(event) => handleFilterChange('sort', event.target.value)}>
+                    <option value="recommended">{t('resources.sortRecommended')}</option>
+                    <option value="newest">{t('resources.sortNewest')}</option>
+                    <option value="featured">{t('resources.sortFeatured')}</option>
+                  </select>
+                </label>
+                <div className="resource-results-count" aria-live="polite">
+                  {t('resources.resultsCount', { count: filteredResources.length })}
+                </div>
+              </div>
             </div>
 
             {/* 3. States & Resource Grid */}
@@ -158,7 +253,7 @@ export default function ResourcesPage() {
                   {t('resources.retry')}
                 </button>
               </div>
-            ) : resources.length === 0 ? (
+            ) : filteredResources.length === 0 ? (
               <div className="text-center py-5 bg-white rounded-4 border p-5 shadow-xs">
                 <i className="bi bi-inbox text-muted display-4 mb-3 d-block"></i>
                 <h3 className="fw-bold mb-2">{t('resources.emptyTitle')}</h3>
@@ -168,17 +263,14 @@ export default function ResourcesPage() {
                 <button
                   type="button"
                   className="btn btn-outline-custom rounded-pill px-4"
-                  onClick={() => {
-                    handleTypeSelect('all');
-                    setSearchQuery('');
-                  }}
+                  onClick={handleResetFilters}
                 >
                   <i className="bi bi-arrow-counterclockwise me-1"></i> {t('resources.resetFilters')}
                 </button>
               </div>
             ) : (
               <div className="row g-4">
-                {resources.map((resource) => {
+                {filteredResources.map((resource) => {
                   const typeCfg = RESOURCE_TYPES[resource.resource_type] || RESOURCE_TYPES.file;
                   const assetCount = Array.isArray(resource.assets) ? resource.assets.length : 0;
                   const currentLang = i18n.language?.startsWith('fr')

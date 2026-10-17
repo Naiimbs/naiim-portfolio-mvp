@@ -90,6 +90,62 @@
   box-shadow: 0 0 0 3px rgba(8, 127, 102, 0.12);
 }
 
+.resource-refinement-filters {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.resource-refinement-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 180px;
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+.resource-filter-select {
+  min-width: 180px;
+  border-color: var(--line);
+  border-radius: 10px;
+  color: var(--ink);
+  background-color: var(--paper);
+}
+
+.resource-filter-select:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(8, 127, 102, 0.12);
+}
+
+.resource-results-count {
+  margin-left: auto;
+  padding-bottom: 8px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 575.98px) {
+  .resource-refinement-filters {
+    align-items: stretch;
+  }
+
+  .resource-refinement-field,
+  .resource-filter-select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .resource-results-count {
+    margin-left: 0;
+  }
+}
+
 /* Resource Card */
 .resource-card {
   background: var(--white);
