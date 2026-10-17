@@ -9,6 +9,7 @@ import ResourceLeadFormModal from '../components/resources/ResourceLeadFormModal
 import ResourceMarkdownViewerModal from '../components/resources/ResourceMarkdownViewerModal';
 import ResourceTemplateCard from '../components/resources/ResourceTemplateCard';
 import ResourceSupportCard from '../components/resources/ResourceSupportCard';
+import Markdown from '../components/cms/Markdown';
 import '../styles/resources.css';
 
 const TYPE_DETAIL_FIELDS = {
@@ -36,10 +37,15 @@ export default function ResourceDetailPage() {
   const [isMarkdownViewerOpen, setIsMarkdownViewerOpen] = useState(false);
   const [selectedMarkdownAsset, setSelectedMarkdownAsset] = useState(null);
   const [activePreviewAsset, setActivePreviewAsset] = useState(null);
+  const [activeCoverIndex, setActiveCoverIndex] = useState(0);
   const [copiedKey, setCopiedKey] = useState(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, [slug]);
+
+  useEffect(() => {
+    setActiveCoverIndex(0);
   }, [slug]);
 
   useEffect(() => {
@@ -142,6 +148,7 @@ export default function ResourceDetailPage() {
 
   const displayTitle = tx.title || resource.title;
   const displayDesc = tx.short_description || tx.description || resource.short_description || resource.description;
+  const displayOverview = tx.description || resource.description;
   const displayPurpose = tx.purpose || resource.purpose;
   const displayWhenToUse = tx.when_to_use || resource.when_to_use;
   const displayWhenNotToUse = tx.when_not_to_use || resource.when_not_to_use;
@@ -155,6 +162,15 @@ export default function ResourceDetailPage() {
   const localizedAssetText = (asset, field) => tx.assets?.[asset.id]?.[field] || asset[field];
   const previewAsset = getResourcePreviewAsset(resource);
   const previewImage = getResourcePreviewImage(resource);
+  const coverGalleryAssets = [previewAsset, ...assets.filter((asset) => {
+    const url = asset.file_url || asset.asset_path || asset.url || asset.preview_url || asset.image_url || asset.public_url || '';
+    return (asset.is_gallery || asset.gallery || asset.featured_in_gallery) && (/^image\//i.test(asset.mime_type || '') || /\.(png|jpe?g|webp|gif|avif|svg)(\?|$)/i.test(url));
+  })].filter(Boolean).filter((asset, index, all) => {
+    const url = asset.file_url || asset.asset_path || asset.url || asset.preview_url || asset.image_url || asset.public_url || '';
+    return all.findIndex((candidate) => (candidate.file_url || candidate.asset_path || candidate.url || candidate.preview_url || candidate.image_url || candidate.public_url || '') === url) === index;
+  });
+  const activeCoverAsset = coverGalleryAssets[activeCoverIndex] || coverGalleryAssets[0] || previewAsset;
+  const activeCoverImage = activeCoverAsset?.file_url || activeCoverAsset?.asset_path || activeCoverAsset?.url || activeCoverAsset?.preview_url || activeCoverAsset?.image_url || activeCoverAsset?.public_url || previewImage;
 
   return (
     <MainLayout>
@@ -186,14 +202,31 @@ export default function ResourceDetailPage() {
 
           {/* 1. SIMPLIFIED HERO BLOCK */}
           <div className="resource-detail-hero">
-            <div className={`resource-detail-cover${previewImage ? '' : ' resource-detail-cover-fallback'}`}>
-              {previewImage ? (
-                <img
-                  src={previewImage}
-                  alt={previewAsset?.caption || `${displayTitle} cover`}
-                  loading="eager"
-                  decoding="async"
-                />
+            <div className={`resource-detail-cover${activeCoverImage ? '' : ' resource-detail-cover-fallback'}`}>
+              {activeCoverImage ? (
+                <>
+                  <img
+                    src={activeCoverImage}
+                    alt={activeCoverAsset?.caption || `${displayTitle} cover`}
+                    loading="eager"
+                    decoding="async"
+                  />
+                  {coverGalleryAssets.length > 1 && (
+                    <>
+                      <button type="button" className="resource-cover-control resource-cover-control-prev" onClick={() => setActiveCoverIndex((activeCoverIndex - 1 + coverGalleryAssets.length) % coverGalleryAssets.length)} aria-label="Previous cover image">
+                        <i className="bi bi-chevron-left"></i>
+                      </button>
+                      <button type="button" className="resource-cover-control resource-cover-control-next" onClick={() => setActiveCoverIndex((activeCoverIndex + 1) % coverGalleryAssets.length)} aria-label="Next cover image">
+                        <i className="bi bi-chevron-right"></i>
+                      </button>
+                      <div className="resource-cover-dots" aria-label="Cover image selector">
+                        {coverGalleryAssets.map((asset, index) => (
+                          <button type="button" key={asset.id || index} className={`resource-cover-dot${index === activeCoverIndex ? ' is-active' : ''}`} onClick={() => setActiveCoverIndex(index)} aria-label={`Show cover image ${index + 1}`}></button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </>
               ) : (
                 <div className="resource-detail-cover-placeholder" aria-hidden="true">
                   <i className={`bi ${typeCfg.icon}`}></i>
@@ -286,6 +319,16 @@ export default function ResourceDetailPage() {
                   <p className="text-secondary leading-relaxed mb-0" style={{ whiteSpace: 'pre-line' }}>
                     {displayPurpose}
                   </p>
+                </div>
+              )}
+
+              {displayOverview && displayOverview !== displayDesc && (
+                <div className="resource-block">
+                  <h3 className="resource-block-title">
+                    <i className="bi bi-file-text" style={{ color: 'var(--green)' }}></i>
+                    <span>Full overview</span>
+                  </h3>
+                  <Markdown className="resource-detail-overview" text={displayOverview} />
                 </div>
               )}
 

@@ -258,6 +258,7 @@ export default function AdminResourceEditor() {
       is_previewable: true,
       is_downloadable: true,
       is_cover: false,
+      is_gallery: false,
       sort_order: (formData.assets.length + 1) * 10,
       file_size: '',
       mime_type: '',
@@ -919,7 +920,7 @@ export default function AdminResourceEditor() {
             <div>
               <h5 className="fw-bold mb-1">Reusable Files</h5>
               <p className="text-muted small mb-0">
-                A Resource contains first-class assets: documentation, scripts, templates, and ZIP bundles.
+                Edit an image asset and choose <strong>Use as cover image</strong> for the primary cover. Choose <strong>Include in cover slider</strong> on multiple images to show a slider on the public page.
               </p>
             </div>
             <button
@@ -1021,7 +1022,7 @@ export default function AdminResourceEditor() {
             <div>
               <h5 className="fw-bold mb-1">Example Output & Responsive Evidence</h5>
               <p className="text-muted small mb-0">
-                Visual proof and screenshots.
+                Visual proof and screenshots. Edit an image and choose <strong>Use as cover image</strong> or <strong>Include in cover slider</strong>.
               </p>
             </div>
             <button
@@ -1447,6 +1448,16 @@ export default function AdminResourceEditor() {
                       onChange={(e) => setEditingAsset({ ...editingAsset, is_cover: e.target.checked })}
                     />
                     <label className="form-check-label small fw-bold" htmlFor="assetCoverCheck">Use as cover image</label>
+                  </div>
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id="assetGalleryCheck"
+                      checked={Boolean(editingAsset.is_gallery)}
+                      onChange={(e) => setEditingAsset({ ...editingAsset, is_gallery: e.target.checked })}
+                    />
+                    <label className="form-check-label small fw-bold" htmlFor="assetGalleryCheck">Include in cover slider</label>
                   </div>
                   <div className="form-check">
                     <input
