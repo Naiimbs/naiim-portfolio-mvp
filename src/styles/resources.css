@@ -176,6 +176,7 @@
 }
 
 .resource-card-preview {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -442,6 +443,20 @@
 
 .resource-cover-dot.is-active {
   background: var(--white);
+}
+
+@media (max-width: 767.98px) {
+  .resource-card-preview .resource-cover-control {
+    display: none;
+  }
+
+  .resource-card-preview .resource-cover-dots {
+    bottom: 10px;
+    gap: 7px;
+    padding: 5px 8px;
+    border-radius: 999px;
+    background: rgba(16, 36, 42, 0.42);
+  }
 }
 
 .resource-detail-overview {

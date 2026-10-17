@@ -9,6 +9,7 @@ import '../styles/resources.css';
 
 function ResourceCardPreview({ resource, displayTitle, typeCfg }) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   const assets = Array.isArray(resource.assets) ? resource.assets : [];
   const primaryAsset = getResourcePreviewAsset(resource);
   const imageUrl = (asset) => asset?.file_url || asset?.asset_path || asset?.url || asset?.preview_url || asset?.image_url || asset?.public_url || '';
@@ -18,11 +19,33 @@ function ResourceCardPreview({ resource, displayTitle, typeCfg }) {
   })].filter(Boolean).filter((asset, index, all) => (
     all.findIndex((candidate) => imageUrl(candidate) === imageUrl(asset)) === index
   ));
+  useEffect(() => {
+    setActiveIndex((currentIndex) => Math.min(currentIndex, Math.max(coverAssets.length - 1, 0)));
+  }, [coverAssets.length]);
+
+  useEffect(() => {
+    if (coverAssets.length <= 1 || isPaused) return undefined;
+
+    const autoplayTimer = window.setInterval(() => {
+      setActiveIndex((currentIndex) => (currentIndex + 1) % coverAssets.length);
+    }, 4500);
+
+    return () => window.clearInterval(autoplayTimer);
+  }, [coverAssets.length, isPaused]);
+
   const activeAsset = coverAssets[activeIndex] || coverAssets[0];
   const activeUrl = imageUrl(activeAsset);
 
   return (
-    <div className={`resource-card-preview${activeUrl ? '' : ' resource-card-preview-fallback'}`}>
+    <div
+      className={`resource-card-preview${activeUrl ? '' : ' resource-card-preview-fallback'}`}
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onFocus={() => setIsPaused(true)}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setIsPaused(false);
+      }}
+    >
       <Link to={`/resources/${resource.slug}`} className="resource-card-preview-link" aria-label={`${displayTitle} visual preview`}>
         {activeUrl ? (
           <img src={activeUrl} alt={activeAsset?.caption || `${displayTitle} preview`} loading="lazy" decoding="async" />
