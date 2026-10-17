@@ -3,9 +3,54 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import MainLayout from '../layouts/MainLayout';
 import SEO from '../components/common/SEO';
-import { getResources, getResourcePreviewAsset, getResourcePreviewImage } from '../services/resources';
+import { getResources, getResourcePreviewAsset } from '../services/resources';
 import { RESOURCE_TYPES, RESOURCE_TYPE_LIST } from '../config/resourceTypes';
 import '../styles/resources.css';
+
+function ResourceCardPreview({ resource, displayTitle, typeCfg }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const assets = Array.isArray(resource.assets) ? resource.assets : [];
+  const primaryAsset = getResourcePreviewAsset(resource);
+  const imageUrl = (asset) => asset?.file_url || asset?.asset_path || asset?.url || asset?.preview_url || asset?.image_url || asset?.public_url || '';
+  const coverAssets = [primaryAsset, ...assets.filter((asset) => {
+    const url = imageUrl(asset);
+    return (asset.is_gallery || asset.gallery || asset.featured_in_gallery) && (/^image\//i.test(asset.mime_type || '') || /\.(png|jpe?g|webp|gif|avif|svg)(\?|$)/i.test(url));
+  })].filter(Boolean).filter((asset, index, all) => (
+    all.findIndex((candidate) => imageUrl(candidate) === imageUrl(asset)) === index
+  ));
+  const activeAsset = coverAssets[activeIndex] || coverAssets[0];
+  const activeUrl = imageUrl(activeAsset);
+
+  return (
+    <div className={`resource-card-preview${activeUrl ? '' : ' resource-card-preview-fallback'}`}>
+      <Link to={`/resources/${resource.slug}`} className="resource-card-preview-link" aria-label={`${displayTitle} visual preview`}>
+        {activeUrl ? (
+          <img src={activeUrl} alt={activeAsset?.caption || `${displayTitle} preview`} loading="lazy" decoding="async" />
+        ) : (
+          <span className="resource-card-preview-placeholder" aria-hidden="true">
+            <i className={`bi ${typeCfg.icon}`}></i>
+            <span>{displayTitle}</span>
+          </span>
+        )}
+      </Link>
+      {coverAssets.length > 1 && (
+        <>
+          <button type="button" className="resource-cover-control resource-cover-control-prev" onClick={(event) => { event.preventDefault(); event.stopPropagation(); setActiveIndex((activeIndex - 1 + coverAssets.length) % coverAssets.length); }} aria-label="Previous card cover image">
+            <i className="bi bi-chevron-left"></i>
+          </button>
+          <button type="button" className="resource-cover-control resource-cover-control-next" onClick={(event) => { event.preventDefault(); event.stopPropagation(); setActiveIndex((activeIndex + 1) % coverAssets.length); }} aria-label="Next card cover image">
+            <i className="bi bi-chevron-right"></i>
+          </button>
+          <div className="resource-cover-dots" aria-label="Card cover image selector">
+            {coverAssets.map((asset, index) => (
+              <button type="button" key={asset.id || index} className={`resource-cover-dot${index === activeIndex ? ' is-active' : ''}`} onClick={(event) => { event.preventDefault(); event.stopPropagation(); setActiveIndex(index); }} aria-label={`Show card cover image ${index + 1}`}></button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 export default function ResourcesPage() {
   const { t, i18n } = useTranslation();
@@ -319,31 +364,11 @@ export default function ResourcesPage() {
                   const tx = resource.i18n?.[currentLang] || resource.metadata?.i18n?.[currentLang] || {};
                   const displayTitle = tx.title || resource.title;
                   const displayDesc = tx.short_description || tx.description || resource.short_description || resource.description;
-                  const featuredImageAsset = getResourcePreviewAsset(resource);
-                  const featuredImageUrl = getResourcePreviewImage(resource);
 
                   return (
                     <div key={resource.id} className="col-12 col-md-6 col-lg-4">
                       <div className="resource-card">
-                        <Link
-                          to={`/resources/${resource.slug}`}
-                          className={`resource-card-preview${featuredImageUrl ? '' : ' resource-card-preview-fallback'}`}
-                          aria-label={`${displayTitle} visual preview`}
-                        >
-                          {featuredImageUrl ? (
-                            <img
-                              src={featuredImageUrl}
-                              alt={featuredImageAsset?.caption || `${displayTitle} preview`}
-                              loading="lazy"
-                              decoding="async"
-                            />
-                          ) : (
-                            <span className="resource-card-preview-placeholder" aria-hidden="true">
-                              <i className={`bi ${typeCfg.icon}`}></i>
-                              <span>{displayTitle}</span>
-                            </span>
-                          )}
-                        </Link>
+                        <ResourceCardPreview resource={resource} displayTitle={displayTitle} typeCfg={typeCfg} />
                         <div>
                           {/* Eyebrow / Badges */}
                           <div className="resource-card-eyebrow">
