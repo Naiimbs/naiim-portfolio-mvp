@@ -100,7 +100,17 @@ export default function ResourceDetailPage() {
   }
 
   const typeCfg = RESOURCE_TYPES[resource.resource_type] || RESOURCE_TYPES.file;
-  const assets = Array.isArray(resource.assets) ? resource.assets : [];
+  const currentLang = i18n.language?.startsWith('fr')
+    ? 'fr'
+    : (i18n.language?.startsWith('ar') ? 'ar' : 'en');
+  const tx = resource?.i18n?.[currentLang] || resource?.metadata?.i18n?.[currentLang] || {};
+  const assets = (Array.isArray(resource.assets) ? resource.assets : []).map((asset) => ({
+    ...asset,
+    i18n: {
+      ...(asset.i18n || {}),
+      ...(tx.assets?.[asset.id] ? { [currentLang]: tx.assets[asset.id] } : {}),
+    },
+  }));
 
   // Grouped Assets
   const skillMdAsset = assets.find((a) => a.name?.toLowerCase() === 'skill.md') || assets.find((a) => a.asset_type === 'documentation');
@@ -118,10 +128,6 @@ export default function ResourceDetailPage() {
   const validDocUrl = showDocLinks && resource.documentation_url && resource.documentation_url.startsWith('http') ? resource.documentation_url : null;
   const hasValidSource = showSourceSection && Boolean(validSourceUrl || validDocUrl);
 
-  const currentLang = i18n.language?.startsWith('fr')
-    ? 'fr'
-    : (i18n.language?.startsWith('ar') ? 'ar' : 'en');
-  const tx = resource?.i18n?.[currentLang] || resource?.metadata?.i18n?.[currentLang] || {};
   const displayTitle = tx.title || resource.title;
   const displayDesc = tx.short_description || tx.description || resource.short_description || resource.description;
   const displayPurpose = tx.purpose || resource.purpose;
