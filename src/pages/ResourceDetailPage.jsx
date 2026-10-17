@@ -11,6 +11,18 @@ import ResourceTemplateCard from '../components/resources/ResourceTemplateCard';
 import ResourceSupportCard from '../components/resources/ResourceSupportCard';
 import '../styles/resources.css';
 
+const TYPE_DETAIL_FIELDS = {
+  template: [['Format', 'template_format'], ['Framework / tool', 'framework'], ['Included files', 'included_files']],
+  figma: [['Figma file', 'figma_url'], ['Design scope', 'design_scope'], ['Access', 'access_requirements']],
+  document: [['Format', 'document_format'], ['Category', 'document_category'], ['Pages', 'page_count'], ['Published', 'publication_date'], ['Provenance', 'citation']],
+  guide: [['Audience', 'audience'], ['Difficulty', 'difficulty'], ['Estimated time', 'estimated_time'], ['Prerequisites', 'prerequisites'], ['Outcomes', 'learning_outcomes']],
+  prompt: [['Format', 'prompt_format'], ['Model compatibility', 'model_compatibility'], ['Variables', 'variables'], ['Safety notes', 'safety_notes']],
+  example: [['Demo', 'demo_url'], ['Status', 'implementation_status'], ['Stack', 'stack'], ['Outcome', 'outcome']],
+  spreadsheet: [['Format', 'spreadsheet_format'], ['Compatible tools', 'compatible_tools'], ['Sheets', 'sheet_names'], ['Purpose', 'model_purpose'], ['Sample data', 'sample_data_notes']],
+  file: [['Format', 'file_format'], ['Platform', 'platform'], ['Usage notes', 'usage_notes']],
+  reference: [['Official URL', 'official_url'], ['Reference type', 'reference_type'], ['Provider', 'provider'], ['Version', 'reference_version'], ['Access notes', 'access_notes']],
+};
+
 export default function ResourceDetailPage() {
   const { t, i18n } = useTranslation();
   const { slug } = useParams();
@@ -137,6 +149,9 @@ export default function ResourceDetailPage() {
   const displayInstallation = tx.installation || resource.installation;
   const displayCompatibility = tx.compatibility || resource.compatibility;
   const displayTags = tx.tags || resource.tags;
+  const typeDetailRows = (TYPE_DETAIL_FIELDS[resource.resource_type] || [])
+    .map(([label, key]) => ({ label, value: resource[key] ?? resource.metadata?.[key] }))
+    .filter(({ value }) => value !== undefined && value !== null && String(value).trim() !== '');
   const localizedAssetText = (asset, field) => tx.assets?.[asset.id]?.[field] || asset[field];
   const previewAsset = getResourcePreviewAsset(resource);
   const previewImage = getResourcePreviewImage(resource);
@@ -271,6 +286,25 @@ export default function ResourceDetailPage() {
                   <p className="text-secondary leading-relaxed mb-0" style={{ whiteSpace: 'pre-line' }}>
                     {displayPurpose}
                   </p>
+                </div>
+              )}
+
+              {typeDetailRows.length > 0 && (
+                <div className="resource-block resource-type-details-block">
+                  <h3 className="resource-block-title">
+                    <i className={`bi ${typeCfg.icon}`} style={{ color: 'var(--green)' }}></i>
+                    <span>{typeCfg.label} details</span>
+                  </h3>
+                  <div className="resource-type-details-grid">
+                    {typeDetailRows.map(({ label, value }) => (
+                      <div className="resource-type-detail" key={label}>
+                        <div className="resource-type-detail-label">{label}</div>
+                        <div className="resource-type-detail-value">
+                          {Array.isArray(value) ? value.join(', ') : String(value)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 

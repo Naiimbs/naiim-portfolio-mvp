@@ -447,6 +447,24 @@
   font-size: 1rem;
 }
 
+.admin-resource-editor-cover {
+  width: 100%;
+  aspect-ratio: 5 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid var(--line, #dfe7e4);
+  border-radius: 10px;
+  background: var(--paper, #f8f9f6);
+}
+
+.admin-resource-editor-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* ------------------------------------------------------------------------------
    Status Badges
    ------------------------------------------------------------------------------ */
@@ -1166,4 +1184,3 @@
     right: 0;
   }
 }
-

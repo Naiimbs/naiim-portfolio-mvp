@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { getResourceById, createResource, updateResource } from '../../services/resources';
+import { getResourceById, createResource, updateResource, getResourcePreviewImage } from '../../services/resources';
 import { RESOURCE_TYPE_LIST, ASSET_TYPES } from '../../config/resourceTypes';
 import { uploadMedia } from '../../services/media';
 import { getEditorSectionsForType } from '../config/resourceEditorConfig';
@@ -257,6 +257,7 @@ export default function AdminResourceEditor() {
       is_required: false,
       is_previewable: true,
       is_downloadable: true,
+      is_cover: false,
       sort_order: (formData.assets.length + 1) * 10,
       file_size: '',
       mime_type: '',
@@ -280,6 +281,9 @@ export default function AdminResourceEditor() {
         updated[index] = editingAsset;
       } else {
         updated = [...existing, editingAsset];
+      }
+      if (editingAsset.is_cover) {
+        updated = updated.map((asset) => ({ ...asset, is_cover: asset.id === editingAsset.id }));
       }
       return { ...prev, assets: updated };
     });
@@ -482,6 +486,7 @@ export default function AdminResourceEditor() {
   };
 
   const typeDetails = getResourceTypeDetails(formData.resource_type);
+  const coverImage = getResourcePreviewImage(formData);
 
   if (loading) {
     return (
@@ -664,6 +669,23 @@ export default function AdminResourceEditor() {
                   onChange={(e) => handleFieldChange('purpose', e.target.value)}
                 />
               </div>
+            </div>
+          </div>
+          <div className="col-12 col-lg-4">
+            <div className="card border-0 shadow-sm p-4 rounded-3 mb-4" style={{ backgroundColor: '#ffffff' }}>
+              <div className="d-flex align-items-start justify-content-between gap-3 mb-3">
+                <div>
+                  <h5 className="fw-bold mb-1">Cover image</h5>
+                  <p className="text-muted small mb-0">Used for the catalog card and public detail hero.</p>
+                </div>
+                <i className="bi bi-image text-success fs-4"></i>
+              </div>
+              <div className="admin-resource-editor-cover mb-3">
+                {coverImage ? <img src={coverImage} alt="Current resource cover" /> : <div className="text-muted small text-center px-3">No cover selected yet</div>}
+              </div>
+              <button type="button" className="btn btn-outline-success btn-sm w-100" onClick={() => setActiveTab('reusableFiles')}>
+                <i className="bi bi-sliders me-2"></i>Manage cover in Files
+              </button>
             </div>
           </div>
         </div>
@@ -1416,6 +1438,16 @@ export default function AdminResourceEditor() {
                 </div>
 
                 <div className="d-flex flex-wrap gap-4 mt-3">
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id="assetCoverCheck"
+                      checked={Boolean(editingAsset.is_cover)}
+                      onChange={(e) => setEditingAsset({ ...editingAsset, is_cover: e.target.checked })}
+                    />
+                    <label className="form-check-label small fw-bold" htmlFor="assetCoverCheck">Use as cover image</label>
+                  </div>
                   <div className="form-check">
                     <input
                       className="form-check-input"
