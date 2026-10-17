@@ -75,11 +75,14 @@ function RouteFallback() {
       style={{
         minHeight: '60vh',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
+        gap: '0.75rem',
       }}
     >
-      <span className="visually-hidden">Loading…</span>
+      <span className="spinner-border spinner-border-sm text-success" aria-hidden="true" />
+      <span className="small text-secondary">Loading page…</span>
     </div>
   );
 }
