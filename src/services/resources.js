@@ -80,6 +80,7 @@ Commit the folder to Git to share with pair-programming team members.`,
     compatibility: [
       { name: 'Google Antigravity', status: 'verified', notes: 'Full browser subagent and tool integration' },
       { name: 'Claude (Computer Use)', status: 'compatible', notes: 'Compatible with standard browser execution' },
+      { name: 'Manus', status: 'compatible', notes: 'Compatible with Manus agents; available tools depend on the session.' },
       { name: 'OpenAI Swarm / Custom Agents', status: 'not_verified', notes: 'Requires markdown prompt parsing' },
     ],
     source_url: 'https://github.com/naiimbsili/antigravity-skills',

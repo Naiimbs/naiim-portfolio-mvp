@@ -200,6 +200,7 @@ export default function ResourcesPage() {
                           <Link
                             to={`/resources/${resource.slug}`}
                             className="resource-card-preview"
+                            style={{ aspectRatio: featuredImageAsset.preview_aspect_ratio || '5 / 3' }}
                             aria-label={`${displayTitle} visual preview`}
                           >
                             <img

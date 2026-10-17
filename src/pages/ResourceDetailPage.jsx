@@ -342,6 +342,15 @@ export default function ResourceDetailPage() {
                             src={asset.file_url || asset.asset_path}
                             alt={asset.name || asset.title}
                             className="screenshot-preview-thumb"
+                            style={
+                              asset.preview_aspect_ratio
+                                ? {
+                                    height: 'auto',
+                                    aspectRatio: asset.preview_aspect_ratio,
+                                    objectFit: 'contain',
+                                  }
+                                : undefined
+                            }
                             loading="lazy"
                           />
                           <div className="screenshot-meta">
@@ -552,7 +561,11 @@ export default function ResourceDetailPage() {
                 <i className="bi bi-image text-success fs-5"></i>
                 <div className="min-w-0">
                   <div className="fw-bold text-dark text-truncate small">{activePreviewAsset.name || activePreviewAsset.title}</div>
-                  <div className="text-muted" style={{ fontSize: '0.72rem' }}>{activePreviewAsset.device || activePreviewAsset.file_url}</div>
+                  {(activePreviewAsset.device || activePreviewAsset.viewport) && (
+                    <div className="text-muted" style={{ fontSize: '0.72rem' }}>
+                      {activePreviewAsset.device || activePreviewAsset.viewport}
+                    </div>
+                  )}
                 </div>
               </div>
               <button
