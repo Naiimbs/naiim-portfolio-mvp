@@ -40,13 +40,19 @@ function trimDescription(value, fallback) {
 }
 
 function resolveImage(meta = {}) {
+  const imageAssets = Array.isArray(meta.assets)
+    ? meta.assets.filter((asset) => asset?.featured === true || /^image\//i.test(asset?.mime_type || '') || /\.(png|jpe?g|webp|gif|avif)(\?|$)/i.test(asset?.file_url || asset?.url || ''))
+    : [];
+  const officialAsset = imageAssets.find((asset) => asset?.featured === true) || imageAssets.find((asset) => /editorial|preview|cover|hero|thumbnail/i.test(asset?.name || ''));
   const candidates = [
     meta.social?.ogImage,
     meta.ogImage,
     meta.featured_image,
     meta.featuredImage,
     meta.heroImage,
-    ...(Array.isArray(meta.assets) ? meta.assets.map((asset) => asset?.file_url || asset?.url) : []),
+    officialAsset?.file_url || officialAsset?.url || officialAsset?.preview_url || officialAsset?.image_url,
+    imageAssets.find((asset) => asset?.asset_type === 'screenshot')?.file_url,
+    ...imageAssets.map((asset) => asset?.file_url || asset?.url),
   ];
   const image = candidates.find((candidate) => typeof candidate === 'string' && /\.(png|jpe?g|webp|gif|avif)(\?|$)/i.test(candidate));
   return absoluteUrl(image);
@@ -70,21 +76,24 @@ async function fetchPublicEntries() {
   return response.json();
 }
 
-function buildRouteHtml(template, entry) {
+function buildRouteHtml(template, entry, locale = 'en') {
   const meta = entry.metadata && typeof entry.metadata === 'object' ? entry.metadata : {};
   const seo = meta.seo && typeof meta.seo === 'object' ? meta.seo : {};
   const route = entry.public_route || `/${entry.content_type === 'blog' ? 'blog' : 'resources'}/${entry.slug}`;
-  const canonical = `${SITE_URL}${route.startsWith('/') ? route : `/${route}`}`;
-  const title = seo.title || meta.social?.ogTitle || entry.title || 'Naïm Bsili';
+  const localized = locale !== 'en' && meta.i18n?.[locale] && typeof meta.i18n[locale] === 'object' ? meta.i18n[locale] : {};
+  const localizedRoute = locale === 'en' ? route : `/${locale}${route.startsWith('/') ? route : `/${route}`}`;
+  const canonical = `${SITE_URL}${localizedRoute}`;
+  const title = localized.title || seo.title || meta.social?.ogTitle || entry.title || 'Naïm Bsili';
   const description = trimDescription(
-    seo.description || meta.social?.ogDescription || meta.excerpt || meta.short_description || meta.description,
+    localized.excerpt || localized.short_description || localized.description || seo.description || meta.social?.ogDescription || meta.excerpt || meta.short_description || meta.description,
     'Naïm Bsili — Product Designer and AI Product Builder.'
   );
   const image = resolveImage(meta);
   const type = entry.content_type === 'blog' ? 'article' : 'website';
-  const bodyTitle = escapeHtml(entry.title || title);
+  const bodyTitle = escapeHtml(localized.title || entry.title || title);
   const bodyDescription = escapeHtml(description);
   return template
+    .replace(/<html lang="[^"]*" dir="[^"]*">/, `<html lang="${locale}" dir="${locale === 'ar' ? 'rtl' : 'ltr'}">`)
     .replace(/<title>[\s\S]*?<\/title>/, `<title>${escapeHtml(title)} · Naïm Bsili</title>`)
     .replace(/<meta\s+name="description"[\s\S]*?\/>/, `<meta name="description" content="${escapeHtml(description)}" />`)
     .replace(/<meta property="og:type"[^>]*\/>/, `<meta property="og:type" content="${type}" />`)
@@ -106,9 +115,13 @@ try {
     if (!entry?.slug || !entry?.content_type) continue;
     const route = entry.public_route || `/${entry.content_type === 'blog' ? 'blog' : 'resources'}/${entry.slug}`;
     if (!/^\/(blog|resources)\/[^/?#]+$/.test(route)) continue;
-    const outputPath = join(DIST_DIR, route, 'index.html');
-    await mkdir(dirname(outputPath), { recursive: true });
-    await writeFile(outputPath, buildRouteHtml(template, entry));
+    const locales = ['en', ...(Object.keys(entry.metadata?.i18n || {}).filter((locale) => ['ar', 'fr'].includes(locale)))];
+    for (const locale of locales) {
+      const localizedRoute = locale === 'en' ? route : `/${locale}${route}`;
+      const outputPath = join(DIST_DIR, localizedRoute, 'index.html');
+      await mkdir(dirname(outputPath), { recursive: true });
+      await writeFile(outputPath, buildRouteHtml(template, entry, locale));
+    }
   }
   console.log(`[seo] Generated ${entries.length} route-specific preview page(s).`);
 } catch (error) {

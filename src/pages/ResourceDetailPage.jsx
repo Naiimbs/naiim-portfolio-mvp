@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import MainLayout from '../layouts/MainLayout';
 import SEO from '../components/common/SEO';
-import { getResourceBySlug } from '../services/resources';
+import { getResourceBySlug, getResourcePreviewImage } from '../services/resources';
 import { RESOURCE_TYPES } from '../config/resourceTypes';
 import ResourceLeadFormModal from '../components/resources/ResourceLeadFormModal';
 import ResourceMarkdownViewerModal from '../components/resources/ResourceMarkdownViewerModal';
@@ -145,6 +145,7 @@ export default function ResourceDetailPage() {
         title={`${displayTitle} — Resources & Skills`}
         description={displayDesc}
         canonical={`/resources/${resource.slug}`}
+        image={getResourcePreviewImage(resource)}
       />
 
       <div className="resource-detail-wrap">

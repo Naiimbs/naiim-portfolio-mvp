@@ -1,5 +1,5 @@
-import React, { Suspense, lazy } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React, { Suspense, lazy, useEffect } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
 // Eager: landing page + tiny shared components (keep initial load instant, no flash)
 import HomePage from './pages/HomePage';
@@ -7,6 +7,7 @@ import PlaceholderPage from './pages/PlaceholderPage';
 import LegacyCaseStudyRedirect from './components/common/LegacyCaseStudyRedirect';
 import GlobalThemeApplier from './components/common/GlobalThemeApplier';
 import { AuthProvider } from './admin/context/AuthContext';
+import { setAppLanguage } from './i18n';
 
 // Lazy: secondary public pages (loaded on navigation, not on first paint)
 const WorkPage = lazy(() => import('./pages/WorkPage'));
@@ -87,6 +88,15 @@ function RouteFallback() {
   );
 }
 
+function LocalizedPublicRoute({ children }) {
+  const location = useLocation();
+  const lang = location.pathname.startsWith('/fr/') ? 'fr' : 'ar';
+  useEffect(() => {
+    setAppLanguage(lang === 'fr' ? 'fr' : 'ar');
+  }, [lang]);
+  return children;
+}
+
 export default function App() {
   return (
     <AuthProvider>
@@ -102,9 +112,17 @@ export default function App() {
           <Route path="/agents/:slug/demo" element={<AgentDemoPage />} />
           <Route path="/resources" element={<ResourcesPage />} />
           <Route path="/resources/:slug" element={<ResourceDetailPage />} />
+          <Route path="/ar/resources" element={<LocalizedPublicRoute><ResourcesPage /></LocalizedPublicRoute>} />
+          <Route path="/ar/resources/:slug" element={<LocalizedPublicRoute><ResourceDetailPage /></LocalizedPublicRoute>} />
+          <Route path="/fr/resources" element={<LocalizedPublicRoute><ResourcesPage /></LocalizedPublicRoute>} />
+          <Route path="/fr/resources/:slug" element={<LocalizedPublicRoute><ResourceDetailPage /></LocalizedPublicRoute>} />
           <Route path="/plugins" element={<PlaceholderPage title="Figma Plugins" description="Tools and utilities built for design systems." />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:slug" element={<BlogPostPage />} />
+          <Route path="/ar/blog" element={<LocalizedPublicRoute><BlogPage /></LocalizedPublicRoute>} />
+          <Route path="/ar/blog/:slug" element={<LocalizedPublicRoute><BlogPostPage /></LocalizedPublicRoute>} />
+          <Route path="/fr/blog" element={<LocalizedPublicRoute><BlogPage /></LocalizedPublicRoute>} />
+          <Route path="/fr/blog/:slug" element={<LocalizedPublicRoute><BlogPostPage /></LocalizedPublicRoute>} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/copilot" element={<PlaceholderPage title="Naïm Copilot" description="Interactive AI Assistant." />} />
           <Route path="/p/:slug" element={<CmsDynamicPage />} />

@@ -394,6 +394,16 @@ export async function getResourceBySlug(slug) {
   return { data: found || null, error: found ? null : new Error('Resource not found') };
 }
 
+export function getResourcePreviewImage(resource) {
+  const assets = Array.isArray(resource?.assets) ? resource.assets : [];
+  const imageAssets = assets.filter((asset) => {
+    return asset?.featured === true || /^image\//i.test(asset?.mime_type || '') || /\.(png|jpe?g|webp|gif|avif)(\?|$)/i.test(asset?.file_url || asset?.url || '');
+  });
+  const official = imageAssets.find((asset) => asset?.featured === true) || imageAssets.find((asset) => /editorial|preview|cover|hero|thumbnail/i.test(asset?.name || ''));
+  const selected = official || imageAssets.find((asset) => asset?.asset_type === 'screenshot') || imageAssets[0];
+  return selected?.file_url || selected?.url || selected?.preview_url || selected?.image_url || '';
+}
+
 /**
  * Fetch a single resource by ID.
  */

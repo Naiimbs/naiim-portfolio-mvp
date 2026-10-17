@@ -24,6 +24,21 @@ export const SUPPORTED_LANGUAGES = [
 ];
 
 const STORAGE_KEY = 'app_lang';
+const URL_LANGUAGES = ['ar', 'fr'];
+
+export const getLocaleFromPathname = (pathname = '') => {
+  const match = String(pathname).match(/^\/(ar|fr)(?=\/|$)/);
+  return match ? match[1] : null;
+};
+
+/** Keep shareable blog/resource URLs explicit about their content language. */
+export const getLocalizedPublicPath = (pathname = '/', lang = 'en') => {
+  const rawPath = String(pathname || '/');
+  const basePath = rawPath.replace(/^\/(ar|fr)(?=\/|$)/, '') || '/';
+  const isLocalizedContent = /^\/(blog|resources)(?:\/|$)/.test(basePath);
+  if (!isLocalizedContent || !URL_LANGUAGES.includes(lang)) return basePath;
+  return `/${lang}${basePath}`;
+};
 
 /** Read the visitor's saved language preference (falls back to 'en'). */
 export const getSavedLanguage = () => {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SUPPORTED_LANGUAGES, setAppLanguage, getSavedLanguage } from '../../i18n';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { SUPPORTED_LANGUAGES, setAppLanguage, getSavedLanguage, getLocaleFromPathname, getLocalizedPublicPath } from '../../i18n';
 
 /**
  * LanguageSwitcher — in-place language toggle (FR / EN / AR).
@@ -11,14 +12,22 @@ import { SUPPORTED_LANGUAGES, setAppLanguage, getSavedLanguage } from '../../i18
  */
 export default function LanguageSwitcher({ className = '' }) {
   const { i18n } = useTranslation();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [current, setCurrent] = useState(getSavedLanguage());
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
   // Keep the saved language applied on first mount (direction + <html lang>).
   useEffect(() => {
-    setAppLanguage(getSavedLanguage());
-  }, []);
+    const pathLocale = getLocaleFromPathname(location.pathname);
+    const savedLanguage = pathLocale || getSavedLanguage();
+    setAppLanguage(savedLanguage);
+    if (!pathLocale) {
+      const localizedPath = getLocalizedPublicPath(location.pathname, savedLanguage);
+      if (localizedPath !== location.pathname) navigate(localizedPath, { replace: true });
+    }
+  }, [location.pathname, navigate]);
 
   // Reflect external language changes (e.g. from elsewhere in the app).
   useEffect(() => {
@@ -48,6 +57,8 @@ export default function LanguageSwitcher({ className = '' }) {
     setAppLanguage(code);
     setCurrent(code);
     setOpen(false);
+    const nextPath = getLocalizedPublicPath(location.pathname, code);
+    if (nextPath !== location.pathname) navigate(nextPath, { replace: true });
   };
 
   const active = SUPPORTED_LANGUAGES.find((l) => l.code === current) || SUPPORTED_LANGUAGES[0];
