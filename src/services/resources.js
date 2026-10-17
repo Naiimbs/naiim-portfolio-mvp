@@ -555,8 +555,8 @@ export async function updateResource(id, payload) {
 
   if (incomingMetadata && typeof incomingMetadata === 'object') {
     updated = {
-      ...updated,
       ...incomingMetadata,
+      ...updated,
       i18n: incomingMetadata.i18n || updated.i18n,
     };
   }
