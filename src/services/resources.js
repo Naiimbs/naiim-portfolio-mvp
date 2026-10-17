@@ -394,14 +394,48 @@ export async function getResourceBySlug(slug) {
   return { data: found || null, error: found ? null : new Error('Resource not found') };
 }
 
-export function getResourcePreviewImage(resource) {
+const isTruthyAssetFlag = (value) => value === true || value === 'true' || value === 1;
+
+const getAssetImageUrl = (asset) => (
+  asset?.file_url
+  || asset?.asset_path
+  || asset?.url
+  || asset?.preview_url
+  || asset?.image_url
+  || asset?.public_url
+  || ''
+);
+
+/**
+ * Select the best public visual for a resource. CMS assets have existed with
+ * slightly different URL/featured field names, so the public UI must not rely
+ * on one exact shape or on the Featured checkbox being enabled.
+ */
+export function getResourcePreviewAsset(resource) {
   const assets = Array.isArray(resource?.assets) ? resource.assets : [];
   const imageAssets = assets.filter((asset) => {
-    return asset?.featured === true || /^image\//i.test(asset?.mime_type || '') || /\.(png|jpe?g|webp|gif|avif)(\?|$)/i.test(asset?.file_url || asset?.url || '');
+    const url = getAssetImageUrl(asset);
+    return asset?.asset_type === 'screenshot'
+      || isTruthyAssetFlag(asset?.featured)
+      || isTruthyAssetFlag(asset?.is_featured)
+      || isTruthyAssetFlag(asset?.featured_in_gallery)
+      || /^image\//i.test(asset?.mime_type || '')
+      || /\.(png|jpe?g|webp|gif|avif|svg)(\?|$)/i.test(url);
   });
-  const official = imageAssets.find((asset) => asset?.featured === true) || imageAssets.find((asset) => /editorial|preview|cover|hero|thumbnail/i.test(asset?.name || ''));
-  const selected = official || imageAssets.find((asset) => asset?.asset_type === 'screenshot') || imageAssets[0];
-  return selected?.file_url || selected?.url || selected?.preview_url || selected?.image_url || '';
+
+  return imageAssets.find((asset) => (
+    isTruthyAssetFlag(asset?.featured)
+      || isTruthyAssetFlag(asset?.is_featured)
+      || isTruthyAssetFlag(asset?.featured_in_gallery)
+  ))
+    || imageAssets.find((asset) => /editorial|preview|cover|hero|thumbnail/i.test(asset?.name || ''))
+    || imageAssets.find((asset) => asset?.asset_type === 'screenshot')
+    || imageAssets[0]
+    || null;
+}
+
+export function getResourcePreviewImage(resource) {
+  return getAssetImageUrl(getResourcePreviewAsset(resource));
 }
 
 /**

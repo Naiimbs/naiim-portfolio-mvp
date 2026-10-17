@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import MainLayout from '../layouts/MainLayout';
 import SEO from '../components/common/SEO';
-import { getResourceBySlug, getResourcePreviewImage } from '../services/resources';
+import { getResourceBySlug, getResourcePreviewAsset, getResourcePreviewImage } from '../services/resources';
 import { RESOURCE_TYPES } from '../config/resourceTypes';
 import ResourceLeadFormModal from '../components/resources/ResourceLeadFormModal';
 import ResourceMarkdownViewerModal from '../components/resources/ResourceMarkdownViewerModal';
@@ -138,6 +138,8 @@ export default function ResourceDetailPage() {
   const displayCompatibility = tx.compatibility || resource.compatibility;
   const displayTags = tx.tags || resource.tags;
   const localizedAssetText = (asset, field) => tx.assets?.[asset.id]?.[field] || asset[field];
+  const previewAsset = getResourcePreviewAsset(resource);
+  const previewImage = getResourcePreviewImage(resource);
 
   return (
     <MainLayout>
@@ -169,6 +171,21 @@ export default function ResourceDetailPage() {
 
           {/* 1. SIMPLIFIED HERO BLOCK */}
           <div className="resource-detail-hero">
+            <div className={`resource-detail-cover${previewImage ? '' : ' resource-detail-cover-fallback'}`}>
+              {previewImage ? (
+                <img
+                  src={previewImage}
+                  alt={previewAsset?.caption || `${displayTitle} cover`}
+                  loading="eager"
+                  decoding="async"
+                />
+              ) : (
+                <div className="resource-detail-cover-placeholder" aria-hidden="true">
+                  <i className={`bi ${typeCfg.icon}`}></i>
+                  <span>{displayTitle}</span>
+                </div>
+              )}
+            </div>
             <div className="row g-4 align-items-center">
               <div className="col-12 col-lg-8">
                 <div className="d-flex flex-wrap align-items-center gap-2 mb-2">

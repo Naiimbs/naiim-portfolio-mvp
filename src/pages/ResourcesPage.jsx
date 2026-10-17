@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import MainLayout from '../layouts/MainLayout';
 import SEO from '../components/common/SEO';
-import { getResources } from '../services/resources';
+import { getResources, getResourcePreviewAsset, getResourcePreviewImage } from '../services/resources';
 import { RESOURCE_TYPES, RESOURCE_TYPE_LIST } from '../config/resourceTypes';
 import '../styles/resources.css';
 
@@ -289,30 +289,32 @@ export default function ResourcesPage() {
                   const tx = resource.i18n?.[currentLang] || resource.metadata?.i18n?.[currentLang] || {};
                   const displayTitle = tx.title || resource.title;
                   const displayDesc = tx.short_description || tx.description || resource.short_description || resource.description;
-                  const featuredImageAsset = (Array.isArray(resource.assets) ? resource.assets : []).find((asset) => (
-                    asset?.asset_type === 'screenshot' && [asset.featured, asset.is_featured, asset.featured_in_gallery]
-                      .some((value) => value === true || value === 'true')
-                  ));
-                  const featuredImageUrl = featuredImageAsset?.file_url || featuredImageAsset?.asset_path;
+                  const featuredImageAsset = getResourcePreviewAsset(resource);
+                  const featuredImageUrl = getResourcePreviewImage(resource);
 
                   return (
                     <div key={resource.id} className="col-12 col-md-6 col-lg-4">
                       <div className="resource-card">
-                        {featuredImageUrl && (
-                          <Link
-                            to={`/resources/${resource.slug}`}
-                            className="resource-card-preview"
-                            style={{ aspectRatio: featuredImageAsset.preview_aspect_ratio || '5 / 3' }}
-                            aria-label={`${displayTitle} visual preview`}
-                          >
+                        <Link
+                          to={`/resources/${resource.slug}`}
+                          className={`resource-card-preview${featuredImageUrl ? '' : ' resource-card-preview-fallback'}`}
+                          style={{ aspectRatio: featuredImageAsset?.preview_aspect_ratio || '5 / 3' }}
+                          aria-label={`${displayTitle} visual preview`}
+                        >
+                          {featuredImageUrl ? (
                             <img
                               src={featuredImageUrl}
-                              alt={featuredImageAsset.caption || `${displayTitle} preview`}
+                              alt={featuredImageAsset?.caption || `${displayTitle} preview`}
                               loading="lazy"
                               decoding="async"
                             />
-                          </Link>
-                        )}
+                          ) : (
+                            <span className="resource-card-preview-placeholder" aria-hidden="true">
+                              <i className={`bi ${typeCfg.icon}`}></i>
+                              <span>{displayTitle}</span>
+                            </span>
+                          )}
+                        </Link>
                         <div>
                           {/* Eyebrow / Badges */}
                           <div className="resource-card-eyebrow">
