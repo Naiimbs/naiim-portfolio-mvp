@@ -1,12 +1,24 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
 
-// Define CORS headers
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*", // Or restrict to specific origins in production
+const ALLOWED_ORIGINS = new Set([
+  "https://naiimbsili.com",
+  "https://www.naiimbsili.com",
+  "http://localhost:5173",
+  "http://localhost:4173",
+]);
+
+function getCorsHeaders(origin: string | null) {
+  const allowedOrigin = origin && ALLOWED_ORIGINS.has(origin)
+    ? origin
+    : "https://naiimbsili.com";
+  return {
+    "Access-Control-Allow-Origin": allowedOrigin,
+    "Vary": "Origin",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
-};
+  };
+}
 
 const DISPOSABLE_EMAIL_DOMAINS = new Set([
   "10minutemail.com", "guerrillamail.com", "mailinator.com", "tempmail.com",
@@ -51,6 +63,15 @@ function errorMessage(reason: string | null) {
 }
 
 Deno.serve(async (req) => {
+  const origin = req.headers.get("origin");
+  if (origin && !ALLOWED_ORIGINS.has(origin)) {
+    return new Response(JSON.stringify({ error: "origin_not_allowed" }), {
+      headers: { ...getCorsHeaders(null), "Content-Type": "application/json" },
+      status: 403,
+    });
+  }
+  const corsHeaders = getCorsHeaders(origin);
+
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders, status: 204 });
@@ -64,6 +85,13 @@ Deno.serve(async (req) => {
   }
 
   try {
+    const contentLength = Number(req.headers.get("content-length") || "0");
+    if (contentLength > 32_768) {
+      return new Response(JSON.stringify({ error: "payload_too_large" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 413,
+      });
+    }
     const payload = await req.json();
     const { action, lead, download } = payload;
 
@@ -308,6 +336,8 @@ Deno.serve(async (req) => {
       .select("id, slug")
       .eq("slug", resourceSlug)
       .eq("content_type", "resource")
+      .eq("status", "published")
+      .eq("visibility", "public")
       .single();
 
     if (resourceError || !resource) {
