@@ -316,6 +316,7 @@ export async function getResources({ type = null, status = null, visibility = nu
             resource_type: meta.resource_type || seedMatch.resource_type || 'file',
             short_description: meta.short_description || seedMatch.short_description || '',
             description: meta.description || seedMatch.description || '',
+            i18n: meta.i18n || seedMatch.i18n || {},
             purpose: meta.purpose || seedMatch.purpose || '',
             when_to_use: meta.when_to_use || seedMatch.when_to_use || [],
             when_not_to_use: meta.when_not_to_use || seedMatch.when_not_to_use || [],
@@ -336,6 +337,10 @@ export async function getResources({ type = null, status = null, visibility = nu
             related_case_studies: meta.related_case_studies || seedMatch.related_case_studies || [],
             tags: meta.tags || seedMatch.tags || [],
             bundle_download_url: meta.bundle_download_url || seedMatch.bundle_download_url || '',
+            support_url: meta.support_url || seedMatch.support_url || '',
+            support_title: meta.support_title || seedMatch.support_title || '',
+            support_description: meta.support_description || seedMatch.support_description || '',
+            support_label: meta.support_label || seedMatch.support_label || '',
             assets,
           };
         });

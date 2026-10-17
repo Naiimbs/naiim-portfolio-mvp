@@ -1,11 +1,15 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function ResourceTemplateCard({
   template,
   onPreview,
   onDownload,
 }) {
+  const { t, i18n } = useTranslation();
   if (!template) return null;
+  const currentLang = i18n.language?.startsWith('fr') ? 'fr' : (i18n.language?.startsWith('ar') ? 'ar' : 'en');
+  const localizedTemplate = template.i18n?.[currentLang] || {};
 
   return (
     <div className="card border rounded-4 shadow-xs bg-white transition-all hover-border-primary overflow-hidden" style={{ borderColor: 'var(--line)' }}>
@@ -20,11 +24,11 @@ export default function ResourceTemplateCard({
           </div>
 
           <h4 className="fw-bold font-heading text-dark mb-2" style={{ fontSize: '1.25rem' }}>
-            {template.name.replace(/\.xlsx$/i, '')}
+            {(localizedTemplate.name || template.name).replace(/\.xlsx$/i, '')}
           </h4>
 
           <p className="text-secondary small mb-4" style={{ fontSize: '0.88rem', lineHeight: '1.6' }}>
-            {template.description || 'A blank workbook for documenting structured UI/UX audit observations.'}
+            {localizedTemplate.description || template.description || t('resourceDetail.template.defaultDescription')}
           </p>
 
           <div>
@@ -35,7 +39,7 @@ export default function ResourceTemplateCard({
               style={{ fontSize: '0.9rem' }}
             >
               <i className="bi bi-download"></i>
-              <span>Download template</span>
+              <span>{t('resourceDetail.template.download')}</span>
             </button>
           </div>
         </div>
@@ -49,9 +53,9 @@ export default function ResourceTemplateCard({
               <span>{template.name}</span>
             </div>
             <div className="bg-light border-bottom px-2 py-1 d-flex gap-1">
-              <div className="bg-white border rounded px-3 py-1 text-muted" style={{ fontSize: '0.65rem' }}>File</div>
-              <div className="bg-white border rounded px-3 py-1 text-muted" style={{ fontSize: '0.65rem' }}>Home</div>
-              <div className="bg-white border rounded px-3 py-1 text-muted" style={{ fontSize: '0.65rem' }}>Insert</div>
+              <div className="bg-white border rounded px-3 py-1 text-muted" style={{ fontSize: '0.65rem' }}>{t('resourceDetail.template.file')}</div>
+              <div className="bg-white border rounded px-3 py-1 text-muted" style={{ fontSize: '0.65rem' }}>{t('resourceDetail.template.home')}</div>
+              <div className="bg-white border rounded px-3 py-1 text-muted" style={{ fontSize: '0.65rem' }}>{t('resourceDetail.template.insert')}</div>
             </div>
             {/* Fake Excel Body */}
             <div className="flex-grow-1 p-3 d-flex flex-column gap-2">
@@ -62,8 +66,8 @@ export default function ResourceTemplateCard({
               <div className="w-75 bg-light rounded" style={{ height: '12px' }}></div>
             </div>
             <div className="bg-light border-top px-3 py-1 d-flex gap-2" style={{ fontSize: '0.65rem' }}>
-              <span className="bg-white border px-2 py-0.5 rounded text-dark fw-bold">Audit Notes</span>
-              <span className="text-muted px-2 py-0.5">Responsive</span>
+              <span className="bg-white border px-2 py-0.5 rounded text-dark fw-bold">{t('resourceDetail.template.auditNotes')}</span>
+              <span className="text-muted px-2 py-0.5">{t('resourceDetail.template.responsive')}</span>
             </div>
           </div>
         </div>

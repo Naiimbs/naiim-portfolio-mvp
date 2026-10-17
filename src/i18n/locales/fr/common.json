@@ -332,6 +332,18 @@
     "sortFeatured": "À la une d’abord",
     "resultsCount_one": "{{count}} ressource",
     "resultsCount_other": "{{count}} ressources",
+    "types": {
+      "skill": { "label": "Skill d’agent", "plural": "Skills" },
+      "template": { "label": "Modèle", "plural": "Modèles" },
+      "figma": { "label": "Fichier Figma", "plural": "Figma" },
+      "document": { "label": "Document / Rapport", "plural": "Documents" },
+      "guide": { "label": "Guide / Playbook", "plural": "Guides" },
+      "prompt": { "label": "Prompt système", "plural": "Prompts" },
+      "example": { "label": "Exemple / Artefact", "plural": "Exemples" },
+      "spreadsheet": { "label": "Tableur / Modèle", "plural": "Tableurs" },
+      "file": { "label": "Fichier / Archive", "plural": "Fichiers" },
+      "reference": { "label": "Référence / Lien", "plural": "Références" }
+    },
     "loading": "Chargement des ressources...",
     "loadingSub": "Chargement des ressources sélectionnées...",
     "errorTitle": "Impossible de charger les ressources",
@@ -451,7 +463,50 @@
     "tagsClassification": "Tags & classification",
     "backToResources": "Retour à toutes les ressources",
     "backToTop": "Haut de page",
-    "license": "Licence"
+    "license": "Licence",
+    "downloadModal": {
+      "title": "Télécharger la ressource gratuitement",
+      "readyTitle": "Votre téléchargement est prêt",
+      "successBody": "La ressource a été téléchargée avec succès.",
+      "intro": "Accédez gratuitement et immédiatement au bundle complet. Saisissez vos coordonnées ci-dessous :",
+      "fullName": "Nom complet",
+      "namePlaceholder": "Ex. : Sarah Connor",
+      "email": "E-mail professionnel ou personnel",
+      "emailPlaceholder": "nom@entreprise.com",
+      "roleCompany": "Fonction / Entreprise",
+      "optional": "Facultatif",
+      "rolePlaceholder": "Ex. : Lead Product Designer chez Acme",
+      "marketingConsent": "Je souhaite recevoir occasionnellement des actualités sur les nouveaux skills d’agents IA, systèmes de design et outils.",
+      "cancel": "Annuler",
+      "preparing": "Préparation du téléchargement…",
+      "download": "Télécharger gratuitement",
+      "nameError": "Veuillez saisir votre nom complet.",
+      "emailError": "Veuillez saisir une adresse e-mail professionnelle ou personnelle valide.",
+      "downloadError": "L’enregistrement du téléchargement a échoué. Veuillez réessayer."
+    },
+    "viewer": {
+      "title": "Lecteur du playbook Skill",
+      "description": "Playbook d’exécution de l’agent et instructions de prompt",
+      "copied": "Fichier complet copié",
+      "copy": "Copier le texte brut",
+      "loading": "Chargement du contenu du playbook…",
+      "loadError": "Impossible de charger le playbook Markdown."
+    },
+    "template": {
+      "defaultDescription": "Un classeur vierge pour consigner des observations structurées d’audit UI/UX.",
+      "download": "Télécharger le modèle",
+      "file": "Fichier",
+      "home": "Accueil",
+      "insert": "Insertion",
+      "auditNotes": "Notes d’audit",
+      "responsive": "Responsive"
+    },
+    "support": {
+      "title": "SOUTIEN DE LA COMMUNAUTÉ",
+      "description": "Vous pouvez utiliser cette ressource gratuitement.\nSi elle vous a fait gagner du temps, améliorer un workflow ou créer quelque chose de meilleur, vous pouvez soutenir le travail qui la rend possible.",
+      "label": "Soutenir mon travail ↗",
+      "optionalNote": "Facultatif · Aucun paiement requis pour télécharger"
+    }
   },
   "about": {
     "eyebrow": "LE PARCOURS",

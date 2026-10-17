@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function ResourceMarkdownViewerModal({
   isOpen,
   onClose,
   asset,
-  title = 'Skill Playbook Viewer',
+  title,
 }) {
+  const { t, i18n } = useTranslation();
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -26,13 +28,16 @@ export default function ResourceMarkdownViewerModal({
         })
         .catch((err) => {
           console.error('[ResourceMarkdownViewer] Load error:', err);
-          setError(err.message || 'Unable to load markdown playbook.');
+          setError(t('resourceDetail.viewer.loadError'));
           setLoading(false);
         });
     }
-  }, [isOpen, asset]);
+  }, [isOpen, asset, t]);
 
   if (!isOpen) return null;
+
+  const currentLang = i18n.language?.startsWith('fr') ? 'fr' : (i18n.language?.startsWith('ar') ? 'ar' : 'en');
+  const localizedAsset = asset?.i18n?.[currentLang] || {};
 
   const handleCopyText = (text, idx) => {
     navigator.clipboard.writeText(text);
@@ -55,10 +60,10 @@ export default function ResourceMarkdownViewerModal({
             </div>
             <div className="min-w-0">
               <div className="fw-bold text-dark small text-truncate">
-                {asset?.name || title}
+                {localizedAsset.name || asset?.name || title || t('resourceDetail.viewer.title')}
               </div>
               <div className="text-muted text-truncate" style={{ fontSize: '0.72rem' }}>
-                {asset?.description || 'Agent execution playbook and prompt instructions'}
+                {localizedAsset.description || asset?.description || t('resourceDetail.viewer.description')}
               </div>
             </div>
           </div>
@@ -72,11 +77,11 @@ export default function ResourceMarkdownViewerModal({
               >
                 {copiedIndex === 'full' ? (
                   <>
-                    <i className="bi bi-check-lg text-success me-1"></i> Copied Full File
+                    <i className="bi bi-check-lg text-success me-1"></i> {t('resourceDetail.viewer.copied')}
                   </>
                 ) : (
                   <>
-                    <i className="bi bi-clipboard me-1"></i> Copy Raw Text
+                    <i className="bi bi-clipboard me-1"></i> {t('resourceDetail.viewer.copy')}
                   </>
                 )}
               </button>
@@ -97,7 +102,7 @@ export default function ResourceMarkdownViewerModal({
           {loading ? (
             <div className="text-center py-5">
               <div className="spinner-border text-success mb-3" role="status" style={{ color: 'var(--green)' }}></div>
-              <div className="text-muted small">Loading playbook contents...</div>
+              <div className="text-muted small">{t('resourceDetail.viewer.loading')}</div>
             </div>
           ) : error ? (
             <div className="alert alert-danger py-3 px-4 rounded-3 small">

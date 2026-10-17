@@ -18,6 +18,9 @@ export default function ResourcesPage() {
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const currentLang = i18n.language?.startsWith('fr')
+    ? 'fr'
+    : (i18n.language?.startsWith('ar') ? 'ar' : 'en');
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -74,6 +77,16 @@ export default function ResourcesPage() {
   const useCaseOptions = useMemo(() => [...new Set(resources.flatMap((resource) => (
     Array.isArray(resource.tags) ? resource.tags.filter(Boolean) : []
   )))].sort((a, b) => a.localeCompare(b)), [resources]);
+
+  const getLocalizedTag = (resource, tag, index) => (
+    resource.i18n?.[currentLang]?.tags?.[index] || tag
+  );
+
+  const getLocalizedUseCase = (tag) => {
+    const owner = resources.find((resource) => Array.isArray(resource.tags) && resource.tags.includes(tag));
+    const index = owner?.tags?.indexOf(tag) ?? -1;
+    return owner && index >= 0 ? getLocalizedTag(owner, tag, index) : tag;
+  };
 
   const filteredResources = useMemo(() => {
     const query = searchQuery.trim().toLocaleLowerCase();
@@ -173,7 +186,7 @@ export default function ResourcesPage() {
                     onClick={() => handleTypeSelect(rt.id)}
                   >
                     <i className={`bi ${rt.icon}`}></i>
-                    <span>{rt.pluralLabel}</span>
+                    <span>{t(`resources.types.${rt.id}.plural`, rt.pluralLabel)}</span>
                   </button>
                 ))}
               </div>
@@ -213,7 +226,7 @@ export default function ResourcesPage() {
                   <span>{t('resources.useCase')}</span>
                   <select className="form-select form-select-sm resource-filter-select" value={activeUseCase} onChange={(event) => handleFilterChange('usecase', event.target.value)}>
                     <option value="all">{t('resources.allUseCases')}</option>
-                    {useCaseOptions.map((useCase) => <option key={useCase} value={useCase}>{useCase}</option>)}
+                    {useCaseOptions.map((useCase) => <option key={useCase} value={useCase}>{getLocalizedUseCase(useCase)}</option>)}
                   </select>
                 </label>
                 <label className="resource-refinement-field">
@@ -273,9 +286,6 @@ export default function ResourcesPage() {
                 {filteredResources.map((resource) => {
                   const typeCfg = RESOURCE_TYPES[resource.resource_type] || RESOURCE_TYPES.file;
                   const assetCount = Array.isArray(resource.assets) ? resource.assets.length : 0;
-                  const currentLang = i18n.language?.startsWith('fr')
-                    ? 'fr'
-                    : (i18n.language?.startsWith('ar') ? 'ar' : 'en');
                   const tx = resource.i18n?.[currentLang] || resource.metadata?.i18n?.[currentLang] || {};
                   const displayTitle = tx.title || resource.title;
                   const displayDesc = tx.short_description || tx.description || resource.short_description || resource.description;
@@ -311,7 +321,7 @@ export default function ResourcesPage() {
                               style={{ backgroundColor: typeCfg.bg, color: typeCfg.color }}
                             >
                               <i className={`bi ${typeCfg.icon}`}></i>
-                              {typeCfg.label}
+                              {t(`resources.types.${resource.resource_type}.label`, typeCfg.label)}
                             </span>
                             <div className="d-flex align-items-center gap-1">
                               {resource.featured && (
@@ -344,7 +354,7 @@ export default function ResourcesPage() {
                             <div className="d-flex flex-wrap gap-1 mb-3">
                               {resource.tags.slice(0, 3).map((tag, idx) => (
                                 <span key={idx} className="resource-tag-chip">
-                                  #{tag}
+                                  #{getLocalizedTag(resource, tag, idx)}
                                 </span>
                               ))}
                             </div>

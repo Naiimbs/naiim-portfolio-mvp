@@ -124,6 +124,14 @@ export default function ResourceDetailPage() {
   const tx = resource?.i18n?.[currentLang] || resource?.metadata?.i18n?.[currentLang] || {};
   const displayTitle = tx.title || resource.title;
   const displayDesc = tx.short_description || tx.description || resource.short_description || resource.description;
+  const displayPurpose = tx.purpose || resource.purpose;
+  const displayWhenToUse = tx.when_to_use || resource.when_to_use;
+  const displayWhenNotToUse = tx.when_not_to_use || resource.when_not_to_use;
+  const displayHowToUse = tx.how_to_use || resource.how_to_use;
+  const displayInstallation = tx.installation || resource.installation;
+  const displayCompatibility = tx.compatibility || resource.compatibility;
+  const displayTags = tx.tags || resource.tags;
+  const localizedAssetText = (asset, field) => tx.assets?.[asset.id]?.[field] || asset[field];
 
   return (
     <MainLayout>
@@ -146,7 +154,7 @@ export default function ResourceDetailPage() {
               style={{ backgroundColor: typeCfg.bg, color: typeCfg.color }}
             >
               <i className={`bi ${typeCfg.icon} me-1`}></i>
-              {typeCfg.label}
+              {t(`resources.types.${resource.resource_type}.label`, typeCfg.label)}
             </span>
             <i className="bi bi-chevron-right" style={{ fontSize: '0.65rem' }}></i>
             <span className="text-dark fw-semibold text-truncate">{displayTitle}</span>
@@ -162,7 +170,7 @@ export default function ResourceDetailPage() {
                     style={{ backgroundColor: typeCfg.bg, color: typeCfg.color }}
                   >
                     <i className={`bi ${typeCfg.icon}`}></i>
-                    {typeCfg.label}
+                    {t(`resources.types.${resource.resource_type}.label`, typeCfg.label)}
                   </span>
                   {resource.featured && (
                     <span className="resource-featured-pill">
@@ -230,56 +238,56 @@ export default function ResourceDetailPage() {
             {/* Main Column */}
             <div className="col-12 col-lg-8">
               {/* Overview & Purpose */}
-              {resource.purpose && (
+              {displayPurpose && (
                 <div className="resource-block">
                   <h3 className="resource-block-title">
                     <i className="bi bi-bullseye" style={{ color: 'var(--green)' }}></i>
                     <span>{t('resourceDetail.overview')}</span>
                   </h3>
                   <p className="text-secondary leading-relaxed mb-0" style={{ whiteSpace: 'pre-line' }}>
-                    {resource.purpose}
+                    {displayPurpose}
                   </p>
                 </div>
               )}
 
               {/* When to use vs When NOT to use */}
-              {(resource.when_to_use || resource.when_not_to_use) && (
+              {(displayWhenToUse || displayWhenNotToUse) && (
                 <div className="row g-3 mb-4">
-                  {resource.when_to_use && (
+                  {displayWhenToUse && (
                     <div className="col-12 col-md-6">
                       <div className="h-100 p-4 rounded-4 border" style={{ backgroundColor: 'var(--green-soft)', borderColor: 'rgba(8, 127, 102, 0.2)' }}>
                         <div className="fw-bold small text-uppercase mb-3 d-flex align-items-center gap-2" style={{ color: 'var(--green)' }}>
                           <i className="bi bi-check-circle-fill"></i>
                           <span>{t('resourceDetail.whenToUse')}</span>
                         </div>
-                        {Array.isArray(resource.when_to_use) ? (
+                        {Array.isArray(displayWhenToUse) ? (
                           <ul className="small text-dark mb-0 ps-3">
-                            {resource.when_to_use.map((item, idx) => (
+                            {displayWhenToUse.map((item, idx) => (
                               <li key={idx} className="mb-1.5">{item}</li>
                             ))}
                           </ul>
                         ) : (
-                          <p className="small text-dark mb-0 whitespace-pre-line">{resource.when_to_use}</p>
+                          <p className="small text-dark mb-0 whitespace-pre-line">{displayWhenToUse}</p>
                         )}
                       </div>
                     </div>
                   )}
 
-                  {resource.when_not_to_use && (
+                  {displayWhenNotToUse && (
                     <div className="col-12 col-md-6">
                       <div className="h-100 p-4 rounded-4 border bg-danger bg-opacity-10 border-danger border-opacity-25">
                         <div className="fw-bold small text-uppercase text-danger mb-3 d-flex align-items-center gap-2">
                           <i className="bi bi-x-circle-fill"></i>
                           <span>{t('resourceDetail.whenNotToUse')}</span>
                         </div>
-                        {Array.isArray(resource.when_not_to_use) ? (
+                        {Array.isArray(displayWhenNotToUse) ? (
                           <ul className="small text-dark mb-0 ps-3">
-                            {resource.when_not_to_use.map((item, idx) => (
+                            {displayWhenNotToUse.map((item, idx) => (
                               <li key={idx} className="mb-1.5">{item}</li>
                             ))}
                           </ul>
                         ) : (
-                          <p className="small text-dark mb-0 whitespace-pre-line">{resource.when_not_to_use}</p>
+                          <p className="small text-dark mb-0 whitespace-pre-line">{displayWhenNotToUse}</p>
                         )}
                       </div>
                     </div>
@@ -288,7 +296,7 @@ export default function ResourceDetailPage() {
               )}
 
               {/* Autonomous Pipeline & How to Use (with one-click Copy) */}
-              {resource.how_to_use && (
+              {displayHowToUse && (
                 <div className="resource-block">
                   <div className="d-flex align-items-center justify-content-between mb-3">
                     <h3 className="resource-block-title mb-0">
@@ -297,7 +305,7 @@ export default function ResourceDetailPage() {
                     </h3>
                     <button
                       type="button"
-                      onClick={() => handleCopy(resource.how_to_use, 'pipeline')}
+                      onClick={() => handleCopy(displayHowToUse, 'pipeline')}
                       className="btn btn-sm btn-outline-secondary rounded-pill px-3"
                       style={{ fontSize: '0.75rem' }}
                     >
@@ -314,7 +322,7 @@ export default function ResourceDetailPage() {
                   </div>
                   <div className="resource-code-box">
                     <pre className="m-0 text-white" style={{ fontFamily: 'inherit', whiteSpace: 'pre-wrap' }}>
-                      {resource.how_to_use}
+                      {displayHowToUse}
                     </pre>
                   </div>
                 </div>
@@ -355,13 +363,13 @@ export default function ResourceDetailPage() {
                           />
                           <div className="screenshot-meta">
                             <div className="d-flex justify-content-between align-items-center mb-1">
-                              <span className="fw-bold small text-dark text-truncate">{asset.name || asset.title}</span>
+                              <span className="fw-bold small text-dark text-truncate">{localizedAssetText(asset, 'name') || asset.title}</span>
                               <span className="badge bg-light text-muted border" style={{ fontSize: '0.65rem' }}>
                                 {asset.device || asset.viewport || t('resourceDetail.captureFallback')}
                               </span>
                             </div>
                             <div className="text-muted small" style={{ fontSize: '0.75rem' }}>
-                              {asset.caption || asset.description || t('resourceDetail.captureProof')}
+                              {localizedAssetText(asset, 'caption') || localizedAssetText(asset, 'description') || t('resourceDetail.captureProof')}
                             </div>
                           </div>
                         </div>
@@ -434,13 +442,13 @@ export default function ResourceDetailPage() {
             {/* Sidebar Column */}
             <div className="col-12 col-lg-4">
               {/* Compatibility Matrix */}
-              {Array.isArray(resource.compatibility) && resource.compatibility.length > 0 && (
+              {Array.isArray(displayCompatibility) && displayCompatibility.length > 0 && (
                 <div className="resource-block mb-4">
                   <h4 className="fw-bold font-heading mb-3 small text-uppercase" style={{ letterSpacing: '0.05em' }}>
                     <i className="bi bi-cpu me-1" style={{ color: 'var(--green)' }}></i> {t('resourceDetail.compatibility')}
                   </h4>
                   <div className="d-flex flex-column gap-2">
-                    {resource.compatibility.map((item, idx) => {
+                    {displayCompatibility.map((item, idx) => {
                       const name = typeof item === 'object' ? item.name : item;
                       const status = typeof item === 'object' ? item.status : 'verified';
                       const notes = typeof item === 'object' ? item.notes : '';
@@ -495,11 +503,11 @@ export default function ResourceDetailPage() {
                     </div>
                   </div>
 
-                  {resource.installation && (
+                  {displayInstallation && (
                     <div className="pt-2 border-top">
                       <div className="small text-secondary fw-semibold mb-1">{t('resourceDetail.setupInstructions')}</div>
                       <pre className="p-2.5 rounded-3 bg-light border text-secondary font-monospace m-0" style={{ fontSize: '0.72rem', whiteSpace: 'pre-wrap' }}>
-                        {resource.installation}
+                        {displayInstallation}
                       </pre>
                     </div>
                   )}
@@ -507,13 +515,13 @@ export default function ResourceDetailPage() {
               </div>
 
               {/* Tags */}
-              {Array.isArray(resource.tags) && resource.tags.length > 0 && (
+              {Array.isArray(displayTags) && displayTags.length > 0 && (
                 <div className="resource-block">
                   <h4 className="fw-bold font-heading mb-3 small text-uppercase" style={{ letterSpacing: '0.05em' }}>
                     <i className="bi bi-tags me-1" style={{ color: 'var(--green)' }}></i> {t('resourceDetail.tagsClassification')}
                   </h4>
                   <div className="d-flex flex-wrap gap-1.5">
-                    {resource.tags.map((tag, idx) => (
+                    {displayTags.map((tag, idx) => (
                       <span key={idx} className="resource-tag-chip">
                         #{tag}
                       </span>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { captureLeadAndDownload } from '../../services/marketing';
 import { getAssetDownloadUrl } from '../../services/resources';
 import ResourceSupportCard from './ResourceSupportCard';
@@ -11,6 +12,8 @@ export default function ResourceLeadFormModal({
   asset,
   onSuccess,
 }) {
+  const { t, i18n } = useTranslation();
+  const currentLang = i18n.language?.startsWith('fr') ? 'fr' : (i18n.language?.startsWith('ar') ? 'ar' : 'en');
   const [searchParams] = useSearchParams();
   const [formData, setFormData] = useState({
     name: '',
@@ -30,17 +33,18 @@ export default function ResourceLeadFormModal({
   // Clean up URL if it has download parameter for display/click purposes
   const downloadUrl = rawDownloadUrl;
   const downloadName = targetAsset?.name || `${resource.slug}.zip`;
+  const localizedResource = resource.i18n?.[currentLang] || {};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
     if (!formData.name.trim()) {
-      setError('Please enter your full name.');
+      setError(t('resourceDetail.downloadModal.nameError'));
       return;
     }
     if (!formData.email.trim() || !formData.email.includes('@')) {
-      setError('Please enter a valid work or personal email address.');
+      setError(t('resourceDetail.downloadModal.emailError'));
       return;
     }
 
@@ -86,7 +90,7 @@ export default function ResourceLeadFormModal({
       // We do NOT auto-close the modal here so the user can see the Support Card
     } catch (err) {
       console.error('[ResourceLeadFormModal] Submit error:', err);
-      setError(err.message || 'Failed to register download. Please try again.');
+      setError(t('resourceDetail.downloadModal.downloadError'));
     } finally {
       setLoading(false);
     }
@@ -106,7 +110,7 @@ export default function ResourceLeadFormModal({
               <i className="bi bi-download"></i>
             </div>
             <div>
-              <div className="fw-bold text-dark small">Download Free Resource</div>
+              <div className="fw-bold text-dark small">{t('resourceDetail.downloadModal.title')}</div>
               <div className="text-muted text-truncate" style={{ fontSize: '0.72rem', maxWidth: '320px' }}>
                 {downloadName}
               </div>
@@ -129,24 +133,24 @@ export default function ResourceLeadFormModal({
               <div className="w-12 h-12 rounded-circle bg-success bg-opacity-10 text-success d-inline-flex align-items-center justify-content-center mb-3" style={{ width: '48px', height: '48px', fontSize: '1.5rem' }}>
                 <i className="bi bi-check-lg"></i>
               </div>
-              <h4 className="fw-bold font-heading mb-1 text-dark">✓ Your download is ready</h4>
+              <h4 className="fw-bold font-heading mb-1 text-dark">✓ {t('resourceDetail.downloadModal.readyTitle')}</h4>
               <p className="text-secondary small mb-4">
-                The resource has been downloaded successfully.
+                {t('resourceDetail.downloadModal.successBody')}
               </p>
               
               <div className="text-start">
                 <ResourceSupportCard 
                   supportUrl={resource.support_url}
-                  title={resource.support_title}
-                  description={resource.support_description}
-                  label={resource.support_label}
+                  title={localizedResource.support_title || resource.support_title}
+                  description={localizedResource.support_description || resource.support_description}
+                  label={localizedResource.support_label || resource.support_label}
                 />
               </div>
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
               <div className="mb-3 text-secondary small">
-                Get free, instant access to the complete resource bundle. Enter your details below:
+                {t('resourceDetail.downloadModal.intro')}
               </div>
 
               {error && (
@@ -159,12 +163,12 @@ export default function ResourceLeadFormModal({
               {/* Name */}
               <div className="mb-3">
                 <label className="form-label small fw-bold text-dark mb-1">
-                  Full Name <span className="text-danger">*</span>
+                  {t('resourceDetail.downloadModal.fullName')} <span className="text-danger">*</span>
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Sarah Connor"
+                  placeholder={t('resourceDetail.downloadModal.namePlaceholder')}
                   className="form-control form-control-sm rounded-3"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -174,12 +178,12 @@ export default function ResourceLeadFormModal({
               {/* Email */}
               <div className="mb-3">
                 <label className="form-label small fw-bold text-dark mb-1">
-                  Work or Personal Email <span className="text-danger">*</span>
+                  {t('resourceDetail.downloadModal.email')} <span className="text-danger">*</span>
                 </label>
                 <input
                   type="email"
                   required
-                  placeholder="name@company.com"
+                  placeholder={t('resourceDetail.downloadModal.emailPlaceholder')}
                   className="form-control form-control-sm rounded-3"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -189,11 +193,11 @@ export default function ResourceLeadFormModal({
               {/* Role / Company */}
               <div className="mb-3">
                 <label className="form-label small fw-bold text-dark mb-1">
-                  Role / Company <span className="text-muted fw-normal">(Optional)</span>
+                  {t('resourceDetail.downloadModal.roleCompany')} <span className="text-muted fw-normal">({t('resourceDetail.downloadModal.optional')})</span>
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Lead Product Designer at Acme"
+                  placeholder={t('resourceDetail.downloadModal.rolePlaceholder')}
                   className="form-control form-control-sm rounded-3"
                   value={formData.roleCompany}
                   onChange={(e) => setFormData({ ...formData, roleCompany: e.target.value })}
@@ -210,7 +214,7 @@ export default function ResourceLeadFormModal({
                   onChange={(e) => setFormData({ ...formData, marketingConsent: e.target.checked })}
                 />
                 <label className="form-check-label text-secondary" htmlFor="marketingConsentCheck" style={{ fontSize: '0.78rem' }}>
-                  I would like to receive occasional updates about new AI agent skills, design systems, and toolkits.
+                  {t('resourceDetail.downloadModal.marketingConsent')}
                 </label>
               </div>
 
@@ -221,7 +225,7 @@ export default function ResourceLeadFormModal({
                   onClick={onClose}
                   className="btn btn-sm btn-outline-secondary rounded-pill px-3"
                 >
-                  Cancel
+                  {t('resourceDetail.downloadModal.cancel')}
                 </button>
                 <button
                   type="submit"
@@ -231,12 +235,12 @@ export default function ResourceLeadFormModal({
                   {loading ? (
                     <>
                       <span className="spinner-border spinner-border-sm" role="status"></span>
-                      <span>Preparing Download...</span>
+                      <span>{t('resourceDetail.downloadModal.preparing')}</span>
                     </>
                   ) : (
                     <>
                       <i className="bi bi-download"></i>
-                      <span>Download for Free</span>
+                      <span>{t('resourceDetail.downloadModal.download')}</span>
                     </>
                   )}
                 </button>

@@ -332,6 +332,18 @@
     "sortFeatured": "Featured first",
     "resultsCount_one": "{{count}} resource",
     "resultsCount_other": "{{count}} resources",
+    "types": {
+      "skill": { "label": "Agent Skill", "plural": "Skills" },
+      "template": { "label": "Template", "plural": "Templates" },
+      "figma": { "label": "Figma File", "plural": "Figma" },
+      "document": { "label": "Document / Report", "plural": "Documents" },
+      "guide": { "label": "Guide & Playbook", "plural": "Guides" },
+      "prompt": { "label": "System Prompt", "plural": "Prompts" },
+      "example": { "label": "Example / Artifact", "plural": "Examples" },
+      "spreadsheet": { "label": "Spreadsheet / Model", "plural": "Spreadsheets" },
+      "file": { "label": "File / Archive", "plural": "Files" },
+      "reference": { "label": "Reference / Link", "plural": "References" }
+    },
     "loading": "Loading resources...",
     "loadingSub": "Loading curated resources...",
     "errorTitle": "Unable to load resources",
@@ -451,7 +463,50 @@
     "tagsClassification": "Tags & Classification",
     "backToResources": "Back to all resources",
     "backToTop": "Back to top",
-    "license": "License"
+    "license": "License",
+    "downloadModal": {
+      "title": "Download Free Resource",
+      "readyTitle": "Your download is ready",
+      "successBody": "The resource has been downloaded successfully.",
+      "intro": "Get free, instant access to the complete resource bundle. Enter your details below:",
+      "fullName": "Full Name",
+      "namePlaceholder": "e.g. Sarah Connor",
+      "email": "Work or Personal Email",
+      "emailPlaceholder": "name@company.com",
+      "roleCompany": "Role / Company",
+      "optional": "Optional",
+      "rolePlaceholder": "e.g. Lead Product Designer at Acme",
+      "marketingConsent": "I would like to receive occasional updates about new AI agent skills, design systems, and toolkits.",
+      "cancel": "Cancel",
+      "preparing": "Preparing download…",
+      "download": "Download for Free",
+      "nameError": "Please enter your full name.",
+      "emailError": "Please enter a valid work or personal email address.",
+      "downloadError": "Failed to register the download. Please try again."
+    },
+    "viewer": {
+      "title": "Skill Playbook Viewer",
+      "description": "Agent execution playbook and prompt instructions",
+      "copied": "Copied full file",
+      "copy": "Copy raw text",
+      "loading": "Loading playbook contents…",
+      "loadError": "Unable to load the Markdown playbook."
+    },
+    "template": {
+      "defaultDescription": "A blank workbook for documenting structured UI/UX audit observations.",
+      "download": "Download template",
+      "file": "File",
+      "home": "Home",
+      "insert": "Insert",
+      "auditNotes": "Audit Notes",
+      "responsive": "Responsive"
+    },
+    "support": {
+      "title": "COMMUNITY SUPPORT",
+      "description": "You can use this resource for free.\nIf it helped you save time, improve a workflow, or build something better, you can support the work behind it.",
+      "label": "Support my work ↗",
+      "optionalNote": "Optional · No payment required to download"
+    }
   },
   "about": {
     "eyebrow": "THE JOURNEY",
