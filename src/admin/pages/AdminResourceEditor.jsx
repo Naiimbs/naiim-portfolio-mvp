@@ -6,6 +6,7 @@ import { RESOURCE_TYPE_LIST, ASSET_TYPES } from '../../config/resourceTypes';
 import { uploadMedia } from '../../services/media';
 import { getEditorSectionsForType } from '../config/resourceEditorConfig';
 import { parseMarkdownSkill } from '../utils/markdownParser';
+import { getResourceTypeDetails, validateTypeSpecificFields } from '../../config/resourceTypeDetails';
 
 export default function AdminResourceEditor() {
   const { id } = useParams();
@@ -144,6 +145,7 @@ export default function AdminResourceEditor() {
     if (field === 'resource_type' && value !== formData.resource_type) {
       const confirmChange = window.confirm(`Changing Resource Type to "${value}" may hide ${formData.resource_type}-specific fields.\n\nExisting data will be preserved and not deleted.\n\nContinue?`);
       if (!confirmChange) return;
+      setActiveTab('basics');
     }
 
     setFormData((prev) => {
@@ -168,6 +170,27 @@ export default function AdminResourceEditor() {
     if (e) e.preventDefault();
     if (!formData.title.trim()) {
       setFeedback({ type: 'danger', message: 'Title is required.' });
+      return;
+    }
+    if (!formData.slug.trim()) {
+      setFeedback({ type: 'danger', message: 'Slug is required.' });
+      return;
+    }
+    if (!formData.short_description.trim()) {
+      setFeedback({ type: 'danger', message: 'Short description is required.' });
+      return;
+    }
+    const typeMetadata = { ...formData, ...(formData.metadata || {}) };
+    if (formData.resource_type === 'reference') {
+      typeMetadata.official_url = typeMetadata.official_url || formData.source_url || formData.external_url;
+    }
+    const missingTypeFields = validateTypeSpecificFields(formData.resource_type, typeMetadata);
+    if (formData.resource_type === 'reference' && !typeMetadata.official_url && !formData.source_url && !formData.external_url) {
+      missingTypeFields.push('Canonical / official URL');
+    }
+    if (missingTypeFields.length > 0) {
+      setFeedback({ type: 'danger', message: `Complete the ${getResourceTypeDetails(formData.resource_type).title}: ${missingTypeFields.join(', ')}.` });
+      setActiveTab('typeDetails');
       return;
     }
 
@@ -427,6 +450,39 @@ export default function AdminResourceEditor() {
     setImportError(null);
   };
 
+  const renderTypeSpecificField = (field) => {
+    const value = field.key === 'compatibility'
+      ? (Array.isArray(formData.compatibility) ? formData.compatibility.map((item) => `${item.name || ''} | ${item.status || ''} | ${item.notes || ''}`).join('\n') : '')
+      : (formData.metadata?.[field.key] ?? formData[field.key] ?? '');
+    const setValue = (nextValue) => {
+      if (field.key === 'compatibility') {
+        const compatibility = String(nextValue).split('\n').map((line) => line.trim()).filter(Boolean).map((line) => {
+          const [name = '', status = 'compatible', notes = ''] = line.split('|').map((part) => part.trim());
+          return { name, status, notes };
+        });
+        handleFieldChange('compatibility', compatibility);
+      } else {
+        handleFieldChange('metadata', { ...(formData.metadata || {}), [field.key]: nextValue });
+      }
+    };
+    const commonProps = {
+      className: `form-control${field.type === 'markdown' ? ' font-monospace' : ''}`,
+      value,
+      placeholder: field.placeholder || '',
+      required: Boolean(field.required),
+      onChange: (event) => setValue(event.target.value),
+    };
+    if (field.type === 'select') {
+      return <select {...commonProps}><option value="">Select…</option>{field.options.map((option) => <option key={option} value={option}>{option}</option>)}</select>;
+    }
+    if (field.type === 'textarea' || field.type === 'markdown' || field.type === 'compatibility') {
+      return <textarea {...commonProps} rows={field.rows || 4} />;
+    }
+    return <input {...commonProps} type={field.type || 'text'} />;
+  };
+
+  const typeDetails = getResourceTypeDetails(formData.resource_type);
+
   if (loading) {
     return (
       <div className="admin-page-container text-center p-5 text-muted">
@@ -613,6 +669,31 @@ export default function AdminResourceEditor() {
         </div>
       )}
 
+      {/* Tab: Type-specific details */}
+      {activeTab === 'typeDetails' && (
+        <div className="card border-0 shadow-sm p-4 rounded-3" style={{ backgroundColor: '#ffffff' }}>
+          <div className="d-flex align-items-start gap-3 mb-4">
+            <div className="rounded-3 p-3" style={{ backgroundColor: 'rgba(8,127,102,.10)', color: 'var(--green, #087f66)' }}>
+              <i className={`bi ${RESOURCE_TYPE_LIST.find((type) => type.id === formData.resource_type)?.icon || 'bi-sliders'} fs-4`}></i>
+            </div>
+            <div>
+              <h5 className="fw-bold mb-1">{typeDetails.title}</h5>
+              <p className="text-muted small mb-0">{typeDetails.description}</p>
+            </div>
+          </div>
+          <div className="row g-3">
+            {typeDetails.fields.map((field) => (
+              <div className={field.type === 'textarea' || field.type === 'markdown' || field.type === 'compatibility' ? 'col-12' : 'col-12 col-md-6'} key={field.key}>
+                <label className="form-label fw-bold small">
+                  {field.label} {field.required && <span className="text-danger">*</span>}
+                </label>
+                {renderTypeSpecificField(field)}
+                {field.key === 'compatibility' && <div className="form-text">One environment per line: <code>Name | status | notes</code></div>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       {/* Tab: Publishing */}
       {activeTab === 'publishing' && (
         <div className="row g-4">
@@ -806,22 +887,6 @@ export default function AdminResourceEditor() {
               onChange={(e) => handleFieldChange('installation', e.target.value)}
             />
           </div>
-        </div>
-      )}
-
-      {/* Tab: Template */}
-      {activeTab === 'template' && (
-        <div className="card border-0 shadow-sm p-4 rounded-3" style={{ backgroundColor: '#ffffff' }}>
-          <h5 className="fw-bold mb-3">Template Details</h5>
-          <p className="text-muted small">Template file and preview management. (Specific template fields will appear here).</p>
-        </div>
-      )}
-
-      {/* Tab: Guide / Content */}
-      {(activeTab === 'guide' || activeTab === 'content') && (
-        <div className="card border-0 shadow-sm p-4 rounded-3" style={{ backgroundColor: '#ffffff' }}>
-          <h5 className="fw-bold mb-3">Content</h5>
-          <p className="text-muted small">Main guide content and table of contents.</p>
         </div>
       )}
 
@@ -1137,28 +1202,6 @@ export default function AdminResourceEditor() {
             </div>
           </div>
 
-          <div className="row g-3 mb-4">
-            <div className="col-md-6">
-              <label className="form-label fw-bold small">Figma File URL</label>
-              <input
-                type="url"
-                className="form-control"
-                placeholder="https://www.figma.com/file/..."
-                value={formData.metadata?.figma_url || ''}
-                onChange={(e) => handleFieldChange('metadata', { ...formData.metadata, figma_url: e.target.value })}
-              />
-            </div>
-            <div className="col-md-6">
-              <label className="form-label fw-bold small">Figma Embed URL</label>
-              <input
-                type="url"
-                className="form-control"
-                placeholder="https://www.figma.com/embed?embed_host=share&url=..."
-                value={formData.metadata?.figma_embed || ''}
-                onChange={(e) => handleFieldChange('metadata', { ...formData.metadata, figma_embed: e.target.value })}
-              />
-            </div>
-          </div>
 
         </div>
       )}

@@ -306,8 +306,10 @@ export async function getResources({ type = null, status = null, visibility = nu
           const assets = (Array.isArray(meta.assets) && meta.assets.length > 0) ? meta.assets : (seedMatch.assets || []);
 
           return {
+            ...meta,
             id: entry.id,
             slug: entry.slug,
+            metadata: meta,
             title: entry.title || seedMatch.title,
             status: entry.status || 'published',
             visibility: entry.visibility || 'public',
