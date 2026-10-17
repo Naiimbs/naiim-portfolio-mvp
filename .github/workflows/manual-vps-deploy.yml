@@ -209,6 +209,25 @@ jobs:
             sleep 2
           done
 
+          if [[ "$HEALTHY" == "true" ]]; then
+            for route in /resources/ /resources/app-ui-ux-auditor; do
+              if ! curl -fsS --max-time 3 "http://127.0.0.1:18080${route}" >/dev/null; then
+                echo "Resource route check failed: ${route}" >&2
+                HEALTHY=false
+                break
+              fi
+            done
+          fi
+
+          if [[ "$HEALTHY" == "true" ]]; then
+            LEGACY_STATUS=$(curl -sS --max-time 3 -o /dev/null -w '%{http_code}' \
+              "http://127.0.0.1:18080/ressources")
+            if [[ "$LEGACY_STATUS" != "301" ]]; then
+              echo "Legacy /ressources redirect returned HTTP ${LEGACY_STATUS}, expected 301." >&2
+              HEALTHY=false
+            fi
+          fi
+
           if [[ "$HEALTHY" != "true" ]]; then
             "${DOCKER[@]}" logs --tail 100 "$CONTAINER_NAME" || true
             echo "Health check failed; restoring the previous image if available." >&2

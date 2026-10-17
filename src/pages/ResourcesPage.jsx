@@ -8,7 +8,7 @@ import { RESOURCE_TYPES, RESOURCE_TYPE_LIST } from '../config/resourceTypes';
 import '../styles/resources.css';
 
 export default function ResourcesPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeType = searchParams.get('type') || 'all';
   const [searchQuery, setSearchQuery] = useState('');
