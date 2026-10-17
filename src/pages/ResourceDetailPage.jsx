@@ -24,6 +24,16 @@ const TYPE_DETAIL_FIELDS = {
   reference: [['Official URL', 'official_url'], ['Reference type', 'reference_type'], ['Provider', 'provider'], ['Version', 'reference_version'], ['Access notes', 'access_notes']],
 };
 
+const hasRenderableContent = (value) => {
+  if (Array.isArray(value)) return value.some((item) => hasRenderableContent(item));
+  if (typeof value === 'string') return value.trim().length > 0;
+  return value !== undefined && value !== null && Boolean(value);
+};
+
+const pickLocalizedContent = (localized, fallback) => (
+  hasRenderableContent(localized) ? localized : fallback
+);
+
 export default function ResourceDetailPage() {
   const { t, i18n } = useTranslation();
   const { slug } = useParams();
@@ -150,11 +160,12 @@ export default function ResourceDetailPage() {
   const displayDesc = tx.short_description || tx.description || resource.short_description || resource.description;
   const displayOverview = tx.description || resource.description;
   const displayPurpose = tx.purpose || resource.purpose;
-  const displayWhenToUse = tx.when_to_use || resource.when_to_use;
-  const displayWhenNotToUse = tx.when_not_to_use || resource.when_not_to_use;
-  const displayHowToUse = tx.how_to_use || resource.how_to_use;
-  const displayInstallation = tx.installation || resource.installation;
-  const displayCompatibility = tx.compatibility || resource.compatibility;
+  const displayWhenToUse = pickLocalizedContent(tx.when_to_use, resource.when_to_use);
+  const displayWhenNotToUse = pickLocalizedContent(tx.when_not_to_use, resource.when_not_to_use);
+  const displayHowToUse = pickLocalizedContent(tx.how_to_use, resource.how_to_use);
+  const isSkillResource = resource.resource_type === 'skill';
+  const displayInstallation = isSkillResource ? pickLocalizedContent(tx.installation, resource.installation) : null;
+  const displayCompatibility = isSkillResource ? pickLocalizedContent(tx.compatibility, resource.compatibility) : null;
   const displayTags = tx.tags || resource.tags;
   const typeDetailRows = (TYPE_DETAIL_FIELDS[resource.resource_type] || [])
     .map(([label, key]) => ({ label, value: resource[key] ?? resource.metadata?.[key] }))
@@ -287,15 +298,17 @@ export default function ResourceDetailPage() {
                     <span>{t('resourceDetail.downloadBundle')}</span>
                   </button>
 
-                  <button
-                    type="button"
-                    onClick={() => handleOpenMarkdownViewer(skillMdAsset)}
-                    className="btn btn-outline-custom rounded-pill py-2.5 px-4 fw-bold d-flex align-items-center justify-content-center gap-2"
-                    style={{ fontSize: '0.9rem' }}
-                  >
-                    <i className="bi bi-file-earmark-code"></i>
-                    <span>{t('resourceDetail.readSkill')}</span>
-                  </button>
+                  {isSkillResource && skillMdAsset && (
+                    <button
+                      type="button"
+                      onClick={() => handleOpenMarkdownViewer(skillMdAsset)}
+                      className="btn btn-outline-custom rounded-pill py-2.5 px-4 fw-bold d-flex align-items-center justify-content-center gap-2"
+                      style={{ fontSize: '0.9rem' }}
+                    >
+                      <i className="bi bi-file-earmark-code"></i>
+                      <span>{t('resourceDetail.readSkill')}</span>
+                    </button>
+                  )}
 
                   <div className="text-muted text-center" style={{ fontSize: '0.75rem' }}>
                     {t('resourceDetail.instantDownload')}
@@ -352,9 +365,9 @@ export default function ResourceDetailPage() {
               )}
 
               {/* When to use vs When NOT to use */}
-              {(displayWhenToUse || displayWhenNotToUse) && (
+              {(hasRenderableContent(displayWhenToUse) || hasRenderableContent(displayWhenNotToUse)) && (
                 <div className="row g-3 mb-4">
-                  {displayWhenToUse && (
+                  {hasRenderableContent(displayWhenToUse) && (
                     <div className="col-12 col-md-6">
                       <div className="h-100 p-4 rounded-4 border" style={{ backgroundColor: 'var(--green-soft)', borderColor: 'rgba(8, 127, 102, 0.2)' }}>
                         <div className="fw-bold small text-uppercase mb-3 d-flex align-items-center gap-2" style={{ color: 'var(--green)' }}>
@@ -363,8 +376,8 @@ export default function ResourceDetailPage() {
                         </div>
                         {Array.isArray(displayWhenToUse) ? (
                           <ul className="small text-dark mb-0 ps-3">
-                            {displayWhenToUse.map((item, idx) => (
-                              <li key={idx} className="mb-1.5">{item}</li>
+                            {displayWhenToUse.filter((item) => hasRenderableContent(item)).map((item, idx) => (
+                              <li key={idx} className="mb-1.5">{String(item)}</li>
                             ))}
                           </ul>
                         ) : (
@@ -374,7 +387,7 @@ export default function ResourceDetailPage() {
                     </div>
                   )}
 
-                  {displayWhenNotToUse && (
+                  {hasRenderableContent(displayWhenNotToUse) && (
                     <div className="col-12 col-md-6">
                       <div className="h-100 p-4 rounded-4 border bg-danger bg-opacity-10 border-danger border-opacity-25">
                         <div className="fw-bold small text-uppercase text-danger mb-3 d-flex align-items-center gap-2">
@@ -383,8 +396,8 @@ export default function ResourceDetailPage() {
                         </div>
                         {Array.isArray(displayWhenNotToUse) ? (
                           <ul className="small text-dark mb-0 ps-3">
-                            {displayWhenNotToUse.map((item, idx) => (
-                              <li key={idx} className="mb-1.5">{item}</li>
+                            {displayWhenNotToUse.filter((item) => hasRenderableContent(item)).map((item, idx) => (
+                              <li key={idx} className="mb-1.5">{String(item)}</li>
                             ))}
                           </ul>
                         ) : (
@@ -570,7 +583,8 @@ export default function ResourceDetailPage() {
                 </div>
               )}
 
-              {/* Installation Paths */}
+              {/* Installation Paths: only meaningful for agent skills. */}
+              {isSkillResource && (
               <div className="resource-block mb-4">
                 <h4 className="fw-bold font-heading mb-3 small text-uppercase" style={{ letterSpacing: '0.05em' }}>
                   <i className="bi bi-folder-symlink me-1" style={{ color: 'var(--green)' }}></i> {t('resourceDetail.installPaths')}
@@ -614,6 +628,7 @@ export default function ResourceDetailPage() {
                   )}
                 </div>
               </div>
+              )}
 
               {/* Tags */}
               {Array.isArray(displayTags) && displayTags.length > 0 && (
