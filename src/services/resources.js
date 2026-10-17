@@ -455,10 +455,54 @@ export async function updateResource(id, payload) {
     return { data: null, error: new Error(`Invalid resource type: ${payload.resource_type}`) };
   }
 
+  let existingResource = {};
+
+  // Resource list actions (for example, toggling Featured) send partial payloads.
+  // Read the current registry entry first so those actions cannot erase the full
+  // resource metadata, assets, or route.
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data: existingEntry, error: existingError } = await supabase
+        .from('content_registry')
+        .select('id, slug, title, status, visibility, featured, sort_order, metadata')
+        .eq('id', id)
+        .limit(1)
+        .maybeSingle();
+
+      if (existingError) throw existingError;
+
+      if (existingEntry) {
+        existingResource = {
+          ...(existingEntry.metadata || {}),
+          id: existingEntry.id,
+          slug: existingEntry.slug,
+          title: existingEntry.title,
+          status: existingEntry.status,
+          visibility: existingEntry.visibility,
+          featured: existingEntry.featured,
+          sort_order: existingEntry.sort_order,
+        };
+      }
+    } catch (err) {
+      console.warn('[resources] Existing registry read failed:', err);
+      return { data: null, error: new Error('Resource could not be loaded before updating. No changes were made.') };
+    }
+  }
+
+  const { metadata: incomingMetadata, ...payloadFields } = payload;
   let updated = {
-    ...payload,
+    ...existingResource,
+    ...payloadFields,
     last_updated: new Date().toISOString().split('T')[0],
   };
+
+  if (incomingMetadata && typeof incomingMetadata === 'object') {
+    updated = {
+      ...updated,
+      ...incomingMetadata,
+      i18n: incomingMetadata.i18n || updated.i18n,
+    };
+  }
 
   let updateSuccess = false;
 
@@ -472,7 +516,7 @@ export async function updateResource(id, payload) {
         visibility: updated.visibility,
         featured: updated.featured,
         sort_order: updated.sort_order,
-        public_route: `/resources/${updated.slug}`,
+        public_route: `/resources/${updated.slug || id}`,
         metadata: { ...updated },
       });
       if (error) {
@@ -487,7 +531,7 @@ export async function updateResource(id, payload) {
             visibility: updated.visibility,
             featured: updated.featured,
             sort_order: updated.sort_order,
-            public_route: `/resources/${updated.slug}`,
+            public_route: `/resources/${updated.slug || id}`,
             metadata: { ...updated },
           });
           if (createError) throw createError;
