@@ -364,8 +364,11 @@ export function resolveContentSeo(item, siteSettings = {}) {
     siteSettings.description ||
     'Portfolio of Naïm Bsili — Product Designer & AI Systems Builder.';
 
+  const storedCanonical = typeof explicitSeo.canonical === 'string' && /^\/(blog|resources)\/[^/]+$/.test(explicitSeo.canonical)
+    ? explicitSeo.canonical
+    : '';
   const canonical =
-    explicitSeo.canonical ||
+    storedCanonical ||
     item.public_route ||
     (item.slug ? getCanonicalRoute(item.content_type || 'blog', item.slug) : '/');
 
@@ -384,9 +387,9 @@ export function resolveContentSeo(item, siteSettings = {}) {
     title,
     description,
     canonical,
+    ogImage,
     ogTitle,
     ogDescription,
-    ogImage,
     robots: explicitSeo.robots || 'index, follow',
   };
 }
