@@ -127,7 +127,7 @@ jobs:
           VPS_PROJECT_PATH="$2"
           REMOTE_ARCHIVE="/tmp/naim-portfolio-${DEPLOY_SHA}.tar.gz"
           BUILD_DIR="$(mktemp -d /tmp/naim-portfolio-build.XXXXXX)"
-          CONTAINER_NAME="naim-portfolio"
+          CONTAINER_NAME="naiimbsili-portfolio"
           IMAGE_TAG="naim-portfolio:${DEPLOY_SHA}"
 
           cleanup() {
@@ -156,7 +156,16 @@ jobs:
             fi
           fi
 
-          OLD_IMAGE_ID="$("${DOCKER[@]}" inspect --format='{{.Image}}' "$CONTAINER_NAME" 2>/dev/null || true)"
+          "${DOCKER[@]}" network inspect proxy >/dev/null
+
+          OLD_IMAGE_ID="$("${DOCKER[@]}" inspect \
+            --format='{{.Image}}' "$CONTAINER_NAME" 2>/dev/null || true)"
+
+          if [[ -z "$OLD_IMAGE_ID" ]]; then
+            echo "Production container or previous image not found; aborting safely." >&2
+            exit 1
+          fi
+
           "${DOCKER[@]}" build \
             --build-arg "VITE_SUPABASE_URL=${VITE_SUPABASE_URL}" \
             --build-arg "VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}" \
@@ -169,8 +178,9 @@ jobs:
             if [[ -n "$OLD_IMAGE_ID" ]]; then
               "${DOCKER[@]}" run -d \
                 --name "$CONTAINER_NAME" \
+                --network proxy \
                 --restart unless-stopped \
-                -p 80:80 \
+                -p 127.0.0.1:18080:80 \
                 "$OLD_IMAGE_ID" >/dev/null || true
             fi
           }
@@ -179,8 +189,9 @@ jobs:
           "${DOCKER[@]}" rm "$CONTAINER_NAME" >/dev/null 2>&1 || true
           if ! "${DOCKER[@]}" run -d \
             --name "$CONTAINER_NAME" \
+            --network proxy \
             --restart unless-stopped \
-            -p 80:80 \
+            -p 127.0.0.1:18080:80 \
             "$IMAGE_TAG"; then
             echo "New container failed to start; restoring the previous image if available." >&2
             rollback
@@ -190,7 +201,7 @@ jobs:
           HEALTHY=false
           for attempt in {1..20}; do
             if curl -fsS --max-time 3 \
-              "http://127.0.0.1/blog/from-designing-interfaces-to-designing-systems-how-i-think-about-digital-products" \
+              "http://127.0.0.1:18080/blog/from-designing-interfaces-to-designing-systems-how-i-think-about-digital-products" \
               >/dev/null; then
               HEALTHY=true
               break
