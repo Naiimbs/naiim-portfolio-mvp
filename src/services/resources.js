@@ -423,7 +423,9 @@ export function getResourcePreviewAsset(resource) {
       || /\.(png|jpe?g|webp|gif|avif|svg)(\?|$)/i.test(url);
   });
 
-  return imageAssets.find((asset) => /editorial|preview|cover|hero|thumbnail/i.test(asset?.name || ''))
+  return imageAssets.find((asset) => /cover/i.test(asset?.name || ''))
+    || imageAssets.find((asset) => /editorial|hero|thumbnail/i.test(asset?.name || ''))
+    || imageAssets.find((asset) => /preview/i.test(asset?.name || ''))
     || imageAssets.find((asset) => (
     isTruthyAssetFlag(asset?.featured)
       || isTruthyAssetFlag(asset?.is_featured)
