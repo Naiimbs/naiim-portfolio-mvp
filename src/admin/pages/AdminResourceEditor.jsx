@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { getResourceById, createResource, updateResource, getResourcePreviewImage } from '../../services/resources';
+import { getResourceById, createResource, updateResource, getResourcePreviewAsset, getResourcePreviewImage } from '../../services/resources';
 import { RESOURCE_TYPE_LIST, ASSET_TYPES } from '../../config/resourceTypes';
 import { uploadMedia } from '../../services/media';
 import { getEditorSectionsForType } from '../config/resourceEditorConfig';
@@ -488,6 +488,21 @@ export default function AdminResourceEditor() {
 
   const typeDetails = getResourceTypeDetails(formData.resource_type);
   const coverImage = getResourcePreviewImage(formData);
+  const imageAssets = (formData.assets || []).filter((asset) => {
+    const url = asset.file_url || asset.asset_path || asset.url || asset.preview_url || asset.image_url || asset.public_url || '';
+    return /^image\//i.test(asset.mime_type || '') || /\.(png|jpe?g|webp|gif|avif|svg)(\?|$)/i.test(url);
+  });
+  const currentCoverAsset = getResourcePreviewAsset(formData);
+  const setCoverAssetField = (assetId, field, checked) => {
+    setFormData((prev) => ({
+      ...prev,
+      assets: (prev.assets || []).map((asset) => (
+        field === 'is_cover'
+          ? { ...asset, is_cover: checked && asset.id === assetId }
+          : asset.id === assetId ? { ...asset, [field]: checked } : asset
+      )),
+    }));
+  };
 
   if (loading) {
     return (
@@ -684,8 +699,37 @@ export default function AdminResourceEditor() {
               <div className="admin-resource-editor-cover mb-3">
                 {coverImage ? <img src={coverImage} alt="Current resource cover" /> : <div className="text-muted small text-center px-3">No cover selected yet</div>}
               </div>
-              <button type="button" className="btn btn-outline-success btn-sm w-100" onClick={() => setActiveTab('reusableFiles')}>
-                <i className="bi bi-sliders me-2"></i>Manage cover in Files
+              <div className="small text-muted mb-3">Choose one primary cover. Select additional images for the public hero slider; the slider appears when two or more images are selected.</div>
+              {imageAssets.length > 0 ? (
+                <div className="d-flex flex-column gap-2">
+                  {imageAssets.map((asset) => {
+                    const assetImage = asset.file_url || asset.asset_path || asset.url || asset.preview_url || asset.image_url || asset.public_url;
+                    const isPrimary = currentCoverAsset?.id === asset.id;
+                    return (
+                      <div key={asset.id} className={`admin-resource-cover-choice${isPrimary ? ' is-primary' : ''}`}>
+                        <img src={assetImage} alt={asset.name || 'Cover candidate'} />
+                        <div className="flex-grow-1 min-w-0">
+                          <div className="small fw-semibold text-truncate">{asset.name || 'Untitled image'}</div>
+                          <label className="form-check small mb-0">
+                            <input className="form-check-input" type="radio" name="primary-cover" checked={isPrimary} onChange={() => setCoverAssetField(asset.id, 'is_cover', true)} />
+                            <span className="form-check-label">Primary cover</span>
+                          </label>
+                          <label className="form-check small mb-0">
+                            <input className="form-check-input" type="checkbox" checked={Boolean(asset.is_gallery)} onChange={(event) => setCoverAssetField(asset.id, 'is_gallery', event.target.checked)} />
+                            <span className="form-check-label">Include in cover slider</span>
+                          </label>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <button type="button" className="btn btn-outline-success btn-sm w-100" onClick={() => setActiveTab('evidence')}>
+                  <i className="bi bi-upload me-2"></i>Upload an image in Evidence
+                </button>
+              )}
+              <button type="button" className="btn btn-link btn-sm w-100 mt-2" onClick={() => setActiveTab('evidence')}>
+                <i className="bi bi-images me-2"></i>Manage image assets in Evidence
               </button>
             </div>
           </div>

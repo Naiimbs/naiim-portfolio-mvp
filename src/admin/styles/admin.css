@@ -465,6 +465,34 @@
   object-fit: cover;
 }
 
+.admin-resource-cover-choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border: 1px solid var(--line, #dfe7e4);
+  border-radius: 9px;
+  background: var(--white, #ffffff);
+}
+
+.admin-resource-cover-choice.is-primary {
+  border-color: rgba(8, 127, 102, 0.45);
+  background: rgba(8, 127, 102, 0.05);
+}
+
+.admin-resource-cover-choice > img {
+  width: 58px;
+  height: 46px;
+  flex: 0 0 58px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: var(--paper, #f8f9f6);
+}
+
+.admin-resource-cover-choice .form-check-input {
+  margin-top: 0.2em;
+}
+
 /* ------------------------------------------------------------------------------
    Status Badges
    ------------------------------------------------------------------------------ */

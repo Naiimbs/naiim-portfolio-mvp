@@ -173,6 +173,11 @@ export default function ResourceDetailPage() {
   const localizedAssetText = (asset, field) => tx.assets?.[asset.id]?.[field] || asset[field];
   const previewAsset = getResourcePreviewAsset(resource);
   const previewImage = getResourcePreviewImage(resource);
+  const coverAssetIds = new Set([
+    previewAsset?.id,
+    ...assets.filter((asset) => asset.is_cover || asset.is_gallery || asset.gallery || asset.featured_in_gallery).map((asset) => asset.id),
+  ].filter(Boolean));
+  const contentScreenshotAssets = screenshotAssets.filter((asset) => !coverAssetIds.has(asset.id));
   const coverGalleryAssets = [previewAsset, ...assets.filter((asset) => {
     const url = asset.file_url || asset.asset_path || asset.url || asset.preview_url || asset.image_url || asset.public_url || '';
     return (asset.is_gallery || asset.gallery || asset.featured_in_gallery) && (/^image\//i.test(asset.mime_type || '') || /\.(png|jpe?g|webp|gif|avif|svg)(\?|$)/i.test(url));
@@ -443,7 +448,7 @@ export default function ResourceDetailPage() {
               )}
 
               {/* Example Output & Responsive Evidence */}
-              {screenshotAssets.length > 0 && (
+              {contentScreenshotAssets.length > 0 && (
                 <div className="resource-block">
                   <h3 className="resource-block-title">
                     <i className="bi bi-images" style={{ color: 'var(--green)' }}></i>
@@ -454,7 +459,7 @@ export default function ResourceDetailPage() {
                   </p>
 
                   <div className="row g-3">
-                    {screenshotAssets.map((asset, idx) => (
+                    {contentScreenshotAssets.map((asset, idx) => (
                       <div key={idx} className="col-12 col-sm-6">
                         <div
                           className="screenshot-evidence-card"
