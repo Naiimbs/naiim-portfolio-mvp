@@ -336,6 +336,7 @@
     "resultsCount_few": "{{count}} موارد",
     "resultsCount_many": "{{count}} موردًا",
     "resultsCount_other": "{{count}} مورد",
+    "resultsLabel": "موارد مطابقة",
     "types": {
       "skill": { "label": "مهارة وكيل", "plural": "المهارات" },
       "template": { "label": "قالب", "plural": "القوالب" },

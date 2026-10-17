@@ -377,7 +377,11 @@ export async function getResources({ type = null, status = null, visibility = nu
     );
   }
 
-  list.sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+  list.sort((a, b) => (
+    (a.sort_order ?? 0) - (b.sort_order ?? 0)
+    || Number(Boolean(b.featured)) - Number(Boolean(a.featured))
+    || String(a.title || '').localeCompare(String(b.title || ''))
+  ));
 
   if (limit) {
     list = list.slice(0, limit);
@@ -418,9 +422,6 @@ export function getResourcePreviewAsset(resource) {
   const imageAssets = assets.filter((asset) => {
     const url = getAssetImageUrl(asset);
     return asset?.asset_type === 'screenshot'
-      || isTruthyAssetFlag(asset?.featured)
-      || isTruthyAssetFlag(asset?.is_featured)
-      || isTruthyAssetFlag(asset?.featured_in_gallery)
       || /^image\//i.test(asset?.mime_type || '')
       || /\.(png|jpe?g|webp|gif|avif|svg)(\?|$)/i.test(url);
   });

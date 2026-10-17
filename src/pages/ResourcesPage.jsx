@@ -14,7 +14,7 @@ export default function ResourcesPage() {
   const activePlatform = searchParams.get('platform') || 'all';
   const activeUseCase = searchParams.get('usecase') || 'all';
   const activeSort = searchParams.get('sort') || 'recommended';
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -64,9 +64,23 @@ export default function ResourcesPage() {
     setSearchParams(params);
   };
 
-  const handleClearSearch = () => {
-    setSearchQuery('');
+  const handleSearchChange = (value) => {
+    setSearchQuery(value);
+    const params = new URLSearchParams(searchParams);
+    if (value.trim()) params.set('q', value);
+    else params.delete('q');
+    setSearchParams(params, { replace: true });
   };
+
+  const handleClearSearch = () => {
+    handleSearchChange('');
+  };
+
+  const normalizeSearchText = (value) => String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase()
+    .trim();
 
   const platformOptions = useMemo(() => [...new Set(resources.flatMap((resource) => (
     Array.isArray(resource.compatibility)
@@ -89,27 +103,34 @@ export default function ResourcesPage() {
   };
 
   const filteredResources = useMemo(() => {
-    const query = searchQuery.trim().toLocaleLowerCase();
+    const query = normalizeSearchText(searchQuery);
     const filtered = resources.filter((resource) => {
       if (activeType !== 'all' && resource.resource_type !== activeType) return false;
       if (activePlatform !== 'all') {
         const names = (resource.compatibility || []).map((item) => (
           item && typeof item === 'object' ? item.name : item
         ));
-        if (!names.some((name) => name?.toLocaleLowerCase() === activePlatform.toLocaleLowerCase())) return false;
+        if (!names.some((name) => normalizeSearchText(name) === normalizeSearchText(activePlatform))) return false;
       }
-      if (activeUseCase !== 'all' && !(resource.tags || []).some((tag) => tag === activeUseCase)) return false;
+      if (activeUseCase !== 'all' && !(resource.tags || []).some((tag) => normalizeSearchText(tag) === normalizeSearchText(activeUseCase))) return false;
       if (query) {
         const searchable = [
           resource.title,
           resource.slug,
           resource.short_description,
           resource.description,
+          resource.purpose,
+          resource.how_to_use,
+          resource.installation,
+          resource.author,
+          resource.license,
+          resource.resource_type,
           ...(resource.tags || []),
           ...(resource.when_to_use || []),
           ...(resource.compatibility || []).map((item) => (item && typeof item === 'object' ? item.name : item)),
-        ].filter(Boolean).join(' ').toLocaleLowerCase();
-        if (!searchable.includes(query)) return false;
+          ...Object.values(resource.metadata || {}).filter((value) => typeof value === 'string'),
+        ].filter(Boolean).join(' ');
+        if (!normalizeSearchText(searchable).includes(query)) return false;
       }
       return true;
     });
@@ -125,15 +146,18 @@ export default function ResourcesPage() {
       }
       if (activeSort === 'featured') {
         return Number(Boolean(b.featured)) - Number(Boolean(a.featured))
-          || (a.sort_order ?? 0) - (b.sort_order ?? 0);
+          || (a.sort_order ?? 0) - (b.sort_order ?? 0)
+          || String(a.title || '').localeCompare(String(b.title || ''));
       }
-      return (a.sort_order ?? 0) - (b.sort_order ?? 0);
+      return (a.sort_order ?? 0) - (b.sort_order ?? 0)
+        || Number(Boolean(b.featured)) - Number(Boolean(a.featured))
+        || String(a.title || '').localeCompare(String(b.title || ''));
     });
   }, [resources, activeType, activePlatform, activeUseCase, activeSort, searchQuery]);
 
   const handleResetFilters = () => {
     const params = new URLSearchParams(searchParams);
-    ['type', 'platform', 'usecase', 'sort'].forEach((key) => params.delete(key));
+    ['type', 'platform', 'usecase', 'sort', 'q'].forEach((key) => params.delete(key));
     setSearchParams(params);
     setSearchQuery('');
   };
@@ -199,7 +223,8 @@ export default function ResourcesPage() {
                   className="resource-search-input"
                   placeholder={t('resources.searchPlaceholder')}
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  aria-label={t('resources.searchPlaceholder')}
                 />
                 {searchQuery && (
                   <button
@@ -238,8 +263,13 @@ export default function ResourcesPage() {
                   </select>
                 </label>
                 <div className="resource-results-count" aria-live="polite">
-                  {t('resources.resultsCount', { count: filteredResources.length })}
+                  <strong>{filteredResources.length}</strong> {t('resources.resultsLabel')}
                 </div>
+                {(searchQuery || activeType !== 'all' || activePlatform !== 'all' || activeUseCase !== 'all' || activeSort !== 'recommended') && (
+                  <button type="button" className="resource-clear-filters" onClick={handleResetFilters}>
+                    <i className="bi bi-x-circle me-1"></i>{t('resources.resetFilters')}
+                  </button>
+                )}
               </div>
             </div>
 
@@ -298,7 +328,6 @@ export default function ResourcesPage() {
                         <Link
                           to={`/resources/${resource.slug}`}
                           className={`resource-card-preview${featuredImageUrl ? '' : ' resource-card-preview-fallback'}`}
-                          style={{ aspectRatio: featuredImageAsset?.preview_aspect_ratio || '5 / 3' }}
                           aria-label={`${displayTitle} visual preview`}
                         >
                           {featuredImageUrl ? (

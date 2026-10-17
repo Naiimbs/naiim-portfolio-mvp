@@ -332,6 +332,7 @@
     "sortFeatured": "Featured first",
     "resultsCount_one": "{{count}} resource",
     "resultsCount_other": "{{count}} resources",
+    "resultsLabel": "matching resources",
     "types": {
       "skill": { "label": "Agent Skill", "plural": "Skills" },
       "template": { "label": "Template", "plural": "Templates" },

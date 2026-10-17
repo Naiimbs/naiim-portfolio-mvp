@@ -3,6 +3,7 @@ import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import {
   getResources,
+  getResourcePreviewImage,
   toggleResourcePublish,
   toggleResourceFeatured,
   deleteResource,
@@ -16,6 +17,8 @@ export default function AdminResources() {
 
   const activeTypeFilter = searchParams.get('type') || 'all';
   const activeStatusFilter = searchParams.get('status') || 'all';
+  const activeVisibilityFilter = searchParams.get('visibility') || 'all';
+  const activeFeaturedFilter = searchParams.get('featured') || 'all';
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,6 +31,8 @@ export default function AdminResources() {
       const { data } = await getResources({
         type: activeTypeFilter,
         status: activeStatusFilter,
+        visibility: activeVisibilityFilter,
+        featured: activeFeaturedFilter === 'all' ? null : activeFeaturedFilter === 'true',
         search: searchQuery,
       });
       setResources(data || []);
@@ -40,7 +45,15 @@ export default function AdminResources() {
 
   useEffect(() => {
     fetchResourceList();
-  }, [activeTypeFilter, activeStatusFilter, searchQuery]);
+  }, [activeTypeFilter, activeStatusFilter, activeVisibilityFilter, activeFeaturedFilter, searchQuery]);
+
+  const handleSearchChange = (value) => {
+    setSearchQuery(value);
+    const params = new URLSearchParams(searchParams);
+    if (value.trim()) params.set('q', value);
+    else params.delete('q');
+    setSearchParams(params, { replace: true });
+  };
 
   const handleTypeChange = (typeId) => {
     const params = new URLSearchParams(searchParams);
@@ -59,6 +72,13 @@ export default function AdminResources() {
     } else {
       params.set('status', status);
     }
+    setSearchParams(params);
+  };
+
+  const handleRefinementChange = (key, value) => {
+    const params = new URLSearchParams(searchParams);
+    if (value === 'all') params.delete(key);
+    else params.set(key, value);
     setSearchParams(params);
   };
 
@@ -178,7 +198,7 @@ export default function AdminResources() {
                   className="form-control border-start-0 bg-light"
                   placeholder="Search by title, slug, tag..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => handleSearchChange(e.target.value)}
                 />
               </div>
             </div>
@@ -210,7 +230,7 @@ export default function AdminResources() {
             </div>
 
             {/* Status Filter */}
-            <div className="col-12 col-md-2 text-md-end">
+            <div className="col-12 col-md-2">
               <select
                 className="form-select form-select-sm"
                 value={activeStatusFilter}
@@ -220,6 +240,31 @@ export default function AdminResources() {
                 <option value="published">Published</option>
                 <option value="draft">Draft</option>
                 <option value="archived">Archived</option>
+              </select>
+            </div>
+            <div className="col-12 col-md-2">
+              <select
+                className="form-select form-select-sm"
+                value={activeVisibilityFilter}
+                onChange={(e) => handleRefinementChange('visibility', e.target.value)}
+                aria-label="Filter by visibility"
+              >
+                <option value="all">All Visibility</option>
+                <option value="public">Public</option>
+                <option value="unlisted">Unlisted</option>
+                <option value="private">Private</option>
+              </select>
+            </div>
+            <div className="col-12 col-md-2">
+              <select
+                className="form-select form-select-sm"
+                value={activeFeaturedFilter}
+                onChange={(e) => handleRefinementChange('featured', e.target.value)}
+                aria-label="Filter by featured status"
+              >
+                <option value="all">All Highlights</option>
+                <option value="true">Featured</option>
+                <option value="false">Not Featured</option>
               </select>
             </div>
           </div>
@@ -251,7 +296,7 @@ export default function AdminResources() {
             <table className="table table-hover align-middle mb-0" style={{ fontSize: '0.88rem' }}>
               <thead className="table-light text-muted text-uppercase" style={{ fontSize: '0.72rem', letterSpacing: '0.05em' }}>
                 <tr>
-                  <th style={{ width: '38%' }}>Resource</th>
+                  <th style={{ width: '42%' }}>Resource</th>
                   <th style={{ width: '14%' }}>Type</th>
                   <th style={{ width: '12%' }}>Status</th>
                   <th style={{ width: '12%' }}>Assets</th>
@@ -279,7 +324,19 @@ export default function AdminResources() {
                           >
                             <i className={`bi ${isFeatured ? 'bi-star-fill text-warning' : 'bi-star text-muted'}`}></i>
                           </button>
-                          <div>
+                          <div className="d-flex align-items-center gap-2">
+                            {getResourcePreviewImage(res) ? (
+                              <img
+                                src={getResourcePreviewImage(res)}
+                                alt=""
+                                className="admin-resource-cover-thumb"
+                              />
+                            ) : (
+                              <span className="admin-resource-cover-thumb admin-resource-cover-thumb-fallback" aria-hidden="true">
+                                <i className={`bi ${typeConfig.icon}`}></i>
+                              </span>
+                            )}
+                            <div>
                             <Link to={`/admin/resources/${res.id}`} className="fw-bold text-decoration-none text-dark d-block">
                               {res.title}
                             </Link>
@@ -291,6 +348,7 @@ export default function AdminResources() {
                                 v{res.version}
                               </span>
                             )}
+                            </div>
                           </div>
                         </div>
                       </td>

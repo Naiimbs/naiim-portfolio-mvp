@@ -428,6 +428,25 @@
   background-color: #f7faf9;
 }
 
+.admin-resource-cover-thumb {
+  display: inline-flex;
+  flex: 0 0 64px;
+  width: 64px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid var(--line, #dfe7e4);
+  border-radius: 7px;
+  background: var(--paper, #f8f9f6);
+  object-fit: cover;
+}
+
+.admin-resource-cover-thumb-fallback {
+  color: var(--green, #087f66);
+  font-size: 1rem;
+}
+
 /* ------------------------------------------------------------------------------
    Status Badges
    ------------------------------------------------------------------------------ */
@@ -1147,5 +1166,4 @@
     right: 0;
   }
 }
-
 

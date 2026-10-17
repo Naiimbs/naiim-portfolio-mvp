@@ -332,6 +332,7 @@
     "sortFeatured": "À la une d’abord",
     "resultsCount_one": "{{count}} ressource",
     "resultsCount_other": "{{count}} ressources",
+    "resultsLabel": "ressources correspondantes",
     "types": {
       "skill": { "label": "Skill d’agent", "plural": "Skills" },
       "template": { "label": "Modèle", "plural": "Modèles" },

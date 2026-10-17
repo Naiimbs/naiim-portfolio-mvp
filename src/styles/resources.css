@@ -130,6 +130,21 @@
   white-space: nowrap;
 }
 
+.resource-clear-filters {
+  border: 0;
+  padding: 0 0 8px;
+  color: var(--green);
+  background: transparent;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.resource-clear-filters:hover {
+  color: var(--green-dark);
+  text-decoration: underline;
+}
+
 @media (max-width: 575.98px) {
   .resource-refinement-filters {
     align-items: stretch;
@@ -165,6 +180,7 @@
   align-items: center;
   justify-content: center;
   aspect-ratio: 5 / 3;
+  height: clamp(170px, 18vw, 230px);
   margin: -26px -26px 24px;
   overflow: hidden;
   background: var(--paper);
@@ -178,6 +194,12 @@
   object-fit: cover;
   padding: 0;
   transition: transform 0.3s ease;
+}
+
+@media (max-width: 575.98px) {
+  .resource-card-preview {
+    height: 190px;
+  }
 }
 
 .resource-card-preview-fallback {
