@@ -8,6 +8,48 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+const DISPOSABLE_EMAIL_DOMAINS = new Set([
+  "10minutemail.com", "guerrillamail.com", "mailinator.com", "tempmail.com",
+  "yopmail.com", "getnada.com", "sharklasers.com", "trashmail.com",
+  "maildrop.cc", "dispostable.com", "temp-mail.org", "emailondeck.com",
+]);
+
+async function validateEmailAddress(value: string) {
+  const email = String(value || "").trim().toLowerCase();
+  const match = email.match(/^[^\s@]+@([^\s@]+\.[^\s@]{2,})$/);
+  if (!match) return { valid: false, email, reason: "format" };
+
+  const domain = match[1];
+  if (DISPOSABLE_EMAIL_DOMAINS.has(domain)) {
+    return { valid: false, email, reason: "disposable" };
+  }
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 3000);
+    const response = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=MX`, {
+      headers: { accept: "application/dns-json" },
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+    const dns = await response.json();
+    if (!dns?.Answer?.some((record: { type?: number }) => record.type === 15)) {
+      return { valid: false, email, reason: "domain" };
+    }
+  } catch (_error) {
+    return { valid: false, email, reason: "domain_unavailable" };
+  }
+
+  return { valid: true, email, reason: null };
+}
+
+function errorMessage(reason: string | null) {
+  if (reason === "disposable") return "Disposable email addresses are not accepted.";
+  if (reason === "domain") return "This email domain cannot receive messages.";
+  if (reason === "domain_unavailable") return "Email verification is temporarily unavailable. Please try again.";
+  return "Please provide a valid email address.";
+}
+
 Deno.serve(async (req) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
@@ -26,6 +68,37 @@ Deno.serve(async (req) => {
     const { action, lead, download } = payload;
 
     if (action !== "lead_and_download") {
+      if (action === "check_lead") {
+        const validation = await validateEmailAddress(payload.email);
+        if (!validation.valid) {
+          return new Response(JSON.stringify({ error: "invalid_email", message: errorMessage(validation.reason) }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+            status: 422,
+          });
+        }
+
+        const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
+        const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+        const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+          auth: { autoRefreshToken: false, persistSession: false },
+        });
+        const { data: lead, error: leadError } = await supabaseAdmin
+          .from("marketing_leads")
+          .select("id, name, role, company")
+          .eq("email", validation.email)
+          .limit(1)
+          .maybeSingle();
+
+        if (leadError) throw leadError;
+        return new Response(JSON.stringify({
+          known: Boolean(lead),
+          lead: lead || null,
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 200,
+        });
+      }
+
       return new Response(
         JSON.stringify({
           error: "invalid_request",
@@ -63,6 +136,21 @@ Deno.serve(async (req) => {
     const role = lead.role ? lead.role.trim() : null;
     const company = lead.company ? lead.company.trim() : null;
     const resourceSlug = download.resource_slug.trim();
+
+    const emailValidation = await validateEmailAddress(email);
+    if (!emailValidation.valid) {
+      return new Response(JSON.stringify({ error: "invalid_email", message: errorMessage(emailValidation.reason) }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 422,
+      });
+    }
+
+    if (!lead.known_lead && (!lead.first_name?.trim() || !lead.last_name?.trim() || !role)) {
+      return new Response(JSON.stringify({ error: "missing_profile", message: "First name, last name, and role are required for a new email." }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 422,
+      });
+    }
 
     if (email.length > 255 || name.length > 255) {
       return new Response(

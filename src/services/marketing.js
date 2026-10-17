@@ -4,6 +4,25 @@ const LOCAL_LEADS_KEY = 'portfolio_marketing_leads';
 const LOCAL_DOWNLOADS_KEY = 'portfolio_resource_downloads';
 const LOCAL_DONATIONS_KEY = 'portfolio_donations';
 
+const DISPOSABLE_EMAIL_DOMAINS = new Set([
+  '10minutemail.com', 'guerrillamail.com', 'mailinator.com', 'tempmail.com',
+  'yopmail.com', 'getnada.com', 'sharklasers.com', 'trashmail.com',
+  'maildrop.cc', 'dispostable.com', 'temp-mail.org', 'emailondeck.com',
+]);
+
+function normalizeEmail(email) {
+  return String(email || '').trim().toLowerCase();
+}
+
+export function validateResourceEmail(email) {
+  const cleanEmail = normalizeEmail(email);
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  if (!emailPattern.test(cleanEmail)) return { valid: false, reason: 'format' };
+  const domain = cleanEmail.split('@')[1];
+  if (DISPOSABLE_EMAIL_DOMAINS.has(domain)) return { valid: false, reason: 'disposable' };
+  return { valid: true, email: cleanEmail };
+}
+
 /**
  * Seed data for development/offline mode
  */
@@ -138,6 +157,24 @@ function saveLocalDownloads(list) {
   } catch (err) {}
 }
 
+/** Resolve an existing lead without exposing marketing tables to the browser. */
+export async function getLeadByEmail(email) {
+  const validation = validateResourceEmail(email);
+  if (!validation.valid) return { data: null, known: false, error: validation.reason };
+
+  if (isSupabaseConfigured && supabase) {
+    const { data, error } = await supabase.functions.invoke('resource-ingest', {
+      body: { action: 'check_lead', email: validation.email },
+    });
+    if (error) throw error;
+    if (data?.error) throw new Error(data.message || 'Unable to verify this email address.');
+    return { data: data?.lead || null, known: Boolean(data?.known), error: null };
+  }
+
+  const lead = getLocalLeads().find((item) => normalizeEmail(item.email) === validation.email) || null;
+  return { data: lead, known: Boolean(lead), error: null };
+}
+
 function getLocalDonations() {
   try {
     const raw = typeof window !== 'undefined' ? localStorage.getItem(LOCAL_DONATIONS_KEY) : null;
@@ -155,6 +192,8 @@ function getLocalDonations() {
 export async function captureLeadAndDownload({
   email,
   name,
+  firstName = '',
+  lastName = '',
   role = '',
   company = '',
   marketingConsent = false,
@@ -165,12 +204,16 @@ export async function captureLeadAndDownload({
   utmSource = '',
   utmMedium = '',
   utmCampaign = '',
+  knownLead = false,
 }) {
-  const cleanEmail = (email || '').trim().toLowerCase();
-  const cleanName = (name || '').trim();
+  const emailValidation = validateResourceEmail(email);
+  const cleanEmail = emailValidation.email || normalizeEmail(email);
+  const cleanName = (name || `${firstName} ${lastName}`).trim();
 
-  if (!cleanEmail || !cleanEmail.includes('@')) {
-    throw new Error('Please provide a valid email address.');
+  if (!emailValidation.valid) {
+    throw new Error(emailValidation.reason === 'disposable'
+      ? 'Disposable email addresses are not accepted.'
+      : 'Please provide a valid email address.');
   }
   if (!cleanName) {
     throw new Error('Please provide your name.');
@@ -188,10 +231,13 @@ export async function captureLeadAndDownload({
         lead: {
           email: cleanEmail,
           name: cleanName,
+          first_name: firstName,
+          last_name: lastName,
           role: role,
           company: company,
           marketing_consent: Boolean(marketingConsent),
-          source: 'resource_download'
+          source: 'resource_download',
+          known_lead: Boolean(knownLead),
         },
         download: {
           resource_id: resourceId || resourceSlug,
