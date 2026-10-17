@@ -187,10 +187,29 @@ export default function ResourcesPage() {
                   const tx = resource.i18n?.[currentLang] || resource.metadata?.i18n?.[currentLang] || {};
                   const displayTitle = tx.title || resource.title;
                   const displayDesc = tx.short_description || tx.description || resource.short_description || resource.description;
+                  const featuredImageAsset = (Array.isArray(resource.assets) ? resource.assets : []).find((asset) => (
+                    asset?.asset_type === 'screenshot' && [asset.featured, asset.is_featured, asset.featured_in_gallery]
+                      .some((value) => value === true || value === 'true')
+                  ));
+                  const featuredImageUrl = featuredImageAsset?.file_url || featuredImageAsset?.asset_path;
 
                   return (
                     <div key={resource.id} className="col-12 col-md-6 col-lg-4">
                       <div className="resource-card">
+                        {featuredImageUrl && (
+                          <Link
+                            to={`/resources/${resource.slug}`}
+                            className="resource-card-preview"
+                            aria-label={`${displayTitle} visual preview`}
+                          >
+                            <img
+                              src={featuredImageUrl}
+                              alt={featuredImageAsset.caption || `${displayTitle} preview`}
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          </Link>
+                        )}
                         <div>
                           {/* Eyebrow / Badges */}
                           <div className="resource-card-eyebrow">
