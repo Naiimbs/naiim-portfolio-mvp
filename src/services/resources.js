@@ -423,12 +423,12 @@ export function getResourcePreviewAsset(resource) {
       || /\.(png|jpe?g|webp|gif|avif|svg)(\?|$)/i.test(url);
   });
 
-  return imageAssets.find((asset) => (
+  return imageAssets.find((asset) => /editorial|preview|cover|hero|thumbnail/i.test(asset?.name || ''))
+    || imageAssets.find((asset) => (
     isTruthyAssetFlag(asset?.featured)
       || isTruthyAssetFlag(asset?.is_featured)
       || isTruthyAssetFlag(asset?.featured_in_gallery)
-  ))
-    || imageAssets.find((asset) => /editorial|preview|cover|hero|thumbnail/i.test(asset?.name || ''))
+    ))
     || imageAssets.find((asset) => asset?.asset_type === 'screenshot')
     || imageAssets[0]
     || null;
