@@ -10,6 +10,7 @@ import ResourceMarkdownViewerModal from '../components/resources/ResourceMarkdow
 import ResourceTemplateCard from '../components/resources/ResourceTemplateCard';
 import ResourceSupportCard from '../components/resources/ResourceSupportCard';
 import Markdown from '../components/cms/Markdown';
+import { isResourceFeatureEnabled } from '../config/resourceTypeDetails';
 import '../styles/resources.css';
 
 const TYPE_DETAIL_FIELDS = {
@@ -164,9 +165,11 @@ export default function ResourceDetailPage() {
   const displayWhenToUse = pickLocalizedContent(tx.when_to_use, resource.when_to_use);
   const displayWhenNotToUse = pickLocalizedContent(tx.when_not_to_use, resource.when_not_to_use);
   const displayHowToUse = pickLocalizedContent(tx.how_to_use, resource.how_to_use);
-  const workflowUsageRaw = resource.workflow_usage || resource.metadata?.workflow_usage;
+  const hasWorkflowUsage = isResourceFeatureEnabled(resource.resource_type, 'workflowUsage');
+  const hasWorkedExample = isResourceFeatureEnabled(resource.resource_type, 'workedExample');
+  const workflowUsageRaw = hasWorkflowUsage ? (resource.workflow_usage || resource.metadata?.workflow_usage) : null;
   const workflowUsage = workflowUsageRaw ? { ...workflowUsageRaw, ...(workflowUsageRaw.i18n?.[currentLang] || {}) } : null;
-  const workedExampleRaw = resource.worked_example || resource.metadata?.worked_example;
+  const workedExampleRaw = hasWorkedExample ? (resource.worked_example || resource.metadata?.worked_example) : null;
   const workedExample = workedExampleRaw ? { ...workedExampleRaw, ...(workedExampleRaw.i18n?.[currentLang] || {}) } : null;
   const isSkillResource = resource.resource_type === 'skill';
   const displayInstallation = isSkillResource ? pickLocalizedContent(tx.installation, resource.installation) : null;

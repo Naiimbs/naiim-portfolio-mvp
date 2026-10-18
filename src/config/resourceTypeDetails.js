@@ -2,6 +2,7 @@ export const RESOURCE_TYPE_DETAILS = {
   skill: {
     title: 'Agent Skill details',
     description: 'Define the capability, execution workflow, installation, and compatible agent environments.',
+    features: { workflowUsage: true, workedExample: true },
     fields: [
       { key: 'compatibility', label: 'Compatible environments', type: 'compatibility', help: 'List the agents, IDEs, or runtimes that can execute this skill.' },
     ],
@@ -9,6 +10,7 @@ export const RESOURCE_TYPE_DETAILS = {
   template: {
     title: 'Template details',
     description: 'Describe what the starter kit contains and how another person should adapt it.',
+    features: { workflowUsage: false, workedExample: false },
     fields: [
       { key: 'template_format', label: 'Template format', type: 'select', options: ['Starter kit', 'Boilerplate', 'Checklist', 'Document template', 'Code template', 'Design template'] },
       { key: 'framework', label: 'Framework / tool', type: 'text', placeholder: 'React, Figma, Notion, Excel…' },
@@ -19,6 +21,7 @@ export const RESOURCE_TYPE_DETAILS = {
   figma: {
     title: 'Figma file details',
     description: 'Connect the source file and explain what is included in the design system or UI kit.',
+    features: { workflowUsage: false, workedExample: false },
     fields: [
       { key: 'figma_url', label: 'Figma file URL', type: 'url', required: true, placeholder: 'https://www.figma.com/file/…' },
       { key: 'figma_embed', label: 'Figma embed URL', type: 'url', placeholder: 'https://www.figma.com/embed?embed_host=share&url=…' },
@@ -30,6 +33,7 @@ export const RESOURCE_TYPE_DETAILS = {
   document: {
     title: 'Document / report details',
     description: 'Capture publication context so visitors understand the format, provenance, and intended use.',
+    features: { workflowUsage: false, workedExample: false },
     fields: [
       { key: 'document_format', label: 'Document format', type: 'select', options: ['PDF', 'DOCX', 'Markdown', 'HTML', 'Presentation', 'Other'] },
       { key: 'document_category', label: 'Document category', type: 'text', placeholder: 'Audit report, whitepaper, research note…' },
@@ -41,6 +45,7 @@ export const RESOURCE_TYPE_DETAILS = {
   guide: {
     title: 'Guide & playbook details',
     description: 'Make the learning path explicit: audience, prerequisites, effort, and expected outcome.',
+    features: { workflowUsage: true, workedExample: true },
     fields: [
       { key: 'audience', label: 'Intended audience', type: 'text', placeholder: 'Product designers, founders, developers…' },
       { key: 'difficulty', label: 'Difficulty', type: 'select', options: ['Beginner', 'Intermediate', 'Advanced', 'Expert'] },
@@ -52,6 +57,7 @@ export const RESOURCE_TYPE_DETAILS = {
   prompt: {
     title: 'System prompt details',
     description: 'Document model compatibility, variables, examples, and safe operating boundaries.',
+    features: { workflowUsage: true, workedExample: true },
     fields: [
       { key: 'prompt_format', label: 'Prompt format', type: 'select', options: ['System prompt', 'Agent instructions', 'Workflow prompt', 'Evaluation prompt', 'Prompt template'] },
       { key: 'model_compatibility', label: 'Model compatibility', type: 'text', placeholder: 'GPT-4.1, Claude, Gemini, model-agnostic…' },
@@ -64,6 +70,7 @@ export const RESOURCE_TYPE_DETAILS = {
   example: {
     title: 'Example / artifact details',
     description: 'Explain the demonstrated outcome and provide a live demo or implementation context when available.',
+    features: { workflowUsage: true, workedExample: true },
     fields: [
       { key: 'demo_url', label: 'Live demo URL', type: 'url', placeholder: 'https://…' },
       { key: 'implementation_status', label: 'Implementation status', type: 'select', options: ['Concept', 'Prototype', 'Beta', 'Production', 'Archived'] },
@@ -74,6 +81,7 @@ export const RESOURCE_TYPE_DETAILS = {
   spreadsheet: {
     title: 'Spreadsheet / model details',
     description: 'Describe the workbook structure, compatible tools, and what the model calculates or tracks.',
+    features: { workflowUsage: false, workedExample: false },
     fields: [
       { key: 'spreadsheet_format', label: 'Spreadsheet format', type: 'select', options: ['XLSX', 'CSV', 'Google Sheets', 'Airtable', 'Other'] },
       { key: 'compatible_tools', label: 'Compatible tools', type: 'text', placeholder: 'Excel, Google Sheets, LibreOffice…' },
@@ -85,6 +93,7 @@ export const RESOURCE_TYPE_DETAILS = {
   file: {
     title: 'File / archive details',
     description: 'Identify the downloadable file and give visitors enough information to use it safely.',
+    features: { workflowUsage: false, workedExample: false },
     fields: [
       { key: 'file_format', label: 'File format', type: 'text', placeholder: 'ZIP, PDF, JSON, PY…' },
       { key: 'platform', label: 'Target platform', type: 'text', placeholder: 'Windows, macOS, Linux, browser…' },
@@ -95,6 +104,7 @@ export const RESOURCE_TYPE_DETAILS = {
   reference: {
     title: 'Reference / link details',
     description: 'Capture the canonical external source, authority, version, and access notes.',
+    features: { workflowUsage: false, workedExample: false },
     fields: [
       { key: 'official_url', label: 'Canonical / official URL', type: 'url', required: true, placeholder: 'https://…' },
       { key: 'reference_type', label: 'Reference type', type: 'select', options: ['Official documentation', 'Standard', 'API reference', 'Repository', 'Article', 'Tool', 'Other'] },
@@ -107,6 +117,15 @@ export const RESOURCE_TYPE_DETAILS = {
 
 export function getResourceTypeDetails(type) {
   return RESOURCE_TYPE_DETAILS[type] || RESOURCE_TYPE_DETAILS.file;
+}
+
+/**
+ * Feature flags keep optional editorial modules scoped to resource types that
+ * can explain an executable workflow. Metadata may still be preserved when an
+ * editor changes type, but it must never render on an incompatible public page.
+ */
+export function isResourceFeatureEnabled(type, feature) {
+  return Boolean(getResourceTypeDetails(type).features?.[feature]);
 }
 
 export function validateTypeSpecificFields(type, metadata = {}) {
