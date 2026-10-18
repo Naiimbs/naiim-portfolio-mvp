@@ -1,4 +1,4 @@
-# Senior Software Engineer & Architect — Project Analysis Prompt
+# Project Analysis Architect - Understand Before You Build
 
 A copy-ready prompt for analyzing an existing repository before implementation changes.
 
