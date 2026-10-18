@@ -49,6 +49,7 @@ export default function ResourceDetailPage() {
   const [activePreviewAsset, setActivePreviewAsset] = useState(null);
   const [activeCoverIndex, setActiveCoverIndex] = useState(0);
   const [copiedKey, setCopiedKey] = useState(null);
+  const [activeUsageMode, setActiveUsageMode] = useState('manual');
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -163,6 +164,10 @@ export default function ResourceDetailPage() {
   const displayWhenToUse = pickLocalizedContent(tx.when_to_use, resource.when_to_use);
   const displayWhenNotToUse = pickLocalizedContent(tx.when_not_to_use, resource.when_not_to_use);
   const displayHowToUse = pickLocalizedContent(tx.how_to_use, resource.how_to_use);
+  const workflowUsageRaw = resource.workflow_usage || resource.metadata?.workflow_usage;
+  const workflowUsage = workflowUsageRaw?.i18n?.[currentLang] || workflowUsageRaw;
+  const workedExampleRaw = resource.worked_example || resource.metadata?.worked_example;
+  const workedExample = workedExampleRaw?.i18n?.[currentLang] || workedExampleRaw;
   const isSkillResource = resource.resource_type === 'skill';
   const displayInstallation = isSkillResource ? pickLocalizedContent(tx.installation, resource.installation) : null;
   const displayCompatibility = isSkillResource ? pickLocalizedContent(tx.compatibility, resource.compatibility) : null;
@@ -411,6 +416,82 @@ export default function ResourceDetailPage() {
                       </div>
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* Autonomous Pipeline & How to Use (with one-click Copy) */}
+              {workflowUsage?.enabled && (
+                <div className="resource-block workflow-usage-section">
+                  <div className="workflow-usage-heading">
+                    <div>
+                      <h3 className="resource-block-title mb-2">
+                        <i className="bi bi-signpost-split" style={{ color: 'var(--green)' }}></i>
+                        <span>{workflowUsage.title || 'Where to use this workflow'}</span>
+                      </h3>
+                      <p className="text-secondary small mb-0">{workflowUsage.subtitle}</p>
+                    </div>
+                  </div>
+                  <div className="workflow-mode-tabs" role="tablist" aria-label={workflowUsage.title}>
+                    {(workflowUsage.modes || []).map((mode) => (
+                      <button
+                        key={mode.id}
+                        type="button"
+                        className={`workflow-mode-tab ${activeUsageMode === mode.id ? 'active' : ''}`}
+                        onClick={() => setActiveUsageMode(mode.id)}
+                        role="tab"
+                        aria-selected={activeUsageMode === mode.id}
+                      >
+                        <i className={`bi ${mode.icon || 'bi-stars'}`}></i>
+                        <span>{mode.title}</span>
+                      </button>
+                    ))}
+                  </div>
+                  {(() => {
+                    const mode = (workflowUsage.modes || []).find((item) => item.id === activeUsageMode) || workflowUsage.modes?.[0];
+                    if (!mode) return null;
+                    return (
+                      <div className="workflow-usage-panel">
+                        <div className="workflow-usage-copy">
+                          <span className="workflow-usage-badge">{mode.badge}</span>
+                          <h4>{mode.title}</h4>
+                          <p>{mode.description}</p>
+                          <div className="workflow-tool-chips">
+                            {(mode.tools || []).map((tool) => <span key={tool}>{tool}</span>)}
+                          </div>
+                        </div>
+                        <div className="workflow-usage-flow" aria-label={mode.flow?.join(' → ')}>
+                          {(mode.flow || []).map((step, index) => (
+                            <React.Fragment key={`${step}-${index}`}>
+                              <span className={`workflow-flow-node ${index === 1 ? 'ai' : index === (mode.flow.length - 2) ? 'human' : ''}`}>{step}</span>
+                              {index < mode.flow.length - 1 && <i className="bi bi-arrow-right workflow-flow-arrow"></i>}
+                            </React.Fragment>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
+
+              {workedExample?.enabled && (
+                <div className="resource-block worked-example-section">
+                  <h3 className="resource-block-title mb-2">
+                    <i className="bi bi-diagram-3" style={{ color: 'var(--green)' }}></i>
+                    <span>{workedExample.title}</span>
+                  </h3>
+                  <p className="text-secondary small mb-4">{workedExample.subtitle}</p>
+                  <div className="worked-example-grid">
+                    {(workedExample.stages || []).map((stage, index) => (
+                      <div className="worked-example-card" key={stage.title}>
+                        <div className="worked-example-step">{String(index + 1).padStart(2, '0')}</div>
+                        <h4>{stage.title}</h4>
+                        <div><strong>{stage.inputLabel}</strong><p>{stage.input}</p></div>
+                        <div><strong>{stage.aiLabel}</strong><p>{stage.ai}</p></div>
+                        <div><strong>{stage.humanLabel}</strong><p>{stage.human}</p></div>
+                        <div className="worked-example-output"><strong>{stage.outputLabel}</strong><p>{stage.output}</p></div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
