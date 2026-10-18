@@ -40,6 +40,7 @@ in `create_article` (draft) → review → `publish_article`.
 - `update_resource` {slug, ...optional resource fields} — only provided fields change
 - `publish_resource` {slug}
 - `unpublish_resource` {slug} — returns the resource to draft/private without deleting its content
+- `upload_resource_asset` {resource_slug, image_url | image_base64, filename?, asset_type?, description?, is_cover?, is_previewable?, is_downloadable?} — uploads and attaches an asset to the resource
 - `get_resource_download_stats` {slug?, limit?}
 
 Resources use the existing `content_registry` table with `content_type = 'resource'`.
@@ -47,6 +48,11 @@ The MCP preserves the admin editor's JSONB metadata and asset structure, includi
 resource-type-specific fields, translations, downloadable files, and preview assets.
 The recommended flow is `create_resource` as draft → review in the admin editor →
 `publish_resource` only after approval.
+
+For resource cover cards, use the `hikayati-editorial-poster` visual system when
+generating the artwork: create a finished cover image without text by default.
+If a text-based design is explicitly requested, do not place the word `حكايتي`
+at the top unless the user specifically asks for it.
 
 ## Quick test (curl)
 ```bash

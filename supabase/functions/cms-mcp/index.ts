@@ -174,6 +174,7 @@ const TOOLS = [
   { name: "update_resource", description: "Update resource metadata, assets, routing, or publishing fields by slug. Omitted fields remain unchanged.", inputSchema: { type: "object", properties: { slug: { type: "string" }, title: { type: "string" }, resource_type: { type: "string", enum: RESOURCE_TYPES }, short_description: { type: "string" }, description: { type: "string" }, purpose: { type: "string" }, how_to_use: { type: "string" }, installation: { type: "string" }, compatibility: { type: "array" }, tags: { type: "array", items: { type: "string" } }, assets: { type: "array" }, metadata: { type: "object" }, visibility: { type: "string", enum: ["public", "private"] }, featured: { type: "boolean" }, sort_order: { type: "number" } }, required: ["slug"] } },
   { name: "publish_resource", description: "Publish a resource and make it publicly visible at its resource route.", inputSchema: { type: "object", properties: { slug: { type: "string" } }, required: ["slug"] } },
   { name: "unpublish_resource", description: "Move a resource back to draft without deleting its content or assets.", inputSchema: { type: "object", properties: { slug: { type: "string" } }, required: ["slug"] } },
+  { name: "upload_resource_asset", description: "Upload a file or cover image to a resource and append it to the resource's existing assets. Cover artwork should be text-free unless the caller explicitly requests text.", inputSchema: { type: "object", properties: { resource_slug: { type: "string" }, image_url: { type: "string" }, image_base64: { type: "string" }, filename: { type: "string" }, asset_type: { type: "string", enum: ["documentation", "script", "template", "screenshot", "example", "source", "attachment"] }, description: { type: "string" }, is_cover: { type: "boolean" }, is_previewable: { type: "boolean" }, is_downloadable: { type: "boolean" } }, required: ["resource_slug"] } },
   { name: "get_resource_download_stats", description: "Return download counts and recent download events for the resource catalog.", inputSchema: { type: "object", properties: { slug: { type: "string" }, limit: { type: "number" } } } },
 ];
 
@@ -225,6 +226,34 @@ async function callTool(name: string, args: any): Promise<any> {
     const published = name === "publish_resource";
     const updated = (await sbWrite(`content_registry?id=eq.${encodeURIComponent(rows[0].id)}`, "PATCH", { status: published ? "published" : "draft", visibility: published ? "public" : "private" }))[0];
     return { slug: updated.slug, status: updated.status, visibility: updated.visibility, public_url: `${SITE_ORIGIN}${updated.public_route || `/resources/${updated.slug}`}` };
+  }
+  if (name === "upload_resource_asset") {
+    const rows = await sbSelect(`content_registry?slug=eq.${encodeURIComponent(args.resource_slug)}&content_type=eq.resource&select=id,slug,metadata&limit=1`);
+    if (!rows[0]) throw new Error(`Resource not found: ${args.resource_slug}`);
+    if (!args.image_url && !args.image_base64) throw new Error("Provide image_url or image_base64");
+    let bytes: Uint8Array;
+    let contentType = "application/octet-stream";
+    let sourceName = String(args.filename || "resource-asset.bin");
+    if (args.image_url) {
+      const assetResponse = await fetch(args.image_url);
+      if (!assetResponse.ok) throw new Error(`fetch asset failed: ${assetResponse.status}`);
+      contentType = assetResponse.headers.get("content-type") || contentType;
+      bytes = new Uint8Array(await assetResponse.arrayBuffer());
+      try { sourceName = args.filename || new URL(args.image_url).pathname.split("/").pop() || sourceName; } catch { /* keep */ }
+    } else {
+      bytes = b64urlToBytes(String(args.image_base64).replace(/^data:[^;]+;base64,/, "").replace(/\+/g, "-").replace(/\//g, "_"));
+    }
+    if (bytes.length > 25 * 1024 * 1024) throw new Error("Asset exceeds the 25 MB upload limit");
+    const safeName = sourceName.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const path = `resources/${rows[0].slug}/${Date.now()}_${safeName}`;
+    const upload = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`, { method: "POST", headers: { ...SRV_HEADERS, "Content-Type": contentType, "x-upsert": "true" }, body: bytes });
+    if (!upload.ok) throw new Error(`upload failed: ${upload.status} ${await upload.text()}`);
+    const asset = { id: `asset-mcp-${Date.now()}`, name: sourceName, file_url: `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}`, asset_type: args.asset_type || (contentType.startsWith("image/") ? "screenshot" : "attachment"), description: args.description || "", is_cover: Boolean(args.is_cover), is_previewable: args.is_previewable !== false, is_downloadable: args.is_downloadable !== false, mime_type: contentType, file_size: bytes.length };
+    const metadata = { ...(rows[0].metadata || {}) };
+    const assets = Array.isArray(metadata.assets) ? metadata.assets : [];
+    metadata.assets = args.is_cover ? [...assets.map((item: any) => ({ ...item, is_cover: false })), asset] : [...assets, asset];
+    const updated = (await sbWrite(`content_registry?id=eq.${encodeURIComponent(rows[0].id)}`, "PATCH", { metadata }))[0];
+    return { slug: updated.slug, asset, asset_count: metadata.assets.length, public_url: asset.file_url };
   }
   if (name === "get_resource_download_stats") {
     const limit = Math.min(Math.max(Number(args.limit) || 100, 1), 500);
