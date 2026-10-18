@@ -165,9 +165,9 @@ export default function ResourceDetailPage() {
   const displayWhenNotToUse = pickLocalizedContent(tx.when_not_to_use, resource.when_not_to_use);
   const displayHowToUse = pickLocalizedContent(tx.how_to_use, resource.how_to_use);
   const workflowUsageRaw = resource.workflow_usage || resource.metadata?.workflow_usage;
-  const workflowUsage = workflowUsageRaw?.i18n?.[currentLang] || workflowUsageRaw;
+  const workflowUsage = workflowUsageRaw ? { ...workflowUsageRaw, ...(workflowUsageRaw.i18n?.[currentLang] || {}) } : null;
   const workedExampleRaw = resource.worked_example || resource.metadata?.worked_example;
-  const workedExample = workedExampleRaw?.i18n?.[currentLang] || workedExampleRaw;
+  const workedExample = workedExampleRaw ? { ...workedExampleRaw, ...(workedExampleRaw.i18n?.[currentLang] || {}) } : null;
   const isSkillResource = resource.resource_type === 'skill';
   const displayInstallation = isSkillResource ? pickLocalizedContent(tx.installation, resource.installation) : null;
   const displayCompatibility = isSkillResource ? pickLocalizedContent(tx.compatibility, resource.compatibility) : null;
