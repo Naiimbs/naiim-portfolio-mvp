@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import MainLayout from '../layouts/MainLayout';
@@ -58,6 +58,12 @@ export default function ResourceDetailPage() {
   const [selectedMarkdownAsset, setSelectedMarkdownAsset] = useState(null);
   const [activePreviewAsset, setActivePreviewAsset] = useState(null);
   const [previewZoom, setPreviewZoom] = useState(1);
+  const [previewPan, setPreviewPan] = useState({ x: 0, y: 0 });
+  const [previewSpaceHeld, setPreviewSpaceHeld] = useState(false);
+  const [isPreviewPanning, setIsPreviewPanning] = useState(false);
+  const previewPanDragRef = useRef(null);
+  const previewBodyRef = useRef(null);
+  const previewTriggerRef = useRef(null);
   const [activeCoverIndex, setActiveCoverIndex] = useState(0);
   const [copiedKey, setCopiedKey] = useState(null);
   const [activeUsageMode, setActiveUsageMode] = useState('manual');
@@ -72,15 +78,60 @@ export default function ResourceDetailPage() {
 
   useEffect(() => {
     setPreviewZoom(1);
+    setPreviewPan({ x: 0, y: 0 });
+    setPreviewSpaceHeld(false);
+    setIsPreviewPanning(false);
+    previewPanDragRef.current = null;
+  }, [activePreviewAsset]);
+
+  useEffect(() => {
+    if (activePreviewAsset) {
+      previewBodyRef.current?.focus({ preventScroll: true });
+      return;
+    }
+    if (previewTriggerRef.current?.isConnected) {
+      previewTriggerRef.current.focus({ preventScroll: true });
+    }
+    previewTriggerRef.current = null;
   }, [activePreviewAsset]);
 
   useEffect(() => {
     if (!activePreviewAsset) return undefined;
+    const isInteractiveTarget = (target) => {
+      const tagName = target?.tagName?.toLowerCase();
+      return target?.isContentEditable
+        || ['input', 'textarea', 'select', 'button', 'a'].includes(tagName)
+        || Boolean(target?.closest?.('[role="button"]'));
+    };
     const handleKeyDown = (event) => {
-      if (event.key === 'Escape') setActivePreviewAsset(null);
+      if (event.key === 'Escape') {
+        setActivePreviewAsset(null);
+        setPreviewSpaceHeld(false);
+        setIsPreviewPanning(false);
+        previewPanDragRef.current = null;
+        return;
+      }
+      if ((event.code === 'Space' || event.key === ' ') && !isInteractiveTarget(event.target)) {
+        event.preventDefault();
+        setPreviewSpaceHeld(true);
+      }
+    };
+    const handleKeyUp = (event) => {
+      if (event.code === 'Space' || event.key === ' ') setPreviewSpaceHeld(false);
+    };
+    const handleWindowBlur = () => {
+      setPreviewSpaceHeld(false);
+      setIsPreviewPanning(false);
+      previewPanDragRef.current = null;
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener('blur', handleWindowBlur);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('blur', handleWindowBlur);
+    };
   }, [activePreviewAsset]);
 
   useEffect(() => {
@@ -121,6 +172,60 @@ export default function ResourceDetailPage() {
     setIsMarkdownViewerOpen(true);
   };
 
+  const handleOpenPreview = (asset, event) => {
+    previewTriggerRef.current = event?.currentTarget || null;
+    setActivePreviewAsset(asset);
+  };
+
+  const handlePreviewPointerDown = (event) => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    if (!previewSpaceHeld && previewZoom <= 1) return;
+    event.preventDefault();
+    try {
+      event.currentTarget.setPointerCapture?.(event.pointerId);
+    } catch {
+      // Continue with pointer events even where capture is unavailable.
+    }
+    previewPanDragRef.current = {
+      pointerId: event.pointerId,
+      clientX: event.clientX,
+      clientY: event.clientY,
+      startPan: previewPan,
+    };
+    setIsPreviewPanning(true);
+  };
+
+  const handlePreviewPointerMove = (event) => {
+    const drag = previewPanDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    event.preventDefault();
+    setPreviewPan({
+      x: drag.startPan.x + event.clientX - drag.clientX,
+      y: drag.startPan.y + event.clientY - drag.clientY,
+    });
+  };
+
+  const handlePreviewPointerEnd = (event) => {
+    const drag = previewPanDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    previewPanDragRef.current = null;
+    setIsPreviewPanning(false);
+    if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+      event.currentTarget.releasePointerCapture?.(event.pointerId);
+    }
+  };
+
+  const handlePreviewZoomIn = () => setPreviewZoom(Math.min(3, previewZoom + 0.25));
+  const handlePreviewZoomOut = () => {
+    const nextZoom = Math.max(1, previewZoom - 0.25);
+    setPreviewZoom(nextZoom);
+    if (nextZoom === 1) setPreviewPan({ x: 0, y: 0 });
+  };
+  const handlePreviewFit = () => {
+    setPreviewZoom(1);
+    setPreviewPan({ x: 0, y: 0 });
+  };
+
   if (loading) {
     return (
       <MainLayout>
@@ -157,10 +262,10 @@ export default function ResourceDetailPage() {
     ? 'fr'
     : (i18n.language?.startsWith('ar') ? 'ar' : 'en');
   const zoomCopy = currentLang === 'fr'
-    ? { out: 'Réduire', in: 'Agrandir', fit: 'Ajuster', controls: 'Contrôles de zoom', open: 'Agrandir l’image', close: 'Fermer l’aperçu', preview: 'Aperçu de l’image' }
+    ? { out: 'Réduire', in: 'Agrandir', fit: 'Ajuster', controls: 'Contrôles de zoom', open: 'Agrandir l’image', close: 'Fermer l’aperçu', preview: 'Aperçu de l’image', pan: 'Espace + glisser pour déplacer ; glisser directement après zoom.' }
     : currentLang === 'ar'
-      ? { out: 'تصغير', in: 'تكبير', fit: 'ملاءمة', controls: 'أدوات تكبير الصورة', open: 'تكبير معاينة الصورة', close: 'إغلاق معاينة الصورة', preview: 'معاينة الصورة' }
-      : { out: 'Zoom out', in: 'Zoom in', fit: 'Fit', controls: 'Image zoom controls', open: 'Open full-size image preview', close: 'Close image preview', preview: 'Image preview' };
+      ? { out: 'تصغير', in: 'تكبير', fit: 'ملاءمة', controls: 'أدوات تكبير الصورة', open: 'تكبير معاينة الصورة', close: 'إغلاق معاينة الصورة', preview: 'معاينة الصورة', pan: 'اضغط مطولًا على Space واسحب للتحريك، أو اسحب بعد التكبير.' }
+      : { out: 'Zoom out', in: 'Zoom in', fit: 'Fit', controls: 'Image zoom controls', open: 'Open full-size image preview', close: 'Close image preview', preview: 'Image preview', pan: 'Hold Space and drag to pan; after zooming, drag directly.' };
   const tx = resource?.i18n?.[currentLang] || resource?.metadata?.i18n?.[currentLang] || {};
   const assets = (Array.isArray(resource.assets) ? resource.assets : []).map((asset) => ({
     ...asset,
@@ -365,30 +470,36 @@ export default function ResourceDetailPage() {
 
           {/* 2. BODY CONTENT */}
           <div className="row g-4 mb-5">
-            {/* Main Column */}
-            <div className="col-12 col-lg-8">
+            {/* Full-width resource details */}
+            <div className="col-12">
+              <div className="row g-4 mb-4 resource-overview-grid">
               {/* Overview & Purpose */}
               {displayPurpose && (
-                <div className="resource-block">
-                  <h3 className="resource-block-title">
-                    <i className="bi bi-bullseye" style={{ color: 'var(--green)' }}></i>
-                    <span>{t('resourceDetail.overview')}</span>
-                  </h3>
-                  <p className="text-secondary leading-relaxed mb-0" style={{ whiteSpace: 'pre-line' }}>
-                    {displayPurpose}
-                  </p>
+                <div className="col-12 col-lg-6">
+                  <div className="resource-block h-100 mb-0">
+                    <h3 className="resource-block-title">
+                      <i className="bi bi-bullseye" style={{ color: 'var(--green)' }}></i>
+                      <span>{t('resourceDetail.overview')}</span>
+                    </h3>
+                    <p className="text-secondary leading-relaxed mb-0" style={{ whiteSpace: 'pre-line' }}>
+                      {displayPurpose}
+                    </p>
+                  </div>
                 </div>
               )}
 
               {displayOverview && displayOverview !== displayDesc && (
-                <div className="resource-block">
-                  <h3 className="resource-block-title">
-                    <i className="bi bi-file-text" style={{ color: 'var(--green)' }}></i>
-                    <span>Full overview</span>
-                  </h3>
-                  <Markdown className="resource-detail-overview" text={displayOverview} />
+                <div className="col-12 col-lg-6">
+                  <div className="resource-block h-100 mb-0">
+                    <h3 className="resource-block-title">
+                      <i className="bi bi-file-text" style={{ color: 'var(--green)' }}></i>
+                      <span>Full overview</span>
+                    </h3>
+                    <Markdown className="resource-detail-overview" text={displayOverview} />
+                  </div>
                 </div>
               )}
+              </div>
 
               {typeDetailRows.length > 0 && (
                 <div className="resource-block resource-type-details-block">
@@ -531,29 +642,31 @@ export default function ResourceDetailPage() {
                   <p className="text-secondary small mb-4">{workedExample.subtitle}</p>
                   <div className="worked-example-grid">
                     {(workedExample.stages || []).map((stage, index) => (
-                      <div className="worked-example-card" key={stage.title}>
-                        <div className="worked-example-step">{String(index + 1).padStart(2, '0')}</div>
-                        <h4>{stage.title}</h4>
-                        {stage.visual_asset_id && assetById.get(stage.visual_asset_id) && (
-                          <button
-                            type="button"
-                            className="worked-example-visual-trigger"
-                            onClick={() => setActivePreviewAsset(assetById.get(stage.visual_asset_id))}
-                            aria-label={`${zoomCopy.open}: ${localizedAssetText(assetById.get(stage.visual_asset_id), 'name') || stage.title}`}
-                          >
-                            <img
-                              src={assetById.get(stage.visual_asset_id).file_url || assetById.get(stage.visual_asset_id).asset_path}
-                              alt={localizedAssetText(assetById.get(stage.visual_asset_id), 'name') || stage.title}
-                              className="worked-example-visual"
-                              style={{ width: '100%', maxHeight: 180, objectFit: 'contain', borderRadius: 12, marginBottom: 16, background: 'var(--warm)' }}
-                              loading="lazy"
-                            />
-                          </button>
-                        )}
-                        <div><strong>{stage.inputLabel}</strong><p>{stage.input}</p></div>
-                        <div><strong>{stage.aiLabel}</strong><p>{stage.ai}</p></div>
-                        <div><strong>{stage.humanLabel}</strong><p>{stage.human}</p></div>
-                        <div className="worked-example-output"><strong>{stage.outputLabel}</strong><p>{stage.output}</p></div>
+                      <div className="worked-example-col" key={stage.title}>
+                        <div className="worked-example-card">
+                          <div className="worked-example-step">{String(index + 1).padStart(2, '0')}</div>
+                          <h4>{stage.title}</h4>
+                          {stage.visual_asset_id && assetById.get(stage.visual_asset_id) && (
+                            <button
+                              type="button"
+                              className="worked-example-visual-trigger"
+                              onClick={(event) => handleOpenPreview(assetById.get(stage.visual_asset_id), event)}
+                              aria-label={`${zoomCopy.open}: ${localizedAssetText(assetById.get(stage.visual_asset_id), 'name') || stage.title}`}
+                            >
+                              <img
+                                src={assetById.get(stage.visual_asset_id).file_url || assetById.get(stage.visual_asset_id).asset_path}
+                                alt={localizedAssetText(assetById.get(stage.visual_asset_id), 'name') || stage.title}
+                                className="worked-example-visual"
+                                style={{ width: '100%', maxHeight: 180, objectFit: 'contain', borderRadius: 12, marginBottom: 16, background: 'var(--warm)' }}
+                                loading="lazy"
+                              />
+                            </button>
+                          )}
+                          <div><strong>{stage.inputLabel}</strong><p>{stage.input}</p></div>
+                          <div><strong>{stage.aiLabel}</strong><p>{stage.ai}</p></div>
+                          <div><strong>{stage.humanLabel}</strong><p>{stage.human}</p></div>
+                          <div className="worked-example-output"><strong>{stage.outputLabel}</strong><p>{stage.output}</p></div>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -609,7 +722,7 @@ export default function ResourceDetailPage() {
                       <div key={idx} className="col-12 col-sm-6">
                         <div
                           className="screenshot-evidence-card"
-                          onClick={() => setActivePreviewAsset(asset)}
+                          onClick={(event) => handleOpenPreview(asset, event)}
                           onKeyDown={(event) => {
                             if (event.key === 'Enter' || event.key === ' ') {
                               event.preventDefault();
@@ -713,8 +826,8 @@ export default function ResourceDetailPage() {
               )}
             </div>
 
-            {/* Sidebar Column */}
-            <div className="col-12 col-lg-4">
+            {/* Supplemental details remain full width below the main content */}
+            <div className="col-12">
               {/* Compatibility Matrix */}
               {Array.isArray(displayCompatibility) && displayCompatibility.length > 0 && (
                 <div className="resource-block mb-4">
@@ -865,29 +978,40 @@ export default function ResourceDetailPage() {
                 onClick={() => setActivePreviewAsset(null)}
                 className="btn btn-sm btn-light rounded-circle"
                 aria-label={zoomCopy.close}
-                autoFocus
                 style={{ width: '32px', height: '32px', padding: 0 }}
               >
                 <i className="bi bi-x-lg"></i>
               </button>
             </div>
             <div className="resource-lightbox-toolbar" role="toolbar" aria-label={zoomCopy.controls}>
-              <button type="button" className="btn btn-sm btn-light rounded-pill" onClick={() => setPreviewZoom((zoom) => Math.max(1, zoom - 0.25))} disabled={previewZoom <= 1}>
+              <button type="button" className="btn btn-sm btn-light rounded-pill" onClick={handlePreviewZoomOut} disabled={previewZoom <= 1}>
                 <i className="bi bi-dash-lg me-1"></i>{zoomCopy.out}
               </button>
               <span className="small text-muted fw-semibold">{Math.round(previewZoom * 100)}%</span>
-              <button type="button" className="btn btn-sm btn-light rounded-pill" onClick={() => setPreviewZoom((zoom) => Math.min(3, zoom + 0.25))} disabled={previewZoom >= 3}>
+              <button type="button" className="btn btn-sm btn-light rounded-pill" onClick={handlePreviewZoomIn} disabled={previewZoom >= 3}>
                 <i className="bi bi-plus-lg me-1"></i>{zoomCopy.in}
               </button>
-              <button type="button" className="btn btn-sm btn-outline-secondary rounded-pill" onClick={() => setPreviewZoom(1)}>{zoomCopy.fit}</button>
+              <button type="button" className="btn btn-sm btn-outline-secondary rounded-pill" onClick={handlePreviewFit}>{zoomCopy.fit}</button>
             </div>
-            <div className="resource-lightbox-body text-center p-4">
+            <div
+              className={`resource-lightbox-body text-center p-4 ${previewSpaceHeld || previewZoom > 1 ? 'can-pan' : ''} ${isPreviewPanning ? 'is-panning' : ''}`}
+              ref={previewBodyRef}
+              role="region"
+              aria-label={zoomCopy.pan}
+              tabIndex={0}
+              onPointerDown={handlePreviewPointerDown}
+              onPointerMove={handlePreviewPointerMove}
+              onPointerUp={handlePreviewPointerEnd}
+              onPointerCancel={handlePreviewPointerEnd}
+            >
               <img
                 src={activePreviewAsset.file_url || activePreviewAsset.asset_path}
                 alt={activePreviewAsset.name || activePreviewAsset.title}
                 className="img-fluid rounded-3 shadow-sm mx-auto"
-                style={{ maxWidth: '100%', maxHeight: 'calc(100vh - 190px)', objectFit: 'contain', transform: `scale(${previewZoom})`, transformOrigin: 'center center', transition: 'transform 0.2s ease' }}
+                draggable={false}
+                style={{ maxWidth: '100%', maxHeight: 'calc(100vh - 220px)', objectFit: 'contain', transform: `translate3d(${previewPan.x}px, ${previewPan.y}px, 0) scale(${previewZoom})`, transformOrigin: 'center center', transition: isPreviewPanning ? 'none' : 'transform 0.2s ease' }}
               />
+              <p className="resource-pan-hint small text-muted mb-0">{zoomCopy.pan}</p>
             </div>
           </div>
         </div>
