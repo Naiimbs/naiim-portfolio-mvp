@@ -346,8 +346,15 @@ export default function ResourceDetailPage() {
   const hasWorkflowUsage = isResourceFeatureEnabled(resource.resource_type, 'workflowUsage');
   const hasWorkedExample = isResourceFeatureEnabled(resource.resource_type, 'workedExample');
   const workflowUsageRaw = hasWorkflowUsage ? (resource.workflow_usage || resource.metadata?.workflow_usage) : null;
-  const workflowUsage = workflowUsageRaw ? { ...workflowUsageRaw, ...(workflowUsageRaw.i18n?.[currentLang] || {}) } : null;
-  const promptText = fullPromptText || workflowUsage?.prompt || '';
+  const localizedWorkflowUsage = workflowUsageRaw ? { ...workflowUsageRaw, ...(workflowUsageRaw.i18n?.[currentLang] || {}) } : null;
+  const promptText = fullPromptText || localizedWorkflowUsage?.prompt || resource.prompt || resource.metadata?.prompt || '';
+  const workflowUsage = localizedWorkflowUsage || (resource.resource_type === 'prompt' && promptText
+    ? { enabled: true, title: 'How to use this prompt', subtitle: '', modes: [] }
+    : null);
+  const promptSteps = Array.isArray(workflowUsage?.promptSteps)
+    ? workflowUsage.promptSteps
+    : t('resourceDetail.promptSteps', { returnObjects: true });
+  const promptNote = workflowUsage?.promptNote ?? t('resourceDetail.promptReadOnlyNote');
   const workedExampleRaw = hasWorkedExample ? (resource.worked_example || resource.metadata?.worked_example) : null;
   const workedExample = workedExampleRaw ? { ...workedExampleRaw, ...(workedExampleRaw.i18n?.[currentLang] || {}) } : null;
   const isSkillResource = resource.resource_type === 'skill';
@@ -357,6 +364,7 @@ export default function ResourceDetailPage() {
   const typeDetailRows = (TYPE_DETAIL_FIELDS[resource.resource_type] || [])
     .map(([label, key]) => ({
       label: TYPE_DETAIL_LABELS[currentLang]?.[resource.resource_type]?.[key] || label,
+      key,
       value: tx[key] ?? resource[key] ?? resource.metadata?.[key],
     }))
     .filter(({ value }) => value !== undefined && value !== null && String(value).trim() !== '');
@@ -573,11 +581,13 @@ export default function ResourceDetailPage() {
                     <span>{typeCfg.label} details</span>
                   </h3>
                   <div className="resource-type-details-grid">
-                    {typeDetailRows.map(({ label, value }) => (
+                    {typeDetailRows.map(({ label, key, value }) => (
                       <div className="resource-type-detail" key={label}>
                         <div className="resource-type-detail-label">{label}</div>
                         <div className="resource-type-detail-value">
-                          {Array.isArray(value) ? value.join(', ') : String(value)}
+                          {key === 'example_output'
+                            ? <Markdown className="resource-type-example-output" text={String(value)} />
+                            : (Array.isArray(value) ? value.join(', ') : String(value))}
                         </div>
                       </div>
                     ))}
@@ -692,10 +702,10 @@ export default function ResourceDetailPage() {
                           {copiedKey === 'workflow-prompt' ? <><i className="bi bi-check-lg me-1"></i>{t('share.copied')}</> : <><i className="bi bi-copy me-1"></i>{workflowUsage.copyPromptLabel || t('resourceDetail.copyPrompt')}</>}
                         </button>
                       </div>
-                      <div className="workflow-prompt-note"><i className="bi bi-shield-check me-1"></i>{t('resourceDetail.promptReadOnlyNote')}</div>
-                      {resource.resource_type === 'prompt' && (
+                      {promptNote && <div className="workflow-prompt-note"><i className="bi bi-shield-check me-1"></i>{promptNote}</div>}
+                      {resource.resource_type === 'prompt' && Array.isArray(promptSteps) && promptSteps.length > 0 && (
                         <ol className="workflow-prompt-steps">
-                          {t('resourceDetail.promptSteps', { returnObjects: true }).map((step) => <li key={step}>{step}</li>)}
+                          {promptSteps.map((step) => <li key={step}>{step}</li>)}
                         </ol>
                       )}
                       <pre className={`workflow-prompt-preview${resource.resource_type === 'prompt' ? ' workflow-prompt-preview-full' : ''}`}>{promptText}</pre>
@@ -745,7 +755,7 @@ export default function ResourceDetailPage() {
               )}
 
               {/* Autonomous Pipeline & How to Use (with one-click Copy) */}
-              {displayHowToUse && (
+              {displayHowToUse && !(resource.resource_type === 'prompt' && workflowUsage?.enabled) && (
                 <div className="resource-block">
                   <div className="d-flex align-items-center justify-content-between mb-3">
                     <h3 className="resource-block-title mb-0">

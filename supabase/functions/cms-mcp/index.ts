@@ -133,16 +133,176 @@ async function sbWrite(path: string, method: string, body?: unknown): Promise<an
 const RESOURCE_TYPES = ["skill", "template", "document", "figma", "guide", "prompt", "example", "spreadsheet", "file", "reference"];
 const RESOURCE_STATUSES = ["draft", "in_review", "ready", "published", "archived"];
 
+// Keep these fields aligned with src/config/resourceTypeDetails.js so MCP
+// callers can populate the same type-specific details as the CMS editor.
+const RESOURCE_DETAIL_PROPERTIES: Record<string, any> = {
+  template_format: { type: "string", enum: ["Starter kit", "Boilerplate", "Checklist", "Document template", "Code template", "Design template"] },
+  framework: { type: "string", description: "Framework or tool used by the template." },
+  included_files: { type: "string", description: "Included files or sections." },
+  setup_instructions: { type: "string", description: "Setup and customization instructions." },
+  figma_url: { type: "string", description: "Figma file URL; required for Figma resources." },
+  figma_embed: { type: "string", description: "Figma embed URL." },
+  figma_file_key: { type: "string", description: "Optional Figma API file key." },
+  design_scope: { type: "string", description: "Pages, components, tokens, and flows included in the Figma resource." },
+  access_requirements: { type: "string", description: "View, duplicate, edit, or community access notes." },
+  document_format: { type: "string", enum: ["PDF", "DOCX", "Markdown", "HTML", "Presentation", "Other"] },
+  document_category: { type: "string", description: "Document category, such as audit report, whitepaper, or research note." },
+  page_count: { type: "number", description: "Number of pages in the document." },
+  publication_date: { type: "string", description: "Publication date in YYYY-MM-DD format." },
+  citation: { type: "string", description: "Citation, source, client, edition, or attribution details." },
+  audience: { type: "string", description: "Intended audience for a guide or playbook." },
+  difficulty: { type: "string", enum: ["Beginner", "Intermediate", "Advanced", "Expert"] },
+  estimated_time: { type: "string", description: "Estimated completion time." },
+  prerequisites: { type: "string", description: "Prerequisites for using or following the guide." },
+  learning_outcomes: { type: "string", description: "Expected learning outcomes." },
+  prompt_format: { type: "string", enum: ["System prompt", "Agent instructions", "Workflow prompt", "Evaluation prompt", "Prompt template"] },
+  model_compatibility: { type: "string", description: "Models or AI assistants compatible with the prompt." },
+  variables: { type: "array", items: { type: "string" }, description: "Prompt variables or inputs; provide one string per variable." },
+  example_input: { type: "string", description: "Concrete sample input for the prompt." },
+  example_output: { type: "string", description: "Representative output produced by the prompt." },
+  safety_notes: { type: "string", description: "Safety and usage boundaries for the prompt." },
+  prompt: { type: "string", description: "Full copy-ready prompt text. Also used as a fallback for the public prompt preview." },
+  workflow_usage: {
+    type: "object",
+    description: "Optional public workflow panel, including prompt preview, usage modes, flow, and copy labels.",
+    properties: {
+      enabled: { type: "boolean" }, title: { type: "string" }, subtitle: { type: "string" },
+      prompt: { type: "string", description: "Full prompt text shown in the copy-ready prompt preview." },
+      promptLabel: { type: "string" }, promptHelp: { type: "string" }, copyPromptLabel: { type: "string" },
+      promptNote: { type: "string", description: "Prompt-specific note shown above the preview." },
+      promptSteps: { type: "array", items: { type: "string" }, description: "Prompt-specific usage steps; overrides generic localized steps." },
+      modes: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            id: { type: "string" }, badge: { type: "string" }, title: { type: "string" },
+            description: { type: "string" }, icon: { type: "string" },
+            tools: { type: "array", items: { type: "string" } },
+            flow: { type: "array", items: { type: "string" } },
+          },
+          additionalProperties: true,
+        },
+      },
+    },
+    additionalProperties: true,
+  },
+  worked_example: {
+    type: "object",
+    description: "Optional public worked example with input, AI output, human decision, and result stages.",
+    properties: {
+      enabled: { type: "boolean" }, title: { type: "string" }, subtitle: { type: "string" },
+      stages: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            title: { type: "string" }, visual_asset_id: { type: "string" },
+            inputLabel: { type: "string" }, input: { type: "string" },
+            aiLabel: { type: "string" }, ai: { type: "string" },
+            humanLabel: { type: "string" }, human: { type: "string" },
+            outputLabel: { type: "string" }, output: { type: "string" },
+          },
+          additionalProperties: true,
+        },
+      },
+      i18n: { type: "object", additionalProperties: true },
+    },
+    additionalProperties: true,
+  },
+  demo_url: { type: "string", description: "Live demo URL for an example or artifact." },
+  implementation_status: { type: "string", enum: ["Concept", "Prototype", "Beta", "Production", "Archived"] },
+  stack: { type: "string", description: "Technology stack used by the example or artifact." },
+  outcome: { type: "string", description: "Outcome demonstrated by the example or artifact." },
+  spreadsheet_format: { type: "string", enum: ["XLSX", "CSV", "Google Sheets", "Airtable", "Other"] },
+  compatible_tools: { type: "string", description: "Tools compatible with the spreadsheet." },
+  sheet_names: { type: "string", description: "Workbook sheet names." },
+  model_purpose: { type: "string", description: "Spreadsheet purpose, calculations, or tracked measures." },
+  sample_data_notes: { type: "string", description: "Sample data and update notes." },
+  file_format: { type: "string", description: "File or archive format." },
+  platform: { type: "string", description: "Target platform for the file." },
+  checksum: { type: "string", description: "Optional file checksum, such as SHA-256." },
+  usage_notes: { type: "string", description: "File usage notes." },
+  official_url: { type: "string", description: "Canonical or official URL; required for reference resources." },
+  reference_type: { type: "string", enum: ["Official documentation", "Standard", "API reference", "Repository", "Article", "Tool", "Other"] },
+  provider: { type: "string", description: "Publisher or provider of the reference." },
+  reference_version: { type: "string", description: "Referenced version or edition." },
+  access_notes: { type: "string", description: "Authentication, license, or access limitations for the reference." },
+};
+
+const RESOURCE_COMMON_METADATA_PROPERTIES: Record<string, any> = {
+  resource_type: { type: "string", enum: RESOURCE_TYPES },
+  short_description: { type: "string" },
+  description: { type: "string" },
+  purpose: { type: "string" },
+  when_to_use: { type: "array", items: { type: "string" } },
+  when_not_to_use: { type: "array", items: { type: "string" } },
+  how_to_use: { type: "string" },
+  installation: { type: "string" },
+  compatibility: { type: "array", items: { type: "object", additionalProperties: true } },
+  version: { type: "string" },
+  author: { type: "string" },
+  attribution: { type: "string" },
+  license: { type: "string" },
+  last_updated: { type: "string", description: "Last updated date or timestamp." },
+  source_url: { type: "string" },
+  source_name: { type: "string" },
+  source_title: { type: "string" },
+  repository_url: { type: "string" },
+  documentation_url: { type: "string" },
+  external_url: { type: "string" },
+  bundle_download_url: { type: "string" },
+  support_url: { type: "string" },
+  support_title: { type: "string" },
+  support_description: { type: "string" },
+  support_label: { type: "string" },
+  tags: { type: "array", items: { type: "string" } },
+  related_projects: { type: "array", items: { type: "string" } },
+  related_agents: { type: "array", items: { type: "string" } },
+  related_case_studies: { type: "array", items: { type: "string" } },
+  i18n: { type: "object", additionalProperties: true },
+  type_details: { type: "object", additionalProperties: true },
+  show_source_section: { type: "boolean" },
+  show_source_links: { type: "boolean" },
+  show_documentation_links: { type: "boolean" },
+  show_support_card: { type: "boolean" },
+};
+
+const RESOURCE_ASSETS_SCHEMA = {
+  type: "array",
+  description: "Resource files and previews. Use upload_resource_asset for uploaded files or cover images.",
+  items: {
+    type: "object",
+    properties: {
+      id: { type: "string" }, name: { type: "string" }, file_url: { type: "string" },
+      asset_type: { type: "string", enum: ["documentation", "script", "template", "screenshot", "example", "source", "attachment"] },
+      description: { type: "string" }, caption: { type: "string" }, mime_type: { type: "string" },
+      is_cover: { type: "boolean" }, is_gallery: { type: "boolean" }, is_required: { type: "boolean" },
+      is_previewable: { type: "boolean" }, is_downloadable: { type: "boolean" }, sort_order: { type: "number" },
+    },
+    additionalProperties: true,
+  },
+};
+
+const RESOURCE_METADATA_SCHEMA = {
+  type: "object",
+  description: "Resource metadata. Use the type-specific properties matching resource_type; these power the public details page.",
+  properties: { ...RESOURCE_COMMON_METADATA_PROPERTIES, ...RESOURCE_DETAIL_PROPERTIES, assets: RESOURCE_ASSETS_SCHEMA },
+  additionalProperties: true,
+};
+
+const RESOURCE_TOOL_PROPERTIES: Record<string, any> = {
+  title: { type: "string" },
+  slug: { type: "string" },
+  ...RESOURCE_COMMON_METADATA_PROPERTIES,
+  ...RESOURCE_DETAIL_PROPERTIES,
+  assets: RESOURCE_ASSETS_SCHEMA,
+  metadata: RESOURCE_METADATA_SCHEMA,
+};
+
 function resourceMeta(args: any, current: any = {}): Record<string, unknown> {
   const supplied = args.metadata && typeof args.metadata === "object" ? args.metadata : {};
-  const fields = [
-    "resource_type", "short_description", "description", "purpose", "when_to_use", "when_not_to_use",
-    "how_to_use", "installation", "compatibility", "version", "author", "license", "source_url",
-    "repository_url", "documentation_url", "external_url", "bundle_download_url", "support_url",
-    "support_title", "support_description", "support_label", "tags", "related_projects", "related_agents",
-    "related_case_studies", "assets", "i18n", "type_details", "show_source_section", "show_source_links",
-    "show_documentation_links", "show_support_card",
-  ];
+  const fields = [...Object.keys(RESOURCE_COMMON_METADATA_PROPERTIES), "assets", ...Object.keys(RESOURCE_DETAIL_PROPERTIES)];
   const next: Record<string, unknown> = { ...(current || {}), ...supplied };
   for (const field of fields) if (args[field] !== undefined) next[field] = args[field];
   return next;
@@ -170,8 +330,8 @@ const TOOLS = [
   { name: "get_style_guide", description: "Return the house writing style guide and workflow rules for this blog. Read it before drafting an article.", inputSchema: { type: "object", properties: {} } },
   { name: "list_resources", description: "List resources from the portfolio resource catalog with optional type, status, visibility, featured, and search filters.", inputSchema: { type: "object", properties: { resource_type: { type: "string", enum: RESOURCE_TYPES }, status: { type: "string", enum: RESOURCE_STATUSES }, visibility: { type: "string", enum: ["public", "private"] }, featured: { type: "boolean" }, search: { type: "string" }, limit: { type: "number" } } } },
   { name: "get_resource", description: "Get a complete resource by slug, including metadata and downloadable assets.", inputSchema: { type: "object", properties: { slug: { type: "string" } }, required: ["slug"] } },
-  { name: "create_resource", description: "Create a resource in draft status by default. Use the same metadata and asset model as the resource admin editor.", inputSchema: { type: "object", properties: { title: { type: "string" }, slug: { type: "string" }, resource_type: { type: "string", enum: RESOURCE_TYPES }, short_description: { type: "string" }, description: { type: "string" }, purpose: { type: "string" }, how_to_use: { type: "string" }, installation: { type: "string" }, compatibility: { type: "array" }, tags: { type: "array", items: { type: "string" } }, assets: { type: "array" }, metadata: { type: "object" }, status: { type: "string", enum: ["draft", "published"] }, visibility: { type: "string", enum: ["public", "private"] }, featured: { type: "boolean" }, sort_order: { type: "number" } }, required: ["title", "resource_type"] } },
-  { name: "update_resource", description: "Update resource metadata, assets, routing, or publishing fields by slug. Omitted fields remain unchanged.", inputSchema: { type: "object", properties: { slug: { type: "string" }, title: { type: "string" }, resource_type: { type: "string", enum: RESOURCE_TYPES }, short_description: { type: "string" }, description: { type: "string" }, purpose: { type: "string" }, how_to_use: { type: "string" }, installation: { type: "string" }, compatibility: { type: "array" }, tags: { type: "array", items: { type: "string" } }, assets: { type: "array" }, metadata: { type: "object" }, visibility: { type: "string", enum: ["public", "private"] }, featured: { type: "boolean" }, sort_order: { type: "number" } }, required: ["slug"] } },
+  { name: "create_resource", description: "Create a resource in draft status by default. Provide the fields for its resource_type; type-specific details can be supplied directly or inside metadata and are stored for the public details page.", inputSchema: { type: "object", properties: { ...RESOURCE_TOOL_PROPERTIES, status: { type: "string", enum: ["draft", "published"] }, visibility: { type: "string", enum: ["public", "private"] }, featured: { type: "boolean" }, sort_order: { type: "number" } }, required: ["title", "resource_type"] } },
+  { name: "update_resource", description: "Update resource metadata, assets, routing, or publishing fields by slug. Omitted fields remain unchanged. Supply type-specific details directly or inside metadata.", inputSchema: { type: "object", properties: { ...RESOURCE_TOOL_PROPERTIES, visibility: { type: "string", enum: ["public", "private"] }, featured: { type: "boolean" }, sort_order: { type: "number" } }, required: ["slug"] } },
   { name: "publish_resource", description: "Publish a resource and make it publicly visible at its resource route.", inputSchema: { type: "object", properties: { slug: { type: "string" } }, required: ["slug"] } },
   { name: "unpublish_resource", description: "Move a resource back to draft without deleting its content or assets.", inputSchema: { type: "object", properties: { slug: { type: "string" } }, required: ["slug"] } },
   { name: "upload_resource_asset", description: "Upload a file or cover image to a resource and append it to the resource's existing assets. Cover artwork should be text-free unless the caller explicitly requests text.", inputSchema: { type: "object", properties: { resource_slug: { type: "string" }, image_url: { type: "string" }, image_base64: { type: "string" }, filename: { type: "string" }, asset_type: { type: "string", enum: ["documentation", "script", "template", "screenshot", "example", "source", "attachment"] }, description: { type: "string" }, is_cover: { type: "boolean" }, is_previewable: { type: "boolean" }, is_downloadable: { type: "boolean" } }, required: ["resource_slug"] } },
@@ -246,7 +406,7 @@ async function callTool(name: string, args: any): Promise<any> {
     if (bytes.length > 25 * 1024 * 1024) throw new Error("Asset exceeds the 25 MB upload limit");
     const safeName = sourceName.replace(/[^a-zA-Z0-9._-]/g, "_");
     const path = `resources/${rows[0].slug}/${Date.now()}_${safeName}`;
-    const upload = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`, { method: "POST", headers: { ...SRV_HEADERS, "Content-Type": contentType, "x-upsert": "true" }, body: bytes });
+    const upload = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`, { method: "POST", headers: { ...SRV_HEADERS, "Content-Type": contentType, "x-upsert": "true" }, body: new Blob([bytes.slice().buffer as ArrayBuffer]) });
     if (!upload.ok) throw new Error(`upload failed: ${upload.status} ${await upload.text()}`);
     const asset = { id: `asset-mcp-${Date.now()}`, name: sourceName, file_url: `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}`, asset_type: args.asset_type || (contentType.startsWith("image/") ? "screenshot" : "attachment"), description: args.description || "", is_cover: Boolean(args.is_cover), is_previewable: args.is_previewable !== false, is_downloadable: args.is_downloadable !== false, mime_type: contentType, file_size: bytes.length };
     const metadata = { ...(rows[0].metadata || {}) };
@@ -331,7 +491,7 @@ async function callTool(name: string, args: any): Promise<any> {
       bytes = b64urlToBytes(String(args.image_base64).replace(/^data:[^;]+;base64,/, "").replace(/\+/g, "-").replace(/\//g, "_"));
     } else throw new Error("Provide image_url or image_base64");
     const path = `blog/${Date.now()}_${String(srcName).replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-    const up = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`, { method: "POST", headers: { ...SRV_HEADERS, "Content-Type": contentType, "x-upsert": "true" }, body: bytes });
+    const up = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`, { method: "POST", headers: { ...SRV_HEADERS, "Content-Type": contentType, "x-upsert": "true" }, body: new Blob([bytes.slice().buffer as ArrayBuffer]) });
     if (!up.ok) throw new Error(`upload failed: ${up.status} ${await up.text()}`);
     return { public_url: `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}`, bytes: bytes.length, content_type: contentType };
   }

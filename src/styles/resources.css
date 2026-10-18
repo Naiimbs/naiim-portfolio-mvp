@@ -696,6 +696,10 @@
   overflow-wrap: anywhere;
 }
 
+.resource-type-example-output > :last-child {
+  margin-bottom: 0;
+}
+
 @media (max-width: 575.98px) {
   .resource-type-details-grid {
     grid-template-columns: 1fr;
