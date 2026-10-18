@@ -75,6 +75,15 @@ export default function ResourceDetailPage() {
   }, [activePreviewAsset]);
 
   useEffect(() => {
+    if (!activePreviewAsset) return undefined;
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setActivePreviewAsset(null);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activePreviewAsset]);
+
+  useEffect(() => {
     async function load() {
       setLoading(true);
       setError(null);
@@ -148,10 +157,10 @@ export default function ResourceDetailPage() {
     ? 'fr'
     : (i18n.language?.startsWith('ar') ? 'ar' : 'en');
   const zoomCopy = currentLang === 'fr'
-    ? { out: 'Réduire', in: 'Agrandir', fit: 'Ajuster', controls: 'Contrôles de zoom' }
+    ? { out: 'Réduire', in: 'Agrandir', fit: 'Ajuster', controls: 'Contrôles de zoom', open: 'Agrandir l’image', close: 'Fermer l’aperçu', preview: 'Aperçu de l’image' }
     : currentLang === 'ar'
-      ? { out: 'تصغير', in: 'تكبير', fit: 'ملاءمة', controls: 'أدوات تكبير الصورة' }
-      : { out: 'Zoom out', in: 'Zoom in', fit: 'Fit', controls: 'Image zoom controls' };
+      ? { out: 'تصغير', in: 'تكبير', fit: 'ملاءمة', controls: 'أدوات تكبير الصورة', open: 'تكبير معاينة الصورة', close: 'إغلاق معاينة الصورة', preview: 'معاينة الصورة' }
+      : { out: 'Zoom out', in: 'Zoom in', fit: 'Fit', controls: 'Image zoom controls', open: 'Open full-size image preview', close: 'Close image preview', preview: 'Image preview' };
   const tx = resource?.i18n?.[currentLang] || resource?.metadata?.i18n?.[currentLang] || {};
   const assets = (Array.isArray(resource.assets) ? resource.assets : []).map((asset) => ({
     ...asset,
@@ -526,13 +535,20 @@ export default function ResourceDetailPage() {
                         <div className="worked-example-step">{String(index + 1).padStart(2, '0')}</div>
                         <h4>{stage.title}</h4>
                         {stage.visual_asset_id && assetById.get(stage.visual_asset_id) && (
-                          <img
-                            src={assetById.get(stage.visual_asset_id).file_url || assetById.get(stage.visual_asset_id).asset_path}
-                            alt={localizedAssetText(assetById.get(stage.visual_asset_id), 'name') || stage.title}
-                            className="worked-example-visual"
-                            style={{ width: '100%', maxHeight: 180, objectFit: 'contain', borderRadius: 12, marginBottom: 16, background: 'var(--warm)' }}
-                            loading="lazy"
-                          />
+                          <button
+                            type="button"
+                            className="worked-example-visual-trigger"
+                            onClick={() => setActivePreviewAsset(assetById.get(stage.visual_asset_id))}
+                            aria-label={`${zoomCopy.open}: ${localizedAssetText(assetById.get(stage.visual_asset_id), 'name') || stage.title}`}
+                          >
+                            <img
+                              src={assetById.get(stage.visual_asset_id).file_url || assetById.get(stage.visual_asset_id).asset_path}
+                              alt={localizedAssetText(assetById.get(stage.visual_asset_id), 'name') || stage.title}
+                              className="worked-example-visual"
+                              style={{ width: '100%', maxHeight: 180, objectFit: 'contain', borderRadius: 12, marginBottom: 16, background: 'var(--warm)' }}
+                              loading="lazy"
+                            />
+                          </button>
                         )}
                         <div><strong>{stage.inputLabel}</strong><p>{stage.input}</p></div>
                         <div><strong>{stage.aiLabel}</strong><p>{stage.ai}</p></div>
@@ -594,6 +610,15 @@ export default function ResourceDetailPage() {
                         <div
                           className="screenshot-evidence-card"
                           onClick={() => setActivePreviewAsset(asset)}
+                          onKeyDown={(event) => {
+                            if (event.key === 'Enter' || event.key === ' ') {
+                              event.preventDefault();
+                              setActivePreviewAsset(asset);
+                            }
+                          }}
+                          role="button"
+                          tabIndex={0}
+                          aria-label={`${zoomCopy.open}: ${localizedAssetText(asset, 'name') || asset.title}`}
                         >
                           <img
                             src={asset.file_url || asset.asset_path}
@@ -814,7 +839,14 @@ export default function ResourceDetailPage() {
 
       {/* IMAGE / LIGHTBOX MODAL */}
       {activePreviewAsset && (
-        <div className="resource-lightbox-modal" onClick={() => setActivePreviewAsset(null)}>
+        <div
+          id="resource-image-preview"
+          className="resource-lightbox-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-label={activePreviewAsset.name || activePreviewAsset.title || zoomCopy.preview}
+          onClick={() => setActivePreviewAsset(null)}
+        >
           <div className="resource-lightbox-dialog" onClick={(e) => e.stopPropagation()}>
             <div className="resource-lightbox-header">
               <div className="d-flex align-items-center gap-2 min-w-0">
@@ -832,6 +864,8 @@ export default function ResourceDetailPage() {
                 type="button"
                 onClick={() => setActivePreviewAsset(null)}
                 className="btn btn-sm btn-light rounded-circle"
+                aria-label={zoomCopy.close}
+                autoFocus
                 style={{ width: '32px', height: '32px', padding: 0 }}
               >
                 <i className="bi bi-x-lg"></i>

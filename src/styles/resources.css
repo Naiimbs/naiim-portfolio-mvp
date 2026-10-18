@@ -634,6 +634,11 @@
   box-shadow: 0 12px 32px rgba(14, 42, 47, 0.1);
 }
 
+.screenshot-evidence-card:focus-visible {
+  outline: 3px solid var(--green);
+  outline-offset: 3px;
+}
+
 .resource-tags-footer {
   margin-top: 8px;
 }
@@ -757,6 +762,9 @@
 .worked-example-section { background:var(--white); }
 .worked-example-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
 .worked-example-card { position:relative; padding:16px; border:1px solid var(--line); border-radius:15px; background:var(--paper); min-height:260px; }
+.worked-example-visual-trigger { display:block; width:100%; padding:0; margin:0; border:0; border-radius:12px; background:transparent; text-align:left; cursor:zoom-in; }
+.worked-example-visual-trigger:focus-visible { outline:3px solid var(--green); outline-offset:3px; }
+.worked-example-visual-trigger img { display:block; }
 .worked-example-step { color:var(--green); font-size:.68rem; font-weight:800; letter-spacing:.08em; margin-bottom:10px; }
 .worked-example-card h4 { margin:0 0 14px; color:var(--ink); font-size:.95rem; }
 .worked-example-card strong { display:block; color:var(--green); font-size:.63rem; text-transform:uppercase; letter-spacing:.06em; margin-bottom:3px; }
