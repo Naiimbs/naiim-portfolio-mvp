@@ -1,0 +1,14 @@
+flowchart LR
+  A[GET /resources/slug] --> B{Nginx resource rule}
+  B -->|Old: test $uri/| C[Existing public/resources/slug directory]
+  C --> D[Directory index unavailable]
+  D --> E[403 Forbidden]
+  B -->|Fixed: try_files $uri /index.html| F[React SPA index.html]
+  F --> G[CMS ResourceDetailPage]
+  G --> H[Downloadable deep asset URLs remain static]
+  classDef bad fill:#fdecec,stroke:#b42318,color:#10242A,stroke-width:2px;
+  classDef good fill:#e8f4f0,stroke:#087F66,color:#10242A,stroke-width:2px;
+  classDef neutral fill:#f8f9f6,stroke:#10242A,color:#10242A,stroke-width:1px;
+  class A,B,C,D neutral;
+  class E bad;
+  class F,G,H good;

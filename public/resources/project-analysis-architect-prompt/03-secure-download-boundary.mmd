@@ -1,0 +1,14 @@
+flowchart LR
+  A[Resource detail + download CTA] --> B[ResourceLeadFormModal.jsx]
+  B --> C[resource-ingest Edge Function]
+  C --> D{Server validation}
+  D --> E[Known contact: direct download]
+  D --> F[New contact: name, surname, role]
+  C --> G[Rate limits + disposable-domain checks]
+  C --> H[RLS + published-resource authorization]
+  G --> D
+  H --> D
+  classDef teal fill:#e8f4f0,stroke:#087F66,color:#10242A,stroke-width:2px;
+  classDef gold fill:#fff6d9,stroke:#EAB52E,color:#10242A,stroke-width:2px;
+  class A,B,C,D,G,H teal;
+  class E,F gold;

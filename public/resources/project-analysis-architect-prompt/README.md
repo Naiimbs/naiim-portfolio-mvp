@@ -12,6 +12,10 @@ A copy-ready prompt for analyzing an existing repository before implementation c
 - `Real-Project-Analysis-Examples-ar.md` — Arabic examples
 - `Example-Input-and-Expected-Output.md` — practical usage example
 - `Analysis-Review-Checklist.md` — approval checklist before implementation
+- `01-cms-publishing-flow.png` — visual evidence for the CMS publishing analysis
+- `02-nginx-resource-route.png` — visual evidence for the Nginx 403 analysis
+- `03-secure-download-boundary.png` — visual evidence for the secure download analysis
+- `project-analysis-architect-prompt-cover-visual.webp` — text-free editorial cover
 
 ## How to use
 
@@ -21,7 +25,7 @@ A copy-ready prompt for analyzing an existing repository before implementation c
 4. Review the analysis, confirmed findings, assumptions, affected files, tests, and open questions.
 5. Approve implementation only after the plan and acceptance criteria are clear.
 
-The live CMS detail page for this resource also shows the Prompt-specific parameters, a copy-ready prompt, workflow modes, and the real-site examples. The resource type is `prompt`, so these sections are rendered through the CMS-driven `/resources/:slug` detail page rather than a hardcoded resource page.
+The live CMS detail page for this resource also shows the Prompt-specific parameters, a copy-ready prompt, workflow modes, three real analyses from the Naïm Bsili portfolio, and a visual evidence gallery. The resource type is `prompt`, so these sections are rendered through the CMS-driven `/resources/:slug` detail page rather than a hardcoded resource page.
 
 ## Safety boundary
 

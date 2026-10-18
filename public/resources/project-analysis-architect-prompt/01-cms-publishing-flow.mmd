@@ -1,0 +1,12 @@
+flowchart LR
+  A[Goal: multilingual Prompt Resource] --> B[Inspect React/Vite repository]
+  B --> C[ResourceDetailPage.jsx]
+  B --> D[resources.js + content_registry]
+  C --> E[Add EN / FR / AR assets]
+  D --> F[Deploy static bundle]
+  E --> F
+  F --> G[Publish Supabase CMS record]
+  G --> H[Verify route, copy, languages, ZIP]
+  classDef teal fill:#e8f4f0,stroke:#087F66,color:#10242A,stroke-width:2px;
+  classDef gold fill:#fff6d9,stroke:#EAB52E,color:#10242A,stroke-width:2px;
+  class A,B,C,D,E,F,G,H teal;

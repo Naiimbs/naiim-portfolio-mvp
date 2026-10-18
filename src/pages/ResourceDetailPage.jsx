@@ -150,6 +150,7 @@ export default function ResourceDetailPage() {
       ...(tx.assets?.[asset.id] ? { [currentLang]: tx.assets[asset.id] } : {}),
     },
   }));
+  const assetById = new Map(assets.map((asset) => [asset.id, asset]));
 
   // Grouped Assets
   const skillMdAsset = assets.find((a) => a.name?.toLowerCase() === 'skill.md') || assets.find((a) => a.asset_type === 'documentation');
@@ -514,6 +515,15 @@ export default function ResourceDetailPage() {
                       <div className="worked-example-card" key={stage.title}>
                         <div className="worked-example-step">{String(index + 1).padStart(2, '0')}</div>
                         <h4>{stage.title}</h4>
+                        {stage.visual_asset_id && assetById.get(stage.visual_asset_id) && (
+                          <img
+                            src={assetById.get(stage.visual_asset_id).file_url || assetById.get(stage.visual_asset_id).asset_path}
+                            alt={localizedAssetText(assetById.get(stage.visual_asset_id), 'name') || stage.title}
+                            className="worked-example-visual"
+                            style={{ width: '100%', maxHeight: 180, objectFit: 'contain', borderRadius: 12, marginBottom: 16, background: 'var(--warm)' }}
+                            loading="lazy"
+                          />
+                        )}
                         <div><strong>{stage.inputLabel}</strong><p>{stage.input}</p></div>
                         <div><strong>{stage.aiLabel}</strong><p>{stage.ai}</p></div>
                         <div><strong>{stage.humanLabel}</strong><p>{stage.human}</p></div>
