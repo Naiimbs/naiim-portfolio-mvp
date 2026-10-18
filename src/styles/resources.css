@@ -743,3 +743,8 @@
 .worked-example-output { border-top:1px solid rgba(8,127,102,.15); padding-top:10px; }
 @media (max-width: 991.98px) { .workflow-usage-panel { grid-template-columns:1fr; } .worked-example-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media (max-width: 575.98px) { .workflow-usage-panel { padding:14px; } .workflow-usage-flow { justify-content:flex-start; } .workflow-flow-arrow { transform:rotate(90deg); } .worked-example-grid { grid-template-columns:1fr; } .worked-example-card { min-height:0; } }
+
+.workflow-prompt-callout { margin-top: 14px; padding: 14px; border: 1px solid rgba(234,181,46,.42); border-radius: 14px; background: #fffaf0; }
+.workflow-prompt-kicker { color: var(--ink); font-size: .78rem; font-weight: 800; margin-bottom: 4px; }
+.workflow-prompt-preview { margin: 12px 0 0; padding: 12px; border-radius: 10px; color: var(--ink); background: rgba(255,255,255,.86); border: 1px solid rgba(16,36,42,.1); white-space: pre-wrap; font: 500 .77rem/1.6 inherit; max-height: 190px; overflow: auto; }
+@media (max-width: 575.98px) { .workflow-prompt-callout .d-flex { flex-direction: column; } .workflow-prompt-callout .btn { width: 100%; } }

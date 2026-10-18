@@ -470,6 +470,20 @@ export default function ResourceDetailPage() {
                       </div>
                     );
                   })()}
+                  {activeUsageMode === 'manual' && workflowUsage.prompt && (
+                    <div className="workflow-prompt-callout">
+                      <div className="d-flex align-items-start justify-content-between gap-3">
+                        <div>
+                          <div className="workflow-prompt-kicker"><i className="bi bi-stars me-1"></i>{workflowUsage.promptLabel || 'Ready-to-use prompt included'}</div>
+                          <p className="small text-secondary mb-0">{workflowUsage.promptHelp || 'Copy this prompt and paste it into ChatGPT, Claude, or Gemini.'}</p>
+                        </div>
+                        <button type="button" className="btn btn-sm btn-primary-custom rounded-pill px-3 flex-shrink-0" onClick={() => handleCopy(workflowUsage.prompt, 'workflow-prompt')}>
+                          {copiedKey === 'workflow-prompt' ? <><i className="bi bi-check-lg me-1"></i>{t('share.copied')}</> : <><i className="bi bi-copy me-1"></i>{workflowUsage.copyPromptLabel || t('resourceDetail.copyPrompt')}</>}
+                        </button>
+                      </div>
+                      <pre className="workflow-prompt-preview">{workflowUsage.prompt}</pre>
+                    </div>
+                  )}
                 </div>
               )}
 
