@@ -119,6 +119,45 @@ async function sbSelect(path: string): Promise<any[]> {
   return await r.json();
 }
 
+async function sbWrite(path: string, method: string, body?: unknown): Promise<any[]> {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    method,
+    headers: { ...JSON_HEADERS, Prefer: "return=representation" },
+    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+  });
+  if (!r.ok) throw new Error(`${method.toLowerCase()} failed: ${r.status} ${await r.text()}`);
+  const text = await r.text();
+  return text ? JSON.parse(text) : [];
+}
+
+const RESOURCE_TYPES = ["skill", "template", "document", "figma", "guide", "prompt", "example", "spreadsheet", "file", "reference"];
+const RESOURCE_STATUSES = ["draft", "in_review", "ready", "published", "archived"];
+
+function resourceMeta(args: any, current: any = {}): Record<string, unknown> {
+  const supplied = args.metadata && typeof args.metadata === "object" ? args.metadata : {};
+  const fields = [
+    "resource_type", "short_description", "description", "purpose", "when_to_use", "when_not_to_use",
+    "how_to_use", "installation", "compatibility", "version", "author", "license", "source_url",
+    "repository_url", "documentation_url", "external_url", "bundle_download_url", "support_url",
+    "support_title", "support_description", "support_label", "tags", "related_projects", "related_agents",
+    "related_case_studies", "assets", "i18n", "type_details", "show_source_section", "show_source_links",
+    "show_documentation_links", "show_support_card",
+  ];
+  const next: Record<string, unknown> = { ...(current || {}), ...supplied };
+  for (const field of fields) if (args[field] !== undefined) next[field] = args[field];
+  return next;
+}
+
+function normalizeResource(row: any) {
+  return {
+    ...row,
+    ...(row.metadata || {}),
+    metadata: row.metadata || {},
+    resource_type: row.metadata?.resource_type || "file",
+    public_url: `${SITE_ORIGIN}${row.public_route || `/resources/${row.slug}`}`,
+  };
+}
+
 // ---------- tools ----------
 const TOOLS = [
   { name: "list_articles", description: "List blog articles with their status.", inputSchema: { type: "object", properties: { status: { type: "string", enum: ["draft", "in_review", "ready", "published", "archived"] }, limit: { type: "number" } } } },
@@ -129,11 +168,72 @@ const TOOLS = [
   { name: "unpublish_article", description: "Revert an article to draft.", inputSchema: { type: "object", properties: { slug: { type: "string" } }, required: ["slug"] } },
   { name: "upload_image", description: "Upload an image (from a URL or base64) and return its public URL. Use for featured_image_url.", inputSchema: { type: "object", properties: { image_url: { type: "string" }, image_base64: { type: "string" }, filename: { type: "string" } } } },
   { name: "get_style_guide", description: "Return the house writing style guide and workflow rules for this blog. Read it before drafting an article.", inputSchema: { type: "object", properties: {} } },
+  { name: "list_resources", description: "List resources from the portfolio resource catalog with optional type, status, visibility, featured, and search filters.", inputSchema: { type: "object", properties: { resource_type: { type: "string", enum: RESOURCE_TYPES }, status: { type: "string", enum: RESOURCE_STATUSES }, visibility: { type: "string", enum: ["public", "private"] }, featured: { type: "boolean" }, search: { type: "string" }, limit: { type: "number" } } } },
+  { name: "get_resource", description: "Get a complete resource by slug, including metadata and downloadable assets.", inputSchema: { type: "object", properties: { slug: { type: "string" } }, required: ["slug"] } },
+  { name: "create_resource", description: "Create a resource in draft status by default. Use the same metadata and asset model as the resource admin editor.", inputSchema: { type: "object", properties: { title: { type: "string" }, slug: { type: "string" }, resource_type: { type: "string", enum: RESOURCE_TYPES }, short_description: { type: "string" }, description: { type: "string" }, purpose: { type: "string" }, how_to_use: { type: "string" }, installation: { type: "string" }, compatibility: { type: "array" }, tags: { type: "array", items: { type: "string" } }, assets: { type: "array" }, metadata: { type: "object" }, status: { type: "string", enum: ["draft", "published"] }, visibility: { type: "string", enum: ["public", "private"] }, featured: { type: "boolean" }, sort_order: { type: "number" } }, required: ["title", "resource_type"] } },
+  { name: "update_resource", description: "Update resource metadata, assets, routing, or publishing fields by slug. Omitted fields remain unchanged.", inputSchema: { type: "object", properties: { slug: { type: "string" }, title: { type: "string" }, resource_type: { type: "string", enum: RESOURCE_TYPES }, short_description: { type: "string" }, description: { type: "string" }, purpose: { type: "string" }, how_to_use: { type: "string" }, installation: { type: "string" }, compatibility: { type: "array" }, tags: { type: "array", items: { type: "string" } }, assets: { type: "array" }, metadata: { type: "object" }, visibility: { type: "string", enum: ["public", "private"] }, featured: { type: "boolean" }, sort_order: { type: "number" } }, required: ["slug"] } },
+  { name: "publish_resource", description: "Publish a resource and make it publicly visible at its resource route.", inputSchema: { type: "object", properties: { slug: { type: "string" } }, required: ["slug"] } },
+  { name: "unpublish_resource", description: "Move a resource back to draft without deleting its content or assets.", inputSchema: { type: "object", properties: { slug: { type: "string" } }, required: ["slug"] } },
+  { name: "get_resource_download_stats", description: "Return download counts and recent download events for the resource catalog.", inputSchema: { type: "object", properties: { slug: { type: "string" }, limit: { type: "number" } } } },
 ];
 
 async function callTool(name: string, args: any): Promise<any> {
   args = args || {};
   if (name === "get_style_guide") return STYLE_GUIDE;
+  if (name === "list_resources") {
+    const filters = ["content_type=eq.resource"];
+    if (args.resource_type) filters.push(`metadata->>resource_type=eq.${encodeURIComponent(args.resource_type)}`);
+    if (args.status) filters.push(`status=eq.${encodeURIComponent(args.status)}`);
+    if (args.visibility) filters.push(`visibility=eq.${encodeURIComponent(args.visibility)}`);
+    if (args.featured !== undefined) filters.push(`featured=eq.${args.featured ? "true" : "false"}`);
+    const limit = Math.min(Math.max(Number(args.limit) || 50, 1), 100);
+    const rows = await sbSelect(`content_registry?${filters.join("&")}&select=id,slug,title,status,visibility,featured,sort_order,public_route,metadata,created_at,updated_at&order=sort_order.asc,updated_at.desc&limit=${limit}`);
+    const q = String(args.search || "").trim().toLowerCase();
+    return rows.filter((r) => !q || [r.slug, r.title, r.metadata?.short_description, r.metadata?.resource_type, ...(r.metadata?.tags || [])].some((v) => String(v || "").toLowerCase().includes(q))).map(normalizeResource);
+  }
+  if (name === "get_resource") {
+    const rows = await sbSelect(`content_registry?slug=eq.${encodeURIComponent(args.slug)}&content_type=eq.resource&select=*&limit=1`);
+    if (!rows[0]) throw new Error(`Resource not found: ${args.slug}`);
+    return normalizeResource(rows[0]);
+  }
+  if (name === "create_resource") {
+    const title = String(args.title || "").trim();
+    if (!title) throw new Error("title is required");
+    if (!RESOURCE_TYPES.includes(args.resource_type)) throw new Error(`Invalid resource_type. Use one of: ${RESOURCE_TYPES.join(", ")}`);
+    const slug = slugify(args.slug || title);
+    if ((await sbSelect(`content_registry?slug=eq.${encodeURIComponent(slug)}&select=slug&limit=1`))[0]) throw new Error(`Slug already in use: ${slug}`);
+    const status = args.status === "published" ? "published" : "draft";
+    const row = { title, slug, content_type: "resource", status, visibility: args.visibility === "private" ? "private" : "public", featured: Boolean(args.featured), sort_order: Number(args.sort_order) || 0, public_route: `/resources/${slug}`, metadata: resourceMeta({ ...args, resource_type: args.resource_type }) };
+    const created = (await sbWrite("content_registry", "POST", row))[0];
+    return { id: created.id, slug, status, public_url: `${SITE_ORIGIN}/resources/${slug}`, admin_url: `${SITE_ORIGIN}/admin/resources/${created.id}`, resource: normalizeResource(created) };
+  }
+  if (name === "update_resource") {
+    const cur = (await sbSelect(`content_registry?slug=eq.${encodeURIComponent(args.slug)}&content_type=eq.resource&select=*&limit=1`))[0];
+    if (!cur) throw new Error(`Resource not found: ${args.slug}`);
+    if (args.resource_type && !RESOURCE_TYPES.includes(args.resource_type)) throw new Error(`Invalid resource_type. Use one of: ${RESOURCE_TYPES.join(", ")}`);
+    const patch: any = { metadata: resourceMeta(args, cur.metadata) };
+    if (args.title !== undefined) patch.title = String(args.title).trim();
+    if (args.visibility !== undefined) patch.visibility = args.visibility;
+    if (args.featured !== undefined) patch.featured = Boolean(args.featured);
+    if (args.sort_order !== undefined) patch.sort_order = Number(args.sort_order) || 0;
+    const updated = (await sbWrite(`content_registry?id=eq.${encodeURIComponent(cur.id)}`, "PATCH", patch))[0];
+    return { slug: updated.slug, updated: true, public_url: `${SITE_ORIGIN}${updated.public_route || `/resources/${updated.slug}`}`, resource: normalizeResource(updated) };
+  }
+  if (name === "publish_resource" || name === "unpublish_resource") {
+    const rows = await sbSelect(`content_registry?slug=eq.${encodeURIComponent(args.slug)}&content_type=eq.resource&select=id,slug,metadata&limit=1`);
+    if (!rows[0]) throw new Error(`Resource not found: ${args.slug}`);
+    const published = name === "publish_resource";
+    const updated = (await sbWrite(`content_registry?id=eq.${encodeURIComponent(rows[0].id)}`, "PATCH", { status: published ? "published" : "draft", visibility: published ? "public" : "private" }))[0];
+    return { slug: updated.slug, status: updated.status, visibility: updated.visibility, public_url: `${SITE_ORIGIN}${updated.public_route || `/resources/${updated.slug}`}` };
+  }
+  if (name === "get_resource_download_stats") {
+    const limit = Math.min(Math.max(Number(args.limit) || 100, 1), 500);
+    const filter = args.slug ? `&resource_slug=eq.${encodeURIComponent(args.slug)}` : "";
+    const events = await sbSelect(`resource_downloads?select=resource_slug,resource_type,asset_name,source,downloaded_at&order=downloaded_at.desc&limit=${limit}${filter}`);
+    const counts: Record<string, number> = {};
+    for (const event of events) counts[event.resource_slug] = (counts[event.resource_slug] || 0) + 1;
+    return { total_events: events.length, by_resource: counts, recent_events: events };
+  }
   if (name === "list_articles") {
     const status = args.status ? `&status=eq.${encodeURIComponent(args.status)}` : "";
     const limit = Number(args.limit) || 50;

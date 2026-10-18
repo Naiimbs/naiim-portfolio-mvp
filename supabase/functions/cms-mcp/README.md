@@ -1,9 +1,9 @@
-# cms-mcp — MCP server for the blog CMS
+# cms-mcp — MCP server for the portfolio CMS
 
-Exposes the blog CMS as MCP tools over Streamable HTTP (JSON-RPC), so external
-AI agents (Claude connectors, n8n MCP node, and any MCP-capable tool) can draft,
-image, update and publish articles that render exactly like the ones created in
-the admin editor.
+Exposes the blog and resource CMS as MCP tools over Streamable HTTP (JSON-RPC),
+so external AI agents (Claude connectors, n8n MCP node, and any MCP-capable
+tool) can draft, update and publish content that renders exactly like the
+content created in the admin editor.
 
 ## Endpoint
 `https://<project-ref>.functions.supabase.co/cms-mcp`
@@ -33,6 +33,21 @@ supabase functions deploy cms-mcp --no-verify-jwt --project-ref <ref>
 Typical agent flow: `upload_image` → use its `public_url` as `featured_image_url`
 in `create_article` (draft) → review → `publish_article`.
 
+## Resource tools
+- `list_resources` {resource_type?, status?, visibility?, featured?, search?, limit?}
+- `get_resource` {slug}
+- `create_resource` {title, resource_type, slug?, metadata?, assets?, status?, visibility?, featured?, sort_order?, ...resource fields} — DRAFT by default
+- `update_resource` {slug, ...optional resource fields} — only provided fields change
+- `publish_resource` {slug}
+- `unpublish_resource` {slug} — returns the resource to draft/private without deleting its content
+- `get_resource_download_stats` {slug?, limit?}
+
+Resources use the existing `content_registry` table with `content_type = 'resource'`.
+The MCP preserves the admin editor's JSONB metadata and asset structure, including
+resource-type-specific fields, translations, downloadable files, and preview assets.
+The recommended flow is `create_resource` as draft → review in the admin editor →
+`publish_resource` only after approval.
+
 ## Quick test (curl)
 ```bash
 EP="https://<ref>.functions.supabase.co/cms-mcp"
@@ -53,5 +68,6 @@ curl -s "${H[@]}" "$EP" -d '{"jsonrpc":"2.0","id":3,"method":"tools/call","param
 - **n8n**: MCP Client node → HTTP/Streamable transport → endpoint + Bearer header.
 - Other tools: point them at the endpoint with the Authorization header.
 
-Security: articles are created as DRAFT; only `publish_article` makes them live.
+Security: articles and resources are created as DRAFT by default; only the explicit
+publish tools make them live.
 Keep MCP_CMS_TOKEN secret and rotate it with `supabase secrets set` if leaked.
