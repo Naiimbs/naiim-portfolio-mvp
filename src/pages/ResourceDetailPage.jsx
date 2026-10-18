@@ -11,6 +11,7 @@ import ResourceTemplateCard from '../components/resources/ResourceTemplateCard';
 import ResourceSupportCard from '../components/resources/ResourceSupportCard';
 import Markdown from '../components/cms/Markdown';
 import { isResourceFeatureEnabled } from '../config/resourceTypeDetails';
+import { siteConfig } from '../config/site';
 import '../styles/resources.css';
 
 const TYPE_DETAIL_FIELDS = {
@@ -67,6 +68,7 @@ export default function ResourceDetailPage() {
   const [activeCoverIndex, setActiveCoverIndex] = useState(0);
   const [copiedKey, setCopiedKey] = useState(null);
   const [activeUsageMode, setActiveUsageMode] = useState('manual');
+  const [fullPromptText, setFullPromptText] = useState('');
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -154,6 +156,39 @@ export default function ResourceDetailPage() {
     }
     load();
   }, [slug]);
+
+  useEffect(() => {
+    if (!resource || resource.resource_type !== 'prompt') {
+      setFullPromptText('');
+      return undefined;
+    }
+
+    const lang = i18n.language?.startsWith('fr') ? 'fr' : (i18n.language?.startsWith('ar') ? 'ar' : 'en');
+    const promptAssets = Array.isArray(resource.assets) ? resource.assets : [];
+    const promptAsset = promptAssets.find((asset) => asset.id === `prompt-${lang}`)
+      || promptAssets.find((asset) => new RegExp(`prompt-${lang}\\.md$`, 'i').test(asset.name || ''))
+      || promptAssets.find((asset) => /^prompt.*\\.md$/i.test(asset.name || ''));
+
+    if (!promptAsset?.file_url) {
+      setFullPromptText('');
+      return undefined;
+    }
+
+    let cancelled = false;
+    fetch(promptAsset.file_url)
+      .then((response) => {
+        if (!response.ok) throw new Error(`Prompt fetch failed: ${response.status}`);
+        return response.text();
+      })
+      .then((text) => {
+        if (!cancelled) setFullPromptText(text.trim());
+      })
+      .catch(() => {
+        if (!cancelled) setFullPromptText('');
+      });
+
+    return () => { cancelled = true; };
+  }, [resource, i18n.language]);
 
   const handleCopy = (text, key) => {
     navigator.clipboard.writeText(text);
@@ -279,6 +314,9 @@ export default function ResourceDetailPage() {
   // Grouped Assets
   const skillMdAsset = assets.find((a) => a.name?.toLowerCase() === 'skill.md') || assets.find((a) => a.asset_type === 'documentation');
   const templateAssets = assets.filter((a) => a.asset_type === 'template' || a.name?.toLowerCase().endsWith('.xlsx'));
+  const bundleAsset = assets.find((asset) => asset.asset_type === 'source' || /application\/zip/i.test(asset.mime_type || '') || /\.zip$/i.test(asset.name || ''));
+  const bundleContents = assets.filter((asset) => asset !== bundleAsset && asset.is_downloadable !== false);
+  const hasBundle = Boolean(resource.bundle_download_url || bundleAsset?.file_url);
   const screenshotAssets = (resource.visual_evidence && Array.isArray(resource.visual_evidence) && resource.visual_evidence.length > 0)
     ? resource.visual_evidence
     : assets.filter((a) => a.asset_type === 'screenshot');
@@ -303,6 +341,7 @@ export default function ResourceDetailPage() {
   const hasWorkedExample = isResourceFeatureEnabled(resource.resource_type, 'workedExample');
   const workflowUsageRaw = hasWorkflowUsage ? (resource.workflow_usage || resource.metadata?.workflow_usage) : null;
   const workflowUsage = workflowUsageRaw ? { ...workflowUsageRaw, ...(workflowUsageRaw.i18n?.[currentLang] || {}) } : null;
+  const promptText = fullPromptText || workflowUsage?.prompt || '';
   const workedExampleRaw = hasWorkedExample ? (resource.worked_example || resource.metadata?.worked_example) : null;
   const workedExample = workedExampleRaw ? { ...workedExampleRaw, ...(workedExampleRaw.i18n?.[currentLang] || {}) } : null;
   const isSkillResource = resource.resource_type === 'skill';
@@ -340,6 +379,16 @@ export default function ResourceDetailPage() {
         description={displayDesc}
         canonical={`/resources/${resource.slug}`}
         image={getResourcePreviewImage(resource)}
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'CreativeWork',
+          name: displayTitle,
+          description: displayDesc,
+          url: `${siteConfig.url}/resources/${resource.slug}`,
+          creator: { '@type': 'Person', name: siteConfig.author.name, url: siteConfig.author.url },
+          isAccessibleForFree: true,
+          ...(resource.last_updated ? { dateModified: resource.last_updated } : {}),
+        }}
       />
 
       <div className="resource-detail-wrap">
@@ -452,6 +501,21 @@ export default function ResourceDetailPage() {
                   <div className="text-muted text-center" style={{ fontSize: '0.75rem' }}>
                     {t('resourceDetail.instantDownload')}
                   </div>
+
+                  {hasBundle && (
+                    <div className="resource-bundle-summary" aria-label={t('resourceDetail.bundleContentsLabel')}>
+                      <div className="resource-bundle-summary-heading">
+                        <i className="bi bi-box-seam"></i>
+                        <strong>{t('resourceDetail.bundleContentsTitle')}</strong>
+                      </div>
+                      <p>{t('resourceDetail.bundleContentsBody', { count: bundleContents.length })}</p>
+                      {bundleContents.length > 0 && (
+                        <ul>
+                          {bundleContents.map((asset) => <li key={asset.id || asset.name}>{asset.name}</li>)}
+                        </ul>
+                      )}
+                    </div>
+                  )}
 
                   <div className="resource-detail-meta">
                     <span className="resource-detail-free-pill">{t('resourceDetail.freeDownload')}</span>
@@ -611,18 +675,24 @@ export default function ResourceDetailPage() {
                       </div>
                     );
                   })()}
-                  {activeUsageMode === 'manual' && workflowUsage.prompt && (
+                  {activeUsageMode === 'manual' && promptText && (
                     <div className="workflow-prompt-callout">
                       <div className="d-flex align-items-start justify-content-between gap-3">
                         <div>
                           <div className="workflow-prompt-kicker"><i className="bi bi-stars me-1"></i>{workflowUsage.promptLabel || 'Ready-to-use prompt included'}</div>
-                          <p className="small text-secondary mb-0">{workflowUsage.promptHelp || 'Copy this prompt and paste it into ChatGPT, Claude, or Gemini.'}</p>
+                          <p className="small text-secondary mb-0">{workflowUsage.promptHelp || t('resourceDetail.copyPromptHelp')}</p>
                         </div>
-                        <button type="button" className="btn btn-sm btn-primary-custom rounded-pill px-3 flex-shrink-0" onClick={() => handleCopy(workflowUsage.prompt, 'workflow-prompt')}>
+                        <button type="button" className="btn btn-sm btn-primary-custom rounded-pill px-3 flex-shrink-0" onClick={() => handleCopy(promptText, 'workflow-prompt')}>
                           {copiedKey === 'workflow-prompt' ? <><i className="bi bi-check-lg me-1"></i>{t('share.copied')}</> : <><i className="bi bi-copy me-1"></i>{workflowUsage.copyPromptLabel || t('resourceDetail.copyPrompt')}</>}
                         </button>
                       </div>
-                      <pre className="workflow-prompt-preview">{workflowUsage.prompt}</pre>
+                      <div className="workflow-prompt-note"><i className="bi bi-shield-check me-1"></i>{t('resourceDetail.promptReadOnlyNote')}</div>
+                      {resource.resource_type === 'prompt' && (
+                        <ol className="workflow-prompt-steps">
+                          {t('resourceDetail.promptSteps', { returnObjects: true }).map((step) => <li key={step}>{step}</li>)}
+                        </ol>
+                      )}
+                      <pre className={`workflow-prompt-preview${resource.resource_type === 'prompt' ? ' workflow-prompt-preview-full' : ''}`}>{promptText}</pre>
                     </div>
                   )}
                 </div>
