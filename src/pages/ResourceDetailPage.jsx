@@ -313,6 +313,7 @@ export default function ResourceDetailPage() {
 
   // Grouped Assets
   const skillMdAsset = assets.find((a) => a.name?.toLowerCase() === 'skill.md') || assets.find((a) => a.asset_type === 'documentation');
+  const readmeAsset = assets.find((a) => a.name?.toLowerCase() === 'readme.md') || assets.find((a) => a.asset_type === 'documentation' && a !== skillMdAsset);
   const templateAssets = assets.filter((a) => a.asset_type === 'template' || a.name?.toLowerCase().endsWith('.xlsx'));
   const bundleAsset = assets.find((asset) => asset.asset_type === 'source' || /application\/zip/i.test(asset.mime_type || '') || /\.zip$/i.test(asset.name || ''));
   const bundleContents = assets.filter((asset) => asset !== bundleAsset && asset.is_downloadable !== false);
@@ -326,9 +327,14 @@ export default function ResourceDetailPage() {
   const showSourceLinks = resource.show_source_links !== false;
   const showDocLinks = resource.show_documentation_links !== false;
   
-  const validSourceUrl = showSourceLinks && resource.source_url && resource.source_url.startsWith('http') ? resource.source_url : null;
-  const validDocUrl = showDocLinks && resource.documentation_url && resource.documentation_url.startsWith('http') ? resource.documentation_url : null;
-  const hasValidSource = showSourceSection && Boolean(validSourceUrl || validDocUrl);
+  const isCodeLikeUrl = (url = '') => /\.(?:md|mdx|txt|json|ya?ml|tsx?|jsx?|py|sh|sql)(?:$|\?)/i.test(url);
+  const validSourceUrl = showSourceLinks && resource.source_url && resource.source_url.startsWith('http') && !isCodeLikeUrl(resource.source_url) ? resource.source_url : null;
+  const validDocUrl = showDocLinks && resource.documentation_url && resource.documentation_url.startsWith('http') && !isCodeLikeUrl(resource.documentation_url) ? resource.documentation_url : null;
+  const rawSourceAsset = showSourceLinks && resource.source_url && isCodeLikeUrl(resource.source_url) ? skillMdAsset : null;
+  const rawDocAsset = showDocLinks && resource.documentation_url && isCodeLikeUrl(resource.documentation_url) ? readmeAsset : null;
+  const validRepositoryUrl = resource.repository_url && resource.repository_url.startsWith('http') ? resource.repository_url : null;
+  const validExternalUrl = resource.external_url && resource.external_url.startsWith('http') ? resource.external_url : null;
+  const hasValidSource = showSourceSection && Boolean(validSourceUrl || validDocUrl || rawSourceAsset || rawDocAsset || validRepositoryUrl || validExternalUrl);
 
   const displayTitle = tx.title || resource.title;
   const displayDesc = tx.short_description || tx.description || resource.short_description || resource.description;
@@ -579,7 +585,7 @@ export default function ResourceDetailPage() {
                 </div>
               )}
 
-              {/* When to use vs When NOT to use */}
+              {/* Where to use vs Where NOT to use */}
               {(hasRenderableContent(displayWhenToUse) || hasRenderableContent(displayWhenNotToUse)) && (
                 <div className="row g-3 mb-4">
                   {hasRenderableContent(displayWhenToUse) && (
@@ -587,7 +593,7 @@ export default function ResourceDetailPage() {
                       <div className="h-100 p-4 rounded-4 border" style={{ backgroundColor: 'var(--green-soft)', borderColor: 'rgba(8, 127, 102, 0.2)' }}>
                         <div className="fw-bold small text-uppercase mb-3 d-flex align-items-center gap-2" style={{ color: 'var(--green)' }}>
                           <i className="bi bi-check-circle-fill"></i>
-                          <span>{t('resourceDetail.whenToUse')}</span>
+                          <span>{t('resourceDetail.whereToUse')}</span>
                         </div>
                         {Array.isArray(displayWhenToUse) ? (
                           <ul className="small text-dark mb-0 ps-3">
@@ -607,7 +613,7 @@ export default function ResourceDetailPage() {
                       <div className="h-100 p-4 rounded-4 border bg-danger bg-opacity-10 border-danger border-opacity-25">
                         <div className="fw-bold small text-uppercase text-danger mb-3 d-flex align-items-center gap-2">
                           <i className="bi bi-x-circle-fill"></i>
-                          <span>{t('resourceDetail.whenNotToUse')}</span>
+                          <span>{t('resourceDetail.whereNotToUse')}</span>
                         </div>
                         {Array.isArray(displayWhenNotToUse) ? (
                           <ul className="small text-dark mb-0 ps-3">
@@ -863,16 +869,68 @@ export default function ResourceDetailPage() {
                     <i className="bi bi-link-45deg" style={{ color: 'var(--green)' }}></i>
                     <span>{t('resourceDetail.sourceLinks')}</span>
                   </h3>
-                  <div className="d-flex flex-wrap gap-3">
+                  <div className="resource-source-links-grid">
+                    {rawSourceAsset && (
+                      <button
+                        type="button"
+                        onClick={() => handleOpenMarkdownViewer(rawSourceAsset)}
+                        className="resource-source-link-card"
+                      >
+                        <i className="bi bi-file-earmark-text"></i>
+                        <span>
+                          <strong>{t('resourceDetail.readOfficialSource')}</strong>
+                          <small>{rawSourceAsset.name}</small>
+                        </span>
+                        <i className="bi bi-arrow-right"></i>
+                      </button>
+                    )}
+                    {rawDocAsset && (
+                      <button
+                        type="button"
+                        onClick={() => handleOpenMarkdownViewer(rawDocAsset)}
+                        className="resource-source-link-card"
+                      >
+                        <i className="bi bi-journal-text"></i>
+                        <span>
+                          <strong>{t('resourceDetail.readDocumentation')}</strong>
+                          <small>{rawDocAsset.name}</small>
+                        </span>
+                        <i className="bi bi-arrow-right"></i>
+                      </button>
+                    )}
+                    {validRepositoryUrl && (
+                      <a href={validRepositoryUrl} target="_blank" rel="noopener noreferrer" className="resource-source-link-card">
+                        <i className="bi bi-github"></i>
+                        <span>
+                          <strong>{t('resourceDetail.repositoryLink')}</strong>
+                          <small>{new URL(validRepositoryUrl).hostname}</small>
+                        </span>
+                        <i className="bi bi-box-arrow-up-right"></i>
+                      </a>
+                    )}
+                    {validExternalUrl && (
+                      <a href={validExternalUrl} target="_blank" rel="noopener noreferrer" className="resource-source-link-card">
+                        <i className="bi bi-globe2"></i>
+                        <span>
+                          <strong>{t('resourceDetail.externalLink')}</strong>
+                          <small>{new URL(validExternalUrl).hostname}</small>
+                        </span>
+                        <i className="bi bi-box-arrow-up-right"></i>
+                      </a>
+                    )}
                     {validSourceUrl && (
                       <a
                         href={validSourceUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="btn btn-outline-custom rounded-pill btn-sm px-3 d-inline-flex align-items-center gap-2"
+                        className="resource-source-link-card"
                       >
+                        <i className="bi bi-link-45deg"></i>
+                        <span>
+                          <strong>{t('resourceDetail.officialSource')}</strong>
+                          <small>{new URL(validSourceUrl).hostname}</small>
+                        </span>
                         <i className="bi bi-box-arrow-up-right"></i>
-                        <span>{t('resourceDetail.officialSource')}</span>
                       </a>
                     )}
                     {validDocUrl && (
@@ -880,10 +938,14 @@ export default function ResourceDetailPage() {
                         href={validDocUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="btn btn-outline-custom rounded-pill btn-sm px-3 d-inline-flex align-items-center gap-2"
+                        className="resource-source-link-card"
                       >
                         <i className="bi bi-book"></i>
-                        <span>{t('resourceDetail.docLink')}</span>
+                        <span>
+                          <strong>{t('resourceDetail.docLink')}</strong>
+                          <small>{new URL(validDocUrl).hostname}</small>
+                        </span>
+                        <i className="bi bi-box-arrow-up-right"></i>
                       </a>
                     )}
                   </div>

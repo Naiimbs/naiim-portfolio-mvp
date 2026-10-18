@@ -234,6 +234,71 @@
   transform: scale(1.025);
 }
 
+.resource-source-links-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.resource-source-link-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  color: var(--ink);
+  background: var(--white);
+  text-decoration: none;
+  text-align: left;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.resource-source-link-card:hover,
+.resource-source-link-card:focus-visible {
+  color: var(--green-dark);
+  border-color: rgba(8, 127, 102, 0.45);
+  background: var(--green-soft);
+  transform: translateY(-2px);
+}
+
+.resource-source-link-card > i:first-child {
+  flex: 0 0 auto;
+  color: var(--green);
+  font-size: 1.1rem;
+}
+
+.resource-source-link-card > i:last-child {
+  flex: 0 0 auto;
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.resource-source-link-card span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.resource-source-link-card strong,
+.resource-source-link-card small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resource-source-link-card strong {
+  font-size: 0.8rem;
+}
+
+.resource-source-link-card small {
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+
 .resource-card-preview:focus-visible {
   outline: 3px solid rgba(8, 127, 102, 0.3);
   outline-offset: -3px;
