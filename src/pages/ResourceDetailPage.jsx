@@ -18,11 +18,20 @@ const TYPE_DETAIL_FIELDS = {
   figma: [['Figma file', 'figma_url'], ['Design scope', 'design_scope'], ['Access', 'access_requirements']],
   document: [['Format', 'document_format'], ['Category', 'document_category'], ['Pages', 'page_count'], ['Published', 'publication_date'], ['Provenance', 'citation']],
   guide: [['Audience', 'audience'], ['Difficulty', 'difficulty'], ['Estimated time', 'estimated_time'], ['Prerequisites', 'prerequisites'], ['Outcomes', 'learning_outcomes']],
-  prompt: [['Format', 'prompt_format'], ['Model compatibility', 'model_compatibility'], ['Variables', 'variables'], ['Safety notes', 'safety_notes']],
+  prompt: [['Format', 'prompt_format'], ['Model compatibility', 'model_compatibility'], ['Variables', 'variables'], ['Example input', 'example_input'], ['Example output', 'example_output'], ['Safety notes', 'safety_notes']],
   example: [['Demo', 'demo_url'], ['Status', 'implementation_status'], ['Stack', 'stack'], ['Outcome', 'outcome']],
   spreadsheet: [['Format', 'spreadsheet_format'], ['Compatible tools', 'compatible_tools'], ['Sheets', 'sheet_names'], ['Purpose', 'model_purpose'], ['Sample data', 'sample_data_notes']],
   file: [['Format', 'file_format'], ['Platform', 'platform'], ['Usage notes', 'usage_notes']],
   reference: [['Official URL', 'official_url'], ['Reference type', 'reference_type'], ['Provider', 'provider'], ['Version', 'reference_version'], ['Access notes', 'access_notes']],
+};
+
+const TYPE_DETAIL_LABELS = {
+  fr: {
+    prompt: { prompt_format: 'Format', model_compatibility: 'Compatibilité des modèles', variables: 'Variables / entrées', example_input: 'Exemple d’entrée', example_output: 'Exemple de sortie', safety_notes: 'Notes de sécurité' },
+  },
+  ar: {
+    prompt: { prompt_format: 'الصيغة', model_compatibility: 'توافق النماذج', variables: 'المتغيرات / المدخلات', example_input: 'مثال على المدخل', example_output: 'مثال على المخرج', safety_notes: 'ملاحظات الأمان' },
+  },
 };
 
 const hasRenderableContent = (value) => {
@@ -176,7 +185,10 @@ export default function ResourceDetailPage() {
   const displayCompatibility = isSkillResource ? pickLocalizedContent(tx.compatibility, resource.compatibility) : null;
   const displayTags = tx.tags || resource.tags;
   const typeDetailRows = (TYPE_DETAIL_FIELDS[resource.resource_type] || [])
-    .map(([label, key]) => ({ label, value: resource[key] ?? resource.metadata?.[key] }))
+    .map(([label, key]) => ({
+      label: TYPE_DETAIL_LABELS[currentLang]?.[resource.resource_type]?.[key] || label,
+      value: tx[key] ?? resource[key] ?? resource.metadata?.[key],
+    }))
     .filter(({ value }) => value !== undefined && value !== null && String(value).trim() !== '');
   const localizedAssetText = (asset, field) => tx.assets?.[asset.id]?.[field] || asset.i18n?.[currentLang]?.[field] || asset[field];
   const previewAsset = getResourcePreviewAsset(resource);
