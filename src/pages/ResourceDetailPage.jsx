@@ -361,42 +361,45 @@ export default function ResourceDetailPage() {
             <span className="text-dark fw-semibold text-truncate">{displayTitle}</span>
           </div>
 
-          {/* 1. SIMPLIFIED HERO BLOCK */}
+          {/* 1. RESOURCE DETAIL HERO */}
           <div className="resource-detail-hero">
-            <div className={`resource-detail-cover${activeCoverImage ? '' : ' resource-detail-cover-fallback'}`}>
-              {activeCoverImage ? (
-                <>
-                  <img
-                    src={activeCoverImage}
-                    alt={activeCoverAsset?.caption || `${displayTitle} cover`}
-                    loading="eager"
-                    decoding="async"
-                  />
-                  {coverGalleryAssets.length > 1 && (
+            <div className="resource-detail-hero-layout">
+              <div className="resource-detail-hero-media">
+                <div className={`resource-detail-cover${activeCoverImage ? '' : ' resource-detail-cover-fallback'}`}>
+                  {activeCoverImage ? (
                     <>
-                      <button type="button" className="resource-cover-control resource-cover-control-prev" onClick={() => setActiveCoverIndex((activeCoverIndex - 1 + coverGalleryAssets.length) % coverGalleryAssets.length)} aria-label="Previous cover image">
-                        <i className="bi bi-chevron-left"></i>
-                      </button>
-                      <button type="button" className="resource-cover-control resource-cover-control-next" onClick={() => setActiveCoverIndex((activeCoverIndex + 1) % coverGalleryAssets.length)} aria-label="Next cover image">
-                        <i className="bi bi-chevron-right"></i>
-                      </button>
-                      <div className="resource-cover-dots" aria-label="Cover image selector">
-                        {coverGalleryAssets.map((asset, index) => (
-                          <button type="button" key={asset.id || index} className={`resource-cover-dot${index === activeCoverIndex ? ' is-active' : ''}`} onClick={() => setActiveCoverIndex(index)} aria-label={`Show cover image ${index + 1}`}></button>
-                        ))}
-                      </div>
+                      <img
+                        src={activeCoverImage}
+                        alt={activeCoverAsset?.caption || `${displayTitle} cover`}
+                        loading="eager"
+                        decoding="async"
+                      />
+                      {coverGalleryAssets.length > 1 && (
+                        <>
+                          <button type="button" className="resource-cover-control resource-cover-control-prev" onClick={() => setActiveCoverIndex((activeCoverIndex - 1 + coverGalleryAssets.length) % coverGalleryAssets.length)} aria-label="Previous cover image">
+                            <i className="bi bi-chevron-left"></i>
+                          </button>
+                          <button type="button" className="resource-cover-control resource-cover-control-next" onClick={() => setActiveCoverIndex((activeCoverIndex + 1) % coverGalleryAssets.length)} aria-label="Next cover image">
+                            <i className="bi bi-chevron-right"></i>
+                          </button>
+                          <div className="resource-cover-dots" aria-label="Cover image selector">
+                            {coverGalleryAssets.map((asset, index) => (
+                              <button type="button" key={asset.id || index} className={`resource-cover-dot${index === activeCoverIndex ? ' is-active' : ''}`} onClick={() => setActiveCoverIndex(index)} aria-label={`Show cover image ${index + 1}`}></button>
+                            ))}
+                          </div>
+                        </>
+                      )}
                     </>
+                  ) : (
+                    <div className="resource-detail-cover-placeholder" aria-hidden="true">
+                      <i className={`bi ${typeCfg.icon}`}></i>
+                      <span>{displayTitle}</span>
+                    </div>
                   )}
-                </>
-              ) : (
-                <div className="resource-detail-cover-placeholder" aria-hidden="true">
-                  <i className={`bi ${typeCfg.icon}`}></i>
-                  <span>{displayTitle}</span>
                 </div>
-              )}
-            </div>
-            <div className="row g-4 align-items-center">
-              <div className="col-12 col-lg-8">
+              </div>
+
+              <div className="resource-detail-hero-content">
                 <div className="d-flex flex-wrap align-items-center gap-2 mb-2">
                   <span
                     className="resource-type-pill"
@@ -423,20 +426,6 @@ export default function ResourceDetailPage() {
                   {displayDesc}
                 </p>
 
-                {/* Clear meta badge line */}
-                <div className="d-flex flex-wrap align-items-center gap-3 text-secondary small pt-3 border-top border-light-subtle">
-                  <span>v{resource.version || '1.0.0'}</span>
-                  <span>·</span>
-                  <span>{t('resources.assets', { count: assets.length })}</span>
-                  <span>·</span>
-                  <span className="badge bg-success bg-opacity-10 text-success fw-bold px-2 py-1 rounded-pill">
-                    {t('resourceDetail.freeDownload')}
-                  </span>
-                </div>
-              </div>
-
-              {/* Action CTAs: Hierarchy reversed */}
-              <div className="col-12 col-lg-4">
                 <div className="resource-action-box">
                   <button
                     type="button"
@@ -462,6 +451,12 @@ export default function ResourceDetailPage() {
 
                   <div className="text-muted text-center" style={{ fontSize: '0.75rem' }}>
                     {t('resourceDetail.instantDownload')}
+                  </div>
+
+                  <div className="resource-detail-meta">
+                    <span className="resource-detail-free-pill">{t('resourceDetail.freeDownload')}</span>
+                    <span>v{resource.version || '1.0.0'}</span>
+                    <span>{t('resources.assets', { count: assets.length })}</span>
                   </div>
                 </div>
               </div>
