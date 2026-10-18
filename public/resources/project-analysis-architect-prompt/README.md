@@ -15,7 +15,7 @@ A copy-ready prompt for analyzing an existing repository before implementation c
 - `01-cms-publishing-flow.png` — visual evidence for the CMS publishing analysis
 - `02-nginx-resource-route.png` — visual evidence for the Nginx 403 analysis
 - `03-secure-download-boundary.png` — visual evidence for the secure download analysis
-- `project-analysis-architect-prompt-cover-visual.webp` — text-free editorial cover
+- `project-analysis-architect-prompt-cover-card.webp` — text-free 5:3 editorial cover matching the resource cards
 
 ## How to use
 

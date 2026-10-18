@@ -57,6 +57,7 @@ export default function ResourceDetailPage() {
   const [isMarkdownViewerOpen, setIsMarkdownViewerOpen] = useState(false);
   const [selectedMarkdownAsset, setSelectedMarkdownAsset] = useState(null);
   const [activePreviewAsset, setActivePreviewAsset] = useState(null);
+  const [previewZoom, setPreviewZoom] = useState(1);
   const [activeCoverIndex, setActiveCoverIndex] = useState(0);
   const [copiedKey, setCopiedKey] = useState(null);
   const [activeUsageMode, setActiveUsageMode] = useState('manual');
@@ -68,6 +69,10 @@ export default function ResourceDetailPage() {
   useEffect(() => {
     setActiveCoverIndex(0);
   }, [slug]);
+
+  useEffect(() => {
+    setPreviewZoom(1);
+  }, [activePreviewAsset]);
 
   useEffect(() => {
     async function load() {
@@ -142,6 +147,11 @@ export default function ResourceDetailPage() {
   const currentLang = i18n.language?.startsWith('fr')
     ? 'fr'
     : (i18n.language?.startsWith('ar') ? 'ar' : 'en');
+  const zoomCopy = currentLang === 'fr'
+    ? { out: 'Réduire', in: 'Agrandir', fit: 'Ajuster', controls: 'Contrôles de zoom' }
+    : currentLang === 'ar'
+      ? { out: 'تصغير', in: 'تكبير', fit: 'ملاءمة', controls: 'أدوات تكبير الصورة' }
+      : { out: 'Zoom out', in: 'Zoom in', fit: 'Fit', controls: 'Image zoom controls' };
   const tx = resource?.i18n?.[currentLang] || resource?.metadata?.i18n?.[currentLang] || {};
   const assets = (Array.isArray(resource.assets) ? resource.assets : []).map((asset) => ({
     ...asset,
@@ -755,23 +765,24 @@ export default function ResourceDetailPage() {
               </div>
               )}
 
-              {/* Tags */}
-              {Array.isArray(displayTags) && displayTags.length > 0 && (
-                <div className="resource-block">
-                  <h4 className="fw-bold font-heading mb-3 small text-uppercase" style={{ letterSpacing: '0.05em' }}>
-                    <i className="bi bi-tags me-1" style={{ color: 'var(--green)' }}></i> {t('resourceDetail.tagsClassification')}
-                  </h4>
-                  <div className="d-flex flex-wrap gap-1.5">
-                    {displayTags.map((tag, idx) => (
-                      <span key={idx} className="resource-tag-chip">
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
+
+          {/* Tags & Classification: full-width footer block */}
+          {Array.isArray(displayTags) && displayTags.length > 0 && (
+            <div className="resource-block resource-tags-footer">
+              <h4 className="fw-bold font-heading mb-3 small text-uppercase" style={{ letterSpacing: '0.05em' }}>
+                <i className="bi bi-tags me-1" style={{ color: 'var(--green)' }}></i> {t('resourceDetail.tagsClassification')}
+              </h4>
+              <div className="d-flex flex-wrap gap-1.5">
+                {displayTags.map((tag, idx) => (
+                  <span key={idx} className="resource-tag-chip">
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Bottom Back Nav */}
           <div className="d-flex justify-content-between align-items-center pt-3 pb-5">
@@ -826,12 +837,22 @@ export default function ResourceDetailPage() {
                 <i className="bi bi-x-lg"></i>
               </button>
             </div>
+            <div className="resource-lightbox-toolbar" role="toolbar" aria-label={zoomCopy.controls}>
+              <button type="button" className="btn btn-sm btn-light rounded-pill" onClick={() => setPreviewZoom((zoom) => Math.max(1, zoom - 0.25))} disabled={previewZoom <= 1}>
+                <i className="bi bi-dash-lg me-1"></i>{zoomCopy.out}
+              </button>
+              <span className="small text-muted fw-semibold">{Math.round(previewZoom * 100)}%</span>
+              <button type="button" className="btn btn-sm btn-light rounded-pill" onClick={() => setPreviewZoom((zoom) => Math.min(3, zoom + 0.25))} disabled={previewZoom >= 3}>
+                <i className="bi bi-plus-lg me-1"></i>{zoomCopy.in}
+              </button>
+              <button type="button" className="btn btn-sm btn-outline-secondary rounded-pill" onClick={() => setPreviewZoom(1)}>{zoomCopy.fit}</button>
+            </div>
             <div className="resource-lightbox-body text-center p-4">
               <img
                 src={activePreviewAsset.file_url || activePreviewAsset.asset_path}
                 alt={activePreviewAsset.name || activePreviewAsset.title}
                 className="img-fluid rounded-3 shadow-sm mx-auto"
-                style={{ maxHeight: '72vh', objectFit: 'contain' }}
+                style={{ maxWidth: '100%', maxHeight: 'calc(100vh - 190px)', objectFit: 'contain', transform: `scale(${previewZoom})`, transformOrigin: 'center center', transition: 'transform 0.2s ease' }}
               />
             </div>
           </div>
