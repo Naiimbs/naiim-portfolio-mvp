@@ -529,7 +529,7 @@ export default function ResourceDetailPage() {
                         </>
                       ) : (
                         <>
-                          <i className="bi bi-clipboard me-1"></i> {t('resourceDetail.copyPrompt')}
+                          <i className="bi bi-clipboard me-1"></i> {workflowUsage ? (currentLang === 'ar' ? 'نسخ طريقة الاستخدام' : currentLang === 'fr' ? 'Copier le mode d’emploi' : 'Copy usage instructions') : t('resourceDetail.copyPrompt')}
                         </>
                       )}
                     </button>
