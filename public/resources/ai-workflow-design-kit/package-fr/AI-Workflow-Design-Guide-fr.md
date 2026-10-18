@@ -29,3 +29,25 @@ Chaque jour, le workflow collecte des offres, évalue l’adéquation selon des 
 
 ## Checklist finale
 Le résultat est-il mesurable ? Le responsable est-il identifié ? Les sources sont-elles explicites ? Les étapes IA sont-elles étroites ? Les valeurs manquantes sont-elles sûres ? Les actions sont-elles journalisées et réversibles ?
+## Exemples de workflows réels
+
+### 1. Triage du support client
+**Déclencheur :** un nouveau message de support arrive.
+**Tâche IA :** classer l’urgence, le sujet, le sentiment et la prochaine action proposée.
+**Validation :** détecter le contexte manquant, les doublons et la faible confiance.
+**Gate humain :** les cas urgents, sensibles ou liés à un remboursement sont traités par un agent.
+**Résultat :** un routage plus rapide sans laisser l’IA prendre une décision à fort impact.
+
+### 2. Réutilisation de contenu
+**Déclencheur :** un article, podcast ou atelier est approuvé.
+**Tâche IA :** extraire les affirmations et préparer un post, un carousel et une newsletter.
+**Validation :** préserver le sens, signaler les affirmations non prouvées et conserver les liens.
+**Gate humain :** un designer ou éditeur valide avant publication.
+**Résultat :** davantage de distribution depuis une même source avec contrôle éditorial.
+
+### 3. Synthèse de recherche
+**Déclencheur :** un dossier de recherche atteint une étape de revue.
+**Tâche IA :** comparer les sources, regrouper les thèmes, relever les conflits et préparer des options argumentées.
+**Validation :** conserver les citations, séparer faits et interprétations, signaler les preuves manquantes.
+**Gate humain :** le responsable de la décision valide la recommandation.
+**Résultat :** un brief de décision clair plutôt qu’une réponse IA opaque.

@@ -32,3 +32,25 @@ A daily run collects job results, scores fit against explicit criteria, removes 
 
 ## Final checklist
 Is the outcome measurable? Is there a named owner? Are sources explicit? Is each AI step narrow? Are missing values handled safely? Is a human gate present where risk requires it? Are actions logged and reversible? Has the workflow been tested on failures?
+## More real workflow examples
+
+### 1. Customer-support triage
+**Trigger:** a new support message arrives.
+**AI task:** classify urgency, topic, sentiment, and suggested next action.
+**Validation:** detect missing context, duplicates, and low confidence.
+**Human gate:** urgent, sensitive, or refund-related cases require an agent.
+**Outcome:** faster routing without allowing AI to make high-impact commitments.
+
+### 2. Content repurposing
+**Trigger:** a long article, podcast, or workshop is approved.
+**AI task:** extract claims and create drafts for a short post, carousel, and newsletter.
+**Validation:** preserve source meaning, flag unsupported claims, and keep links.
+**Human gate:** a designer or editor approves before publishing.
+**Outcome:** more distribution from one source while preserving editorial control.
+
+### 3. Research synthesis
+**Trigger:** a research folder reaches a review milestone.
+**AI task:** compare sources, group themes, identify conflicts, and draft evidence-backed options.
+**Validation:** retain citations, separate facts from interpretation, and flag missing evidence.
+**Human gate:** the decision owner reviews the recommendation.
+**Outcome:** a clearer decision brief instead of an opaque AI answer.

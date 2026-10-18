@@ -171,3 +171,26 @@ The point is not to automate every decision. The point is to reduce search effor
 - Is the expected value greater than operating cost?
 
 Use the companion Canvas, Prompt Pack, Blueprint, ROI Calculator, and Quality Checklist to move from this guide to a working first prototype.
+
+## More real workflow examples
+
+### 1. Customer-support triage
+**Trigger:** a new support message arrives.
+**AI task:** classify urgency, topic, sentiment, and suggested next action.
+**Validation:** detect missing context, duplicates, and low confidence.
+**Human gate:** urgent, sensitive, or refund-related cases require an agent.
+**Outcome:** faster routing without allowing AI to make high-impact commitments.
+
+### 2. Content repurposing
+**Trigger:** a long article, podcast, or workshop is approved.
+**AI task:** extract claims and create drafts for a short post, carousel, and newsletter.
+**Validation:** preserve source meaning, flag unsupported claims, and keep links.
+**Human gate:** a designer or editor approves before publishing.
+**Outcome:** more distribution from one source while preserving editorial control.
+
+### 3. Research synthesis
+**Trigger:** a research folder reaches a review milestone.
+**AI task:** compare sources, group themes, identify conflicts, and draft evidence-backed options.
+**Validation:** retain citations, separate facts from interpretation, and flag missing evidence.
+**Human gate:** the decision owner reviews the recommendation.
+**Outcome:** a clearer decision brief instead of an opaque AI answer.

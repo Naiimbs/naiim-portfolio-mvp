@@ -170,7 +170,7 @@ export default function ResourceDetailPage() {
   const typeDetailRows = (TYPE_DETAIL_FIELDS[resource.resource_type] || [])
     .map(([label, key]) => ({ label, value: resource[key] ?? resource.metadata?.[key] }))
     .filter(({ value }) => value !== undefined && value !== null && String(value).trim() !== '');
-  const localizedAssetText = (asset, field) => tx.assets?.[asset.id]?.[field] || asset[field];
+  const localizedAssetText = (asset, field) => tx.assets?.[asset.id]?.[field] || asset.i18n?.[currentLang]?.[field] || asset[field];
   const previewAsset = getResourcePreviewAsset(resource);
   const previewImage = getResourcePreviewImage(resource);
   const coverAssetIds = new Set([
