@@ -1,0 +1,11 @@
+flowchart LR
+  A[Trigger: new input] --> B[Collect minimum context]
+  B --> C[AI task: extract / classify / draft]
+  C --> D{Schema + policy validation}
+  D -->|Fail| E[Log failure and request correction]
+  D -->|Pass, low risk| F[Deterministic action]
+  D -->|Ambiguous or high impact| G[Human approval]
+  G -->|Approve| F
+  G -->|Reject| H[Revise or stop]
+  F --> I[Notify owner + write audit log]
+  E --> I

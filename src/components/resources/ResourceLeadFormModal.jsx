@@ -41,7 +41,11 @@ export default function ResourceLeadFormModal({
 
   if (!isOpen || !resource) return null;
 
-  const targetAsset = asset || (resource.assets?.find((a) => a.file_url?.endsWith('.zip')) || resource.assets?.[0]);
+  const targetAsset = asset || (
+    resource.assets?.find((a) => a.file_url?.endsWith('.zip') && (a.language === currentLang || a.locale === currentLang))
+    || resource.assets?.find((a) => a.file_url?.endsWith('.zip'))
+    || resource.assets?.[0]
+  );
   const downloadUrl = targetAsset ? getAssetDownloadUrl(targetAsset) : resource.bundle_download_url;
   const downloadName = targetAsset?.name || `${resource.slug}.zip`;
   const localizedResource = resource.i18n?.[currentLang] || {};
