@@ -1,0 +1,571 @@
+/**
+ * MHAF Accessibility Widget - Shadow DOM Stylesheet
+ * Completely isolated from host page styles.
+ */
+
+:host {
+  all: initial;
+  --mhaf-primary: #2563eb;
+  --mhaf-primary-hover: #1d4ed8;
+  --mhaf-navy: #123b8f;
+  --mhaf-yellow: #facc15;
+  --mhaf-bg: #ffffff;
+  --mhaf-text: #0f172a;
+  --mhaf-text-muted: #64748b;
+  --mhaf-border: #e2e8f0;
+  --mhaf-card-bg: #f8fafc;
+  --mhaf-font: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  font-family: var(--mhaf-font);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--mhaf-text);
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Floating Trigger Button */
+.mhaf-toggle-btn {
+  position: fixed;
+  z-index: 2147483647;
+  bottom: 24px;
+  left: 24px;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  border: 3px solid #ffffff;
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4), 0 2px 6px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+}
+
+.mhaf-toggle-btn[data-position="bottom-right"] {
+  left: auto;
+  right: 24px;
+}
+.mhaf-toggle-btn[data-position="top-left"] {
+  bottom: auto;
+  top: 24px;
+}
+.mhaf-toggle-btn[data-position="top-right"] {
+  bottom: auto;
+  left: auto;
+  top: 24px;
+  right: 24px;
+}
+
+.mhaf-toggle-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.5), 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.mhaf-toggle-btn:focus-visible {
+  outline: 4px solid #f59e0b;
+  outline-offset: 4px;
+}
+
+.mhaf-toggle-btn svg {
+  width: 32px;
+  height: 32px;
+}
+
+.mhaf-toggle-btn .mhaf-accessibility-icon {
+  fill: none;
+}
+
+/* Modal / Drawer Overlay */
+.mhaf-panel {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 2147483646;
+}
+
+.mhaf-panel.open {
+  display: block;
+}
+
+.mhaf-panel-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.mhaf-panel.open .mhaf-panel-backdrop {
+  opacity: 1;
+}
+
+/* Slide-in Drawer Window */
+.mhaf-panel-window {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 500px;
+  max-width: 100vw;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  transform: translateX(-100%);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+[dir="rtl"] .mhaf-panel-window {
+  left: auto;
+  right: 0;
+  transform: translateX(100%);
+}
+
+.mhaf-panel.open .mhaf-panel-window {
+  transform: translateX(0);
+}
+
+/* Header */
+.mhaf-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  color: #ffffff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.mhaf-header-brand {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.mhaf-brand-lockup {
+  min-width: 0;
+}
+
+.mhaf-wordmark {
+  position: relative;
+  display: inline-block;
+  color: #ffffff;
+  font-family: var(--mhaf-font);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.06em;
+  line-height: 0.95;
+}
+
+.mhaf-wink {
+  position: absolute;
+  top: -9px;
+  left: 34px;
+  color: var(--mhaf-yellow);
+  font-family: Georgia, serif;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  transform: rotate(-7deg);
+}
+
+.mhaf-slogan {
+  margin: 5px 0 0;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+}
+
+.mhaf-context {
+  margin-top: 9px;
+}
+
+.mhaf-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.mhaf-subtitle {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.mhaf-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mhaf-lang-group {
+  display: flex;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 3px;
+  border-radius: 8px;
+  gap: 2px;
+}
+
+.mhaf-lang-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.mhaf-lang-btn.active {
+  background: #ffffff;
+  color: #1e3a8a;
+}
+
+.mhaf-close-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #ffffff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.mhaf-close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+/* Scrollable Content Body */
+.mhaf-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  overscroll-behavior: contain;
+}
+
+.mhaf-section {
+  margin-bottom: 26px;
+}
+
+.mhaf-section-title {
+  margin: 0 0 14px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #64748b;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 6px;
+}
+
+/* Profiles Grid */
+.mhaf-profiles-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.mhaf-profile-card {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 16px;
+  text-align: inherit;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.mhaf-profile-card:hover {
+  border-color: #93c5fd;
+  background: #f0f7ff;
+}
+
+.mhaf-profile-card.active {
+  border-color: #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+}
+
+.mhaf-profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mhaf-profile-name {
+  font-weight: 700;
+  font-size: 15px;
+  color: #0f172a;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mhaf-profile-card.active .mhaf-profile-name {
+  color: #1d4ed8;
+}
+
+.mhaf-profile-desc {
+  margin: 0;
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.mhaf-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.badge-off {
+  background: #e2e8f0;
+  color: #64748b;
+}
+
+.badge-on {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+/* Cards Grid */
+.mhaf-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.mhaf-card-wide {
+  grid-column: span 2;
+}
+
+.mhaf-card {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mhaf-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.mhaf-feature-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  color: var(--mhaf-primary);
+  stroke: currentColor;
+}
+
+.mhaf-profile-name .mhaf-feature-icon {
+  width: 19px;
+  height: 19px;
+  flex-basis: 19px;
+  color: var(--mhaf-primary);
+}
+
+/* Toggle Card */
+.mhaf-toggle-card {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: inherit;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.mhaf-toggle-card:hover {
+  background: #f0f7ff;
+  border-color: #93c5fd;
+}
+
+.mhaf-toggle-card.active {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.mhaf-toggle-card.active .mhaf-card-title {
+  color: #1d4ed8;
+}
+
+.mhaf-toggle-card.active .mhaf-feature-icon,
+.mhaf-profile-card.active .mhaf-feature-icon {
+  color: #1d4ed8;
+}
+
+/* Switch UI */
+.mhaf-switch {
+  width: 44px;
+  height: 24px;
+  background: #cbd5e1;
+  border-radius: 20px;
+  position: relative;
+  transition: background 0.25s ease;
+  flex-shrink: 0;
+}
+
+.mhaf-switch::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.25s ease;
+}
+
+[dir="rtl"] .mhaf-switch::after {
+  left: auto;
+  right: 2px;
+}
+
+.mhaf-switch.on {
+  background: #2563eb;
+}
+
+.mhaf-switch.on::after {
+  transform: translateX(20px);
+}
+
+[dir="rtl"] .mhaf-switch.on::after {
+  transform: translateX(-20px);
+}
+
+/* Level Button Groups */
+.mhaf-btn-group {
+  display: flex;
+  background: #e2e8f0;
+  padding: 3px;
+  border-radius: 8px;
+  gap: 2px;
+}
+
+.mhaf-level-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+  padding: 6px 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.mhaf-level-btn:hover {
+  color: #0f172a;
+}
+
+.mhaf-level-btn.active {
+  background: #ffffff;
+  color: #1d4ed8;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Footer */
+.mhaf-footer {
+  padding: 16px 24px;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.mhaf-reset-btn {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.mhaf-reset-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.mhaf-reset-btn:focus-visible,
+.mhaf-close-btn:focus-visible,
+.mhaf-lang-btn:focus-visible,
+.mhaf-profile-card:focus-visible,
+.mhaf-toggle-card:focus-visible,
+.mhaf-level-btn:focus-visible {
+  outline: 3px solid var(--mhaf-yellow);
+  outline-offset: 2px;
+}
+
+.mhaf-powered {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+  .mhaf-panel-window {
+    width: 100vw;
+  }
+  .mhaf-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  .mhaf-card-wide {
+    grid-column: span 1;
+  }
+}
