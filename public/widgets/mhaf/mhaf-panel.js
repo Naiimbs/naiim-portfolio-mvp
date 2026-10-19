@@ -129,8 +129,8 @@ export function createPanel(shadowRoot, options = {}) {
         <!-- Content Area (Scrollable) -->
         <div class="mhaf-body">
           <!-- Profiles Section -->
-          <section class="mhaf-section">
-            <h3 class="mhaf-section-title">${t('profilesTitle')}</h3>
+          <details class="mhaf-section" open>
+            <summary class="mhaf-section-title"><span role="heading" aria-level="3">${t('profilesTitle')}</span></summary>
             <div class="mhaf-profiles-grid">
               ${Object.keys(PROFILES)
                 .map((profKey) => {
@@ -149,11 +149,11 @@ export function createPanel(shadowRoot, options = {}) {
                 })
                 .join('')}
             </div>
-          </section>
+          </details>
 
           <!-- Readability Section -->
-          <section class="mhaf-section">
-            <h3 class="mhaf-section-title">${t('readabilityTitle')}</h3>
+          <details class="mhaf-section" open>
+            <summary class="mhaf-section-title"><span role="heading" aria-level="3">${t('readabilityTitle')}</span></summary>
             <div class="mhaf-cards-grid">
               <!-- Scale Content -->
               <div class="mhaf-card">
@@ -230,11 +230,11 @@ export function createPanel(shadowRoot, options = {}) {
                 <span class="mhaf-switch ${prefs.outline_links ? 'on' : ''}"></span>
               </button>
             </div>
-          </section>
+          </details>
 
           <!-- Contrast & Colors Section -->
-          <section class="mhaf-section">
-            <h3 class="mhaf-section-title">${t('contrastTitle')}</h3>
+          <details class="mhaf-section" open>
+            <summary class="mhaf-section-title"><span role="heading" aria-level="3">${t('contrastTitle')}</span></summary>
             <div class="mhaf-cards-grid">
               <button type="button" class="mhaf-toggle-card ${prefs.dark_contrast ? 'active' : ''}" data-toggle="dark_contrast">
                 ${cardTitle('dark_contrast', t('dark_contrast'))}
@@ -258,11 +258,11 @@ export function createPanel(shadowRoot, options = {}) {
                 </div>
               </div>
             </div>
-          </section>
+          </details>
 
           <!-- Assistive & Navigation Tools -->
-          <section class="mhaf-section">
-            <h3 class="mhaf-section-title">${t('assistiveTitle')}</h3>
+          <details class="mhaf-section" open>
+            <summary class="mhaf-section-title"><span role="heading" aria-level="3">${t('assistiveTitle')}</span></summary>
             <div class="mhaf-cards-grid">
               <button type="button" class="mhaf-toggle-card ${prefs.reading_guide ? 'active' : ''}" data-toggle="reading_guide">
                 ${cardTitle('reading_guide', t('reading_guide'))}
@@ -304,7 +304,7 @@ export function createPanel(shadowRoot, options = {}) {
                 <span class="mhaf-switch ${prefs.keyboard_navigation ? 'on' : ''}"></span>
               </button>
             </div>
-          </section>
+          </details>
         </div>
 
         <!-- Footer -->
