@@ -73,8 +73,8 @@
 }
 
 .mhaf-toggle-btn svg {
-  width: 32px;
-  height: 32px;
+  width: 38px;
+  height: 38px;
 }
 
 .mhaf-toggle-btn .mhaf-accessibility-icon {
@@ -96,8 +96,9 @@
 .mhaf-panel-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(4px);
+  background: rgba(15, 23, 42, 0.28);
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -267,6 +268,10 @@
 }
 
 .mhaf-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   margin: 0 0 14px;
   font-size: 14px;
   font-weight: 700;
@@ -275,6 +280,40 @@
   color: #64748b;
   border-bottom: 1px solid #f1f5f9;
   padding-bottom: 6px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.mhaf-section-title::-webkit-details-marker {
+  display: none;
+}
+
+.mhaf-section-title::after {
+  content: '⌄';
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid #cbd5e1;
+  border-radius: 50%;
+  color: #334155;
+  font-size: 16px;
+  line-height: 1;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.mhaf-section-title:hover::after {
+  background: #f1f5f9;
+}
+
+.mhaf-section:not([open]) .mhaf-section-title {
+  margin-bottom: 0;
+}
+
+.mhaf-section:not([open]) .mhaf-section-title::after {
+  transform: rotate(-90deg);
 }
 
 /* Profiles Grid */
@@ -544,6 +583,7 @@
 .mhaf-reset-btn:focus-visible,
 .mhaf-close-btn:focus-visible,
 .mhaf-lang-btn:focus-visible,
+.mhaf-section-title:focus-visible,
 .mhaf-profile-card:focus-visible,
 .mhaf-toggle-card:focus-visible,
 .mhaf-level-btn:focus-visible {

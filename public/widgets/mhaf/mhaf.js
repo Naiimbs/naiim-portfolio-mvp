@@ -44,9 +44,9 @@ import { initEngine } from './mhaf-engine.js';
     toggleBtn.setAttribute('aria-haspopup', 'dialog');
     toggleBtn.innerHTML = `
       <svg class="mhaf-accessibility-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-        <circle cx="24" cy="24" r="21" stroke="currentColor" stroke-width="3"/>
-        <circle cx="24" cy="13" r="3.5" fill="currentColor"/>
-        <path d="M13 19h22M24 18v13M24 31l-7 9M24 31l7 9" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="24" cy="24" r="21" stroke="currentColor" stroke-width="3.5"/>
+        <circle cx="24" cy="12.5" r="4" fill="currentColor"/>
+        <path d="M11 19h26M24 19v12M24 31l-8 10M24 31l8 10" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     `;
 
