@@ -7,6 +7,8 @@
   all: initial;
   --mhaf-primary: #2563eb;
   --mhaf-primary-hover: #1d4ed8;
+  --mhaf-navy: #123b8f;
+  --mhaf-yellow: #facc15;
   --mhaf-bg: #ffffff;
   --mhaf-text: #0f172a;
   --mhaf-text-muted: #64748b;
@@ -147,14 +149,20 @@
 }
 
 .mhaf-brand-icon {
-  width: 42px;
+  width: 54px;
   height: 42px;
-  border-radius: 10px;
+  border-radius: 12px;
   background: rgba(255, 255, 255, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+}
+
+.mhaf-brand-icon .mhaf-mark {
+  width: 42px;
+  height: 28px;
+  display: block;
 }
 
 .mhaf-title {
@@ -285,6 +293,9 @@
   font-weight: 700;
   font-size: 15px;
   color: #0f172a;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .mhaf-profile-card.active .mhaf-profile-name {
@@ -340,6 +351,26 @@
   font-size: 13px;
   font-weight: 700;
   color: #1e293b;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.mhaf-feature-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  color: var(--mhaf-primary);
+  stroke: currentColor;
+}
+
+.mhaf-profile-name .mhaf-feature-icon {
+  width: 19px;
+  height: 19px;
+  flex-basis: 19px;
+  color: var(--mhaf-primary);
 }
 
 /* Toggle Card */
@@ -368,6 +399,11 @@
 }
 
 .mhaf-toggle-card.active .mhaf-card-title {
+  color: #1d4ed8;
+}
+
+.mhaf-toggle-card.active .mhaf-feature-icon,
+.mhaf-profile-card.active .mhaf-feature-icon {
   color: #1d4ed8;
 }
 
@@ -477,6 +513,16 @@
 .mhaf-reset-btn:hover {
   background: #e2e8f0;
   color: #0f172a;
+}
+
+.mhaf-reset-btn:focus-visible,
+.mhaf-close-btn:focus-visible,
+.mhaf-lang-btn:focus-visible,
+.mhaf-profile-card:focus-visible,
+.mhaf-toggle-card:focus-visible,
+.mhaf-level-btn:focus-visible {
+  outline: 3px solid var(--mhaf-yellow);
+  outline-offset: 2px;
 }
 
 .mhaf-powered {
