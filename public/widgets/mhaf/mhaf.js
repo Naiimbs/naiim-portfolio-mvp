@@ -39,14 +39,14 @@ import { initEngine } from './mhaf-engine.js';
     toggleBtn.type = 'button';
     toggleBtn.className = 'mhaf-toggle-btn';
     toggleBtn.setAttribute('data-position', position);
-    toggleBtn.setAttribute('aria-label', 'Options d’accessibilité / إمكانية الوصول');
-    toggleBtn.setAttribute('title', 'MHAF — Accessibility options');
+    toggleBtn.setAttribute('aria-label', 'Open accessibility options');
+    toggleBtn.setAttribute('title', 'Open accessibility options');
     toggleBtn.setAttribute('aria-haspopup', 'dialog');
     toggleBtn.innerHTML = `
-      <svg class="mhaf-mark" viewBox="0 0 48 32" fill="none" aria-hidden="true">
-        <circle cx="12" cy="16" r="6" fill="currentColor"/>
-        <path d="M23 22C28 13 34 9 42 8" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
-        <path d="M8 28H40" stroke="#FACC15" stroke-width="2.5" stroke-linecap="round"/>
+      <svg class="mhaf-accessibility-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <circle cx="24" cy="24" r="21" stroke="currentColor" stroke-width="3"/>
+        <circle cx="24" cy="13" r="3.5" fill="currentColor"/>
+        <path d="M13 19h22M24 18v13M24 31l-7 9M24 31l7 9" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     `;
 

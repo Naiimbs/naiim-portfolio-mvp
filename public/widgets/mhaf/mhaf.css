@@ -14,7 +14,7 @@
   --mhaf-text-muted: #64748b;
   --mhaf-border: #e2e8f0;
   --mhaf-card-bg: #f8fafc;
-  --mhaf-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  --mhaf-font: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   font-family: var(--mhaf-font);
   font-size: 15px;
   line-height: 1.5;
@@ -75,7 +75,10 @@
 .mhaf-toggle-btn svg {
   width: 32px;
   height: 32px;
-  fill: currentColor;
+}
+
+.mhaf-toggle-btn .mhaf-accessibility-icon {
+  fill: none;
 }
 
 /* Modal / Drawer Overlay */
@@ -145,24 +148,47 @@
 .mhaf-header-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  min-width: 0;
 }
 
-.mhaf-brand-icon {
-  width: 54px;
-  height: 42px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+.mhaf-brand-lockup {
+  min-width: 0;
 }
 
-.mhaf-brand-icon .mhaf-mark {
-  width: 42px;
-  height: 28px;
-  display: block;
+.mhaf-wordmark {
+  position: relative;
+  display: inline-block;
+  color: #ffffff;
+  font-family: var(--mhaf-font);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.06em;
+  line-height: 0.95;
+}
+
+.mhaf-wink {
+  position: absolute;
+  top: -9px;
+  left: 34px;
+  color: var(--mhaf-yellow);
+  font-family: Georgia, serif;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  transform: rotate(-7deg);
+}
+
+.mhaf-slogan {
+  margin: 5px 0 0;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+}
+
+.mhaf-context {
+  margin-top: 9px;
 }
 
 .mhaf-title {

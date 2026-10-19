@@ -92,16 +92,13 @@ export function createPanel(shadowRoot, options = {}) {
         <!-- Header -->
         <header class="mhaf-header">
           <div class="mhaf-header-brand">
-            <span class="mhaf-brand-icon">
-              <svg class="mhaf-mark" viewBox="0 0 48 32" fill="none" aria-hidden="true">
-                <circle cx="12" cy="16" r="6" fill="currentColor"/>
-                <path d="M23 22C28 13 34 9 42 8" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
-                <path d="M8 28H40" stroke="#FACC15" stroke-width="2.5" stroke-linecap="round"/>
-              </svg>
-            </span>
-            <div>
-              <h2 class="mhaf-title">${t('widgetTitle')}</h2>
-              <p class="mhaf-subtitle">${t('widgetSubtitle')}</p>
+            <div class="mhaf-brand-lockup">
+              <div class="mhaf-wordmark" aria-label="mhaf">mhaf<span class="mhaf-wink" aria-hidden="true">⌒</span></div>
+              <p class="mhaf-slogan" lang="en">A little wink. A more accessible web.</p>
+              <div class="mhaf-context">
+                <h2 class="mhaf-title">${t('widgetTitle')}</h2>
+                <p class="mhaf-subtitle">${t('widgetSubtitle')}</p>
+              </div>
             </div>
           </div>
 
