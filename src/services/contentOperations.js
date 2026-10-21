@@ -346,18 +346,29 @@ export function calculateContentQuality(item, sections = []) {
 /**
  * Reusable SEO resolver with multi-layer fallback rules
  */
-export function resolveContentSeo(item, siteSettings = {}) {
+export function resolveContentSeo(item, siteSettings = {}, locale = 'en') {
   if (!item) return {};
 
   const meta = item.metadata || {};
   const explicitSeo = meta.seo || {};
+  const normalizedLocale = ['en', 'fr', 'ar'].includes(locale) ? locale : 'en';
+  const localized = normalizedLocale !== 'en' && meta.i18n?.[normalizedLocale]
+    ? meta.i18n[normalizedLocale]
+    : {};
 
   const title =
+    localized.seo_title ||
+    localized.seoTitle ||
+    localized.title ||
     explicitSeo.metaTitle ||
     explicitSeo.title ||
     (item.title ? `${item.title} | Naïm Bsili` : 'Naïm Bsili | Product Designer & AI Builder');
 
   const description =
+    localized.seo_description ||
+    localized.seoDescription ||
+    localized.excerpt ||
+    localized.description ||
     explicitSeo.metaDescription ||
     explicitSeo.description ||
     meta.excerpt ||
@@ -368,9 +379,11 @@ export function resolveContentSeo(item, siteSettings = {}) {
     ? explicitSeo.canonical
     : '';
   const canonical =
-    storedCanonical ||
-    item.public_route ||
-    (item.slug ? getCanonicalRoute(item.content_type || 'blog', item.slug) : '/');
+    (normalizedLocale !== 'en' ? `/${normalizedLocale}` : '') + (
+      storedCanonical ||
+      item.public_route ||
+      (item.slug ? getCanonicalRoute(item.content_type || 'blog', item.slug) : '/')
+    );
 
   const ogImage =
     meta.social?.ogImage ||
@@ -380,8 +393,20 @@ export function resolveContentSeo(item, siteSettings = {}) {
     siteSettings.ogImage ||
     'https://naiimbsili.com/assets/og-default.png';
 
-  const ogTitle = meta.social?.ogTitle || explicitSeo.ogTitle || title;
-  const ogDescription = meta.social?.ogDescription || explicitSeo.ogDescription || description;
+  const ogTitle =
+    localized.og_title ||
+    localized.ogTitle ||
+    localized.title ||
+    meta.social?.ogTitle ||
+    explicitSeo.ogTitle ||
+    title;
+  const ogDescription =
+    localized.og_description ||
+    localized.ogDescription ||
+    localized.excerpt ||
+    meta.social?.ogDescription ||
+    explicitSeo.ogDescription ||
+    description;
 
   return {
     title,
@@ -390,6 +415,8 @@ export function resolveContentSeo(item, siteSettings = {}) {
     ogImage,
     ogTitle,
     ogDescription,
+    locale: normalizedLocale,
+    baseCanonical: canonical.replace(/^\/(?:fr|ar)(?=\/)/, '') || '/',
     robots: explicitSeo.robots || 'index, follow',
   };
 }

@@ -11,6 +11,15 @@ import { recordPostView } from '../services/engagement';
 import ShareButtons from '../components/blog/ShareButtons';
 import PostFeedback from '../components/blog/PostFeedback';
 import { useAuth } from '../admin/context/AuthContext';
+import { getLocaleFromPathname } from '../i18n';
+
+const SITE_URL = 'https://naiimbsili.com';
+const SEO_LOCALES = ['en', 'fr', 'ar'];
+
+function localizedArticlePath(basePath, locale) {
+  const cleanPath = basePath.replace(/^\/(?:fr|ar)(?=\/)/, '') || '/';
+  return locale === 'en' ? cleanPath : `/${locale}${cleanPath}`;
+}
 
 export default function BlogPostPage() {
   const { t, i18n } = useTranslation();
@@ -19,7 +28,17 @@ export default function BlogPostPage() {
   const { isEditor, loading: authLoading } = useAuth();
   const isPreviewRequested = searchParams.get('preview') === 'true';
   const isAuthorizedPreview = !authLoading && Boolean(isEditor) && isPreviewRequested;
-  const dateLocale = i18n.language === 'fr' ? 'fr-FR' : i18n.language === 'ar' ? 'ar' : 'en-US';
+  const routeLocale = getLocaleFromPathname(typeof window !== 'undefined' ? window.location.pathname : '');
+  const currentLocale = routeLocale || i18n.language?.slice(0, 2) || 'en';
+  const dateLocale = currentLocale === 'fr' ? 'fr-FR' : currentLocale === 'ar' ? 'ar' : 'en-US';
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const direction = currentLocale === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = currentLocale;
+    document.documentElement.dir = direction;
+    document.body?.setAttribute('dir', direction);
+  }, [currentLocale]);
 
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -104,12 +123,12 @@ export default function BlogPostPage() {
   }
 
   const meta = post.metadata || {};
-  const seo = resolveContentSeo(post);
+  const seo = resolveContentSeo(post, {}, currentLocale);
   const cover = meta.featuredImage ? resolveAsset(meta.featuredImage) : null;
   const relationships = Array.isArray(meta.relationships) ? meta.relationships : [];
 
   // Phase 3 — localized article content (falls back to default English).
-  const tx = (i18n.language && i18n.language !== 'en' && meta.i18n) ? meta.i18n[i18n.language] : null;
+  const tx = (currentLocale !== 'en' && meta.i18n) ? meta.i18n[currentLocale] : null;
   const displayTitle = (tx && tx.title) || post.title;
   const displayExcerpt = (tx && tx.excerpt) || meta.excerpt;
   const sections = (tx && Array.isArray(tx.sections) && tx.sections.length)
@@ -125,11 +144,52 @@ export default function BlogPostPage() {
       <Helmet>
         <title>{seo.title}</title>
         <meta name="description" content={seo.description} />
-        <link rel="canonical" href={`https://naiimbsili.com${seo.canonical}`} />
+        <meta name="robots" content={seo.robots} />
+        <link rel="canonical" href={`${SITE_URL}${seo.canonical}`} />
+        {SEO_LOCALES.map((alternateLocale) => (
+          <link
+            key={alternateLocale}
+            rel="alternate"
+            hrefLang={alternateLocale}
+            href={`${SITE_URL}${localizedArticlePath(seo.baseCanonical, alternateLocale)}`}
+          />
+        ))}
+        <link
+          rel="alternate"
+          hrefLang="x-default"
+          href={`${SITE_URL}${localizedArticlePath(seo.baseCanonical, 'en')}`}
+        />
+        <meta property="og:site_name" content="Naïm Bsili" />
         <meta property="og:title" content={seo.ogTitle} />
         <meta property="og:description" content={seo.ogDescription} />
+        <meta property="og:url" content={`${SITE_URL}${seo.canonical}`} />
+        <meta property="og:locale" content={currentLocale === 'fr' ? 'fr_FR' : currentLocale === 'ar' ? 'ar_AR' : 'en_US'} />
+        {SEO_LOCALES.filter((alternateLocale) => alternateLocale !== currentLocale).map((alternateLocale) => (
+          <meta
+            key={alternateLocale}
+            property="og:locale:alternate"
+            content={alternateLocale === 'fr' ? 'fr_FR' : alternateLocale === 'ar' ? 'ar_AR' : 'en_US'}
+          />
+        ))}
         {seo.ogImage && <meta property="og:image" content={seo.ogImage} />}
         <meta property="og:type" content="article" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={seo.ogTitle} />
+        <meta name="twitter:description" content={seo.ogDescription} />
+        {seo.ogImage && <meta name="twitter:image" content={seo.ogImage} />}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Article',
+            headline: displayTitle,
+            description: seo.description,
+            inLanguage: currentLocale,
+            url: `${SITE_URL}${seo.canonical}`,
+            image: seo.ogImage ? [seo.ogImage] : undefined,
+            author: { '@type': 'Person', name: meta.author || 'Naïm Bsili' },
+            datePublished: meta.publishedAt || undefined,
+          })}
+        </script>
       </Helmet>
 
       {/* Preview Notification Banner */}
