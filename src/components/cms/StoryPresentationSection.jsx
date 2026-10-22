@@ -1,8 +1,56 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import '../../styles/story-presentation.css';
 
 const CHANNEL_PREFIX = 'naiim-story-presentation';
+
+const COPY = {
+  en: {
+    emptyState: 'Add milestones to this section from the Page Builder.',
+    imagePlaceholder: 'Image placeholder',
+    imageSlot: 'Empty image placeholder',
+    imageHint: 'Add a real image or an abstract visual later from the Page Builder.',
+    speakerNotes: 'Speaker notes',
+    openSpeaker: 'Open speaker notes in a separate window, shortcut S',
+    students: 'For students',
+    previous: 'Previous',
+    next: 'Next',
+    previousChapter: 'Previous milestone',
+    nextChapter: 'Next milestone',
+    chooseChapter: 'Choose a milestone from the journey',
+    chapter: 'Chapter',
+    useKeys: 'Use ← → to navigate · S to open speaker notes',
+    back: 'Back to presentation',
+    returnToPresentation: 'Return to presentation',
+    part: 'Part',
+    emptySpeaker: 'No speaker script has been added for this milestone yet. Add one in the Page Builder.',
+    studentTakeaway: 'Takeaway for students',
+    home: 'Naïm Bsili — Home',
+  },
+  ar: {
+    emptyState: 'أضف محطات إلى هذا القسم من محرر الصفحة.',
+    imagePlaceholder: 'موضع صورة',
+    imageSlot: 'موضع صورة فارغ',
+    imageHint: 'يمكن إضافة صورة حقيقية أو تصور تجريدي لاحقاً من محرر الصفحة.',
+    speakerNotes: 'نص المتحدث',
+    openSpeaker: 'فتح نص المتحدث في صفحة مستقلة، الاختصار S',
+    students: 'للطلبة',
+    previous: 'السابق',
+    next: 'التالي',
+    previousChapter: 'المحطة السابقة',
+    nextChapter: 'المحطة التالية',
+    chooseChapter: 'اختر محطة من المسار',
+    chapter: 'محطة',
+    useKeys: 'استعمل ← → للتنقّل · S لفتح نص المتحدث',
+    back: 'العودة للعرض',
+    returnToPresentation: 'العودة إلى العرض',
+    part: 'الجزء',
+    emptySpeaker: 'لا يوجد نص إلقاء لهذه المحطة بعد. أضفه من محرر الصفحة.',
+    studentTakeaway: 'رسالة للطلبة',
+    home: 'Naïm Bsili — الصفحة الرئيسية',
+  },
+};
 
 function clampIndex(index, length) {
   if (!length) return 0;
@@ -36,7 +84,16 @@ function openSpeakerView(index) {
   window.open(url.toString(), '_blank', 'noopener,noreferrer');
 }
 
-function StoryImageSlot({ item }) {
+function localizeItem(item, lang) {
+  const { i18n: itemTranslations, ...base } = item;
+  const overrides = itemTranslations?.[lang] || {};
+  const translatedFields = Object.fromEntries(
+    Object.entries(overrides).filter(([, value]) => value !== '' && value !== null && value !== undefined)
+  );
+  return { ...base, ...translatedFields };
+}
+
+function StoryImageSlot({ item, copy }) {
   if (!item.imageUrl && !item.imageCue) return null;
   if (item.imageUrl) {
     return (
@@ -47,17 +104,24 @@ function StoryImageSlot({ item }) {
     );
   }
   return (
-    <div className="story-image-slot" aria-label="موضع صورة فارغ">
+    <div className="story-image-slot" aria-label={copy.imageSlot}>
       <span className="story-image-slot__icon" aria-hidden="true"><i className="bi bi-image" /></span>
-      <span className="story-image-slot__title">موضع صورة</span>
+      <span className="story-image-slot__title">{copy.imagePlaceholder}</span>
       <span className="story-image-slot__cue">{item.imageCue}</span>
-      <span className="story-image-slot__hint">يمكن إضافة صورة حقيقية أو تصور تجريدي لاحقاً من محرر الصفحة.</span>
+      <span className="story-image-slot__hint">{copy.imageHint}</span>
     </div>
   );
 }
 
-export default function StoryPresentationSection({ config = {} }) {
-  const items = useMemo(() => (Array.isArray(config.items) ? config.items : []).filter(Boolean), [config.items]);
+export default function StoryPresentationSection({ config = {}, activeLang }) {
+  const { i18n } = useTranslation();
+  const lang = String(activeLang || i18n?.language || 'en').slice(0, 2);
+  const copy = COPY[lang] || COPY.en;
+  const direction = lang === 'ar' ? 'rtl' : 'ltr';
+  const items = useMemo(
+    () => (Array.isArray(config.items) ? config.items : []).filter(Boolean).map((item) => localizeItem(item, lang)),
+    [config.items, lang]
+  );
   const channelName = String(config.channelName || 'beaux-arts-nabeul');
   const [activeIndex, setActiveIndex] = useState(() => getInitialIndex(items.length));
   const [viewMode, setViewMode] = useState(() => {
@@ -152,92 +216,95 @@ export default function StoryPresentationSection({ config = {} }) {
   }, [activeIndex, changeViewMode, isSpeaker, selectChapter]);
 
   if (!items.length) {
-    return <section className="story-empty-state">أضف محطات إلى هذا القسم من محرر الصفحة.</section>;
+    return <section className="story-empty-state" dir={direction}>{copy.emptyState}</section>;
   }
 
   const progress = ((activeIndex + 1) / items.length) * 100;
   const speechParagraphs = String(current.speech || '').split(/\n\s*\n/).map((text) => text.trim()).filter(Boolean);
+  const defaultEyebrow = lang === 'ar' ? 'يوم إبداعي · المعهد العالي للفنون الجميلة بنابل' : 'CREATIVE TALK DAY · BEAUX ARTS NABEUL';
+  const defaultTitle = lang === 'ar' ? 'من الهندسة الميكانيكية إلى تصميم منتجات الذكاء الاصطناعي' : 'From Mechanical Engineering to AI Product Design';
+  const defaultSubtitle = lang === 'ar' ? 'تعلّم، بناء، ومشاركة — مسار غير مستقيم تعلّمت فيه كيف أبني طريقي.' : 'Learning, building, and sharing — a winding path that taught me how to find my way.';
 
   return (
     <>
       {!isSpeaker ? (
-        <section className="story-presentation" dir="rtl">
-        <div className="story-deck">
-          <div className="story-deck__topline">
-            <a className="story-brand" href="/" aria-label="Naïm Bsili — الصفحة الرئيسية">NB<span>.</span></a>
-            <div className="story-deck__event">{config.eyebrow || 'CREATIVE TALK DAY · BEAUX ARTS NABEUL'}</div>
-            <button type="button" className="story-script-button" onClick={() => openSpeakerView(activeIndex)} aria-label="فتح نص المتحدث في صفحة مستقلة، الاختصار S">
-              <kbd>S</kbd><span>نص المتحدث</span><i className="bi bi-box-arrow-up-right" aria-hidden="true" />
-            </button>
-          </div>
-
-          <div className="story-deck__intro">
-            <p className="story-kicker">{config.eyebrow || 'CREATIVE TALK DAY · BEAUX ARTS NABEUL'}</p>
-            <h1>{config.title || 'من الهندسة الميكانيكية إلى تصميم منتجات الذكاء الاصطناعي'}</h1>
-            <p className="story-deck__subtitle">{config.subtitle || 'تعلّم، بناء، ومشاركة — مسار غير مستقيم تعلّمت فيه كيف أبني طريقي.'}</p>
-            {config.openingQuote && <p className="story-opening-quote">“{config.openingQuote}”</p>}
-          </div>
-
-          <div className="story-stage" aria-live="polite" aria-atomic="true">
-            <div className="story-stage__copy">
-              <div className="story-stage__meta"><span>{current.period || `محطة ${activeIndex + 1}`}</span><span>{String(activeIndex + 1).padStart(2, '0')} / {String(items.length).padStart(2, '0')}</span></div>
-              <h2>{current.title}</h2>
-              {current.summary && <p className="story-stage__summary">{current.summary}</p>}
-              {current.studentTakeaway && (
-                <aside className="story-takeaway"><span>للطلبة</span><p>{current.studentTakeaway}</p></aside>
-              )}
-            </div>
-            <StoryImageSlot item={current} />
-          </div>
-
-          <div className="story-deck__controls">
-            <button type="button" className="story-nav-button" onClick={() => selectChapter(activeIndex - 1)} disabled={activeIndex === 0} aria-label="المحطة السابقة">
-              <i className="bi bi-arrow-right" aria-hidden="true" /><span>السابق</span>
-            </button>
-            <div className="story-progress" aria-label={`المحطة ${activeIndex + 1} من ${items.length}`}>
-              <div className="story-progress__caption"><span>{current.period || current.title}</span><span>{Math.round(progress)}%</span></div>
-              <div className="story-progress__track"><span style={{ width: `${progress}%` }} /></div>
-            </div>
-            <button type="button" className="story-nav-button story-nav-button--next" onClick={() => selectChapter(activeIndex + 1)} disabled={activeIndex === items.length - 1} aria-label="المحطة التالية">
-              <span>التالي</span><i className="bi bi-arrow-left" aria-hidden="true" />
-            </button>
-          </div>
-
-          <nav className="story-chapter-rail" aria-label="اختر محطة من المسار">
-            {items.map((item, index) => (
-              <button type="button" key={`${item.period || ''}-${index}`} className={index === activeIndex ? 'is-active' : ''} onClick={() => selectChapter(index)} aria-current={index === activeIndex ? 'step' : undefined} aria-label={`${index + 1}. ${item.period || item.title}`}>
-                <span className="story-chapter-rail__dot" /><span className="story-chapter-rail__label">{item.period || item.title}</span>
+        <section className="story-presentation" dir={direction}>
+          <div className="story-deck">
+            <div className="story-deck__topline">
+              <a className="story-brand" href="/" aria-label={copy.home}>NB<span>.</span></a>
+              <div className="story-deck__event">{config.eyebrow || defaultEyebrow}</div>
+              <button type="button" className="story-script-button" onClick={() => openSpeakerView(activeIndex)} aria-label={copy.openSpeaker}>
+                <kbd>S</kbd><span>{copy.speakerNotes}</span><i className="bi bi-box-arrow-up-right" aria-hidden="true" />
               </button>
-            ))}
-          </nav>
-          <footer className="story-deck__footer"><span>{config.motto || 'I think. I design. I experiment.'}</span><span>استعمل ← → للتنقّل · S لفتح نص المتحدث</span></footer>
-        </div>
+            </div>
+
+            <div className="story-deck__intro">
+              <p className="story-kicker">{config.eyebrow || defaultEyebrow}</p>
+              <h1>{config.title || defaultTitle}</h1>
+              <p className="story-deck__subtitle">{config.subtitle || defaultSubtitle}</p>
+              {config.openingQuote && <p className="story-opening-quote">“{config.openingQuote}”</p>}
+            </div>
+
+            <div className="story-stage" aria-live="polite" aria-atomic="true">
+              <div className="story-stage__copy">
+                <div className="story-stage__meta"><span>{current.period || `${copy.chapter} ${activeIndex + 1}`}</span><span>{String(activeIndex + 1).padStart(2, '0')} / {String(items.length).padStart(2, '0')}</span></div>
+                <h2>{current.title}</h2>
+                {current.summary && <p className="story-stage__summary">{current.summary}</p>}
+                {current.studentTakeaway && (
+                  <aside className="story-takeaway"><span>{copy.students}</span><p>{current.studentTakeaway}</p></aside>
+                )}
+              </div>
+              <StoryImageSlot item={current} copy={copy} />
+            </div>
+
+            <div className="story-deck__controls">
+              <button type="button" className="story-nav-button" onClick={() => selectChapter(activeIndex - 1)} disabled={activeIndex === 0} aria-label={copy.previousChapter}>
+                <i className={`bi bi-arrow-${lang === 'ar' ? 'right' : 'left'}`} aria-hidden="true" /><span>{copy.previous}</span>
+              </button>
+              <div className="story-progress" aria-label={`${copy.chapter} ${activeIndex + 1} ${lang === 'ar' ? 'من' : 'of'} ${items.length}`}>
+                <div className="story-progress__caption"><span>{current.period || current.title}</span><span>{Math.round(progress)}%</span></div>
+                <div className="story-progress__track"><span style={{ width: `${progress}%` }} /></div>
+              </div>
+              <button type="button" className="story-nav-button story-nav-button--next" onClick={() => selectChapter(activeIndex + 1)} disabled={activeIndex === items.length - 1} aria-label={copy.nextChapter}>
+                <span>{copy.next}</span><i className={`bi bi-arrow-${lang === 'ar' ? 'left' : 'right'}`} aria-hidden="true" />
+              </button>
+            </div>
+
+            <nav className="story-chapter-rail" aria-label={copy.chooseChapter}>
+              {items.map((item, index) => (
+                <button type="button" key={`${item.period || ''}-${index}`} className={index === activeIndex ? 'is-active' : ''} onClick={() => selectChapter(index)} aria-current={index === activeIndex ? 'step' : undefined} aria-label={`${index + 1}. ${item.period || item.title}`}>
+                  <span className="story-chapter-rail__dot" /><span className="story-chapter-rail__label">{item.period || item.title}</span>
+                </button>
+              ))}
+            </nav>
+            <footer className="story-deck__footer"><span>{config.motto || 'I think. I design. I experiment.'}</span><span>{copy.useKeys}</span></footer>
+          </div>
         </section>
       ) : createPortal(
-        <section className="story-presentation story-presentation--speaker" dir="rtl" role="dialog" aria-modal="true" aria-label="نص المتحدث">
-        <div className="story-speaker-overlay">
-          <header className="story-speaker__bar">
-            <div className="story-speaker__identity"><span className="story-speaker__live-dot" /><div><strong>نص المتحدث</strong><small>{current.period || `محطة ${activeIndex + 1}`} · {activeIndex + 1} من {items.length}</small></div></div>
-            <div className="story-speaker__actions">
-              <button type="button" className="story-speaker__return" onClick={() => changeViewMode('deck')}><i className="bi bi-easel2" aria-hidden="true" /> العودة للعرض</button>
-              <button type="button" className="story-speaker__close" onClick={() => changeViewMode('deck')} aria-label="العودة إلى العرض"><i className="bi bi-x-lg" /></button>
-            </div>
-          </header>
-          <main className="story-speaker__main" aria-live="polite" aria-atomic="false">
-            <div className="story-speaker__chapter"><span>{current.period || `محطة ${activeIndex + 1}`}</span><span>الجزء {String(activeIndex + 1).padStart(2, '0')}</span></div>
-            <h1>{current.title}</h1>
-            {current.summary && <p className="story-speaker__summary">{current.summary}</p>}
-            <div className="story-speaker__text">
-              {speechParagraphs.length ? speechParagraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>) : <p className="story-speaker__empty">لا يوجد نص إلقاء لهذه المحطة بعد. أضفه من محرر الصفحة.</p>}
-            </div>
-            {current.studentTakeaway && <aside className="story-speaker__aside"><strong>رسالة للطلبة</strong><p>{current.studentTakeaway}</p></aside>}
-          </main>
-          <footer className="story-speaker__controls">
-            <button type="button" onClick={() => selectChapter(activeIndex - 1)} disabled={activeIndex === 0}><i className="bi bi-arrow-right" /> المحطة السابقة</button>
-            <div className="story-speaker__progress"><span style={{ width: `${progress}%` }} /></div>
-            <button type="button" onClick={() => selectChapter(activeIndex + 1)} disabled={activeIndex === items.length - 1}>المحطة التالية <i className="bi bi-arrow-left" /></button>
-          </footer>
-        </div>
+        <section className="story-presentation story-presentation--speaker" dir={direction} role="dialog" aria-modal="true" aria-label={copy.speakerNotes}>
+          <div className="story-speaker-overlay">
+            <header className="story-speaker__bar">
+              <div className="story-speaker__identity"><span className="story-speaker__live-dot" /><div><strong>{copy.speakerNotes}</strong><small>{current.period || `${copy.chapter} ${activeIndex + 1}`} · {activeIndex + 1} {lang === 'ar' ? 'من' : 'of'} {items.length}</small></div></div>
+              <div className="story-speaker__actions">
+                <button type="button" className="story-speaker__return" onClick={() => changeViewMode('deck')}><i className="bi bi-easel2" aria-hidden="true" /> {copy.back}</button>
+                <button type="button" className="story-speaker__close" onClick={() => changeViewMode('deck')} aria-label={copy.returnToPresentation}><i className="bi bi-x-lg" /></button>
+              </div>
+            </header>
+            <main className="story-speaker__main" aria-live="polite" aria-atomic="false">
+              <div className="story-speaker__chapter"><span>{current.period || `${copy.chapter} ${activeIndex + 1}`}</span><span>{copy.part} {String(activeIndex + 1).padStart(2, '0')}</span></div>
+              <h1>{current.title}</h1>
+              {current.summary && <p className="story-speaker__summary">{current.summary}</p>}
+              <div className="story-speaker__text">
+                {speechParagraphs.length ? speechParagraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>) : <p className="story-speaker__empty">{copy.emptySpeaker}</p>}
+              </div>
+              {current.studentTakeaway && <aside className="story-speaker__aside"><strong>{copy.studentTakeaway}</strong><p>{current.studentTakeaway}</p></aside>}
+            </main>
+            <footer className="story-speaker__controls">
+              <button type="button" onClick={() => selectChapter(activeIndex - 1)} disabled={activeIndex === 0}><i className={`bi bi-arrow-${lang === 'ar' ? 'right' : 'left'}`} /> {copy.previousChapter}</button>
+              <div className="story-speaker__progress"><span style={{ width: `${progress}%` }} /></div>
+              <button type="button" onClick={() => selectChapter(activeIndex + 1)} disabled={activeIndex === items.length - 1}>{copy.nextChapter} <i className={`bi bi-arrow-${lang === 'ar' ? 'left' : 'right'}`} /></button>
+            </footer>
+          </div>
         </section>,
         document.body
       )}

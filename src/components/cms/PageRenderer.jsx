@@ -35,10 +35,11 @@ export default function PageRenderer({
   onDuplicateSection = null,
   onDeleteSection = null,
   onInsertSection = null,
+  activeLang = null,
 }) {
   const isEditorMode = Boolean(onSelectSection);
   const { i18n } = useTranslation();
-  const lang = i18n?.language || 'en';
+  const lang = String(activeLang || i18n?.language || 'en').split('-')[0];
 
   if (loading) {
     return (
@@ -67,12 +68,16 @@ export default function PageRenderer({
   const displaySections = sections
     .filter((sec) => sec && (isEditorMode || sec.is_visible !== false))
     .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+  const pageTranslation = page.metadata?.i18n?.[lang] || page.i18n?.[lang] || {};
+  const localizedPageTitle = pageTranslation.title || page.title || 'Naïm Bsili — Portfolio';
+  const localizedSeoTitle = pageTranslation.seo_title || pageTranslation.title || page.seo_title || localizedPageTitle;
+  const localizedSeoDescription = pageTranslation.seo_description || pageTranslation.description || page.seo_description || page.description;
 
   return (
     <div className={`cms-page-wrapper page-template-${page.template || 'default'}`}>
       <Helmet>
-        <title>{page.seo_title || page.title || 'Naïm Bsili — Portfolio'}</title>
-        {page.seo_description && <meta name="description" content={page.seo_description} />}
+        <title>{localizedSeoTitle}</title>
+        {localizedSeoDescription && <meta name="description" content={localizedSeoDescription} />}
         {page.canonical_url && <link rel="canonical" href={page.canonical_url} />}
       </Helmet>
 
@@ -265,7 +270,7 @@ export default function PageRenderer({
                                 const slotLocalizedConfig = localizeConfig(colSlot.config || {}, lang);
                                 return (
                                   <div key={colIdx} style={{ gridColumn: `span ${span}`, minWidth: 0, width: '100%' }}>
-                                    <SlotComp config={slotLocalizedConfig} section={{ ...sec, id: `${sec.id}-slot-${colIdx}` }} />
+                                    <SlotComp config={slotLocalizedConfig} section={{ ...sec, id: `${sec.id}-slot-${colIdx}` }} activeLang={lang} />
                                   </div>
                                 );
                               }
@@ -274,7 +279,7 @@ export default function PageRenderer({
                             if (colIdx === 0) {
                               return (
                                 <div key={colIdx} style={{ gridColumn: `span ${span}`, minWidth: 0, width: '100%' }}>
-                                  <SectionComp config={localizedConfig} section={sec} />
+                                  <SectionComp config={localizedConfig} section={sec} activeLang={lang} />
                                 </div>
                               );
                             }
@@ -305,7 +310,7 @@ export default function PageRenderer({
                         </div>
                       ) : (
                         <div style={{ width: '100%' }}>
-                          <SectionComp config={localizedConfig} section={sec} />
+                          <SectionComp config={localizedConfig} section={sec} activeLang={lang} />
                         </div>
                       )}
                       {/* Editor placeholder for components that return null or minimal height */}
@@ -337,7 +342,7 @@ export default function PageRenderer({
                           const slotLocalizedConfig = localizeConfig(colSlot.config || {}, lang);
                           return (
                             <div key={colIdx} style={{ gridColumn: `span ${span}`, minWidth: 0, width: '100%' }}>
-                              <SlotComp config={slotLocalizedConfig} section={{ ...sec, id: `${sec.id}-slot-${colIdx}` }} />
+                              <SlotComp config={slotLocalizedConfig} section={{ ...sec, id: `${sec.id}-slot-${colIdx}` }} activeLang={lang} />
                             </div>
                           );
                         }
@@ -346,7 +351,7 @@ export default function PageRenderer({
                       if (colIdx === 0) {
                         return (
                           <div key={colIdx} style={{ gridColumn: `span ${span}`, minWidth: 0, width: '100%' }}>
-                            <SectionComp config={localizedConfig} section={sec} />
+                            <SectionComp config={localizedConfig} section={sec} activeLang={lang} />
                           </div>
                         );
                       }
@@ -356,7 +361,7 @@ export default function PageRenderer({
                   </div>
                 ) : (
                   <div style={{ width: '100%' }}>
-                    <SectionComp config={localizedConfig} section={sec} />
+                    <SectionComp config={localizedConfig} section={sec} activeLang={lang} />
                   </div>
                 )}
               </div>

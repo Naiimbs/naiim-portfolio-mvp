@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import PageRenderer from '../../components/cms/PageRenderer';
 import SectionPropertyEditor from '../components/cms/editors/SectionPropertyEditor';
+import StoryTimelineTranslationsEditor from './StoryTimelineTranslationsEditor';
 import AddSectionModal from '../components/cms/AddSectionModal';
 import BlogPageCanvasPreview from '../components/cms/BlogPageCanvasPreview';
 import {
@@ -55,6 +56,10 @@ export default function AdminPageEditor() {
   useEffect(() => {
     loadPageAndSections();
   }, [id]);
+
+  useEffect(() => {
+    if (page?.slug === 'my-journey') setTxLang('ar');
+  }, [page?.slug]);
 
   // Warn before leaving page with unsaved modifications
   useEffect(() => {
@@ -1034,6 +1039,7 @@ export default function AdminPageEditor() {
                     error={null}
                     activeSectionId={activeSectionId}
                     viewport={previewViewport}
+                    activeLang={activeTab === 'translations' ? txLang : undefined}
                     onSelectSection={handleSelectSection}
                     onMoveSection={handleMoveSection}
                     onToggleVisibility={handleToggleVisibility}
@@ -1139,15 +1145,17 @@ export default function AdminPageEditor() {
               ) : activeTab === 'translations' ? (
                 <div className="p-3">
                   <div className="d-flex justify-content-between align-items-center mb-3">
-                    <h6 className="fw-bold mb-0">Page Translations</h6>
+                    <h6 className="fw-bold mb-0">{page.slug === 'my-journey' ? 'Page & Section Translations' : 'Page Translations'}</h6>
                     <div className="btn-group btn-group-sm">
-                      <button
-                        type="button"
-                        className={`btn ${txLang === 'fr' ? 'btn-dark' : 'btn-outline-secondary'}`}
-                        onClick={() => setTxLang('fr')}
-                      >
-                        Français (FR)
-                      </button>
+                      {page.slug !== 'my-journey' && (
+                        <button
+                          type="button"
+                          className={`btn ${txLang === 'fr' ? 'btn-dark' : 'btn-outline-secondary'}`}
+                          onClick={() => setTxLang('fr')}
+                        >
+                          Français (FR)
+                        </button>
+                      )}
                       <button
                         type="button"
                         className={`btn ${txLang === 'ar' ? 'btn-dark' : 'btn-outline-secondary'}`}
@@ -1387,6 +1395,23 @@ export default function AdminPageEditor() {
                       {savingPage ? 'Saving...' : `Save ${txLang.toUpperCase()} Translations`}
                     </button>
                   </form>
+                  {page.slug === 'my-journey' && (
+                    <div className="mt-3">
+                      {activeSection?.section_type === 'story_timeline' ? (
+                        <StoryTimelineTranslationsEditor
+                          config={activeSection.config}
+                          lang={txLang}
+                          onChange={(config) => handleSectionChange({ ...activeSection, config })}
+                          onSave={handleSaveActiveSection}
+                          saving={savingSection}
+                        />
+                      ) : (
+                        <div className="alert alert-info small mt-3 mb-0">
+                          Select the Story Presentation section on the canvas or in the Structure panel to translate its 19 milestones here.
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="p-3">
