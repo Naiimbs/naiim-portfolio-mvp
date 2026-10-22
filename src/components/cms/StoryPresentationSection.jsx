@@ -115,7 +115,10 @@ function StoryImageSlot({ item, copy }) {
 
 export default function StoryPresentationSection({ config = {}, activeLang }) {
   const { i18n } = useTranslation();
-  const lang = String(activeLang || i18n?.language || 'en').slice(0, 2);
+  const requestedLang = String(activeLang || i18n?.language || 'en').split('-')[0];
+  const currentCopy = `${config.title || ''} ${config.eyebrow || ''} ${config.subtitle || ''}`;
+  const containsArabic = /[\u0600-\u06FF]/.test(currentCopy);
+  const lang = requestedLang === 'ar' || containsArabic ? 'ar' : requestedLang;
   const copy = COPY[lang] || COPY.en;
   const direction = lang === 'ar' ? 'rtl' : 'ltr';
   const items = useMemo(
