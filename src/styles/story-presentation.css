@@ -76,7 +76,7 @@
 .story-deck__footer > span:first-child { color: #d7e4df; font: 600 .82rem "Space Grotesk", sans-serif; direction: ltr; text-align: left; }
 .story-presentation--speaker { position: fixed; inset: 0; z-index: 1200; color: var(--story-ink); }
 .story-speaker-overlay { height: 100%; min-height: 100vh; overflow-y: auto; background: #f6f7f4; display: flex; flex-direction: column; }
-.story-speaker__bar { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .85rem clamp(1rem, 5vw, 4rem); background: rgba(248,249,246,.94); border-bottom: 1px solid #dfe7e4; backdrop-filter: blur(14px); }
+.story-speaker__bar { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .85rem clamp(1rem, 5vw, 4rem); background: #f8f9f6; border-bottom: 1px solid #dfe7e4; }
 .story-speaker__identity { display: flex; gap: .75rem; align-items: center; }
 .story-speaker__live-dot { width: 9px; height: 9px; flex: 0 0 auto; background: #087f66; border-radius: 50%; box-shadow: 0 0 0 4px #e0f2eb; }
 .story-speaker__identity strong, .story-speaker__identity small { display: block; }
@@ -97,7 +97,7 @@
 .story-speaker__aside { margin-top: 2rem; padding: 1rem 1.1rem; border-right: 3px solid #087f66; background: #e7f3ef; border-radius: 0 14px 14px 0; }
 .story-speaker__aside strong { display: block; color: #075b4b; font-size: .8rem; margin-bottom: .3rem; }
 .story-speaker__aside p { margin: 0; color: #233b40; line-height: 1.8; }
-.story-speaker__controls { position: sticky; bottom: 0; display: grid; grid-template-columns: minmax(110px, 1fr) minmax(100px, 2fr) minmax(110px, 1fr); gap: 1rem; align-items: center; padding: .85rem clamp(1rem, 5vw, 4rem); background: rgba(248,249,246,.96); border-top: 1px solid #dfe7e4; backdrop-filter: blur(14px); }
+.story-speaker__controls { position: sticky; bottom: 0; display: grid; grid-template-columns: minmax(110px, 1fr) minmax(100px, 2fr) minmax(110px, 1fr); gap: 1rem; align-items: center; padding: .85rem clamp(1rem, 5vw, 4rem); background: #f8f9f6; border-top: 1px solid #dfe7e4; }
 .story-speaker__controls button { min-height: 42px; padding: .5rem .8rem; border: 1px solid #cfdad5; border-radius: 999px; background: #fff; color: #163137; font-size: .82rem; }
 .story-speaker__controls button:last-child { justify-self: end; }
 .story-speaker__progress { background: #d9e3df; }
