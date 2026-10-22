@@ -1,5 +1,6 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
 import { getCanonicalRoute } from './contentRouteResolver.js';
+import BEAUX_ARTS_STORY from '../data/beauxArtsStory.json';
 
 /**
  * Service for Pages, Page Sections, Navigation Items, and Site Settings.
@@ -60,11 +61,25 @@ export const FALLBACK_PAGES = [
     updated_at: new Date().toISOString(),
     published_at: null,
   },
+  {
+    id: 'page-my-journey',
+    slug: 'my-journey',
+    title: 'من الهندسة الميكانيكية إلى تصميم منتجات الذكاء الاصطناعي',
+    status: 'published',
+    template: 'default',
+    seo_title: 'من الهندسة الميكانيكية إلى تصميم منتجات الذكاء الاصطناعي — Naïm Bsili',
+    seo_description: 'قصة مسار مهني غير مستقيم ودروس عملية للطلبة في التصميم والتعلّم وبناء المنتجات الرقمية.',
+    canonical_url: '/p/my-journey',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    published_at: new Date().toISOString(),
+  },
 ];
 
 // Canonical default navigation items
 export const DEFAULT_HEADER_NAV = [
   { id: 'nav-header-1', location: 'header', label: 'Work', href: '/work', item_type: 'link', parent_id: null, sort_order: 10, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-header-story', location: 'header', label: 'My Journey', href: '/p/my-journey', item_type: 'link', parent_id: null, sort_order: 15, is_visible: true, open_in_new_tab: false },
   { id: 'nav-header-2', location: 'header', label: 'Agents', href: '/agents', item_type: 'link', parent_id: null, sort_order: 20, is_visible: true, open_in_new_tab: false },
   { id: 'nav-header-3', location: 'header', label: 'Resources', href: '/resources', item_type: 'link', parent_id: null, sort_order: 25, is_visible: true, open_in_new_tab: false },
   { id: 'nav-header-5', location: 'header', label: 'Career', href: '#career', item_type: 'link', parent_id: null, sort_order: 40, is_visible: true, open_in_new_tab: false },
@@ -227,6 +242,15 @@ export const FALLBACK_SECTIONS = [
       title: 'Design Systems & AI Engineering Notes',
       body: 'Articles and explorations on design systems, autonomous AI agents, and product design.',
     },
+  },
+  {
+    id: 'sec-my-journey-story',
+    page_id: 'page-my-journey',
+    section_type: 'story_timeline',
+    label: 'رحلتي · عرض الخط الزمني ونص المتحدث',
+    sort_order: 10,
+    is_visible: true,
+    config: { ...BEAUX_ARTS_STORY, channelName: 'beaux-arts-nabeul' },
   },
 ];
 

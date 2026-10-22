@@ -5,6 +5,7 @@
  */
 
 import { HERO_DEFAULTS } from '../hero/heroDefaults';
+import BEAUX_ARTS_STORY from '../../data/beauxArtsStory.json';
 
 const HOME_BLOCK = (type, label, icon, description) => ({
   type,
@@ -427,6 +428,25 @@ export const PAGE_SECTION_TYPES = {
       return { valid: errors.length === 0, errors, advisories };
     },
   },
+  story_timeline: {
+    type: 'story_timeline',
+    label: 'Story Presentation · Timeline + Speaker Script',
+    category: 'CONTENT',
+    icon: 'bi-easel2',
+    description: 'Presentation milestones with a synchronized, separate speaker-script view. Every item is editable in the Page Builder.',
+    hasEditor: true,
+    defaultConfig: { ...BEAUX_ARTS_STORY, channelName: 'beaux-arts-nabeul' },
+    validate: (cfg = {}) => {
+      const errors = [];
+      const advisories = [];
+      if (!cfg.title?.trim()) errors.push('Presentation title is required.');
+      if (!Array.isArray(cfg.items) || cfg.items.length === 0) errors.push('Add at least one story milestone.');
+      if (Array.isArray(cfg.items) && cfg.items.some((item) => !String(item?.title || '').trim())) {
+        advisories.push('Give every milestone a short title.');
+      }
+      return { valid: errors.length === 0, errors, advisories };
+    },
+  },
   workflow: {
     type: 'workflow',
     label: 'Workflow Steps',
@@ -826,6 +846,21 @@ export function normalizeSectionConfig(sectionType, rawConfig = {}) {
     if (!Array.isArray(config.items)) config.items = [];
   }
 
+  if (type === 'story_timeline') {
+    if (!Array.isArray(config.items)) config.items = [];
+    config.items = config.items.map((item) => ({
+      ...item,
+      period: item.period || '',
+      title: item.title || '',
+      summary: item.summary || '',
+      studentTakeaway: item.studentTakeaway || '',
+      speech: item.speech || '',
+      imageUrl: item.imageUrl || '',
+      imageAlt: item.imageAlt || '',
+      imageCue: item.imageCue || '',
+    }));
+  }
+
   if (type === 'workflow') {
     if (!Array.isArray(config.steps)) config.steps = [];
   }
@@ -866,4 +901,3 @@ export function createDefaultSection(type, customProps = {}) {
     props: { ...defaults, ...customProps },
   };
 }
-
