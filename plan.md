@@ -17,11 +17,11 @@
 - `SectionPropertyEditor.jsx` و`StoryTimelineSectionEditor.jsx`: محرر خاص لكل محطة، بما يشمل الملخص والنص الكامل ورسالة الطلبة والصورة وترتيب المحطات.
 - `src/services/siteCms.js`: بيانات fallback محلية للصفحة والقسم ورابط navigation.
 - `public/manus-routes.json`: لا يحتاج مساراً ثابتاً جديداً لأن `/p/:slug` معلن مسبقاً.
-- أُنشئت صفحة `/p/my-journey` في قاعدة CMS كمسودة خاصة، مع سجل `Content Registry` خاص وقسم `story_timeline` قابل للتحرير. ستُحوّل إلى منشورة ويُضاف إليها عنصر navigation بعد اكتمال نشر الشيفرة والتحقق منها، مع منع تكرار السجلات.
+- أُنشئت صفحة `/p/my-journey` في قاعدة CMS مع قسم `story_timeline` قابل للتحرير، ثم نُشرت page وContent Registry كعامّين بعد نشر الشيفرة. أُضيف عنصر Header واحد إلى المسار، مع التحقق من عدم التكرار.
 
 ## النشر
 
-اكتمل `npm run build`، ومعاينة وضع العرض ونص المتحدث، واختبار استقبال رسالة `BroadcastChannel` وتحديث الفصل. يستعمل المشروع GitHub Actions workflow للنشر اليدوي إلى VPS من الفرع `migration/react-phase-1`؛ يتطلب `confirm_deployment=true` وأسرار بيئة الإنتاج الموجودة مسبقاً في GitHub. يبني صورة Docker، ويستبدل الحاوية بعد حفظ معرّف الصورة السابقة، ويعيدها تلقائياً عند فشل بدء الحاوية أو فحوص الصحة. بعد نجاح النشر، تُنشر مسودة CMS ويُضاف رابط navigation، ثم يُفحص الموقع العام.
+اكتمل `npm run build` واختبار استقبال رسالة `BroadcastChannel` وتحديث الفصل في المعاينة. نُشرت النسخة من الفرع `migration/react-phase-1` عبر GitHub Actions workflow اليدوي إلى VPS، مع `confirm_deployment=true`؛ اكتملت فحوص الصحة بنجاح بعد نسختي التطبيق في commit `15aadd5` و`17055e7`. نُشرت CMS page وContent Registry، وأُضيف عنصر Header واحد. تحققنا أن `/p/my-journey` يرد HTTP 200 وأن العرض ونص المتحدث يحمّلان من الموقع العام.
 
 ## القيود
 
