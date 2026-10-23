@@ -5,7 +5,7 @@ import { getHeaderNavigation, getPublicSiteSettings, DEFAULT_HEADER_NAV } from '
 import LanguageSwitcher from './LanguageSwitcher';
 
 export default function Navbar() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [navItems, setNavItems] = useState(DEFAULT_HEADER_NAV);
   const [siteSettings, setSiteSettings] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -79,7 +79,9 @@ export default function Navbar() {
 
   const isHome = location.pathname === '/';
 
-  const brandName = siteSettings?.site_name || 'NAÏM BSILI';
+  const brandName = i18n.language?.startsWith('ar')
+    ? t('about.displayName', 'نعيم بصيلي')
+    : (siteSettings?.site_name || t('about.displayName', 'NAÏM BSILI'));
   const ctaLabel = (!siteSettings?.contact_cta_label || siteSettings.contact_cta_label === "Let's Talk")
     ? t('nav.talk')
     : siteSettings.contact_cta_label;
@@ -262,7 +264,7 @@ export default function Navbar() {
           {siteSettings?.logo_url ? (
             <img src={siteSettings.logo_url} alt={brandName} height="28" className="me-2 rounded" />
           ) : null}
-          {brandName} <span className="beta-badge">Beta</span>
+          {brandName} <span className="beta-badge">{t('nav.beta', 'Beta')}</span>
         </Link>
 
         <button
@@ -271,7 +273,7 @@ export default function Navbar() {
           onClick={() => setIsNavOpen(!isNavOpen)}
           aria-controls="mainNav"
           aria-expanded={isNavOpen}
-          aria-label="Toggle navigation"
+          aria-label={t('nav.toggleNavigation', 'Toggle navigation')}
         >
           <i className="bi bi-list fs-2"></i>
         </button>

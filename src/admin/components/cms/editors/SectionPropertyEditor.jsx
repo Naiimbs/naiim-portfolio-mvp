@@ -1409,29 +1409,29 @@ export default function SectionPropertyEditor({ section, onChange, onSave, onCan
             </div>
             <div className="row g-2 mb-3">
               <div className="col-4">
-                <label className="form-label small fw-semibold">Hours</label>
+                <label className="form-label small fw-semibold">Learning focus</label>
                 <input
                   type="text"
                   className="form-control form-control-sm rounded-3"
-                  value={config.hours ?? '1,200+'}
+                  value={config.hours ?? 'Learn'}
                   onChange={(e) => handleConfigChange({ ...config, hours: e.target.value })}
                 />
               </div>
               <div className="col-4">
-                <label className="form-label small fw-semibold">Learners</label>
+                <label className="form-label small fw-semibold">Building focus</label>
                 <input
                   type="text"
                   className="form-control form-control-sm rounded-3"
-                  value={config.learners ?? '300+'}
+                  value={config.learners ?? 'Build'}
                   onChange={(e) => handleConfigChange({ ...config, learners: e.target.value })}
                 />
               </div>
               <div className="col-4">
-                <label className="form-label small fw-semibold">Articles</label>
+                <label className="form-label small fw-semibold">Sharing focus</label>
                 <input
                   type="text"
                   className="form-control form-control-sm rounded-3"
-                  value={config.articles ?? '20+'}
+                  value={config.articles ?? 'Share'}
                   onChange={(e) => handleConfigChange({ ...config, articles: e.target.value })}
                 />
               </div>

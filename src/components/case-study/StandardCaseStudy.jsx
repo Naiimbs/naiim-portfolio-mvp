@@ -13,6 +13,9 @@ export default function StandardCaseStudy({ data }) {
 
   const { slug } = data;
   const rawHero = data.hero || {};
+  const liveProductUrl = typeof rawHero.liveProductUrl === 'string' && /^https?:\/\//i.test(rawHero.liveProductUrl.trim())
+    ? rawHero.liveProductUrl.trim()
+    : '';
   const rawChallenge = data.challenge || {};
   const rawContribution = data.contribution || {};
   const rawEvidence = data.evidence || {};
@@ -20,6 +23,7 @@ export default function StandardCaseStudy({ data }) {
 
   const hero = {
     ...rawHero,
+    liveProductUrl,
     eyebrow: txCase.hero?.eyebrow || rawHero.eyebrow,
     title: txCase.hero?.title || tx.title || rawHero.title,
     lead: txCase.hero?.lead || tx.description || rawHero.lead,
@@ -44,11 +48,25 @@ export default function StandardCaseStudy({ data }) {
       : rawContribution.items,
   };
 
+  const localizedEvidenceGallery = Array.isArray(txCase.evidence?.gallery) ? txCase.evidence.gallery : [];
   const evidence = {
     ...rawEvidence,
     eyebrow: txCase.evidence?.eyebrow || rawEvidence.eyebrow,
     title: txCase.evidence?.title || rawEvidence.title,
     caption: txCase.evidence?.caption || rawEvidence.caption,
+    imageAlt: txCase.evidence?.imageAlt || rawEvidence.imageAlt,
+    gallery: Array.isArray(rawEvidence.gallery)
+      ? rawEvidence.gallery.map((item, index) => {
+          const localized = localizedEvidenceGallery.find((entry) => entry?.image && entry.image === item?.image)
+            || localizedEvidenceGallery[index]
+            || {};
+          return {
+            ...item,
+            imageAlt: localized.imageAlt || item.imageAlt,
+            caption: localized.caption || item.caption,
+          };
+        })
+      : rawEvidence.gallery,
   };
 
   const technology = {
@@ -213,6 +231,19 @@ export default function StandardCaseStudy({ data }) {
                 {hero.metaChips.map((chip, i) => (
                   <span key={i}>{chip}</span>
                 ))}
+              </div>
+            )}
+            {hero.liveProductUrl && (
+              <div className="case-live-product-action">
+                <a
+                  className="case-live-product-link"
+                  href={hero.liveProductUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t('caseStudy.visitLiveProduct')}
+                  <i className="bi bi-arrow-up-right" aria-hidden="true"></i>
+                </a>
               </div>
             )}
             {hero.image && (

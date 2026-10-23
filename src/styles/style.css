@@ -1051,6 +1051,35 @@ h1 em {
   color: var(--ink-soft);
   font-size: 1.1rem;
 }
+.case-live-product-action {
+  margin: 24px 0 8px;
+}
+.case-live-product-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border: 1px solid var(--ink, #10242a);
+  border-radius: 999px;
+  background: var(--ink, #10242a);
+  color: #fff !important;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+.case-live-product-link i {
+  color: #74c49e;
+}
+.case-live-product-link:hover {
+  background: #173d32;
+  border-color: #173d32;
+  color: #fff !important;
+  transform: translateY(-1px);
+}
+.case-live-product-link:focus-visible {
+  outline: 3px solid rgba(27, 122, 96, 0.38);
+  outline-offset: 3px;
+}
 .case-hero-image {
   margin-top: 42px;
   border: 1px solid var(--line);

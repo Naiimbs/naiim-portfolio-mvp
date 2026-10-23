@@ -13,6 +13,9 @@ export function AboutHeroSection({ config = {} }) {
   const exploreCta = config.exploreCta || { label: t('about.exploreWork', 'Explore My Work'), href: '/work' };
   const talkCta = config.talkCta || { label: t('about.letsTalk', "Let's Talk"), href: '/about#contact' };
   const buildingNote = config.buildingNote || 'WINNI Identity Ecosystem · Naïm Copilot · AI Agent Protocols';
+  const currentBuildingLabel = t('about.currentBuildingLabel', 'CURRENTLY BUILDING');
+  const displayName = t('about.displayName', 'Naïm Bsili');
+  const portraitRole = t('about.portraitRole', 'Product Designer · Low-Code & AI Builder');
 
   return (
     <section className="about-hero-section section-pad pt-4 pb-5 border-bottom">
@@ -52,7 +55,7 @@ export function AboutHeroSection({ config = {} }) {
             <div className="card border-0 bg-light rounded-4 p-3 d-inline-flex flex-row align-items-center gap-3">
               <span className="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 fw-bold" style={{ fontSize: '0.72rem' }}>
                 <span className="spinner-grow spinner-grow-sm me-1 text-success" style={{ width: '8px', height: '8px' }} />
-                CURRENTLY BUILDING
+                {currentBuildingLabel}
               </span>
               <span className="small text-dark fw-semibold">
                 {buildingNote}
@@ -65,13 +68,13 @@ export function AboutHeroSection({ config = {} }) {
               <div className="rounded-4 overflow-hidden shadow-lg border bg-white" style={{ maxWidth: '380px', margin: '0 auto' }}>
                 <img
                   src={config.portraitUrl || portraitCutout || '/naim-portrait.jpg'}
-                  alt="Naïm Bsili Portrait"
+                  alt={`${displayName} portrait`}
                   className="img-fluid"
                   style={{ objectFit: 'cover', maxHeight: '440px', width: '100%' }}
                 />
                 <div className="p-3 bg-white text-start border-top">
-                  <strong className="d-block text-dark fw-bold">Naïm Bsili</strong>
-                  <small className="text-muted">Product Designer · Low-Code & AI Builder</small>
+                  <strong className="d-block text-dark fw-bold">{displayName}</strong>
+                  <small className="text-muted">{portraitRole}</small>
                 </div>
               </div>
             </div>
@@ -92,12 +95,14 @@ export function AboutJourneySection({ config = {} }) {
   const eyebrow = config.eyebrow || t('about.journeyEyebrow', 'SIGNATURE EVOLUTION');
   const title = config.title || t('about.journeyTitle', 'From Mechanical Design to AI');
   const subtitle = config.subtitle || t('about.journeySubtitle', 'A visual progression connecting physical engineering, visual craft, human-centered UX, low-code delivery, and autonomous AI systems.');
+  const stageLabel = t('about.stageLabel', 'STAGE');
+  const keyLessonLabel = t('about.keyLessonLabel', 'Key lesson learned');
 
   const defaultStages = [
     {
       id: 'mechanical',
       number: '01',
-      period: 'Foundations',
+      period: t('about.periods.foundations', 'Foundations'),
       title: t('about.stages.1.title', 'Mechanical Design & Fabrication'),
       tag: t('about.stages.1.tag', 'Physical Engineering'),
       icon: 'bi-gear-wide-connected',
@@ -107,7 +112,7 @@ export function AboutJourneySection({ config = {} }) {
     {
       id: 'graphic',
       number: '02',
-      period: 'Visual Craft',
+      period: t('about.periods.visualCraft', 'Visual Craft'),
       title: t('about.stages.2.title', 'Graphic & Visual Design'),
       tag: t('about.stages.2.tag', 'Visual Communication'),
       icon: 'bi-palette',
@@ -117,7 +122,7 @@ export function AboutJourneySection({ config = {} }) {
     {
       id: 'uxui',
       number: '03',
-      period: 'Digital Systems',
+      period: t('about.periods.digitalSystems', 'Digital Systems'),
       title: t('about.stages.3.title', 'UX/UI & Product Design'),
       tag: t('about.stages.3.tag', 'Human-Centered Design'),
       icon: 'bi-window-stack',
@@ -127,7 +132,7 @@ export function AboutJourneySection({ config = {} }) {
     {
       id: 'lowcode',
       number: '04',
-      period: 'Production Delivery',
+      period: t('about.periods.productionDelivery', 'Production Delivery'),
       title: t('about.stages.4.title', 'Low-Code & Implementation'),
       tag: t('about.stages.4.tag', 'Mendix & OutSystems'),
       icon: 'bi-code-square',
@@ -137,7 +142,7 @@ export function AboutJourneySection({ config = {} }) {
     {
       id: 'ai',
       number: '05',
-      period: 'Current Frontier',
+      period: t('about.periods.currentFrontier', 'Current Frontier'),
       title: t('about.stages.5.title', 'AI Product Building & Automation'),
       tag: t('about.stages.5.tag', 'Agents & Orchestration'),
       icon: 'bi-stars',
@@ -182,7 +187,7 @@ export function AboutJourneySection({ config = {} }) {
           <div className="card border-0 rounded-4 shadow-sm bg-white p-4 p-md-5 mx-auto transition-all" style={{ maxWidth: '880px' }}>
             <div className="d-flex flex-wrap justify-content-between align-items-center mb-3">
               <span className="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-1 fw-bold">
-                STAGE {stages[activeStage].number} · {stages[activeStage].period}
+                {stageLabel} {stages[activeStage].number} · {stages[activeStage].period}
               </span>
               <span className="badge bg-light text-dark border rounded-pill px-3 py-1 fw-semibold">
                 <i className={`bi ${stages[activeStage].icon || 'bi-stars'} me-1 text-primary`} />
@@ -197,7 +202,7 @@ export function AboutJourneySection({ config = {} }) {
 
             <div className="p-3 rounded-3 bg-light border-start border-primary border-4">
               <small className="text-uppercase fw-bold text-primary d-block mb-1" style={{ fontSize: '0.72rem' }}>
-                <i className="bi bi-lightbulb-fill me-1" /> Key Lesson Learned
+                <i className="bi bi-lightbulb-fill me-1" /> {keyLessonLabel}
               </small>
               <div className="text-dark fst-italic fw-medium" style={{ fontSize: '0.95rem' }}>
                 "{stages[activeStage].lesson}"
@@ -218,7 +223,9 @@ export function AboutPhilosophySection({ config = {} }) {
   const eyebrow = config.eyebrow || t('about.philosophyEyebrow', 'HOW I THINK');
   const title = config.title || t('about.philosophyTitle', 'Principles over trends.');
   const intro = config.intro || t('about.philosophyIntro', 'Tools evolve every month, but how you approach problems remains your true craft. Here is how I think before touching any tool.');
-  const signature = config.signatureStatement || '"I think. I design. I experiment."';
+  const signature = config.signatureStatement || t('about.signatureStatement', 'I think. I design. I experiment. I build.');
+  const signatureLabel = t('about.signatureLabel', 'SIGNATURE STATEMENT');
+  const signatureDescription = t('about.signatureDescription', 'The continuous feedback loop behind every meaningful digital product.');
 
   const defaultPrinciples = [
     {
@@ -281,13 +288,13 @@ export function AboutPhilosophySection({ config = {} }) {
 
         <div className="card border-0 rounded-4 p-4 p-md-5 text-center text-white" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' }}>
           <span className="badge bg-white bg-opacity-10 text-white rounded-pill px-3 py-1 mb-3 mx-auto" style={{ fontSize: '0.72rem', letterSpacing: '0.1em' }}>
-            SIGNATURE STATEMENT
+            {signatureLabel}
           </span>
           <div className="display-5 fw-bold font-serif mb-2" style={{ letterSpacing: '0.05em' }}>
             {signature}
           </div>
           <p className="text-white text-opacity-75 small mb-0">
-            The continuous feedback loop behind every meaningful digital product.
+            {signatureDescription}
           </p>
         </div>
       </div>
@@ -374,6 +381,9 @@ export function AboutProofSection({ config = {} }) {
   const { t } = useTranslation();
   const eyebrow = config.eyebrow || t('about.proofEyebrow', 'PROOF, NOT CLAIMS');
   const title = config.title || t('about.proofTitle', 'Selected Work & Artifacts');
+  const viewAllWorkLabel = t('about.viewAllWork', 'View All Work');
+  const roleLabel = t('about.roleLabel', 'Role');
+  const exploreDetailsLabel = t('about.exploreDetails', 'Explore Details');
 
   const defaultProjects = [
     {
@@ -419,7 +429,7 @@ export function AboutProofSection({ config = {} }) {
             <h2 className="display-6 fw-bold text-dark mb-1">{title}</h2>
           </div>
           <a href="/work" className="btn btn-outline-dark rounded-pill px-4 btn-sm fw-semibold mt-3 mt-md-0">
-            View All Work <i className="bi bi-arrow-right ms-1"></i>
+            {viewAllWorkLabel} <i className="bi bi-arrow-right ms-1"></i>
           </a>
         </div>
 
@@ -436,10 +446,10 @@ export function AboutProofSection({ config = {} }) {
                 <p className="text-secondary small mb-3" style={{ lineHeight: 1.6 }}>{p.desc}</p>
                 <div className="mt-auto pt-3 border-top">
                   <small className="text-muted d-block mb-2" style={{ fontSize: '0.75rem' }}>
-                    <strong>Role:</strong> {p.role}
+                    <strong>{roleLabel}:</strong> {p.role}
                   </small>
                   <a href={p.link || '/work'} className="btn btn-sm btn-link p-0 text-dark fw-bold text-decoration-none">
-                    Explore Details <i className="bi bi-arrow-right ms-1"></i>
+                    {exploreDetailsLabel} <i className="bi bi-arrow-right ms-1"></i>
                   </a>
                 </div>
               </div>
@@ -458,9 +468,15 @@ export function AboutShareSection({ config = {} }) {
   const { t } = useTranslation();
   const eyebrow = config.eyebrow || t('about.shareEyebrow', 'KNOWLEDGE SHARING');
   const title = config.title || t('about.shareTitle', 'Beyond the Portfolio');
-  const hours = config.hours || '1,200+';
-  const learners = config.learners || '300+';
-  const articles = config.articles || '20+';
+  const hours = config.hours || t('about.shareMetricLearning', 'Learn');
+  const learners = config.learners || t('about.shareMetricBuilding', 'Build');
+  const articles = config.articles || t('about.shareMetricSharing', 'Share');
+  const shareIntro = t('about.shareIntro', 'Sharing what I learn through documentation, writing, and practical experiments.');
+  const hoursLabel = t('about.trainingHoursLabel', 'Training & mentorship hours');
+  const learnersLabel = t('about.learnersLabel', 'Design & low-code learners guided');
+  const articlesLabel = t('about.articlesLabel', 'Published articles & experiments');
+  const readArticlesLabel = t('about.readBlogArticles', 'Read Blog Articles');
+  const exploreLabLabel = t('about.exploreLab', 'Explore the Lab');
 
   return (
     <section className="about-beyond-portfolio section-pad py-5 border-bottom bg-light bg-opacity-50">
@@ -471,7 +487,7 @@ export function AboutShareSection({ config = {} }) {
           </div>
           <h2 className="display-6 fw-bold text-dark mb-3">{title}</h2>
           <p className="text-secondary" style={{ fontSize: '1.05rem' }}>
-            Documenting learning, writing articles, and conducting hands-on training.
+            {shareIntro}
           </p>
         </div>
 
@@ -479,29 +495,29 @@ export function AboutShareSection({ config = {} }) {
           <div className="col-md-4">
             <div className="card border-0 bg-white rounded-4 p-4 text-center shadow-xs">
               <div className="display-5 fw-bold text-dark font-heading mb-1">{hours}</div>
-              <div className="small text-secondary fw-semibold">Training & Mentorship Hours</div>
+              <div className="small text-secondary fw-semibold">{hoursLabel}</div>
             </div>
           </div>
           <div className="col-md-4">
             <div className="card border-0 bg-white rounded-4 p-4 text-center shadow-xs">
               <div className="display-5 fw-bold text-dark font-heading mb-1">{learners}</div>
-              <div className="small text-secondary fw-semibold">Design & Low-Code Learners Guided</div>
+              <div className="small text-secondary fw-semibold">{learnersLabel}</div>
             </div>
           </div>
           <div className="col-md-4">
             <div className="card border-0 bg-white rounded-4 p-4 text-center shadow-xs">
               <div className="display-5 fw-bold text-dark font-heading mb-1">{articles}</div>
-              <div className="small text-secondary fw-semibold">Published Articles & Experiments</div>
+              <div className="small text-secondary fw-semibold">{articlesLabel}</div>
             </div>
           </div>
         </div>
 
         <div className="d-flex flex-wrap justify-content-center gap-3">
           <a href="/blog" className="btn btn-dark rounded-pill px-4 btn-sm fw-semibold">
-            <i className="bi bi-journal-text me-1" /> Read Blog Articles
+            <i className="bi bi-journal-text me-1" /> {readArticlesLabel}
           </a>
           <a href="/#lab" className="btn btn-outline-dark rounded-pill px-4 btn-sm fw-semibold">
-            <i className="bi bi-beaker me-1" /> Explore the Lab
+            <i className="bi bi-beaker me-1" /> {exploreLabLabel}
           </a>
         </div>
       </div>
@@ -513,10 +529,12 @@ export function AboutShareSection({ config = {} }) {
 // 7. About · Currently Building
 // -----------------------------------------------------------------------------
 export function AboutBuildingSection({ config = {} }) {
+  const { t } = useTranslation();
   const title = config.title || 'WINNI Identity & Autonomous Agent Protocols';
   const stage = config.stage || 'ACTIVE DEVELOPMENT';
   const description = config.description || 'Refining the physical-to-digital QR/NFC recovery flow and experimenting with autonomous agent orchestration via Model Context Protocol (MCP) to make physical objects interact with intelligent workflows.';
   const link = config.link || '/#lab';
+  const trackInLabLabel = t('about.trackInLab', 'Track in the Lab');
 
   return (
     <section className="about-building-section section-pad py-5 border-bottom">
@@ -535,7 +553,7 @@ export function AboutBuildingSection({ config = {} }) {
             </div>
             <div className="col-md-4 text-md-end">
               <a href={link} className="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold btn-sm">
-                Track in the Lab <i className="bi bi-arrow-right ms-1"></i>
+                {trackInLabLabel} <i className="bi bi-arrow-right ms-1"></i>
               </a>
             </div>
           </div>
@@ -553,6 +571,16 @@ export function AboutHumanSection({ config = {} }) {
   const eyebrow = config.eyebrow || t('about.humanEyebrow', 'THE PERSON BEHIND');
   const title = config.title || t('about.humanTitle', 'Curiosity as the continuous thread.');
   const story = config.story || 'Behind every design system and agentic workflow is a deep curiosity about how things work. Whether dismantling a mechanical mechanism, observing how people handle friction in everyday tasks, or writing automation logic, the common thread is transforming ideas into something tangible and useful.';
+  const spokenLanguages = t('about.spokenLanguages', 'Arabic · French · English · Italian');
+  const psmBadge = t('about.psmBadge', 'PSM I Scrum Master');
+  const designBadge = t('about.designBadge', 'Design — ISSAT Sousse');
+  const beliefsTitle = t('about.beliefsTitle', 'A few core beliefs:');
+  const simplicityTitle = t('about.beliefs.simplicityTitle', 'Simplicity requires hard work:');
+  const simplicityBody = t('about.beliefs.simplicityBody', 'Removing unnecessary noise is more demanding than adding more features.');
+  const prototypeTitle = t('about.beliefs.prototypeTitle', 'Prototyping beats arguing:');
+  const prototypeBody = t('about.beliefs.prototypeBody', 'A tangible, working prototype answers design questions faster than hours of meetings.');
+  const knowledgeTitle = t('about.beliefs.knowledgeTitle', 'Shared knowledge compounds:');
+  const knowledgeBody = t('about.beliefs.knowledgeBody', 'Teaching and writing forces clarity and keeps your own knowledge rigorous.');
 
   return (
     <section className="about-human-section section-pad py-5 border-bottom bg-light bg-opacity-50">
@@ -566,32 +594,32 @@ export function AboutHumanSection({ config = {} }) {
             <p className="text-secondary" style={{ fontSize: '1.05rem', lineHeight: 1.7 }}>{story}</p>
             <div className="d-flex flex-wrap gap-2 mt-4">
               <span className="badge bg-white text-dark border rounded-pill px-3 py-2 fw-semibold">
-                <i className="bi bi-translate me-1 text-primary" /> Arabic · French · English · Italian
+                <i className="bi bi-translate me-1 text-primary" /> {spokenLanguages}
               </span>
               <span className="badge bg-white text-dark border rounded-pill px-3 py-2 fw-semibold">
-                <i className="bi bi-patch-check me-1 text-primary" /> PSM I Scrum Master
+                <i className="bi bi-patch-check me-1 text-primary" /> {psmBadge}
               </span>
               <span className="badge bg-white text-dark border rounded-pill px-3 py-2 fw-semibold">
-                <i className="bi bi-mortarboard me-1 text-primary" /> Design ISSAT
+                <i className="bi bi-mortarboard me-1 text-primary" /> {designBadge}
               </span>
             </div>
           </div>
 
           <div className="col-lg-6">
             <div className="card border-0 bg-white rounded-4 p-4 p-md-5 shadow-xs">
-              <h5 className="fw-bold text-dark mb-3">A few core beliefs:</h5>
+              <h5 className="fw-bold text-dark mb-3">{beliefsTitle}</h5>
               <ul className="list-unstyled d-flex flex-column gap-3 mb-0 text-secondary small" style={{ lineHeight: 1.6 }}>
                 <li className="d-flex align-items-start gap-2">
                   <i className="bi bi-check-circle-fill text-success fs-6 mt-1" />
-                  <span><strong>Simplicity requires hard work:</strong> Removing unnecessary noise is more demanding than adding more features.</span>
+                  <span><strong>{simplicityTitle}</strong> {simplicityBody}</span>
                 </li>
                 <li className="d-flex align-items-start gap-2">
                   <i className="bi bi-check-circle-fill text-success fs-6 mt-1" />
-                  <span><strong>Prototyping beats arguing:</strong> A tangible, working prototype answers design questions faster than hours of meetings.</span>
+                  <span><strong>{prototypeTitle}</strong> {prototypeBody}</span>
                 </li>
                 <li className="d-flex align-items-start gap-2">
                   <i className="bi bi-check-circle-fill text-success fs-6 mt-1" />
-                  <span><strong>Shared knowledge compounds:</strong> Teaching and writing forces clarity and keeps your own knowledge rigorous.</span>
+                  <span><strong>{knowledgeTitle}</strong> {knowledgeBody}</span>
                 </li>
               </ul>
             </div>

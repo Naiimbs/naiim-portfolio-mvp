@@ -100,7 +100,10 @@ export default function CaseStudyRenderer() {
 
       if (!isMounted) return;
 
-      setStudyData(studyContent);
+      setStudyData({
+        ...studyContent,
+        i18n: normalizedEntry?.i18n || {},
+      });
       setGate(GATE.ALLOWED);
     }
 

@@ -1,0 +1,304 @@
+{
+  "record": {
+    "id": "80e48067-b0a4-4b8d-b775-39b6ed3a0a88",
+    "slug": "mhaf-accessibility",
+    "content_type": "case-study",
+    "status": "draft",
+    "visibility": "private",
+    "featured": false,
+    "sort_order": 200,
+    "public_route": "/work/mhaf-accessibility"
+  },
+  "before_metadata": {
+    "tags": [
+      "Accessibility",
+      "Embedded Widget",
+      "React",
+      "Vite",
+      "Supabase"
+    ],
+    "year": 2026,
+    "kicker": "ACCESSIBILITY SUPPORT · EMBEDDED WIDGET",
+    "category": "Accessibility Support · Independent Product",
+    "subtitle": "An accessibility-support widget with a site dashboard for domain-aware setup and a guided embed flow. The private MVP includes TXT-based ownership verification and a best-effort installation check.",
+    "description": "An accessibility-support widget with a site dashboard for domain-aware setup and a guided embed flow. The private MVP includes TXT-based ownership verification and a best-effort installation check."
+  },
+  "metadata_additions": {
+    "kicker": "INDEPENDENT PRODUCT",
+    "subtitle": "A visitor-first accessibility widget and a clearer website-owner setup flow.",
+    "description": "MHAF Accessibility is a live independent product that connects a site-owner workspace to an embedded widget visitors can open and control. It is designed to make setup and accessibility options easier to find, configure and use—not to replace accessible design or guarantee compliance.",
+    "caseStudy": {
+      "version": 1,
+      "type": "standard",
+      "sectionOrder": [
+        "challenge",
+        "contribution",
+        "evidence",
+        "technology"
+      ],
+      "hero": {
+        "eyebrow": "INDEPENDENT PRODUCT · LIVE IN PRODUCTION",
+        "title": "MHAF Accessibility",
+        "lead": "A visitor-first accessibility widget paired with a site-owner workspace. Website owners verify a domain, configure a site, and add a generated script; visitors open the widget to adjust how the page is presented.",
+        "liveProductUrl": "https://mhaf.naiimbsili.com/",
+        "metaChips": [],
+        "image": "",
+        "imageAlt": "",
+        "caption": ""
+      },
+      "challenge": {
+        "eyebrow": "THE CHALLENGE",
+        "title": "Connect the setup journey to the visitor experience",
+        "copy": "Accessibility options can be hard to discover, configure and integrate into an existing website. MHAF serves two audiences: owners who need a predictable setup flow, and visitors who need controls they can find and choose for themselves. The widget is a usability aid; it does not replace semantic markup, keyboard access, sufficient contrast, captions, alt text or a WCAG review.",
+        "role": "Independent product design & engineering",
+        "context": "From verified site setup to visitor-facing controls",
+        "is_visible": true
+      },
+      "contribution": {
+        "eyebrow": "PRODUCT EXPERIENCE",
+        "title": "One flow, from site setup to visitor choice",
+        "items": [
+          "Built MHAF as an independent product spanning the owner setup experience, the embedded widget and the public product site.",
+          "Designed the per-site onboarding flow: add the canonical hostname, publish a TXT ownership record, and verify the domain before its configuration is served.",
+          "Connected the verified site to a generated ES-module snippet that the owner adds to the existing website; the public guide intentionally shows only a generic example.",
+          "Designed the visitor-facing panel around selectable starting profiles and direct controls for text size, fonts, spacing, contrast, motion and navigation.",
+          "Added a Check installation troubleshooting action that records a recent event; this is best-effort telemetry, not proof that a script remains installed.",
+          "Next validation: test the owner-to-visitor flow on verified sites and keep underlying accessibility practices independent of the widget."
+        ],
+        "process": [
+          {
+            "step": "01",
+            "title": "Add a site",
+            "desc": "Enter the website’s canonical hostname in the owner workspace."
+          },
+          {
+            "step": "02",
+            "title": "Verify ownership",
+            "desc": "Publish the required TXT record; the site configuration remains gated until verification."
+          },
+          {
+            "step": "03",
+            "title": "Configure",
+            "desc": "Choose the widget settings for that site in the management workspace."
+          },
+          {
+            "step": "04",
+            "title": "Install",
+            "desc": "Add the generated module script to the website; each site receives its own identifier."
+          },
+          {
+            "step": "05",
+            "title": "Check",
+            "desc": "Open the widget on the site and use the installation check for a recent, best-effort diagnostic signal."
+          }
+        ],
+        "is_visible": true
+      },
+      "evidence": {
+        "eyebrow": "LIVE PRODUCT",
+        "title": "A visitor-facing widget and its setup guide",
+        "image": "mhaf-accessibility-widget-open.webp",
+        "imageAlt": "MHAF accessibility widget open over the public product page, showing profiles and visitor controls.",
+        "caption": "Live production widget on the public MHAF site. The demo uses safe default settings when a site-specific configuration is unavailable.",
+        "gallery": [
+          {
+            "image": "mhaf-accessibility-widget-closed.webp",
+            "imageAlt": "MHAF public product page with the accessibility widget launcher closed in the lower-left corner.",
+            "caption": "Closed state: the floating launcher sits on the live product page."
+          },
+          {
+            "image": "mhaf-accessibility-installation-guide.webp",
+            "imageAlt": "Public MHAF installation guide showing a generic ES-module script example with placeholders.",
+            "caption": "Public installation guidance; the example contains placeholders, not a customer Site ID."
+          }
+        ],
+        "is_visible": true
+      },
+      "technology": {
+        "eyebrow": "IMPLEMENTATION",
+        "title": "A small embed, separated from the host page",
+        "tags": [
+          "React 18",
+          "Vite",
+          "Supabase",
+          "ES module widget",
+          "Shadow DOM"
+        ],
+        "is_visible": true
+      }
+    },
+    "i18n": {
+      "fr": {
+        "title": "MHAF Accessibility",
+        "kicker": "PRODUIT INDÉPENDANT",
+        "subtitle": "Un widget d’accessibilité pensé pour les visiteurs et un parcours de configuration plus clair pour les propriétaires de sites.",
+        "description": "MHAF Accessibility est un produit indépendant en production qui relie un espace de gestion de sites à un widget intégré que les visiteurs peuvent ouvrir et personnaliser. Il vise à rendre la configuration et les commandes d’accessibilité plus faciles à repérer et à utiliser, sans remplacer les pratiques d’accessibilité ni garantir la conformité.",
+        "caseStudy": {
+          "hero": {
+            "eyebrow": "PRODUIT INDÉPENDANT · EN PRODUCTION",
+            "title": "MHAF Accessibility",
+            "lead": "Un widget d’accessibilité contrôlé par les visiteurs, associé à un espace de gestion de sites. Le propriétaire vérifie son domaine et configure son site, puis ajoute un script généré ; les visiteurs ouvrent le widget pour ajuster la présentation de la page."
+          },
+          "challenge": {
+            "eyebrow": "LE DÉFI",
+            "title": "Relier la configuration à l’expérience des visiteurs",
+            "copy": "Les options d’accessibilité peuvent être difficiles à repérer, à configurer et à intégrer à un site existant. MHAF s’adresse à deux publics : les propriétaires, qui ont besoin d’un parcours de configuration prévisible, et les visiteurs, qui doivent pouvoir trouver et choisir les commandes utiles. Le widget améliore l’usage ; il ne remplace ni le balisage sémantique, ni l’accès au clavier, ni un contraste suffisant, ni les légendes, les textes alternatifs ou une évaluation WCAG.",
+            "role": "Conception produit et ingénierie — projet indépendant",
+            "context": "Du site vérifié aux commandes destinées aux visiteurs"
+          },
+          "contribution": {
+            "eyebrow": "EXPÉRIENCE PRODUIT",
+            "title": "Un parcours, de la configuration au choix du visiteur",
+            "items": [
+              "J’ai conçu et développé MHAF comme un produit indépendant, du parcours de configuration au widget intégré et au site produit public.",
+              "J’ai structuré l’intégration par site : saisir le nom d’hôte canonique, publier un enregistrement TXT de propriété, puis vérifier le domaine avant de servir sa configuration.",
+              "J’ai relié le site vérifié à un script ES module généré, à ajouter au site existant ; le guide public ne montre qu’un exemple générique.",
+              "J’ai conçu le panneau visiteur autour de profils de départ et de commandes directes pour la taille du texte, les polices, l’espacement, le contraste, les animations et la navigation.",
+              "J’ai ajouté une action de diagnostic « Vérifier l’installation », qui enregistre un événement récent ; cette télémétrie indicative ne prouve pas que le script est toujours installé.",
+              "Prochaine validation : tester le parcours propriétaire-visiteur sur des domaines vérifiés, tout en gardant les bonnes pratiques d’accessibilité indépendantes du widget."
+            ],
+            "process": [
+              {
+                "step": "01",
+                "title": "Ajouter un site",
+                "desc": "Saisir le nom d’hôte canonique du site dans l’espace de gestion."
+              },
+              {
+                "step": "02",
+                "title": "Vérifier la propriété",
+                "desc": "Publier l’enregistrement TXT requis ; la configuration reste bloquée jusqu’à la vérification."
+              },
+              {
+                "step": "03",
+                "title": "Configurer",
+                "desc": "Choisir les paramètres du widget pour ce site dans l’espace de gestion."
+              },
+              {
+                "step": "04",
+                "title": "Installer",
+                "desc": "Ajouter le script module généré au site ; chaque site reçoit son propre identifiant."
+              },
+              {
+                "step": "05",
+                "title": "Vérifier",
+                "desc": "Ouvrir le widget sur le site et lancer le contrôle d’installation pour obtenir un signal de diagnostic récent et indicatif."
+              }
+            ]
+          },
+          "evidence": {
+            "eyebrow": "PRODUIT EN PRODUCTION",
+            "title": "Le widget visiteur et son guide d’installation",
+            "imageAlt": "Widget d’accessibilité MHAF ouvert sur la page publique du produit, avec les profils et commandes visiteurs visibles.",
+            "caption": "Widget en production sur le site public de MHAF. La démo utilise des réglages sûrs par défaut lorsqu’aucune configuration propre à un site n’est disponible.",
+            "gallery": [
+              {
+                "image": "mhaf-accessibility-widget-closed.webp",
+                "imageAlt": "Page publique de MHAF avec le bouton flottant du widget fermé en bas à gauche.",
+                "caption": "État fermé : le bouton flottant est intégré à la page publique du produit."
+              },
+              {
+                "image": "mhaf-accessibility-installation-guide.webp",
+                "imageAlt": "Guide public d’installation MHAF montrant un exemple générique de script ES module avec des valeurs fictives.",
+                "caption": "Guide d’installation public ; l’exemple utilise des valeurs fictives, sans identifiant de site client."
+              }
+            ]
+          },
+          "technology": {
+            "eyebrow": "IMPLÉMENTATION",
+            "title": "Un petit module isolé du site hôte"
+          }
+        }
+      },
+      "ar": {
+        "title": "MHAF Accessibility",
+        "kicker": "منتج مستقل",
+        "subtitle": "أداة إتاحة يختار الزوار إعداداتها، مع مسار إعداد أوضح لمالكي المواقع.",
+        "description": "MHAF Accessibility منتج مستقل يعمل في الإنتاج، ويربط مساحة لإدارة المواقع بأداة مدمجة يفتحها الزوار ويتحكمون بها. يسهّل تهيئة الأداة والعثور على خيارات الإتاحة واستخدامها، لكنه لا يحل محل تصميم المواقع المتاح ولا يضمن الامتثال.",
+        "caseStudy": {
+          "hero": {
+            "eyebrow": "منتج مستقل · متاح في الإنتاج",
+            "title": "MHAF Accessibility",
+            "lead": "أداة إتاحة يختار الزائر إعداداتها، مرتبطة بمساحة لإدارة المواقع. يتحقق مالك الموقع من نطاقه ويضبط موقعه ثم يضيف مقطعًا مولّدًا؛ ويفتح الزائر الأداة لضبط طريقة عرض الصفحة."
+          },
+          "challenge": {
+            "eyebrow": "التحدي",
+            "title": "ربط مسار الإعداد بتجربة الزائر",
+            "copy": "قد يصعب العثور على خيارات الإتاحة وتهيئتها ودمجها في موقع قائم. يخدم MHAF طرفين: مالك الموقع الذي يحتاج إلى مسار إعداد واضح يمكن توقعه، والزائر الذي يحتاج إلى أدوات يجدها ويختار منها ما يناسبه. تدعم الأداة سهولة الاستخدام؛ ولا تحل محل بنية HTML الدلالية أو الوصول بلوحة المفاتيح أو التباين الكافي أو النصوص التوضيحية والبديلة أو مراجعة WCAG.",
+            "role": "تصميم المنتج وتجربته وتنفيذه · مشروع مستقل",
+            "context": "من إعداد موقع موثّق إلى أدوات الزائر"
+          },
+          "contribution": {
+            "eyebrow": "تجربة المنتج",
+            "title": "مسار واحد من إعداد الموقع إلى اختيار الزائر",
+            "items": [
+              "بنيت MHAF بوصفه منتجًا مستقلًا، من تجربة إعداد الموقع إلى الأداة المدمجة والموقع التعريفي العام.",
+              "صممت مسار التهيئة لكل موقع: إدخال النطاق الأساسي، ونشر سجل TXT لإثبات الملكية، ثم التحقق قبل إتاحة إعداداته.",
+              "ربطت الموقع الموثّق بمقطع ES module مولّد يضيفه المالك إلى موقعه الحالي؛ وتعرض صفحة التثبيت العامة مثالًا عامًا فقط.",
+              "صممت لوحة الزائر حول ملفات بدء وأدوات مباشرة لحجم النص والخطوط والتباعد والتباين والحركة والتنقل.",
+              "أضفت إجراء «التحقق من التثبيت» لتسجيل حدث حديث يساعد في استكشاف المشكلة؛ وهو قياس تقريبي لا يثبت استمرار وجود السكربت.",
+              "التحقق التالي: تجربة المسار من المالك إلى الزائر على نطاقات موثّقة، مع إبقاء ممارسات الإتاحة الأساسية مستقلة عن الأداة."
+            ],
+            "process": [
+              {
+                "step": "01",
+                "title": "أضف موقعًا",
+                "desc": "أدخل اسم النطاق الأساسي في مساحة إدارة الموقع."
+              },
+              {
+                "step": "02",
+                "title": "تحقق من الملكية",
+                "desc": "انشر سجل TXT المطلوب؛ وتظل إعدادات الموقع محجوبة حتى إتمام التحقق."
+              },
+              {
+                "step": "03",
+                "title": "هيّئ الإعدادات",
+                "desc": "اختر إعدادات الأداة الخاصة بهذا الموقع من مساحة الإدارة."
+              },
+              {
+                "step": "04",
+                "title": "ثبّت السكربت",
+                "desc": "أضف مقطع module المولّد إلى الموقع؛ ولكل موقع معرّفه الخاص."
+              },
+              {
+                "step": "05",
+                "title": "تحقق",
+                "desc": "افتح الأداة على الموقع واستخدم فحص التثبيت للحصول على إشارة تشخيصية حديثة وتقريبية."
+              }
+            ]
+          },
+          "evidence": {
+            "eyebrow": "المنتج في الإنتاج",
+            "title": "أداة الزائر ودليل التثبيت",
+            "imageAlt": "أداة MHAF مفتوحة فوق صفحة المنتج العامة، وتعرض ملفات البدء وأدوات الزائر.",
+            "caption": "الأداة الحية على موقع MHAF العام. يستخدم العرض إعدادات آمنة افتراضية عند عدم توفر إعداد خاص بموقع موثّق.",
+            "gallery": [
+              {
+                "image": "mhaf-accessibility-widget-closed.webp",
+                "imageAlt": "صفحة MHAF العامة مع بقاء زر أداة الإتاحة العائم مغلقًا في أسفل اليسار.",
+                "caption": "الحالة المغلقة: زر التشغيل العائم مدمج في صفحة المنتج العامة."
+              },
+              {
+                "image": "mhaf-accessibility-installation-guide.webp",
+                "imageAlt": "دليل التثبيت العام في MHAF ويعرض مثالًا عامًا لمقطع ES module باستخدام عناصر نائبة.",
+                "caption": "تعليمات التثبيت العامة؛ المثال يستخدم عناصر نائبة وليس معرّف موقع لعميل."
+              }
+            ]
+          },
+          "technology": {
+            "eyebrow": "التنفيذ",
+            "title": "مكوّن مدمج ومعزول عن صفحة الموقع"
+          }
+        }
+      }
+    }
+  },
+  "publishing_state": {
+    "status": "published",
+    "visibility": "public",
+    "featured": false,
+    "sort_order": 200,
+    "evidence_section_visible": true,
+    "public_route": "/work/mhaf-accessibility",
+    "verified_at": "2026-10-23T13:41:42+01:00"
+  }
+}

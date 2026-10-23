@@ -8,7 +8,9 @@
     "talk": "Let's Talk",
     "blog": "Blog",
     "agents": "Agents",
-    "resources": "Resources"
+    "resources": "Resources",
+    "beta": "Beta",
+    "toggleNavigation": "Toggle navigation"
   },
   "hero": {
     "eyebrow": "SENIOR UX/UI DESIGNER · AI PRODUCT BUILDER",
@@ -252,7 +254,47 @@
     "humanEyebrow": "THE PERSON BEHIND",
     "humanTitle": "Curiosity as the continuous thread.",
     "closingTitle": "Let's Build Something Meaningful",
-    "closingDesc": "I'm interested in meaningful product challenges where design, technology, and AI come together. Whether you are building an ambitious system or exploring workflow automation, let's talk."
+    "closingDesc": "I'm interested in meaningful product challenges where design, technology, and AI come together. Whether you are building an ambitious system or exploring workflow automation, let's talk.",
+    "displayName": "Naïm Bsili",
+    "portraitRole": "Product Builder · UX/UI · AI & Automation",
+    "currentBuildingLabel": "CURRENTLY BUILDING",
+    "stageLabel": "STAGE",
+    "keyLessonLabel": "Key lesson learned",
+    "periods": {
+      "foundations": "Foundations",
+      "visualCraft": "Visual craft",
+      "digitalSystems": "Digital systems",
+      "productionDelivery": "Implementation",
+      "currentFrontier": "Current experiments"
+    },
+    "signatureStatement": "I think. I design. I experiment. I build.",
+    "signatureLabel": "SIGNATURE STATEMENT",
+    "signatureDescription": "The feedback loop behind a useful product: understand, design, build, test, and improve.",
+    "viewAllWork": "View all work",
+    "roleLabel": "Role",
+    "exploreDetails": "Explore details",
+    "shareMetricLearning": "Learn",
+    "shareMetricBuilding": "Build",
+    "shareMetricSharing": "Share",
+    "shareIntro": "Sharing what I learn through documentation, writing, and practical experiments.",
+    "trainingHoursLabel": "through documentation and practice",
+    "learnersLabel": "product experiences, UX/UI & low-code",
+    "articlesLabel": "through writing and experimentation",
+    "readBlogArticles": "Read blog articles",
+    "exploreLab": "Explore the Lab",
+    "trackInLab": "Track in the Lab",
+    "spokenLanguages": "Arabic · French · English · Italian",
+    "psmBadge": "PSM I Scrum Master",
+    "designBadge": "Design · ISSAT Sousse",
+    "beliefsTitle": "A few core beliefs:",
+    "beliefs": {
+      "simplicityTitle": "Simplicity requires hard work:",
+      "simplicityBody": "Removing unnecessary noise is more demanding than adding more features.",
+      "prototypeTitle": "Prototyping beats arguing:",
+      "prototypeBody": "A tangible, working prototype answers design questions faster than hours of meetings.",
+      "knowledgeTitle": "Shared knowledge compounds:",
+      "knowledgeBody": "Teaching and writing force clarity and keep knowledge rigorous."
+    }
   },
   "copilot": {
     "kicker": "AI ASSISTANT",
@@ -288,6 +330,7 @@
     "myRole": "MY ROLE",
     "context": "CONTEXT",
     "backToWork": "Back to selected work",
+    "visitLiveProduct": "Explore the live product",
     "notFoundLabel": "NOT FOUND",
     "notFoundTitle": "Case Study Not Found",
     "notFoundBody": "No project case study matches the URL /work/{{slug}}."
