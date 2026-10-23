@@ -1186,6 +1186,49 @@ h1 em {
   color: var(--muted);
   font-size: 0.7rem;
 }
+.case-code-example {
+  margin: 32px 0 0;
+  overflow: hidden;
+  border: 1px solid #23313a;
+  border-radius: 18px;
+  background: #101a20;
+  box-shadow: 0 14px 38px rgba(20, 48, 53, 0.12);
+}
+.case-code-example-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f4f8f6;
+  font-size: 0.8rem;
+}
+.case-code-example-header span {
+  padding: 4px 8px;
+  border: 1px solid rgba(191, 219, 208, 0.25);
+  border-radius: 999px;
+  color: #b8d6c9;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+}
+.case-code-example pre {
+  margin: 0;
+  padding: 22px;
+  overflow-x: auto;
+  color: #d3eadf;
+  font: 0.78rem/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  tab-size: 2;
+  white-space: pre;
+}
+.case-code-example figcaption {
+  padding: 13px 18px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: #f3f6f4;
+  color: var(--muted);
+  font-size: 0.73rem;
+  line-height: 1.6;
+}
 .case-media {
   border: 1px solid var(--line);
   border-radius: 20px;

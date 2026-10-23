@@ -416,7 +416,7 @@ export default function AdminRegistryEntry() {
       type: (data.slug === 'winni' || data.slug === 'assestini') ? 'custom' : 'standard',
       hero: { eyebrow: '', title: data.title || '', lead: meta.description || meta.subtitle || '', metaChips: [], image: '', imageAlt: '', caption: '' },
       challenge: { eyebrow: '', title: '', copy: '', role: '', context: '' },
-      contribution: { eyebrow: '', title: '', items: [], process: [] },
+      contribution: { eyebrow: '', title: '', items: [], process: [], codeExample: { title: '', code: '', caption: '' } },
       evidence: { eyebrow: '', title: '', image: '', imageAlt: '', caption: '' },
       technology: { eyebrow: '', title: '', tags: [] },
     } : null);
@@ -1269,6 +1269,28 @@ export default function AdminRegistryEntry() {
                           disabled={saving}
                         />
                       </div>
+                      <div className="col-md-6">
+                        <label className="form-label fw-bold small text-dark">Hero Image Alt Text ({txLang.toUpperCase()})</label>
+                        <input
+                          type="text"
+                          className="form-control form-control-sm"
+                          value={txCase.hero?.imageAlt || ''}
+                          onChange={(e) => setTxCaseStudyField('hero', { imageAlt: e.target.value })}
+                          placeholder={caseStudy?.hero?.imageAlt || 'Describe the hero image'}
+                          disabled={saving}
+                        />
+                      </div>
+                      <div className="col-md-6">
+                        <label className="form-label fw-bold small text-dark">Hero Image Caption ({txLang.toUpperCase()})</label>
+                        <input
+                          type="text"
+                          className="form-control form-control-sm"
+                          value={txCase.hero?.caption || ''}
+                          onChange={(e) => setTxCaseStudyField('hero', { caption: e.target.value })}
+                          placeholder={caseStudy?.hero?.caption || 'Supporting hero image context'}
+                          disabled={saving}
+                        />
+                      </div>
                     </div>
 
                     {/* Challenge */}
@@ -1331,6 +1353,29 @@ export default function AdminRegistryEntry() {
                           placeholder="Point 1&#10;Point 2&#10;Point 3"
                           disabled={saving}
                         />
+                      </div>
+                      <div className="col-md-6">
+                        <label className="form-label fw-bold small text-dark">Code Example Title ({txLang.toUpperCase()})</label>
+                        <input
+                          type="text"
+                          className="form-control form-control-sm"
+                          value={txCase.contribution?.codeExample?.title || ''}
+                          onChange={(e) => setTxCaseStudyField('contribution', { codeExample: { ...(txCase.contribution?.codeExample || {}), title: e.target.value } })}
+                          placeholder={caseStudy?.contribution?.codeExample?.title || 'Public installation example'}
+                          disabled={saving}
+                        />
+                      </div>
+                      <div className="col-12">
+                        <label className="form-label fw-bold small text-dark">Code Example Caption ({txLang.toUpperCase()})</label>
+                        <textarea
+                          className="form-control"
+                          rows="2"
+                          value={txCase.contribution?.codeExample?.caption || ''}
+                          onChange={(e) => setTxCaseStudyField('contribution', { codeExample: { ...(txCase.contribution?.codeExample || {}), caption: e.target.value } })}
+                          placeholder={caseStudy?.contribution?.codeExample?.caption || 'Explain which values are generated for each site.'}
+                          disabled={saving}
+                        />
+                        <div className="form-text">The code remains shared across locales; translate its heading and explanatory caption.</div>
                       </div>
                     </div>
 

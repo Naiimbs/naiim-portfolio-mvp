@@ -1013,6 +1013,46 @@ export default function CaseStudyContentEditor({
           </div>
         </div>
 
+        {/* Optional public integration code example */}
+        <div className="mt-4 p-3 rounded border" style={{ background: '#f8fafc', borderColor: '#dbe4e8' }}>
+          <label className="form-label fw-semibold small text-dark mb-1" style={{ fontSize: '0.8rem' }}>
+            Public Code Example Title
+          </label>
+          <input
+            type="text"
+            className="form-control form-control-sm mb-3"
+            value={contribution.codeExample?.title || ''}
+            onChange={(e) => updateSection('contribution', 'codeExample', { ...(contribution.codeExample || {}), title: e.target.value })}
+            placeholder="e.g. Generic installation snippet"
+            disabled={disabled}
+          />
+          <label className="form-label fw-semibold small text-dark mb-1" style={{ fontSize: '0.8rem' }}>
+            Public Code Example (HTML)
+          </label>
+          <textarea
+            className="form-control form-control-sm font-monospace mb-3"
+            rows="7"
+            dir="ltr"
+            spellCheck="false"
+            value={contribution.codeExample?.code || ''}
+            onChange={(e) => updateSection('contribution', 'codeExample', { ...(contribution.codeExample || {}), code: e.target.value })}
+            placeholder="Paste a safe, generic example. Do not include customer IDs or secrets."
+            disabled={disabled}
+          />
+          <label className="form-label fw-semibold small text-dark mb-1" style={{ fontSize: '0.8rem' }}>
+            Code Example Caption
+          </label>
+          <textarea
+            className="form-control form-control-sm"
+            rows="2"
+            value={contribution.codeExample?.caption || ''}
+            onChange={(e) => updateSection('contribution', 'codeExample', { ...(contribution.codeExample || {}), caption: e.target.value })}
+            placeholder="Explain which values are generated and what the placeholder example means."
+            disabled={disabled}
+          />
+          <div className="form-text">Use public placeholders only; never paste a live client Site ID, token, or private endpoint.</div>
+        </div>
+
         {/* Process Steps */}
         <div className="mt-4">
           <div className="d-flex justify-content-between align-items-center mb-2">
