@@ -472,7 +472,7 @@ function WorkflowSection({ config = {} }) {
           {steps.map((step, idx) => (
             <div key={idx} className="col-12 col-md-4">
               <div className="p-4 border rounded-4 h-100">
-                <span className="badge bg-secondary mb-3">Step {idx + 1}</span>
+                <span className="badge bg-secondary mb-3">{String(idx + 1).padStart(2, '0')}</span>
                 <h5 className="fw-bold">{step.title}</h5>
                 <p className="text-muted small mb-0">{step.description}</p>
               </div>

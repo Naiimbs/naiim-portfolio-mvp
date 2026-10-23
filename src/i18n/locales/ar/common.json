@@ -8,7 +8,9 @@
     "talk": "لنتحدث",
     "blog": "المدونة",
     "agents": "الوكلاء",
-    "resources": "الموارد"
+    "resources": "الموارد",
+    "beta": "تجريبي",
+    "toggleNavigation": "فتح قائمة التنقل"
   },
   "hero": {
     "eyebrow": "مصمم واجهات وتجربة مستخدم أول · مطور منتجات الذكاء الاصطناعي",
@@ -252,7 +254,47 @@
     "humanEyebrow": "الإنسان وراء المنتج",
     "humanTitle": "الفضول المستمر كحلقة وصل.",
     "closingTitle": "فلنبنِ شيئاً ذا قيمة حقيقية",
-    "closingDesc": "أتطلع إلى التحديات التي تجمع بين التصميم المتقن والتقنية الحديثة والذكاء الاصطناعي. إذا كنت تبني نظاماً طموحاً أو ترغب في أتمتة أعمالك، يسعدني التواصل معك."
+    "closingDesc": "أتطلع إلى التحديات التي تجمع بين التصميم المتقن والتقنية الحديثة والذكاء الاصطناعي. إذا كنت تبني نظاماً طموحاً أو ترغب في أتمتة أعمالك، يسعدني التواصل معك.",
+    "displayName": "نعيم بصيلي",
+    "portraitRole": "بناء المنتجات · UX/UI · الذكاء الاصطناعي والأتمتة",
+    "currentBuildingLabel": "قيد التطوير",
+    "stageLabel": "المرحلة",
+    "keyLessonLabel": "الخلاصة المستفادة",
+    "periods": {
+      "foundations": "الأسس",
+      "visualCraft": "الحرفة البصرية",
+      "digitalSystems": "الأنظمة الرقمية",
+      "productionDelivery": "التنفيذ",
+      "currentFrontier": "التجارب الحالية"
+    },
+    "signatureStatement": "أفكّر. أصمّم. أجرّب. أبني.",
+    "signatureLabel": "عبارة العمل",
+    "signatureDescription": "حلقة التعلم وراء المنتج المفيد: افهم، صمّم، ابنِ، اختبر، ثم حسّن.",
+    "viewAllWork": "عرض كل الأعمال",
+    "roleLabel": "الدور",
+    "exploreDetails": "استكشف التفاصيل",
+    "shareMetricLearning": "تعلّم",
+    "shareMetricBuilding": "ابنِ",
+    "shareMetricSharing": "شارك",
+    "shareIntro": "أشارك ما أتعلمه عبر التوثيق والكتابة والتجارب العملية.",
+    "trainingHoursLabel": "عبر التوثيق والممارسة",
+    "learnersLabel": "تجارب المنتجات وUX/UI وLow-Code",
+    "articlesLabel": "بالكتابة والتجريب",
+    "readBlogArticles": "اقرأ المقالات",
+    "exploreLab": "استكشف المختبر",
+    "trackInLab": "تابع في المختبر",
+    "spokenLanguages": "العربية · الفرنسية · الإنجليزية · الإيطالية",
+    "psmBadge": "Scrum Master · PSM I",
+    "designBadge": "التصميم · ISSAT Sousse",
+    "beliefsTitle": "بعض المبادئ التي أؤمن بها:",
+    "beliefs": {
+      "simplicityTitle": "البساطة تتطلب جهدًا:",
+      "simplicityBody": "إزالة التعقيد غير الضروري أصعب من إضافة مزايا جديدة.",
+      "prototypeTitle": "النموذج العملي أوضح من الجدل:",
+      "prototypeBody": "نموذج أولي قابل للتجربة يجيب عن أسئلة التصميم أسرع من اجتماعات مطولة.",
+      "knowledgeTitle": "المعرفة المشتركة تتراكم:",
+      "knowledgeBody": "التدريس والكتابة يعززان الوضوح ويحافظان على دقة المعرفة."
+    }
   },
   "copilot": {
     "kicker": "مساعد الذكاء الاصطناعي",
@@ -288,6 +330,7 @@
     "myRole": "دوري",
     "context": "السياق",
     "backToWork": "العودة إلى الأعمال المختارة",
+    "visitLiveProduct": "اكتشف المنتج مباشرةً",
     "notFoundLabel": "غير موجود",
     "notFoundTitle": "دراسة الحالة غير موجودة",
     "notFoundBody": "لا توجد دراسة حالة تطابق الرابط /work/{{slug}}."

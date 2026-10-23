@@ -1,0 +1,43 @@
+{
+  "page_id": "b458c42a-8e8e-4629-b6cd-9eae47ccbb79",
+  "note": "Pre-change snapshot for draft-only About page localization and visibility edits. Published snapshot is separate and remains unchanged.",
+  "sections": {
+    "about_share": {
+      "id": "16c08682-88de-40ed-9cae-2e703ab71afa",
+      "fr_i18n": null,
+      "base_values": {
+        "hours": "1,200+",
+        "learners": "300+",
+        "articles": "20+"
+      },
+      "ar_i18n": {
+        "hours": "1,200+",
+        "title": "ما وراء معرض الأعمال",
+        "eyebrow": "مشاركة المعرفة",
+        "articles": "20+",
+        "learners": "300+"
+      }
+    },
+    "about_human": {
+      "id": "94d7e6f8-66d0-4c5c-a589-7eaf31c9106e",
+      "fr_i18n": null,
+      "ar_i18n": {
+        "story": "وراء كل نظام تصميم وكل تدفق عمل قائم على الوكلاء فضول عميق لمعرفة كيفية عمل الأشياء. سواء أكنت أفكك آلية ميكانيكية، أو أراقب كيف يتعامل الناس مع الاحتكاك في مهامهم اليومية، أو أكتب منطق الأتمتة، يبقى الخيط المشترك هو تحويل الأفكار إلى شيء ملموس ومفيد.",
+        "title": "الفضول هو الخيط الذي يربط كل شيء.",
+        "eyebrow": "الإنسان وراء العمل"
+      }
+    },
+    "about_closing": {
+      "id": "687e058d-b2a5-4fb6-8d8b-fab705641bd6",
+      "fr_i18n": null,
+      "ar_i18n": {
+        "title": "لنبنِ شيئاً ذا معنى",
+        "eyebrow": "تواصل معي",
+        "description": "أهتم بتحديات المنتجات ذات المعنى، حيث يلتقي التصميم بالتقنية والذكاء الاصطناعي. سواء كنت تبني نظاماً طموحاً أو تستكشف أتمتة تدفقات العمل، يسعدني أن نتحدث.",
+        "exploreLabel": "استكشف أعمالي"
+      }
+    },
+    "accordion": { "id": "0fb046e4-cba8-4ff4-be5e-cdd014ca3fbe", "is_visible": true },
+    "gallery": { "id": "52b255ea-6090-4b54-b4e2-9ff52d9b5074", "is_visible": true }
+  }
+}

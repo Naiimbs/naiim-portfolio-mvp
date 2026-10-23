@@ -498,6 +498,7 @@ export function normalizeRegistryEntry(entry, presentationAsset = null) {
     sort_order: entry.sort_order ?? 0,
     content_type: entry.content_type,
     contentType: entry.content_type,
+    i18n: meta.i18n || entry.i18n || {},
     presentation,
     caseStudy,
     page,
@@ -522,5 +523,4 @@ export function normalizeRegistryEntry(entry, presentationAsset = null) {
     },
   };
 }
-
 

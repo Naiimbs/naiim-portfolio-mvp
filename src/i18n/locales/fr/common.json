@@ -8,7 +8,9 @@
     "talk": "Discutons",
     "blog": "Blog",
     "agents": "Agents",
-    "resources": "Ressources"
+    "resources": "Ressources",
+    "beta": "Bêta",
+    "toggleNavigation": "Ouvrir la navigation"
   },
   "hero": {
     "eyebrow": "DESIGNER UX/UI SENIOR · BÂTISSEUR DE PRODUITS IA",
@@ -252,7 +254,47 @@
     "humanEyebrow": "LA PERSONNE DERRIÈRE",
     "humanTitle": "La curiosité comme fil conducteur.",
     "closingTitle": "Bâtissons quelque chose qui compte",
-    "closingDesc": "Je m'intéresse aux défis de produits ambitieux où le design, la technologie et l'IA se rencontrent. Que vous construisiez un système complexe ou exploriez l'automatisation, parlons-en."
+    "closingDesc": "Je m'intéresse aux défis de produits ambitieux où le design, la technologie et l'IA se rencontrent. Que vous construisiez un système complexe ou exploriez l'automatisation, parlons-en.",
+    "displayName": "Naïm Bsili",
+    "portraitRole": "Product Builder · UX/UI · IA et automatisation",
+    "currentBuildingLabel": "EN COURS D’EXPLORATION",
+    "stageLabel": "ÉTAPE",
+    "keyLessonLabel": "Leçon à retenir",
+    "periods": {
+      "foundations": "Fondations",
+      "visualCraft": "Savoir-faire visuel",
+      "digitalSystems": "Systèmes numériques",
+      "productionDelivery": "Mise en œuvre",
+      "currentFrontier": "Expérimentations actuelles"
+    },
+    "signatureStatement": "Je pense. Je conçois. J’expérimente. Je construis.",
+    "signatureLabel": "MA DÉMARCHE",
+    "signatureDescription": "La boucle d’apprentissage derrière un produit utile : comprendre, concevoir, construire, tester et améliorer.",
+    "viewAllWork": "Voir tous les projets",
+    "roleLabel": "Rôle",
+    "exploreDetails": "Découvrir le projet",
+    "shareMetricLearning": "Apprendre",
+    "shareMetricBuilding": "Construire",
+    "shareMetricSharing": "Partager",
+    "shareIntro": "Je partage mes apprentissages par la documentation, l’écriture et des expérimentations pratiques.",
+    "trainingHoursLabel": "par la documentation et la pratique",
+    "learnersLabel": "des produits et interfaces UX/UI et Low-Code",
+    "articlesLabel": "par l’écriture et l’expérimentation",
+    "readBlogArticles": "Lire les articles",
+    "exploreLab": "Explorer le Lab",
+    "trackInLab": "Suivre dans le Lab",
+    "spokenLanguages": "Arabe · Français · Anglais · Italien",
+    "psmBadge": "Scrum Master certifié PSM I",
+    "designBadge": "Design · ISSAT Sousse",
+    "beliefsTitle": "Quelques convictions :",
+    "beliefs": {
+      "simplicityTitle": "La simplicité demande du travail :",
+      "simplicityBody": "Retirer le bruit inutile demande plus d’efforts qu’ajouter des fonctionnalités.",
+      "prototypeTitle": "Le prototype vaut mieux que le débat :",
+      "prototypeBody": "Un prototype concret répond aux questions de design plus vite que de longues réunions.",
+      "knowledgeTitle": "Le savoir partagé se renforce :",
+      "knowledgeBody": "Enseigner et écrire obligent à clarifier ses idées et à garder des connaissances rigoureuses."
+    }
   },
   "copilot": {
     "kicker": "ASSISTANT IA",
@@ -288,6 +330,7 @@
     "myRole": "MON RÔLE",
     "context": "CONTEXTE",
     "backToWork": "Retour aux projets sélectionnés",
+    "visitLiveProduct": "Découvrir le produit en ligne",
     "notFoundLabel": "INTROUVABLE",
     "notFoundTitle": "Étude de cas introuvable",
     "notFoundBody": "Aucune étude de cas ne correspond à l'URL /work/{{slug}}."

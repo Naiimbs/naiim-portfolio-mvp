@@ -571,6 +571,8 @@ export default function AdminRegistryEntry() {
 
   const tx = translations[txLang] || {};
   const txCase = tx.caseStudy || {};
+  const baseEvidenceGallery = Array.isArray(caseStudy?.evidence?.gallery) ? caseStudy.evidence.gallery : [];
+  const txEvidenceGallery = Array.isArray(txCase.evidence?.gallery) ? txCase.evidence.gallery : [];
 
   const setTxField = (patch) => {
     setTranslations((prev) => ({
@@ -600,6 +602,20 @@ export default function AdminRegistryEntry() {
       };
     });
     setIsDirty(true);
+  };
+
+  const getTxEvidenceGalleryText = (field) => baseEvidenceGallery
+    .map((_, index) => txEvidenceGallery[index]?.[field] || '')
+    .join('\n');
+
+  const setTxEvidenceGalleryText = (field, value) => {
+    const lines = value.split('\n');
+    const gallery = baseEvidenceGallery.map((item, index) => ({
+      ...(txEvidenceGallery[index] || {}),
+      image: item?.image || '',
+      [field]: lines[index]?.trim() || '',
+    }));
+    setTxCaseStudyField('evidence', { gallery });
   };
 
   // ── Save ──────────────────────────────────────────────────────────────────
@@ -1341,6 +1357,43 @@ export default function AdminRegistryEntry() {
                           placeholder={caseStudy?.evidence?.caption || 'Supporting visual documentation'}
                           disabled={saving}
                         />
+                      </div>
+                    </div>
+
+                    <div className="row g-3 mb-3">
+                      <div className="col-12">
+                        <label className="form-label fw-bold small text-dark">Evidence Image Alt Text ({txLang.toUpperCase()})</label>
+                        <input
+                          type="text"
+                          className="form-control form-control-sm"
+                          value={txCase.evidence?.imageAlt || ''}
+                          onChange={(e) => setTxCaseStudyField('evidence', { imageAlt: e.target.value })}
+                          placeholder={caseStudy?.evidence?.imageAlt || 'Describe the main evidence image'}
+                          disabled={saving}
+                        />
+                      </div>
+                      <div className="col-md-6">
+                        <label className="form-label fw-bold small text-dark">Gallery Captions, in display order ({txLang.toUpperCase()})</label>
+                        <textarea
+                          className="form-control"
+                          rows="3"
+                          value={getTxEvidenceGalleryText('caption')}
+                          onChange={(e) => setTxEvidenceGalleryText('caption', e.target.value)}
+                          placeholder="One caption per gallery image"
+                          disabled={saving || baseEvidenceGallery.length === 0}
+                        />
+                      </div>
+                      <div className="col-md-6">
+                        <label className="form-label fw-bold small text-dark">Gallery Image Alt Text, in display order ({txLang.toUpperCase()})</label>
+                        <textarea
+                          className="form-control"
+                          rows="3"
+                          value={getTxEvidenceGalleryText('imageAlt')}
+                          onChange={(e) => setTxEvidenceGalleryText('imageAlt', e.target.value)}
+                          placeholder="One alt description per gallery image"
+                          disabled={saving || baseEvidenceGallery.length === 0}
+                        />
+                        <div className="form-text">Translations follow the image order in the Evidence editor.</div>
                       </div>
                     </div>
 

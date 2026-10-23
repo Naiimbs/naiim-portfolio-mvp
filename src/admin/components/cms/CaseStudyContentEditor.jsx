@@ -563,6 +563,23 @@ export default function CaseStudyContentEditor({
           />
         </div>
 
+        <div className="mt-3">
+          <label className="form-label fw-semibold small text-dark mb-1" style={{ fontSize: '0.8rem' }}>
+            Live Product URL
+          </label>
+          <input
+            type="url"
+            className="form-control form-control-sm"
+            value={hero.liveProductUrl || ''}
+            onChange={(e) => updateSection('hero', 'liveProductUrl', e.target.value)}
+            placeholder="https://mhaf.naiimbsili.com/"
+            disabled={disabled}
+          />
+          <div className="form-text text-muted" style={{ fontSize: '0.7rem' }}>
+            Shown as the case-study product link; external links open in a new tab.
+          </div>
+        </div>
+
         {/* Meta Chips */}
         <div className="mt-3">
           <label className="form-label fw-semibold small text-dark mb-1" style={{ fontSize: '0.8rem' }}>

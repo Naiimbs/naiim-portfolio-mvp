@@ -15,6 +15,9 @@ import dgaGovEvidenceImg from '../assets/images/dga_government_services_case_evi
 import dgaBankingEvidenceImg from '../assets/images/dga_antifraud_case_evidence_skeleton_v2.webp';
 import dgaDigitalEvidenceImg from '../assets/images/dga_digital_government_case_evidence_skeleton.webp';
 import dgaRegEvidenceImg from '../assets/images/dga_regulatory_healthcare_case_evidence_skeleton.webp';
+import mhafWidgetClosedImg from '../assets/images/mhaf-accessibility-widget-closed.webp';
+import mhafWidgetOpenImg from '../assets/images/mhaf-accessibility-widget-open.webp';
+import mhafInstallationGuideImg from '../assets/images/mhaf-accessibility-installation-guide.webp';
 
 /**
  * Static Asset Dictionary for Portfolio Presentation Assets.
@@ -62,6 +65,11 @@ export const ASSET_MAP = {
   'dga_regulatory_healthcare_case_hero_skeleton.png': dgaRegHeroImg,
   'saudi-regulatory': dgaRegHeroImg,
   'dga_regulatory_healthcare_case_evidence_skeleton.png': dgaRegEvidenceImg,
+
+  // MHAF Accessibility — verified public production captures
+  'mhaf-accessibility-widget-closed.webp': mhafWidgetClosedImg,
+  'mhaf-accessibility-widget-open.webp': mhafWidgetOpenImg,
+  'mhaf-accessibility-installation-guide.webp': mhafInstallationGuideImg,
 };
 
 /**
