@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { resolveAsset } from '../../../services/assetRegistry';
+import { FDE_STAGE_TYPES, createFdeStage, createStageId, getFdeStageLabel, normalizeProcessStages } from '../../../utils/caseStudyStages';
 
 /**
  * CaseStudyContentEditor.jsx
@@ -28,6 +29,7 @@ export default function CaseStudyContentEditor({
   // State for chip / tag inputs
   const [newMetaChip, setNewMetaChip] = useState('');
   const [newTechTag, setNewTechTag] = useState('');
+  const [newStageType, setNewStageType] = useState('problem-context');
 
   // Local image load error tracking
   const [heroImgError, setHeroImgError] = useState(false);
@@ -228,62 +230,84 @@ export default function CaseStudyContentEditor({
     onChange(updated);
   };
 
-  // Process steps handlers
-  const handleAddStep = () => {
+  // Optional process stages use stable IDs so translations survive reordering.
+  const commitProcessStages = (process) => {
     const updated = clone(caseStudy);
-    const process = Array.isArray(updated.contribution?.process) ? [...updated.contribution.process] : [];
-    const stepNum = String(process.length + 1).padStart(2, '0');
-    process.push({ step: stepNum, title: '', desc: '' });
     if (!updated.contribution) updated.contribution = {};
     updated.contribution.process = process;
     onChange(updated);
+  };
+
+  const handleAddStep = (stageType = newStageType) => {
+    const process = normalizeProcessStages(contribution.process);
+    process.push(createFdeStage(stageType, process.length));
+    commitProcessStages(process);
   };
 
   const handleDuplicateStep = (index) => {
-    const updated = clone(caseStudy);
-    const process = Array.isArray(updated.contribution?.process) ? [...updated.contribution.process] : [];
-    if (process[index]) {
-      const stepNum = String(process.length + 1).padStart(2, '0');
-      const cloneStep = { ...process[index], step: stepNum, title: `${process[index].title || 'Step'} (Copy)` };
-      process.splice(index + 1, 0, cloneStep);
-      if (!updated.contribution) updated.contribution = {};
-      updated.contribution.process = process;
-      onChange(updated);
-    }
+    const process = normalizeProcessStages(contribution.process);
+    if (!process[index]) return;
+    const duplicated = {
+      ...process[index],
+      id: createStageId(process[index].stageType || 'custom'),
+      step: String(process.length + 1).padStart(2, '0'),
+      title: process[index].title ? `${process[index].title} (Copy)` : '',
+      media: (process[index].media || []).map((item) => ({ ...item, id: createStageId('media') })),
+      links: (process[index].links || []).map((item) => ({ ...item, id: createStageId('link') })),
+    };
+    process.splice(index + 1, 0, duplicated);
+    commitProcessStages(process);
   };
 
   const handleMoveStep = (index, direction) => {
-    const updated = clone(caseStudy);
-    const process = Array.isArray(updated.contribution?.process) ? [...updated.contribution.process] : [];
+    const process = normalizeProcessStages(contribution.process);
     const targetIdx = index + direction;
     if (targetIdx < 0 || targetIdx >= process.length) return;
-    const temp = process[index];
-    process[index] = process[targetIdx];
-    process[targetIdx] = temp;
-    process.forEach((p, idx) => {
-      p.step = String(idx + 1).padStart(2, '0');
-    });
-    if (!updated.contribution) updated.contribution = {};
-    updated.contribution.process = process;
-    onChange(updated);
+    [process[index], process[targetIdx]] = [process[targetIdx], process[index]];
+    process.forEach((stage, idx) => { stage.step = String(idx + 1).padStart(2, '0'); });
+    commitProcessStages(process);
   };
 
   const handleUpdateStep = (index, field, value) => {
-    const updated = clone(caseStudy);
-    const process = Array.isArray(updated.contribution?.process) ? [...updated.contribution.process] : [];
+    const process = normalizeProcessStages(contribution.process);
+    if (!process[index]) return;
     process[index] = { ...process[index], [field]: value };
-    if (!updated.contribution) updated.contribution = {};
-    updated.contribution.process = process;
-    onChange(updated);
+    commitProcessStages(process);
   };
 
   const handleRemoveStep = (index) => {
-    const updated = clone(caseStudy);
-    const process = Array.isArray(updated.contribution?.process) ? [...updated.contribution.process] : [];
+    const process = normalizeProcessStages(contribution.process);
     process.splice(index, 1);
-    if (!updated.contribution) updated.contribution = {};
-    updated.contribution.process = process;
-    onChange(updated);
+    process.forEach((stage, idx) => { stage.step = String(idx + 1).padStart(2, '0'); });
+    commitProcessStages(process);
+  };
+
+  const handleAddStageItem = (stageIndex, field) => {
+    const process = normalizeProcessStages(contribution.process);
+    if (!process[stageIndex]) return;
+    const items = Array.isArray(process[stageIndex][field]) ? [...process[stageIndex][field]] : [];
+    items.push(field === 'media'
+      ? { id: createStageId('media'), url: '', alt: '', caption: '' }
+      : { id: createStageId('link'), label: '', url: '' });
+    process[stageIndex] = { ...process[stageIndex], [field]: items };
+    commitProcessStages(process);
+  };
+
+  const handleUpdateStageItem = (stageIndex, field, itemIndex, itemField, value) => {
+    const process = normalizeProcessStages(contribution.process);
+    const items = Array.isArray(process[stageIndex]?.[field]) ? [...process[stageIndex][field]] : [];
+    if (!items[itemIndex]) return;
+    items[itemIndex] = { ...items[itemIndex], [itemField]: value };
+    process[stageIndex] = { ...process[stageIndex], [field]: items };
+    commitProcessStages(process);
+  };
+
+  const handleRemoveStageItem = (stageIndex, field, itemIndex) => {
+    const process = normalizeProcessStages(contribution.process);
+    const items = Array.isArray(process[stageIndex]?.[field]) ? [...process[stageIndex][field]] : [];
+    items.splice(itemIndex, 1);
+    process[stageIndex] = { ...process[stageIndex], [field]: items };
+    commitProcessStages(process);
   };
 
   // Evidence gallery handlers
@@ -1053,114 +1077,145 @@ export default function CaseStudyContentEditor({
           <div className="form-text">Use public placeholders only; never paste a live client Site ID, token, or private endpoint.</div>
         </div>
 
-        {/* Process Steps */}
+        {/* Optional FDE methodology stages */}
         <div className="mt-4">
-          <div className="d-flex justify-content-between align-items-center mb-2">
+          <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
             <label className="form-label fw-semibold small text-dark mb-0" style={{ fontSize: '0.8rem' }}>
-              Execution Process Steps (Optional)
+              Optional Methodology Stages
             </label>
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-primary py-0 px-2"
-              style={{ fontSize: '0.72rem' }}
-              onClick={handleAddStep}
-              disabled={disabled}
-            >
-              <i className="bi bi-plus-lg me-1" /> Add Step
-            </button>
+            <div className="d-flex align-items-center gap-2">
+              <select
+                className="form-select form-select-sm"
+                style={{ width: 'auto', maxWidth: '260px' }}
+                value={newStageType}
+                onChange={(e) => setNewStageType(e.target.value)}
+                aria-label="Stage type to add"
+                disabled={disabled}
+              >
+                {FDE_STAGE_TYPES.map((stageType) => (
+                  <option key={stageType} value={stageType}>{getFdeStageLabel(stageType, 'en')}</option>
+                ))}
+              </select>
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-primary py-0 px-2"
+                style={{ fontSize: '0.72rem' }}
+                onClick={() => handleAddStep(newStageType)}
+                disabled={disabled}
+              >
+                <i className="bi bi-plus-lg me-1" /> Add Stage
+              </button>
+            </div>
+          </div>
+          <div className="form-text mb-2">
+            All stages are optional. Add only substantiated material; hidden stages and empty stages do not render publicly. Evidence, technologies, media and links are optional.
           </div>
 
           <div className="d-flex flex-column gap-3">
-            {(contribution.process || []).map((proc, idx) => (
-              <div key={idx} className="p-3 rounded border bg-light" style={{ borderColor: '#e2e8f0' }}>
-                <div className="d-flex justify-content-between align-items-center mb-2">
-                  <div className="d-flex align-items-center gap-2">
+            {normalizeProcessStages(contribution.process).map((proc, idx) => (
+              <div key={proc.id} className={`p-3 rounded border bg-light ${proc.is_visible === false ? 'opacity-50' : ''}`} style={{ borderColor: '#e2e8f0' }}>
+                <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                  <div className="d-flex align-items-center gap-2 flex-wrap">
                     <span className="badge bg-secondary-subtle text-secondary border px-2 py-1" style={{ fontSize: '0.7rem' }}>
                       Step {proc.step || idx + 1}
                     </span>
-                    <span className="fw-semibold small text-dark">{proc.title || 'Untitled Step'}</span>
+                    <span className="fw-semibold small text-dark">{proc.title || getFdeStageLabel(proc.stageType || 'custom', 'en')}</span>
+                    {proc.is_visible === false && <span className="badge bg-warning-subtle text-warning-emphasis border">Hidden</span>}
                   </div>
                   <div className="d-flex align-items-center gap-1">
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-secondary py-0 px-2"
-                      style={{ fontSize: '0.68rem' }}
-                      disabled={disabled || idx === 0}
-                      onClick={() => handleMoveStep(idx, -1)}
-                      title="Move Step Up"
-                    >
+                    <button type="button" className="btn btn-sm btn-outline-secondary py-0 px-2" disabled={disabled || idx === 0} onClick={() => handleMoveStep(idx, -1)} title="Move stage up" aria-label="Move stage up">
                       <i className="bi bi-chevron-up" />
                     </button>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-secondary py-0 px-2"
-                      style={{ fontSize: '0.68rem' }}
-                      disabled={disabled || idx === (contribution.process || []).length - 1}
-                      onClick={() => handleMoveStep(idx, 1)}
-                      title="Move Step Down"
-                    >
+                    <button type="button" className="btn btn-sm btn-outline-secondary py-0 px-2" disabled={disabled || idx === normalizeProcessStages(contribution.process).length - 1} onClick={() => handleMoveStep(idx, 1)} title="Move stage down" aria-label="Move stage down">
                       <i className="bi bi-chevron-down" />
                     </button>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-secondary py-0 px-2"
-                      style={{ fontSize: '0.68rem' }}
-                      onClick={() => handleDuplicateStep(idx)}
-                      disabled={disabled}
-                      title="Duplicate Step"
-                    >
+                    <button type="button" className="btn btn-sm btn-outline-secondary py-0 px-2" onClick={() => handleDuplicateStep(idx)} disabled={disabled} title="Duplicate stage" aria-label="Duplicate stage">
                       <i className="bi bi-copy" />
                     </button>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-danger py-0 px-2"
-                      style={{ fontSize: '0.68rem' }}
-                      onClick={() => handleRemoveStep(idx)}
-                      disabled={disabled}
-                    >
+                    <button type="button" className="btn btn-sm btn-outline-secondary py-0 px-2" onClick={() => handleUpdateStep(idx, 'is_visible', proc.is_visible === false)} disabled={disabled} title={proc.is_visible === false ? 'Show stage publicly' : 'Hide stage publicly'} aria-label={proc.is_visible === false ? 'Show stage publicly' : 'Hide stage publicly'}>
+                      <i className={`bi bi-${proc.is_visible === false ? 'eye-slash' : 'eye'}`} />
+                    </button>
+                    <button type="button" className="btn btn-sm btn-outline-danger py-0 px-2" onClick={() => handleRemoveStep(idx)} disabled={disabled} title="Remove stage">
                       <i className="bi bi-trash me-1" /> Remove
                     </button>
                   </div>
                 </div>
 
                 <div className="row g-2">
-                  <div className="col-sm-3">
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      value={proc.step || ''}
-                      onChange={(e) => handleUpdateStep(idx, 'step', e.target.value)}
-                      placeholder="Step (e.g. 01)"
+                  <div className="col-md-4">
+                    <label className="form-label small mb-1">Stage type</label>
+                    <select
+                      className="form-select form-select-sm"
+                      value={proc.stageType || 'custom'}
+                      onChange={(e) => {
+                        const nextType = e.target.value;
+                        const previousLabel = getFdeStageLabel(proc.stageType || 'custom', 'en');
+                        const patch = { stageType: nextType };
+                        if (!proc.title || proc.title === previousLabel) patch.title = nextType === 'custom' ? '' : getFdeStageLabel(nextType, 'en');
+                        const next = normalizeProcessStages(contribution.process);
+                        next[idx] = { ...next[idx], ...patch };
+                        commitProcessStages(next);
+                      }}
                       disabled={disabled}
-                    />
+                    >
+                      {FDE_STAGE_TYPES.map((stageType) => <option key={stageType} value={stageType}>{getFdeStageLabel(stageType, 'en')}</option>)}
+                    </select>
                   </div>
-                  <div className="col-sm-9">
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      value={proc.title || ''}
-                      onChange={(e) => handleUpdateStep(idx, 'title', e.target.value)}
-                      placeholder="Step title"
-                      disabled={disabled}
-                    />
+                  <div className="col-md-8">
+                    <label className="form-label small mb-1">Stage title (English source)</label>
+                    <input type="text" className="form-control form-control-sm" value={proc.title || ''} onChange={(e) => handleUpdateStep(idx, 'title', e.target.value)} placeholder={getFdeStageLabel(proc.stageType || 'custom', 'en')} disabled={disabled} />
                   </div>
                 </div>
 
                 <div className="mt-2">
-                  <textarea
-                    className="form-control form-control-sm"
-                    rows="2"
-                    value={proc.desc || ''}
-                    onChange={(e) => handleUpdateStep(idx, 'desc', e.target.value)}
-                    placeholder="Step details and execution notes…"
-                    disabled={disabled}
-                  />
+                  <label className="form-label small mb-1">Stage description (English source)</label>
+                  <textarea className="form-control form-control-sm" rows="2" value={proc.desc || ''} onChange={(e) => handleUpdateStep(idx, 'desc', e.target.value)} placeholder="Describe only verified work for this stage." disabled={disabled} />
+                </div>
+
+                <div className="row g-2 mt-1">
+                  <div className="col-md-6">
+                    <label className="form-label small mb-1">Public evidence / reference (optional)</label>
+                    <textarea className="form-control form-control-sm" rows="2" value={proc.evidence || ''} onChange={(e) => handleUpdateStep(idx, 'evidence', e.target.value)} placeholder="Name a public artifact or evidence note; do not paste private material." disabled={disabled} />
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label small mb-1">Relevant technologies (optional, one per line)</label>
+                    <textarea className="form-control form-control-sm" rows="2" value={(proc.technologies || []).join('\n')} onChange={(e) => handleUpdateStep(idx, 'technologies', e.target.value.split('\n').map((item) => item.trim()).filter(Boolean))} placeholder="Only technologies used in this stage" disabled={disabled} />
+                  </div>
+                </div>
+
+                <div className="mt-3 pt-2 border-top">
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <span className="small fw-semibold">Stage media (optional)</span>
+                    <button type="button" className="btn btn-sm btn-outline-secondary py-0 px-2" onClick={() => handleAddStageItem(idx, 'media')} disabled={disabled}><i className="bi bi-plus-lg me-1" />Add image</button>
+                  </div>
+                  {(proc.media || []).map((media, mediaIndex) => (
+                    <div className="row g-2 align-items-end mb-2" key={media.id || mediaIndex}>
+                      <div className="col-md-4"><label className="form-label small mb-1">Image URL / asset</label><input type="text" className="form-control form-control-sm" value={media.url || media.image || ''} onChange={(e) => handleUpdateStageItem(idx, 'media', mediaIndex, 'url', e.target.value)} placeholder="https://… or registered asset" disabled={disabled} /></div>
+                      <div className="col-md-3"><label className="form-label small mb-1">Alt text</label><input type="text" className="form-control form-control-sm" value={media.alt || media.imageAlt || ''} onChange={(e) => handleUpdateStageItem(idx, 'media', mediaIndex, 'alt', e.target.value)} placeholder="Describe the image" disabled={disabled} /></div>
+                      <div className="col-md-4"><label className="form-label small mb-1">Caption</label><input type="text" className="form-control form-control-sm" value={media.caption || ''} onChange={(e) => handleUpdateStageItem(idx, 'media', mediaIndex, 'caption', e.target.value)} placeholder="Optional caption" disabled={disabled} /></div>
+                      <div className="col-md-1"><button type="button" className="btn btn-sm btn-outline-danger w-100" onClick={() => handleRemoveStageItem(idx, 'media', mediaIndex)} disabled={disabled} aria-label="Remove image"><i className="bi bi-trash" /></button></div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-3 pt-2 border-top">
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <span className="small fw-semibold">Stage links (optional)</span>
+                    <button type="button" className="btn btn-sm btn-outline-secondary py-0 px-2" onClick={() => handleAddStageItem(idx, 'links')} disabled={disabled}><i className="bi bi-plus-lg me-1" />Add link</button>
+                  </div>
+                  {(proc.links || []).map((link, linkIndex) => (
+                    <div className="row g-2 align-items-end mb-2" key={link.id || linkIndex}>
+                      <div className="col-md-5"><label className="form-label small mb-1">Link label</label><input type="text" className="form-control form-control-sm" value={link.label || ''} onChange={(e) => handleUpdateStageItem(idx, 'links', linkIndex, 'label', e.target.value)} placeholder="Public resource" disabled={disabled} /></div>
+                      <div className="col-md-6"><label className="form-label small mb-1">HTTPS or site-relative URL</label><input type="url" className="form-control form-control-sm" value={link.url || ''} onChange={(e) => handleUpdateStageItem(idx, 'links', linkIndex, 'url', e.target.value)} placeholder="https://…" disabled={disabled} /></div>
+                      <div className="col-md-1"><button type="button" className="btn btn-sm btn-outline-danger w-100" onClick={() => handleRemoveStageItem(idx, 'links', linkIndex)} disabled={disabled} aria-label="Remove link"><i className="bi bi-trash" /></button></div>
+                    </div>
+                  ))}
                 </div>
               </div>
             ))}
             {(!contribution.process || contribution.process.length === 0) && (
               <div className="text-muted small p-2 rounded border bg-light" style={{ fontSize: '0.72rem' }}>
-                No structured process steps defined.
+                No methodology stages are configured. Add only stages supported by the project evidence.
               </div>
             )}
           </div>

@@ -140,6 +140,7 @@ export default function Navbar() {
     '#work': 'nav.work',
     '/#work': 'nav.work',
     '/about': 'nav.about',
+    '/p/my-journey': 'nav.myJourney',
     '/blog': 'nav.blog',
     '/agents': 'nav.agents',
     '/resources': 'nav.resources',

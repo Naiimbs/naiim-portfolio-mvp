@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && node scripts/generate-seo-pages.mjs",
+    "validate:i18n": "node scripts/validate-locales.mjs",
+    "test:case-study-stages": "node scripts/test-case-study-stages.mjs",
     "preview": "vite preview",
     "api": "node server/apiServer.js",
     "mcp:check": "node server/mcpCheck.js"

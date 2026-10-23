@@ -8,6 +8,7 @@ const CONTENT_TYPES = [
   { value: 'agent', label: 'AI Agent', defaultPrefix: '/agents' },
   { value: 'plugin', label: 'Plugin / Tool', defaultPrefix: '/plugins' },
   { value: 'blog', label: 'Blog Article', defaultPrefix: '/blog' },
+  { value: 'resource', label: 'Resource', defaultPrefix: '/resources' },
   { value: 'other', label: 'Other Content', defaultPrefix: '/p' },
 ];
 

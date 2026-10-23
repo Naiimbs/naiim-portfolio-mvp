@@ -309,26 +309,44 @@ export function AboutExpertiseSection({ config = {} }) {
   const { t } = useTranslation();
   const eyebrow = config.eyebrow || t('about.expertiseEyebrow', 'AREAS OF EXPERTISE');
   const title = config.title || t('about.expertiseTitle', 'What I Bring to Products');
-  const subtitle = config.subtitle || 'Structured capability groups reflecting proven hands-on delivery.';
+  const subtitle = config.subtitle || t('about.expertiseSubtitle', 'Three complementary ways I contribute to product work.');
 
   const defaultClusters = [
     {
       title: t('about.expertise.1.title', 'Product & UX/UI Design'),
       desc: t('about.expertise.1.desc', 'Designing systems and human experiences from initial discovery to validated components.'),
       icon: 'bi-bezier2',
-      skills: ['User Research & Discovery', 'Interaction & Flow Design', 'Wireframing & Prototyping', 'Design Systems & Tokens', 'Accessibility (WCAG)'],
+      skills: [
+        t('about.expertise.1.skills.1', 'User research & discovery'),
+        t('about.expertise.1.skills.2', 'Interaction and flow design'),
+        t('about.expertise.1.skills.3', 'Wireframing & prototyping'),
+        t('about.expertise.1.skills.4', 'Design systems & tokens'),
+        t('about.expertise.1.skills.5', 'Accessibility (WCAG)'),
+      ],
     },
     {
       title: t('about.expertise.2.title', 'Low-Code Product Delivery'),
       desc: t('about.expertise.2.desc', 'Delivering enterprise apps with robust logic, data models, and clean UI.'),
       icon: 'bi-layers',
-      skills: ['Mendix Rapid Engineering', 'OutSystems Platforms', 'Design-to-Code Translation', 'API & Integration Logic', 'Production Quality QA'],
+      skills: [
+        t('about.expertise.2.skills.1', 'Mendix rapid development'),
+        t('about.expertise.2.skills.2', 'OutSystems platforms'),
+        t('about.expertise.2.skills.3', 'Design-to-code translation'),
+        t('about.expertise.2.skills.4', 'API & integration logic'),
+        t('about.expertise.2.skills.5', 'Production quality assurance'),
+      ],
     },
     {
       title: t('about.expertise.3.title', 'AI Product Building & Automation'),
       desc: t('about.expertise.3.desc', 'Building connected workflows and autonomous agentic interfaces.'),
       icon: 'bi-robot',
-      skills: ['n8n & Make Automation', 'Model Context Protocol (MCP)', 'Agentic Workflow Systems', 'Prompt Engineering', 'Custom Tool Integration'],
+      skills: [
+        t('about.expertise.3.skills.1', 'n8n & Make automation'),
+        t('about.expertise.3.skills.2', 'Model Context Protocol (MCP)'),
+        t('about.expertise.3.skills.3', 'Agentic workflow systems'),
+        t('about.expertise.3.skills.4', 'Prompt design'),
+        t('about.expertise.3.skills.5', 'Custom tool integration'),
+      ],
     },
   ];
 
@@ -437,7 +455,7 @@ export function AboutProofSection({ config = {} }) {
           {projects.map((p, idx) => (
             <div key={idx} className="col-md-6">
               <div className="card h-100 border-0 bg-light rounded-4 p-4 transition-all">
-                <div className="d-flex justify-content-between align-items-center mb-3">
+                <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                   <h4 className="fw-bold mb-0 text-dark">{p.title}</h4>
                   <span className="badge bg-white text-secondary border rounded-pill px-3 py-1" style={{ fontSize: '0.72rem' }}>
                     {p.badge}
@@ -468,9 +486,11 @@ export function AboutShareSection({ config = {} }) {
   const { t } = useTranslation();
   const eyebrow = config.eyebrow || t('about.shareEyebrow', 'KNOWLEDGE SHARING');
   const title = config.title || t('about.shareTitle', 'Beyond the Portfolio');
-  const hours = config.hours || t('about.shareMetricLearning', 'Learn');
-  const learners = config.learners || t('about.shareMetricBuilding', 'Build');
-  const articles = config.articles || t('about.shareMetricSharing', 'Share');
+  const metrics = [
+    { value: config.hours, label: config.hoursLabel || t('about.trainingHoursLabel', 'Training & mentorship') },
+    { value: config.learners, label: config.learnersLabel || t('about.learnersLabel', 'Learners guided') },
+    { value: config.articles, label: config.articlesLabel || t('about.articlesLabel', 'Articles & experiments') },
+  ].filter((metric) => metric.value !== undefined && metric.value !== null && String(metric.value).trim() !== '');
   const shareIntro = t('about.shareIntro', 'Sharing what I learn through documentation, writing, and practical experiments.');
   const hoursLabel = t('about.trainingHoursLabel', 'Training & mentorship hours');
   const learnersLabel = t('about.learnersLabel', 'Design & low-code learners guided');
@@ -491,26 +511,18 @@ export function AboutShareSection({ config = {} }) {
           </p>
         </div>
 
-        <div className="row g-4 mb-4">
-          <div className="col-md-4">
-            <div className="card border-0 bg-white rounded-4 p-4 text-center shadow-xs">
-              <div className="display-5 fw-bold text-dark font-heading mb-1">{hours}</div>
-              <div className="small text-secondary fw-semibold">{hoursLabel}</div>
-            </div>
+        {metrics.length > 0 && (
+          <div className="row g-4 mb-4">
+            {metrics.map((metric, idx) => (
+              <div className="col-md-4" key={idx}>
+                <div className="card border-0 bg-white rounded-4 p-4 text-center shadow-xs">
+                  <div className="display-5 fw-bold text-dark font-heading mb-1">{metric.value}</div>
+                  <div className="small text-secondary fw-semibold">{metric.label}</div>
+                </div>
+              </div>
+            ))}
           </div>
-          <div className="col-md-4">
-            <div className="card border-0 bg-white rounded-4 p-4 text-center shadow-xs">
-              <div className="display-5 fw-bold text-dark font-heading mb-1">{learners}</div>
-              <div className="small text-secondary fw-semibold">{learnersLabel}</div>
-            </div>
-          </div>
-          <div className="col-md-4">
-            <div className="card border-0 bg-white rounded-4 p-4 text-center shadow-xs">
-              <div className="display-5 fw-bold text-dark font-heading mb-1">{articles}</div>
-              <div className="small text-secondary fw-semibold">{articlesLabel}</div>
-            </div>
-          </div>
-        </div>
+        )}
 
         <div className="d-flex flex-wrap justify-content-center gap-3">
           <a href="/blog" className="btn btn-dark rounded-pill px-4 btn-sm fw-semibold">
@@ -570,7 +582,7 @@ export function AboutHumanSection({ config = {} }) {
   const { t } = useTranslation();
   const eyebrow = config.eyebrow || t('about.humanEyebrow', 'THE PERSON BEHIND');
   const title = config.title || t('about.humanTitle', 'Curiosity as the continuous thread.');
-  const story = config.story || 'Behind every design system and agentic workflow is a deep curiosity about how things work. Whether dismantling a mechanical mechanism, observing how people handle friction in everyday tasks, or writing automation logic, the common thread is transforming ideas into something tangible and useful.';
+  const story = config.story || t('about.humanStory', 'Behind every design system and agentic workflow is a deep curiosity about how things work. Whether dismantling a mechanical mechanism, observing how people handle friction in everyday tasks, or writing automation logic, the common thread is transforming ideas into something tangible and useful.');
   const spokenLanguages = t('about.spokenLanguages', 'Arabic · French · English · Italian');
   const psmBadge = t('about.psmBadge', 'PSM I Scrum Master');
   const designBadge = t('about.designBadge', 'Design — ISSAT Sousse');
@@ -635,7 +647,7 @@ export function AboutHumanSection({ config = {} }) {
 // -----------------------------------------------------------------------------
 export function AboutClosingSection({ config = {} }) {
   const { t } = useTranslation();
-  const eyebrow = config.eyebrow || 'GET IN TOUCH';
+  const eyebrow = config.eyebrow || t('about.closingEyebrow', 'GET IN TOUCH');
   const title = config.title || t('about.closingTitle', "Let's Build Something Meaningful");
   const description = config.description || t('about.closingDesc', "I'm interested in meaningful product challenges where design, technology, and AI come together. Whether you are building an ambitious system or exploring workflow automation, let's talk.");
   const exploreLabel = config.exploreLabel || t('about.exploreWork', 'Explore My Work');

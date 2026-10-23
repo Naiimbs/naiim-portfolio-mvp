@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import MainLayout from '../../layouts/MainLayout';
 import SEO from '../common/SEO';
 import { getCaseStudySchema } from '../../lib/schema';
+import { getFdeStageLabel, mergeLocalizedProcessStages, safeCaseStudyUrl, shouldRenderProcessStage } from '../../utils/caseStudyStages';
 
 export default function StandardCaseStudy({ data }) {
   const { t, i18n } = useTranslation();
@@ -48,6 +49,9 @@ export default function StandardCaseStudy({ data }) {
     items: Array.isArray(txCase.contribution?.items) && txCase.contribution.items.length > 0
       ? txCase.contribution.items
       : rawContribution.items,
+    process: Array.isArray(rawContribution.process)
+      ? mergeLocalizedProcessStages(rawContribution.process, txCase.contribution?.process)
+      : rawContribution.process,
     codeExample: rawContribution.codeExample
       ? {
           ...rawCodeExample,
@@ -132,15 +136,41 @@ export default function StandardCaseStudy({ data }) {
               ))}
             </ul>
           )}
-          {contribution.process && (
-            <div className="case-process">
-              {contribution.process.map((p, idx) => (
-                <div key={idx}>
-                  <b>{p.step}</b>
-                  <strong>{p.title}</strong>
-                  <p>{p.desc}</p>
-                </div>
-              ))}
+          {Array.isArray(contribution.process) && contribution.process.some(shouldRenderProcessStage) && (
+            <div className="case-process" dir={currentLang === 'ar' ? 'rtl' : 'ltr'}>
+              {contribution.process.filter(shouldRenderProcessStage).map((p, idx) => {
+                const title = p.title || getFdeStageLabel(p.stageType, currentLang);
+                const mediaItems = (p.media || []).map((item) => ({ ...item, src: safeCaseStudyUrl(item.url || item.image) })).filter((item) => item.src);
+                const links = (p.links || []).map((item) => ({ ...item, href: safeCaseStudyUrl(item.url) })).filter((item) => item.href && item.label?.trim());
+                return (
+                  <article className="case-process-stage" key={p.id || idx}>
+                    <b>{p.step}</b>
+                    {title && <strong>{title}</strong>}
+                    {p.desc && <p>{p.desc}</p>}
+                    {p.evidence && <p className="case-process-evidence">{p.evidence}</p>}
+                    {Array.isArray(p.technologies) && p.technologies.length > 0 && (
+                      <div className="case-process-technologies" aria-label={t('caseStudyStages.technologies', 'Relevant technologies')}>
+                        {p.technologies.filter(Boolean).map((technologyName, techIndex) => <span key={`${technologyName}-${techIndex}`}>{technologyName}</span>)}
+                      </div>
+                    )}
+                    {mediaItems.map((media, mediaIndex) => (
+                      <figure className="case-process-media" key={media.id || mediaIndex}>
+                        <img src={media.src} alt={media.alt || media.imageAlt || ''} loading="lazy" />
+                        {media.caption && <figcaption>{media.caption}</figcaption>}
+                      </figure>
+                    ))}
+                    {links.length > 0 && (
+                      <ul className="case-process-links">
+                        {links.map((link, linkIndex) => (
+                          <li key={link.id || linkIndex}>
+                            <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label}</a>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </article>
+                );
+              })}
             </div>
           )}
           {contribution.codeExample?.code && (
@@ -227,6 +257,14 @@ export default function StandardCaseStudy({ data }) {
 
   return (
     <MainLayout>
+      {data.previewInfo && (
+        <div className="preview-mode-banner preview-mode-banner-safe bg-warning text-dark text-center py-2 px-3 fw-semibold small shadow-sm" role="status">
+          <i className="bi bi-eye-fill me-2" aria-hidden="true" />
+          {data.previewInfo.status === 'published' && data.previewInfo.visibility === 'public'
+            ? `SAVED CMS PREVIEW — ${data.previewInfo.title} (published/public); showing the current saved registry content.`
+            : `SAVED CMS DRAFT PREVIEW — ${data.previewInfo.title} (${data.previewInfo.status}/${data.previewInfo.visibility}); this is not the public version.`}
+        </div>
+      )}
       <SEO
         title={hero.title}
         description={hero.lead}

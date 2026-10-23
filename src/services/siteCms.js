@@ -1,11 +1,40 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
 import { getCanonicalRoute } from './contentRouteResolver.js';
 import BEAUX_ARTS_STORY from '../data/beauxArtsStory.json';
+import frCommon from '../i18n/locales/fr/common.json';
+import arCommon from '../i18n/locales/ar/common.json';
 
 /**
  * Service for Pages, Page Sections, Navigation Items, and Site Settings.
  * Supports Supabase persistence with safe local fallback.
  */
+
+const ABOUT_LOCALES = { fr: frCommon.about, ar: arCommon.about };
+
+function readNestedValue(source, path) {
+  return path.split('.').reduce((value, key) => value?.[key], source);
+}
+
+function writeNestedValue(target, path, value) {
+  const keys = path.split('.');
+  const last = keys.pop();
+  const parent = keys.reduce((node, key) => (node[key] ||= {}), target);
+  parent[last] = value;
+}
+
+/** Add locale overrides to bundled About fallback sections; CMS configs keep their own i18n. */
+function localizeAboutConfig(config, fieldMap) {
+  const i18n = {};
+  for (const [lang, locale] of Object.entries(ABOUT_LOCALES)) {
+    const translated = {};
+    for (const [configPath, localePath] of Object.entries(fieldMap)) {
+      const value = readNestedValue(locale, localePath);
+      if (value !== undefined) writeNestedValue(translated, configPath, value);
+    }
+    if (Object.keys(translated).length) i18n[lang] = translated;
+  }
+  return { ...config, i18n: { ...config.i18n, ...i18n } };
+}
 
 // Local fallback data for pages
 export const FALLBACK_PAGES = [
@@ -15,8 +44,8 @@ export const FALLBACK_PAGES = [
     title: 'Home',
     status: 'draft',
     template: 'default',
-    seo_title: 'Naïm Bsili — Lead Product Designer & Design Systems Engineer',
-    seo_description: 'Portfolio of Naïm Bsili, specializing in AI design systems, UX architecture, and digital products.',
+    seo_title: 'Naïm Bsili — Product Designer & AI Builder',
+    seo_description: 'Portfolio of Naïm Bsili, specializing in UX/UI, digital product design, AI, and automation.',
     canonical_url: '/',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
@@ -107,7 +136,7 @@ export const ABOUT_PROPOSAL_SECTIONS = [
     label: 'About · 01 Hero — Beyond a Job Title',
     sort_order: 10,
     is_visible: true,
-    config: {
+    config: localizeAboutConfig({
       eyebrow: 'PRODUCT DESIGNER · AI BUILDER',
       headline: 'I DESIGN. I BUILD. I EXPERIMENT.',
       lead: 'I turn complex problems into usable digital products through product design, AI, low-code, and automation.',
@@ -115,7 +144,7 @@ export const ABOUT_PROPOSAL_SECTIONS = [
       talkCta: { label: "Let's Talk", href: '/about#contact' },
       buildingNote: 'WINNI Identity Ecosystem · Naïm Copilot · AI Agent Protocols',
       portraitUrl: '',
-    },
+    }, { eyebrow: 'heroEyebrow', headline: 'heroHeadline', lead: 'heroLead', 'exploreCta.label': 'exploreWork', 'talkCta.label': 'letsTalk', buildingNote: 'buildingNote' }),
   },
   {
     id: 'sec-about-journey',
@@ -124,11 +153,11 @@ export const ABOUT_PROPOSAL_SECTIONS = [
     label: 'About · 02 My Journey — From Mechanical to AI',
     sort_order: 20,
     is_visible: true,
-    config: {
+    config: localizeAboutConfig({
       eyebrow: 'SIGNATURE EVOLUTION',
       title: 'From Mechanical Design to AI',
       subtitle: 'A visual progression connecting physical engineering, visual craft, human-centered UX, low-code delivery, and autonomous AI systems.',
-    },
+    }, { eyebrow: 'journeyEyebrow', title: 'journeyTitle', subtitle: 'journeySubtitle' }),
   },
   {
     id: 'sec-about-philosophy',
@@ -137,12 +166,12 @@ export const ABOUT_PROPOSAL_SECTIONS = [
     label: 'About · 03 How I Think — Philosophy',
     sort_order: 30,
     is_visible: true,
-    config: {
+    config: localizeAboutConfig({
       eyebrow: 'HOW I THINK',
       title: 'Principles over trends.',
       intro: 'Tools evolve every month, but how you approach problems remains your true craft. Here is how I think before touching any tool.',
       signatureStatement: '"I think. I design. I experiment."',
-    },
+    }, { eyebrow: 'philosophyEyebrow', title: 'philosophyTitle', intro: 'philosophyIntro', signatureStatement: 'signatureStatement' }),
   },
   {
     id: 'sec-about-expertise',
@@ -151,11 +180,11 @@ export const ABOUT_PROPOSAL_SECTIONS = [
     label: 'About · 04 What I Do — Expertise',
     sort_order: 40,
     is_visible: true,
-    config: {
+    config: localizeAboutConfig({
       eyebrow: 'AREAS OF EXPERTISE',
       title: 'What I Bring to Products',
       subtitle: 'Structured capability groups reflecting proven hands-on delivery.',
-    },
+    }, { eyebrow: 'expertiseEyebrow', title: 'expertiseTitle', subtitle: 'expertiseSubtitle' }),
   },
   {
     id: 'sec-about-proof',
@@ -164,10 +193,10 @@ export const ABOUT_PROPOSAL_SECTIONS = [
     label: 'About · 05 Selected Work — Proof, Not Claims',
     sort_order: 50,
     is_visible: true,
-    config: {
+    config: localizeAboutConfig({
       eyebrow: 'PROOF, NOT CLAIMS',
       title: 'Selected Work & Artifacts',
-    },
+    }, { eyebrow: 'proofEyebrow', title: 'proofTitle' }),
   },
   {
     id: 'sec-about-share',
@@ -176,13 +205,10 @@ export const ABOUT_PROPOSAL_SECTIONS = [
     label: 'About · 06 Beyond Portfolio — What I Share',
     sort_order: 60,
     is_visible: true,
-    config: {
+    config: localizeAboutConfig({
       eyebrow: 'KNOWLEDGE SHARING',
       title: 'Beyond the Portfolio',
-      hours: '1,200+',
-      learners: '300+',
-      articles: '20+',
-    },
+    }, { eyebrow: 'shareEyebrow', title: 'shareTitle' }),
   },
   {
     id: 'sec-about-building',
@@ -191,12 +217,12 @@ export const ABOUT_PROPOSAL_SECTIONS = [
     label: 'About · 07 Currently Building — Spotlight',
     sort_order: 70,
     is_visible: true,
-    config: {
+    config: localizeAboutConfig({
       title: 'WINNI Identity & Autonomous Agent Protocols',
       stage: 'ACTIVE DEVELOPMENT',
       description: 'Refining the physical-to-digital QR/NFC recovery flow and experimenting with autonomous agent orchestration via Model Context Protocol (MCP) to make physical objects interact with intelligent workflows.',
       link: '/#lab',
-    },
+    }, { title: 'buildingTitle', stage: 'currentBuildingLabel', description: 'buildingDescription' }),
   },
   {
     id: 'sec-about-human',
@@ -205,11 +231,11 @@ export const ABOUT_PROPOSAL_SECTIONS = [
     label: 'About · 08 Beyond Work — The Person',
     sort_order: 80,
     is_visible: true,
-    config: {
+    config: localizeAboutConfig({
       eyebrow: 'THE PERSON BEHIND',
       title: 'Curiosity as the continuous thread.',
       story: 'Behind every design system and agentic workflow is a deep curiosity about how things work. Whether dismantling a mechanical mechanism, observing how people handle friction in everyday tasks, or writing automation logic, the common thread is transforming ideas into something tangible and useful.',
-    },
+    }, { eyebrow: 'humanEyebrow', title: 'humanTitle', story: 'humanStory' }),
   },
   {
     id: 'sec-about-closing',
@@ -218,13 +244,13 @@ export const ABOUT_PROPOSAL_SECTIONS = [
     label: "About · 09 Let's Build Something Meaningful",
     sort_order: 90,
     is_visible: true,
-    config: {
+    config: localizeAboutConfig({
       eyebrow: 'GET IN TOUCH',
       title: "Let's Build Something Meaningful",
       description: "I'm interested in meaningful product challenges where design, technology, and AI come together. Whether you are building an ambitious system or exploring workflow automation, let's talk.",
       exploreLabel: 'Explore My Work',
       email: 'contact@naiimbsili.com',
-    },
+    }, { eyebrow: 'closingEyebrow', title: 'closingTitle', description: 'closingDesc', exploreLabel: 'exploreWork' }),
   },
 ];
 
@@ -354,6 +380,50 @@ export async function getAdminPages() {
     return { data: combined, error: null, source: 'supabase' };
   } catch (err) {
     return { data: localPagesStore, error: err, source: 'error' };
+  }
+}
+
+/** Read one saved Page Builder record without merging bundled fallback rows. */
+export async function getAdminPageBySlug(slug) {
+  const cleanSlug = String(slug || '').trim();
+  if (!isSupabaseConfigured || !supabase) {
+    const page = localPagesStore.find((item) => item.slug === cleanSlug);
+    return { data: page || null, error: null, source: 'local' };
+  }
+  try {
+    const { data, error } = await supabase
+      .from('pages')
+      .select('*')
+      .eq('slug', cleanSlug)
+      .maybeSingle();
+    if (error) return { data: null, error, source: 'error' };
+    if (data) return { data, error: null, source: 'supabase' };
+
+    const registryRes = await supabase
+      .from('content_registry')
+      .select('*')
+      .eq('content_type', 'page')
+      .eq('slug', cleanSlug)
+      .maybeSingle();
+    if (registryRes.error) return { data: null, error: registryRes.error, source: 'error' };
+    if (!registryRes.data) return { data: null, error: null, source: 'supabase' };
+    const entry = registryRes.data;
+    return {
+      data: {
+        id: entry.metadata?.pageId || entry.id,
+        title: entry.title,
+        slug: entry.slug,
+        status: entry.status,
+        seo_title: entry.metadata?.seo_title || null,
+        seo_description: entry.metadata?.description || null,
+        registryEntry: entry,
+        isOrphanRegistry: true,
+      },
+      error: null,
+      source: 'supabase_registry',
+    };
+  } catch (err) {
+    return { data: null, error: err, source: 'error' };
   }
 }
 
@@ -622,8 +692,9 @@ export async function getPageSections(pageId) {
   }
 }
 
-export async function getAdminPageSections(pageId) {
+export async function getAdminPageSections(pageId, { allowFallback = true } = {}) {
   if (!isSupabaseConfigured || !supabase) {
+    if (!allowFallback) return { data: [], error: new Error('Supabase is not configured.'), source: 'unconfigured' };
     const sections = localSectionsStore
       .filter((s) => s.page_id === pageId || ((pageId === 'b458c42a-8e8e-4629-b6cd-9eae47ccbb79' || pageId === 'page-about') && (s.page_id === 'page-about' || s.page_id === 'b458c42a-8e8e-4629-b6cd-9eae47ccbb79')))
       .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
@@ -637,6 +708,7 @@ export async function getAdminPageSections(pageId) {
       .order('sort_order', { ascending: true });
 
     if (error) {
+      if (!allowFallback) return { data: [], error, source: 'error' };
       const fallback = localSectionsStore
         .filter((s) => s.page_id === pageId || ((pageId === 'b458c42a-8e8e-4629-b6cd-9eae47ccbb79' || pageId === 'page-about') && (s.page_id === 'page-about' || s.page_id === 'b458c42a-8e8e-4629-b6cd-9eae47ccbb79')))
         .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
@@ -645,7 +717,7 @@ export async function getAdminPageSections(pageId) {
 
     const isAboutPage = pageId === 'b458c42a-8e8e-4629-b6cd-9eae47ccbb79' || pageId === 'page-about';
     const hasLegacyAboutOnly = isAboutPage && data && data.length > 0 && data.every((s) => ['hero', 'rich_text', 'timeline', 'workflow', 'cta'].includes(s.section_type));
-    if (isAboutPage && (!data || data.length === 0 || hasLegacyAboutOnly)) {
+    if (allowFallback && isAboutPage && (!data || data.length === 0 || hasLegacyAboutOnly)) {
       const fallback = localSectionsStore
         .filter((s) => s.page_id === 'page-about' || s.page_id === pageId)
         .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
@@ -654,6 +726,7 @@ export async function getAdminPageSections(pageId) {
 
     return { data: data || [], error: null, source: 'supabase' };
   } catch (err) {
+    if (!allowFallback) return { data: [], error: err, source: 'error' };
     const fallback = localSectionsStore
       .filter((s) => s.page_id === pageId || ((pageId === 'b458c42a-8e8e-4629-b6cd-9eae47ccbb79' || pageId === 'page-about') && (s.page_id === 'page-about' || s.page_id === 'b458c42a-8e8e-4629-b6cd-9eae47ccbb79')))
       .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));

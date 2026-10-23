@@ -110,6 +110,27 @@ export async function getContentRegistryEntryById(id) {
 }
 
 /**
+ * Fetch one saved case-study entry for an authenticated admin preview.
+ * This uses the normal browser Supabase client; database RLS remains authoritative.
+ */
+export async function getAdminContentRegistryEntryBySlug(slug) {
+  if (!isSupabaseConfigured || !supabase) {
+    return { data: null, error: new Error('Supabase is not configured.'), source: 'unconfigured' };
+  }
+  try {
+    const { data, error } = await supabase
+      .from('content_registry')
+      .select('*')
+      .eq('slug', String(slug || '').trim())
+      .eq('content_type', 'case-study')
+      .maybeSingle();
+    return { data, error, source: 'supabase' };
+  } catch (err) {
+    return { data: null, error: err, source: 'error' };
+  }
+}
+
+/**
  * Check if a slug is available.
  */
 export async function checkSlugAvailable(slug, excludeId = null) {
@@ -523,4 +544,3 @@ export function normalizeRegistryEntry(entry, presentationAsset = null) {
     },
   };
 }
-

@@ -25,6 +25,7 @@ const TYPE_LABELS = {
   agent: { label: 'AI Agent', badgeBg: '#ede9fe', color: '#6d28d9' },
   plugin: { label: 'Plugin', badgeBg: '#e0f2fe', color: '#0369a1' },
   blog: { label: 'Blog', badgeBg: '#fef3c7', color: '#b45309' },
+  resource: { label: 'Resource', badgeBg: '#ecfeff', color: '#0e7490' },
   other: { label: 'Other', badgeBg: '#f3f4f6', color: '#4b5563' },
 };
 
@@ -472,6 +473,7 @@ export default function AdminRegistry() {
               <option value="agent">AI Agents</option>
               <option value="plugin">Plugins</option>
               <option value="blog">Blog Articles</option>
+              <option value="resource">Resources</option>
               <option value="other">Other</option>
             </select>
           </div>

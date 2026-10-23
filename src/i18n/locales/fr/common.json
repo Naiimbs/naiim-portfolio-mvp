@@ -10,7 +10,18 @@
     "agents": "Agents",
     "resources": "Ressources",
     "beta": "Bêta",
-    "toggleNavigation": "Ouvrir la navigation"
+    "toggleNavigation": "Ouvrir la navigation",
+    "myJourney": "Mon parcours"
+  },
+  "caseStudyStages": {
+    "problem-context": "Problème et contexte",
+    "discovery-investigation": "Découverte et investigation",
+    "solution-design": "Conception de la solution",
+    "build-integration": "Construction et intégration",
+    "validation-iteration": "Validation et itération",
+    "outcome-learnings": "Résultats et enseignements",
+    "custom": "Étape personnalisée",
+    "technologies": "Technologies associées"
   },
   "hero": {
     "eyebrow": "DESIGNER UX/UI SENIOR · BÂTISSEUR DE PRODUITS IA",
@@ -162,40 +173,35 @@
   },
   "about": {
     "eyebrow": "LE PARCOURS",
-    "titleLine1": "De la fabrication manuelle",
-    "titleLine2": "à la création de produits intelligents.",
-    "nowLabel": "AUJOURD’HUI",
+    "titleLine1": "De la création de mes propres mains",
+    "titleLine2": "à la conception de produits intelligents.",
+    "nowLabel": "AUJOURD'HUI",
     "timeline": [
       {
         "title": "Conception mécanique",
-        "subtitle": "& fabrication",
-        "small": null
+        "subtitle": "& fabrication"
       },
       {
         "title": "Environnements industriels",
-        "subtitle": null,
         "small": "Procédés & maintenance · industrie du chlore"
       },
       {
         "title": "Injection plastique",
-        "subtitle": null,
         "small": "Moulage & fabrication"
       },
       {
         "title": "Design numérique",
-        "subtitle": "& UX/UI",
-        "small": null
+        "subtitle": "& UX/UI"
       },
       {
         "title": "Product Design",
-        "subtitle": "& création de produits IA",
-        "small": null
+        "subtitle": "& Conception de produits IA"
       }
     ],
-    "cardEyebrow": "À PROPOS",
+    "cardEyebrow": "À PROPOS DE MOI",
     "cardTitleLine1": "Concevoir avec curiosité.",
-    "cardTitleLine2": "Bâtir avec intention.",
-    "bio": "Je suis Naïm, product designer et bâtisseur IA basé en Tunisie. J’aime prendre des idées floues, leur donner une structure, concevoir l’expérience et les transformer en quelque chose de réellement utilisable.",
+    "cardTitleLine2": "Bâtir avec raison d'être.",
+    "bio": "Je m'appelle Naïm, product designer et créateur de solutions IA basé en Tunisie. J'aime prendre des idées complexes, leur donner une structure claire, en soigner l'expérience utilisateur et les concrétiser en produits tangibles et utiles au quotidien.",
     "skills": [
       "UX/UI",
       "Product Design",
@@ -220,34 +226,114 @@
     "journeyTitle": "Du design mécanique à l'IA",
     "journeySubtitle": "Une progression visuelle reliant l'ingénierie physique, le craft visuel, l'UX centré utilisateur, la livraison low-code et les systèmes autonomes d'IA.",
     "stages": {
-      "1": { "title": "Conception mécanique & fabrication", "tag": "Ingénierie physique", "exp": "Apprendre comment les objets physiques sont conçus, fabriqués et perfectionnés sous des contraintes concrètes ; développer une démarche pragmatique et rigoureuse.", "lesson": "Les contraintes physiques vous apprennent que chaque millimètre compte avant la mise en production." },
-      "2": { "title": "Design graphique & visuel", "tag": "Communication visuelle", "exp": "Traduire des idées en communication visuelle et forger une intuition précise de la typographie, de la hiérarchie de composition et de la clarté.", "lesson": "La clarté est une forme d'empathie ; le design commence par la perception de l'information." },
-      "3": { "title": "UX/UI & Design produit", "tag": "Design centré humain", "exp": "Comprendre les modèles mentaux des utilisateurs, cartographier leurs parcours et concevoir des expériences numériques fluides et accessibles sur le web et mobile.", "lesson": "La meilleure interface est celle qui élimine toute friction entre l'humain et son objectif." },
-      "4": { "title": "Low-Code & Implémentation", "tag": "Mendix & OutSystems", "exp": "Relier les décisions de design au comportement réel des applications, aux structures de données et aux APIs — comblant le fossé entre la vision design et la production.", "lesson": "Un design n'a de valeur que s'il est fidèlement déployé et pérenne en production." },
-      "5": { "title": "Création de produits IA & Automatisation", "tag": "Agents & Orchestration", "exp": "Expérimenter avec les workflows agentiques, le Model Context Protocol (MCP), les automatisations API et l'orchestration de LLMs pour bâtir des écosystèmes numériques intelligents.", "lesson": "L'IA décuple la portée d'un bâtisseur, mais le discernement humain définit le goût et l'exigence de qualité." }
+      "1": {
+        "title": "Conception mécanique & fabrication",
+        "tag": "Ingénierie physique",
+        "exp": "Apprendre comment les objets physiques sont conçus, fabriqués et perfectionnés sous des contraintes concrètes ; développer une démarche pragmatique et rigoureuse.",
+        "lesson": "Les contraintes physiques vous apprennent que chaque millimètre compte avant la mise en production."
+      },
+      "2": {
+        "title": "Design graphique & visuel",
+        "tag": "Communication visuelle",
+        "exp": "Traduire des idées en communication visuelle et forger une intuition précise de la typographie, de la hiérarchie de composition et de la clarté.",
+        "lesson": "La clarté est une forme d'empathie ; le design commence par la perception de l'information."
+      },
+      "3": {
+        "title": "UX/UI & Design produit",
+        "tag": "Design centré humain",
+        "exp": "Comprendre les modèles mentaux des utilisateurs, cartographier leurs parcours et concevoir des expériences numériques fluides et accessibles sur le web et mobile.",
+        "lesson": "La meilleure interface est celle qui élimine toute friction entre l'humain et son objectif."
+      },
+      "4": {
+        "title": "Low-Code & Implémentation",
+        "tag": "Mendix & OutSystems",
+        "exp": "Relier les décisions de design au comportement réel des applications, aux structures de données et aux APIs — comblant le fossé entre la vision design et la production.",
+        "lesson": "Un design n'a de valeur que s'il est fidèlement déployé et pérenne en production."
+      },
+      "5": {
+        "title": "Création de produits IA & Automatisation",
+        "tag": "Agents & Orchestration",
+        "exp": "Expérimenter avec les workflows agentiques, le Model Context Protocol (MCP), les automatisations API et l'orchestration de LLMs pour bâtir des écosystèmes numériques intelligents.",
+        "lesson": "L'IA décuple la portée d'un bâtisseur, mais le discernement humain définit le goût et l'exigence de qualité."
+      }
     },
     "philosophyEyebrow": "MA FAÇON DE PENSER",
     "philosophyTitle": "Les principes avant les effets de mode.",
     "philosophyIntro": "Les outils changent tous les mois, mais la manière d'aborder un problème demeure votre véritable métier. Voici comment je réfléchis avant de manipuler un outil.",
     "principles": {
-      "1": { "title": "Comprendre avant de concevoir", "body": "Déconstruire le problème réel et son contexte opérationnel avant de décider quoi construire. Éviter de se précipiter vers une solution avant d'avoir cerné le besoin profond." },
-      "2": { "title": "Concevoir en pensant à l'implémentation", "body": "Un design doit intégrer les contraintes techniques réelles, les goulots d'étranglement de performance et les transitions d'état afin de préserver l'utilisabilité en production." },
-      "3": { "title": "Expérimenter pour apprendre", "body": "Valider les hypothèses par des prototypes fonctionnels rapides, observer les usages réels et itérer sans relâche plutôt que de supposer que la première idée est la meilleure." }
+      "1": {
+        "title": "Comprendre avant de concevoir",
+        "body": "Déconstruire le problème réel et son contexte opérationnel avant de décider quoi construire. Éviter de se précipiter vers une solution avant d'avoir cerné le besoin profond."
+      },
+      "2": {
+        "title": "Concevoir en pensant à l'implémentation",
+        "body": "Un design doit intégrer les contraintes techniques réelles, les goulots d'étranglement de performance et les transitions d'état afin de préserver l'utilisabilité en production."
+      },
+      "3": {
+        "title": "Expérimenter pour apprendre",
+        "body": "Valider les hypothèses par des prototypes fonctionnels rapides, observer les usages réels et itérer sans relâche plutôt que de supposer que la première idée est la meilleure."
+      }
     },
     "expertiseEyebrow": "DOMAINES D'EXPERTISE",
     "expertiseTitle": "Ce que j'apporte aux produits",
     "expertise": {
-      "1": { "title": "Design Produit & UX/UI", "desc": "Concevoir des systèmes et des parcours humains de la découverte initiale aux composants testés." },
-      "2": { "title": "Livraison Produit en Low-Code", "desc": "Déployer des applications d'entreprise robustes avec une logique solide, des modèles de données fiables et une interface soignée." },
-      "3": { "title": "Création de produits IA & Automatisation", "desc": "Bâtir des workflows connectés et des interfaces agentiques autonomes." }
+      "1": {
+        "title": "Design Produit & UX/UI",
+        "desc": "Concevoir des systèmes et des parcours humains de la découverte initiale aux composants testés.",
+        "skills": [
+          "Recherche utilisateur et découverte",
+          "Conception des interactions et des parcours",
+          "Wireframes et prototypage",
+          "Systèmes de design et tokens",
+          "Accessibilité (WCAG)"
+        ]
+      },
+      "2": {
+        "title": "Livraison Produit en Low-Code",
+        "desc": "Déployer des applications d'entreprise robustes avec une logique solide, des modèles de données fiables et une interface soignée.",
+        "skills": [
+          "Développement rapide avec Mendix",
+          "Plateformes OutSystems",
+          "Du design au code",
+          "Logique API et intégrations",
+          "Assurance qualité avant production"
+        ]
+      },
+      "3": {
+        "title": "Création de produits IA & Automatisation",
+        "desc": "Bâtir des workflows connectés et des interfaces agentiques autonomes.",
+        "skills": [
+          "Automatisation avec n8n et Make",
+          "Model Context Protocol (MCP)",
+          "Workflows avec agents IA",
+          "Conception de prompts",
+          "Intégration d’outils personnalisés"
+        ]
+      }
     },
     "proofEyebrow": "DES PREUVES, PAS DES PROMESSES",
     "proofTitle": "Projets & réalisations sélectionnés",
     "projects": {
-      "1": { "badge": "Concept & Identité physique", "desc": "Un écosystème d'identification d'objets physiques par QR/NFC, ne nécessitant aucun compte pour le trouveur tout en protégeant l'anonymat du propriétaire.", "role": "Concept produit · Form factor physique · Parcours de bout en bout" },
-      "2": { "badge": "Assistant IA & Laboratoire", "desc": "Un assistant conversationnel autonome et système d'intelligence de portfolio, conçu pour répondre aux questions et démontrer une orchestration IA en direct.", "role": "Architecture agentique · Conception de prompts · Interface utilisateur" },
-      "3": { "badge": "Projet client professionnel", "desc": "Services numériques bancaires et institutionnels hautement sécurisés, conçus selon des normes strictes de conformité, de confidentialité et de passage à l'échelle.", "role": "Architecture UX/UI · Bibliothèque de composants · Directives multiplateformes" },
-      "4": { "badge": "Expérimentation d'automatisation", "desc": "Pipelines d'automatisation réels connectant des LLMs, des webhooks et des processus métier avec des résultats tangibles et mesurés.", "role": "Architecture d'intégration · Pipelines n8n · Vérification des résultats" }
+      "1": {
+        "badge": "Concept & Identité physique",
+        "desc": "Un écosystème d'identification d'objets physiques par QR/NFC, ne nécessitant aucun compte pour le trouveur tout en protégeant l'anonymat du propriétaire.",
+        "role": "Concept produit · Form factor physique · Parcours de bout en bout"
+      },
+      "2": {
+        "badge": "Assistant IA & Laboratoire",
+        "desc": "Un assistant conversationnel autonome et système d'intelligence de portfolio, conçu pour répondre aux questions et démontrer une orchestration IA en direct.",
+        "role": "Architecture agentique · Conception de prompts · Interface utilisateur"
+      },
+      "3": {
+        "badge": "Projet client professionnel",
+        "desc": "Services numériques bancaires et institutionnels hautement sécurisés, conçus selon des normes strictes de conformité, de confidentialité et de passage à l'échelle.",
+        "role": "Architecture UX/UI · Bibliothèque de composants · Directives multiplateformes"
+      },
+      "4": {
+        "badge": "Expérimentation d'automatisation",
+        "desc": "Projet expérimental reliant des modèles de langage, des webhooks et des processus opérationnels pour explorer l’automatisation.",
+        "role": "Architecture d’intégration · expérimentations de workflows n8n · évaluation en cours"
+      }
     },
     "shareEyebrow": "PARTAGE DE CONNAISSANCES",
     "shareTitle": "Au-delà du portfolio",
@@ -256,7 +342,7 @@
     "closingTitle": "Bâtissons quelque chose qui compte",
     "closingDesc": "Je m'intéresse aux défis de produits ambitieux où le design, la technologie et l'IA se rencontrent. Que vous construisiez un système complexe ou exploriez l'automatisation, parlons-en.",
     "displayName": "Naïm Bsili",
-    "portraitRole": "Product Builder · UX/UI · IA et automatisation",
+    "portraitRole": "Créateur de produits · UX/UI · IA et automatisation",
     "currentBuildingLabel": "EN COURS D’EXPLORATION",
     "stageLabel": "ÉTAPE",
     "keyLessonLabel": "Leçon à retenir",
@@ -294,7 +380,15 @@
       "prototypeBody": "Un prototype concret répond aux questions de design plus vite que de longues réunions.",
       "knowledgeTitle": "Le savoir partagé se renforce :",
       "knowledgeBody": "Enseigner et écrire obligent à clarifier ses idées et à garder des connaissances rigoureuses."
-    }
+    },
+    "seoTitle": "À propos — Naïm Bsili | Product Designer & Créateur IA",
+    "seoDesc": "Parcours professionnel, philosophie de design produit et expertise en IA et automatisation de Naïm Bsili.",
+    "expertiseSubtitle": "Trois axes complémentaires de contribution aux produits.",
+    "humanStory": "Derrière chaque système de design et chaque workflow d’agents IA se trouve une curiosité profonde pour le fonctionnement des choses. Qu’il s’agisse de démonter un mécanisme, d’observer les irritants du quotidien ou d’écrire une logique d’automatisation, le fil conducteur est de rendre les idées concrètes et utiles.",
+    "buildingTitle": "WINNI — identité produit et protocoles d’agents autonomes",
+    "buildingDescription": "Affiner le parcours de récupération QR/NFC entre monde physique et numérique, tout en expérimentant l’orchestration d’agents autonomes avec le Model Context Protocol (MCP), pour relier des objets physiques à des workflows intelligents.",
+    "closingEyebrow": "PRENONS CONTACT",
+    "buildingNote": "Écosystème d’identité WINNI · Naïm Copilot · protocoles d’agents IA"
   },
   "copilot": {
     "kicker": "ASSISTANT IA",
@@ -377,16 +471,46 @@
     "resultsCount_other": "{{count}} ressources",
     "resultsLabel": "ressources correspondantes",
     "types": {
-      "skill": { "label": "Skill d’agent", "plural": "Skills" },
-      "template": { "label": "Modèle", "plural": "Modèles" },
-      "figma": { "label": "Fichier Figma", "plural": "Figma" },
-      "document": { "label": "Document / Rapport", "plural": "Documents" },
-      "guide": { "label": "Guide / Playbook", "plural": "Guides" },
-      "prompt": { "label": "Prompt système", "plural": "Prompts" },
-      "example": { "label": "Exemple / Artefact", "plural": "Exemples" },
-      "spreadsheet": { "label": "Tableur / Modèle", "plural": "Tableurs" },
-      "file": { "label": "Fichier / Archive", "plural": "Fichiers" },
-      "reference": { "label": "Référence / Lien", "plural": "Références" }
+      "skill": {
+        "label": "Skill d’agent",
+        "plural": "Skills"
+      },
+      "template": {
+        "label": "Modèle",
+        "plural": "Modèles"
+      },
+      "figma": {
+        "label": "Fichier Figma",
+        "plural": "Figma"
+      },
+      "document": {
+        "label": "Document / Rapport",
+        "plural": "Documents"
+      },
+      "guide": {
+        "label": "Guide / Playbook",
+        "plural": "Guides"
+      },
+      "prompt": {
+        "label": "Prompt système",
+        "plural": "Prompts"
+      },
+      "example": {
+        "label": "Exemple / Artefact",
+        "plural": "Exemples"
+      },
+      "spreadsheet": {
+        "label": "Tableur / Modèle",
+        "plural": "Tableurs"
+      },
+      "file": {
+        "label": "Fichier / Archive",
+        "plural": "Fichiers"
+      },
+      "reference": {
+        "label": "Référence / Lien",
+        "plural": "Références"
+      }
     },
     "loading": "Chargement des ressources...",
     "loadingSub": "Chargement des ressources sélectionnées...",
@@ -488,7 +612,12 @@
     "bundleContentsBody": "Le téléchargement est un ZIP contenant {{count}} fichier(s) listé(s) ci-dessous. Copier le prompt est une action séparée et ne télécharge pas le bundle.",
     "copyPromptHelp": "Copiez le prompt complet dans votre assistant de code. Remplacez le contexte entre crochets avant de l’envoyer.",
     "promptReadOnlyNote": "Commencez en lecture seule : gardez l’écriture désactivée et relisez le rapport avant d’approuver l’implémentation.",
-    "promptSteps": ["Ouvrez votre projet dans un assistant de code disposant d’un accès en lecture au dépôt.", "Collez le prompt complet dans l’assistant.", "Remplacez les variables entre crochets par votre contexte.", "Demandez uniquement l’analyse, puis relisez le rapport avant d’approuver toute implémentation."],
+    "promptSteps": [
+      "Ouvrez votre projet dans un assistant de code disposant d’un accès en lecture au dépôt.",
+      "Collez le prompt complet dans l’assistant.",
+      "Remplacez les variables entre crochets par votre contexte.",
+      "Demandez uniquement l’analyse, puis relisez le rapport avant d’approuver toute implémentation."
+    ],
     "overview": "Aperçu & objectif",
     "whenToUse": "Quand l’utiliser",
     "whenNotToUse": "Quand NE PAS l’utiliser",
@@ -579,53 +708,9 @@
       "optionalNote": "Facultatif · Aucun paiement requis pour télécharger"
     }
   },
-  "about": {
-    "eyebrow": "LE PARCOURS",
-    "titleLine1": "De la création de mes propres mains",
-    "titleLine2": "à la conception de produits intelligents.",
-    "nowLabel": "AUJOURD'HUI",
-    "timeline": [
-      {
-        "title": "Conception mécanique",
-        "subtitle": "& fabrication"
-      },
-      {
-        "title": "Environnements industriels",
-        "small": "Procédés & maintenance · industrie du chlore"
-      },
-      {
-        "title": "Injection plastique",
-        "small": "Moulage & fabrication"
-      },
-      {
-        "title": "Design numérique",
-        "subtitle": "& UX/UI"
-      },
-      {
-        "title": "Product Design",
-        "subtitle": "& Conception de produits IA"
-      }
-    ],
-    "cardEyebrow": "À PROPOS DE MOI",
-    "cardTitleLine1": "Concevoir avec curiosité.",
-    "cardTitleLine2": "Bâtir avec raison d'être.",
-    "bio": "Je m'appelle Naïm, product designer et créateur de solutions IA basé en Tunisie. J'aime prendre des idées complexes, leur donner une structure claire, en soigner l'expérience utilisateur et les concrétiser en produits tangibles et utiles au quotidien.",
-    "skills": [
-      "UX/UI",
-      "Product Design",
-      "IA",
-      "Low-Code",
-      "Design Systems",
-      "Automatisation"
-    ],
-    "languagesLabel": "LANGUES",
-    "languagesLine1": "Arabe · Français",
-    "languagesLine2": "Anglais · Italien",
-    "certificationsLabel": "CERTIFICATIONS",
-    "certLine1": "PSM I",
-    "certLine2": "Mendix Rapid Developer",
-    "certLine3": "Design — ISSAT Sousse",
-    "seoTitle": "À propos — Naïm Bsili | Product Designer & Créateur IA",
-    "seoDesc": "Parcours professionnel, philosophie de design produit et expertise en IA et automatisation de Naïm Bsili."
-  }
+  "homeSeoTitle": "Naïm Bsili — Designer produit & créateur IA",
+  "homeSeoDescription": "Portfolio de Naïm Bsili, spécialisé en UX/UI, conception de produits numériques, IA et automatisation.",
+  "localPreviewNotice": "Aperçu local uniquement — contenu de secours intégré, pas un brouillon CMS enregistré.",
+  "draftPreviewNotice": "Aperçu du brouillon : contenu CMS enregistré pour « {{title}} ».",
+  "homePageTitle": "Accueil"
 }

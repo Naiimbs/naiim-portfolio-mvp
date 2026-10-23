@@ -131,6 +131,25 @@ h1 em {
   color: var(--green);
   font-style: normal;
 }
+html[lang="fr"] .hero h1 {
+  font-size: clamp(3rem, 6vw, 5.2rem);
+}
+.about-hero-section {
+  padding-top: clamp(5rem, 8vw, 7rem) !important;
+}
+.preview-mode-banner {
+  margin-top: 70px;
+}
+@media (min-width: 992px) {
+  .preview-mode-banner {
+    margin-top: 82px;
+  }
+}
+@media (max-width: 575.98px) {
+  html[lang="fr"] .hero h1 {
+    font-size: clamp(2.1rem, 12vw, 3.05rem);
+  }
+}
 .hero-lead {
   max-width: 590px;
   color: var(--ink-soft);
@@ -1164,7 +1183,7 @@ h1 em {
   gap: 12px;
   margin-top: 30px;
 }
-.case-process div {
+.case-process-stage {
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 17px;
@@ -1180,6 +1199,45 @@ h1 em {
   display: block;
   margin-top: 5px;
   font-family: "Space Grotesk";
+}
+.case-process-stage p {
+  white-space: pre-line;
+}
+.case-process-evidence {
+  padding-top: 8px;
+  border-top: 1px solid #edf1ef;
+}
+.case-process-technologies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+.case-process-technologies span {
+  padding: 4px 8px;
+  border: 1px solid #dce7e2;
+  border-radius: 999px;
+  color: var(--ink-soft);
+  font-size: 0.65rem;
+}
+.case-process-media {
+  margin: 14px 0 0;
+}
+.case-process-media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+.case-process-media figcaption {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.65rem;
+}
+.case-process-links {
+  margin: 12px 0 0;
+  padding-inline-start: 18px;
+  font-size: 0.72rem;
 }
 .case-process p {
   margin: 5px 0 0;

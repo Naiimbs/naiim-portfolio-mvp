@@ -11,6 +11,7 @@ import { computeEntryHealth, getCaseStudyPublishingReadiness } from '../../utils
 import { isPublicRouteImplemented, getPublicRouteStatus, getCanonicalRoute } from '../../services/contentRouteResolver';
 import { isSupabaseConfigured } from '../../lib/supabase';
 import CaseStudyContentEditor from '../components/cms/CaseStudyContentEditor';
+import { getFdeStageLabel, getMissingStageTranslationFields, getStageTranslationForId, normalizeProcessStages, normalizeProcessTranslations } from '../../utils/caseStudyStages';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -20,6 +21,7 @@ const CONTENT_TYPES = [
   { value: 'agent', label: 'AI Agent', defaultPrefix: '/agents' },
   { value: 'plugin', label: 'Plugin / Tool', defaultPrefix: '/plugins' },
   { value: 'blog', label: 'Blog Article', defaultPrefix: '/blog' },
+  { value: 'resource', label: 'Resource', defaultPrefix: '/resources' },
   { value: 'other', label: 'Other Content', defaultPrefix: '/p' },
 ];
 
@@ -408,10 +410,8 @@ export default function AdminRegistryEntry() {
     setHeroImageAlt(meta.heroImageAlt || '');
     setLogoLetter(meta.logoMark?.letter || '');
     setLogoClass(meta.logoMark?.className || '');
-    setTranslations(data.i18n || meta.i18n || {});
-
     // Initialize caseStudy content state
-    const initialCaseStudy = meta.caseStudy || (data.content_type === 'case-study' ? {
+    const rawCaseStudy = meta.caseStudy || (data.content_type === 'case-study' ? {
       version: 1,
       type: (data.slug === 'winni' || data.slug === 'assestini') ? 'custom' : 'standard',
       hero: { eyebrow: '', title: data.title || '', lead: meta.description || meta.subtitle || '', metaChips: [], image: '', imageAlt: '', caption: '' },
@@ -420,6 +420,15 @@ export default function AdminRegistryEntry() {
       evidence: { eyebrow: '', title: '', image: '', imageAlt: '', caption: '' },
       technology: { eyebrow: '', title: '', tags: [] },
     } : null);
+    const initialCaseStudy = rawCaseStudy?.type === 'standard' ? {
+      ...rawCaseStudy,
+      contribution: {
+        ...(rawCaseStudy.contribution || {}),
+        process: normalizeProcessStages(rawCaseStudy.contribution?.process),
+      },
+    } : rawCaseStudy;
+    const normalizedTranslations = normalizeProcessTranslations(data.i18n || meta.i18n || {}, initialCaseStudy?.contribution?.process || []);
+    setTranslations(normalizedTranslations);
     setCaseStudy(initialCaseStudy);
 
     setImageLoadError(false);
@@ -440,7 +449,7 @@ export default function AdminRegistryEntry() {
       category: meta.category || '', year: meta.year ? String(meta.year) : '',
       heroImage: meta.heroImage || '', heroImageAlt: meta.heroImageAlt || '',
       logoLetter: meta.logoMark?.letter || '', logoClass: meta.logoMark?.className || '',
-      caseStudyStr: JSON.stringify(meta.caseStudy || initialCaseStudy || null),
+      caseStudyStr: JSON.stringify(initialCaseStudy || null),
     };
   }
 
@@ -602,6 +611,19 @@ export default function AdminRegistryEntry() {
       };
     });
     setIsDirty(true);
+  };
+
+  const setTxProcessStageField = (stageId, field, value, index = -1) => {
+    const sourceProcess = normalizeProcessStages(caseStudy?.contribution?.process);
+    const existingTranslations = txCase.contribution?.process;
+    const translatedProcess = sourceProcess.map((stage, stepIndex) => ({
+      ...getStageTranslationForId(existingTranslations, stage.id, stepIndex),
+      id: stage.id,
+    }));
+    const targetIndex = sourceProcess.findIndex((stage) => stage.id === stageId);
+    if (targetIndex < 0) return;
+    translatedProcess[targetIndex] = { ...translatedProcess[targetIndex], [field]: value };
+    setTxCaseStudyField('contribution', { process: translatedProcess });
   };
 
   const getTxEvidenceGalleryText = (field) => baseEvidenceGallery
@@ -850,6 +872,17 @@ export default function AdminRegistryEntry() {
             <a href={previewHref} target="_blank" rel="noopener noreferrer" className="admin-btn admin-btn-secondary" style={{ fontSize: '0.8rem' }}>
               <i className="bi bi-box-arrow-up-right me-1 text-success" /> Preview Live
             </a>
+          )}
+          {contentType === 'case-study' && caseStudy?.type === 'standard' && (
+            isDirty || saving ? (
+              <button type="button" className="admin-btn admin-btn-secondary" disabled title="Save changes before opening the persisted preview" style={{ fontSize: '0.8rem', opacity: 0.55 }}>
+                <i className="bi bi-eye me-1" /> Save before preview
+              </button>
+            ) : (
+              <a href={`${previewHref}${previewHref.includes('?') ? '&' : '?'}preview=true`} target="_blank" rel="noopener noreferrer" className="admin-btn admin-btn-secondary" style={{ fontSize: '0.8rem' }}>
+                <i className="bi bi-eye me-1 text-primary" /> {isLive ? 'Preview Saved CMS' : 'Preview Saved Draft'}
+              </a>
+            )
           )}
           <button type="button" className="admin-btn admin-btn-primary" onClick={handleSave} disabled={saving || !isDirty} style={{ fontSize: '0.8rem', opacity: (!isDirty && !saving) ? 0.6 : 1 }}>
             {saving ? (
@@ -1354,6 +1387,49 @@ export default function AdminRegistryEntry() {
                           disabled={saving}
                         />
                       </div>
+                      {Array.isArray(caseStudy?.contribution?.process) && caseStudy.contribution.process.length > 0 && (
+                        <div className="col-12">
+                          <label className="form-label fw-bold small text-dark">Methodology / Process Stages ({txLang.toUpperCase()})</label>
+                          <div className="form-text mb-2">Translate stage titles and descriptions. Stable stage IDs keep translations attached when stages are reordered. Blank fields fall back to the English source in public rendering.</div>
+                          <div className="d-flex flex-column gap-3">
+                            {caseStudy.contribution.process.map((step, index) => {
+                              const translatedStep = getStageTranslationForId(txCase.contribution?.process, step.id, index);
+                              const missingFields = getMissingStageTranslationFields(step, translatedStep);
+                              const sourceTitle = step.title || getFdeStageLabel(step.stageType, 'en') || `Stage ${index + 1}`;
+                              return (
+                                <div className="border rounded p-3" key={step.id || `${step.step || index}-${index}`}>
+                                  <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                                    <div className="small fw-semibold text-secondary">{step.step || String(index + 1).padStart(2, '0')} · {sourceTitle}</div>
+                                    {missingFields.length > 0 ? (
+                                      <span className="badge bg-warning-subtle text-warning-emphasis border">Incomplete: {missingFields.join(', ')}</span>
+                                    ) : (
+                                      <span className="badge bg-success-subtle text-success border">Source copy translated</span>
+                                    )}
+                                  </div>
+                                  <label className="form-label small mb-1">Stage title ({txLang.toUpperCase()})</label>
+                                  <input
+                                    type="text"
+                                    className="form-control form-control-sm mb-2"
+                                    value={translatedStep.title || ''}
+                                    onChange={(e) => setTxProcessStageField(step.id, 'title', e.target.value, index)}
+                                    placeholder={sourceTitle}
+                                    disabled={saving}
+                                  />
+                                  <label className="form-label small mb-1">Stage description ({txLang.toUpperCase()})</label>
+                                  <textarea
+                                    className="form-control form-control-sm"
+                                    rows="3"
+                                    value={translatedStep.desc || ''}
+                                    onChange={(e) => setTxProcessStageField(step.id, 'desc', e.target.value, index)}
+                                    placeholder={step.desc || 'No source description; add one only if factually supported.'}
+                                    disabled={saving}
+                                  />
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
                       <div className="col-md-6">
                         <label className="form-label fw-bold small text-dark">Code Example Title ({txLang.toUpperCase()})</label>
                         <input

@@ -27,6 +27,7 @@ export default function PageRenderer({
   sections = [],
   loading = false,
   error = null,
+  robots = null,
   activeSectionId = null,
   viewport = 'desktop',
   onSelectSection = null,
@@ -78,6 +79,7 @@ export default function PageRenderer({
       <Helmet>
         <title>{localizedSeoTitle}</title>
         {localizedSeoDescription && <meta name="description" content={localizedSeoDescription} />}
+        {robots && <meta name="robots" content={robots} />}
         {page.canonical_url && <link rel="canonical" href={page.canonical_url} />}
       </Helmet>
 

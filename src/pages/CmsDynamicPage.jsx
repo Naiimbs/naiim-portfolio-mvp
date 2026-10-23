@@ -5,7 +5,7 @@ import PageRenderer from '../components/cms/PageRenderer';
 import {
   getPageBySlug,
   getPageSections,
-  getAdminPages,
+  getAdminPageBySlug,
   getAdminPageSections,
 } from '../services/siteCms';
 
@@ -21,34 +21,54 @@ import { isPagePubliclyAccessible } from '../utils/registryHealth';
 export default function CmsDynamicPage() {
   const { slug } = useParams();
   const [searchParams] = useSearchParams();
-  const { isAuthenticated, isEditor, loading: authLoading } = useAuth();
+  const { isAdmin, loading: authLoading } = useAuth();
   const isPreviewRequested = searchParams.get('preview') === 'true';
 
   const [page, setPage] = useState(null);
   const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [previewSource, setPreviewSource] = useState(null);
 
-  const canPreviewDraft = isPreviewRequested && (isAuthenticated || isEditor || !isSupabaseConfigured);
+  const canPreviewDraft = isPreviewRequested;
 
   useEffect(() => {
     async function loadPageData() {
       if (!slug || authLoading) return;
       setLoading(true);
       setError(null);
+      setPreviewSource(null);
+      setPage(null);
+      setSections([]);
 
-      // Authenticated draft preview mode
+      // Saved draft preview: use only persisted records, never merged local fallback data.
       if (canPreviewDraft) {
-        const adminPagesRes = await getAdminPages();
-        const found = (adminPagesRes.data || []).find((p) => p.slug === slug);
-
-        if (found) {
-          setPage(found);
-          const secRes = await getAdminPageSections(found.id);
-          setSections(secRes.data || []);
+        if (isSupabaseConfigured && !isAdmin) {
+          setError(new Error('Preview blocked: sign in with an authorized admin account.'));
           setLoading(false);
           return;
         }
+        const pageRes = await getAdminPageBySlug(slug);
+        if (pageRes.error || !pageRes.data || (isSupabaseConfigured && !['supabase', 'supabase_registry'].includes(pageRes.source))) {
+          setError(new Error('No saved CMS page could be loaded. Local proposal data is not substituted in authenticated preview mode.'));
+          setPage(null);
+          setSections([]);
+          setLoading(false);
+          return;
+        }
+        const secRes = await getAdminPageSections(pageRes.data.id, { allowFallback: !isSupabaseConfigured });
+        if (isSupabaseConfigured && (secRes.error || secRes.source !== 'supabase' || !Array.isArray(secRes.data) || secRes.data.length === 0)) {
+          setError(new Error('Saved CMS sections are unavailable. Check the page row, section rows, and admin authorization.'));
+          setPage(null);
+          setSections([]);
+          setLoading(false);
+          return;
+        }
+        setPage(pageRes.data);
+        setSections(secRes.data || []);
+        setPreviewSource(isSupabaseConfigured ? 'supabase' : 'local');
+        setLoading(false);
+        return;
       }
 
       // ── Step 1: Content Registry Publication Gate (Single Authority) ──────
@@ -96,16 +116,17 @@ export default function CmsDynamicPage() {
     }
 
     loadPageData();
-  }, [slug, canPreviewDraft, authLoading]);
+  }, [slug, canPreviewDraft, isAdmin, authLoading]);
 
   return (
     <MainLayout>
       {canPreviewDraft && (
         <div className="bg-warning text-dark text-center py-2 px-3 fw-semibold small shadow-sm position-sticky top-0 z-3">
-          <i className="bi bi-eye-fill me-2"></i> PREVIEW MODE — This is an unpublished preview of page "<code>{slug}</code>".
+          <i className="bi bi-eye-fill me-2"></i>
+          {error ? error.message : previewSource === 'local' ? 'LOCAL PREVIEW — not connected to saved CMS data.' : previewSource === 'supabase' ? `SAVED CMS PREVIEW — ${page?.title || slug}; not the public snapshot.` : `Loading saved preview for ${slug}…`}
         </div>
       )}
-      <PageRenderer page={page} sections={sections} loading={loading} error={error} />
+      <PageRenderer page={page} sections={sections} loading={loading} error={error} robots={canPreviewDraft ? 'noindex, nofollow' : null} />
     </MainLayout>
   );
 }

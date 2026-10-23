@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import MainLayout from '../layouts/MainLayout';
 import SEO from '../components/common/SEO';
 import PageRenderer from '../components/cms/PageRenderer';
 import {
   getPageBySlug,
   getPageSections,
-  getAdminPages,
+  getAdminPageBySlug,
   getAdminPageSections,
 } from '../services/siteCms';
 import { getPublishedPublicContentBySlug } from '../services/contentRegistry';
@@ -25,33 +26,90 @@ import { getPersonSchema, getWebSiteSchema } from '../lib/schema';
 
 export default function HomePage() {
   const schemas = [getPersonSchema(), getWebSiteSchema()];
+  const { t, i18n } = useTranslation();
+  const currentLang = i18n?.language?.slice(0, 2) || 'en';
 
   const [searchParams] = useSearchParams();
-  const { isAuthenticated, isEditor, loading: authLoading } = useAuth();
+  const { isAdmin, loading: authLoading } = useAuth();
   const isPreviewRequested = searchParams.get('preview') === 'true';
 
   const [homePage, setHomePage] = useState(null);
   const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [previewSource, setPreviewSource] = useState(null);
+  const [previewError, setPreviewError] = useState(null);
 
-  const canPreviewDraft = isPreviewRequested && (isAuthenticated || isEditor || !isSupabaseConfigured);
+  const canPreviewDraft = isPreviewRequested;
+  const pageTx = {
+    ...homePage?.i18n?.[currentLang],
+    ...homePage?.metadata?.i18n?.[currentLang],
+  };
+  const localizedPageTitle = pageTx.title || (currentLang === 'en' ? homePage?.title || t('homePageTitle') : t('homePageTitle'));
+  const localizedSeoTitle = pageTx.seo_title || pageTx.title || (currentLang === 'en' ? homePage?.seo_title : t('homeSeoTitle'));
+  const localizedSeoDescription = pageTx.seo_description || pageTx.description || (currentLang === 'en' ? homePage?.seo_description : t('homeSeoDescription'));
+  const localizedPageTranslation = {
+    ...pageTx,
+    title: localizedPageTitle,
+    seo_title: localizedSeoTitle,
+    seo_description: localizedSeoDescription,
+  };
+  const localizedHomePage = homePage ? {
+    ...homePage,
+    i18n: { ...homePage.i18n, [currentLang]: localizedPageTranslation },
+    metadata: {
+      ...homePage.metadata,
+      i18n: { ...homePage.metadata?.i18n, [currentLang]: localizedPageTranslation },
+    },
+  } : homePage;
+  const previewTitle = localizedPageTitle;
+  const previewNotice = previewSource === 'local'
+    ? t('localPreviewNotice')
+    : previewSource === 'supabase'
+      ? t('draftPreviewNotice', { title: previewTitle })
+      : 'Loading saved page preview…';
 
   useEffect(() => {
     let isMounted = true;
     async function loadHomeCms() {
       if (authLoading) return;
+      setLoading(true);
+      setPreviewError(null);
+      setPreviewSource(null);
+      setHomePage(null);
+      setSections([]);
 
-      // Authenticated draft preview mode
+      // Saved draft preview: configured Supabase requires an admin session and reads only persisted rows.
       if (canPreviewDraft) {
-        const adminPagesRes = await getAdminPages();
-        const found = (adminPagesRes.data || []).find((p) => p.slug === 'home');
-        if (found && isMounted) {
-          setHomePage(found);
-          const secRes = await getAdminPageSections(found.id);
-          setSections(secRes.data || []);
-          setLoading(false);
+        if (isSupabaseConfigured && !isAdmin) {
+          if (isMounted) {
+            setPreviewError('Preview blocked: sign in with an authorized admin account.');
+            setLoading(false);
+          }
           return;
         }
+        const pageRes = await getAdminPageBySlug('home');
+        if (pageRes.error || !pageRes.data || (isSupabaseConfigured && !['supabase', 'supabase_registry'].includes(pageRes.source))) {
+          if (isMounted) {
+            setPreviewError('No saved CMS page could be loaded. Local fallback content is not substituted in authenticated preview mode.');
+            setLoading(false);
+          }
+          return;
+        }
+        const secRes = await getAdminPageSections(pageRes.data.id, { allowFallback: !isSupabaseConfigured });
+        if (isSupabaseConfigured && (secRes.error || secRes.source !== 'supabase' || !Array.isArray(secRes.data) || secRes.data.length === 0)) {
+          if (isMounted) {
+            setPreviewError('Saved CMS sections are unavailable. Check the page row, section rows, and admin authorization.');
+            setLoading(false);
+          }
+          return;
+        }
+        if (isMounted) {
+          setHomePage(pageRes.data);
+          setSections(secRes.data || []);
+          setPreviewSource(isSupabaseConfigured ? 'supabase' : 'local');
+          setLoading(false);
+        }
+        return;
       }
 
       // Step 1: Content Registry Single Publication Authority
@@ -81,27 +139,32 @@ export default function HomePage() {
     return () => {
       isMounted = false;
     };
-  }, [canPreviewDraft, authLoading]);
+  }, [canPreviewDraft, isAdmin, authLoading]);
 
   const hasCmsSections = Boolean(sections && sections.length > 0);
 
   return (
     <MainLayout>
       <SEO
-        title={homePage?.seo_title || 'Naïm Bsili — Product Designer & AI Builder'}
-        description={homePage?.seo_description || 'Senior UX/UI Designer & AI Product Builder. Turning ambiguous problems into usable digital products across product design, AI, low-code and automation.'}
+        title={localizedSeoTitle || t('homeSeoTitle', 'Naïm Bsili — Product Designer & AI Builder')}
+        description={localizedSeoDescription || t('homeSeoDescription', 'Portfolio of Naïm Bsili, specializing in UX/UI, digital product design, AI, and automation.')}
         canonical="/"
         schema={schemas}
+        robots={isPreviewRequested ? 'noindex, nofollow' : undefined}
       />
 
       {canPreviewDraft && (
-        <div className="bg-warning text-dark text-center py-2 px-3 fw-semibold small shadow-sm position-sticky top-0 z-3">
-          <i className="bi bi-eye-fill me-2"></i> PREVIEW MODE — You are previewing the Home page layout.
+        <div className="preview-mode-banner bg-warning text-dark text-center py-2 px-3 fw-semibold small shadow-sm">
+          <i className="bi bi-eye-fill me-2"></i> {previewError || previewNotice}
         </div>
       )}
 
-      {hasCmsSections ? (
-        <PageRenderer page={homePage} sections={sections} loading={loading} />
+      {canPreviewDraft && previewError ? (
+        <section className="section-pad" role="alert"><div className="container"><h2>Preview unavailable</h2><p>{previewError}</p></div></section>
+      ) : hasCmsSections ? (
+        <PageRenderer page={localizedHomePage} sections={sections} loading={loading} />
+      ) : canPreviewDraft && isSupabaseConfigured ? (
+        <section className="section-pad"><div className="container">Loading saved CMS sections…</div></section>
       ) : (
         <>
           <HeroSection />

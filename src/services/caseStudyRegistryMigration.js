@@ -8,6 +8,7 @@
 import { resolveAsset } from './assetRegistry.js';
 import { updateContentRegistryEntry, getAdminContentRegistry } from './contentRegistry.js';
 import legacyCaseStudiesData from '../data/caseStudiesData.json';
+import { normalizeProcessStages } from '../utils/caseStudyStages.js';
 
 export const LEGACY_CASE_STUDIES_DATA = legacyCaseStudiesData;
 
@@ -63,13 +64,13 @@ export function migrateCaseStudyToRegistry(legacyData) {
       eyebrow: contribution?.eyebrow || '',
       title: contribution?.title || '',
       items: Array.isArray(contribution?.items) ? [...contribution.items] : [],
-      process: Array.isArray(contribution?.process)
-        ? contribution.process.map((p) => ({
-            step: p.step || '',
-            title: p.title || '',
-            desc: p.desc || '',
-          }))
-        : [],
+      process: normalizeProcessStages(contribution?.process).map((stage) => ({
+        ...stage,
+        media: stage.media.map((item) => ({
+          ...item,
+          url: item.url ? (resolveAsset(item.url) || item.url) : '',
+        })),
+      })),
       ...(contribution?.codeExample && typeof contribution.codeExample === 'object'
         ? { codeExample: { ...contribution.codeExample } }
         : {}),
@@ -210,7 +211,13 @@ export function normalizeCaseStudyContent(caseStudy, slug = '') {
     contribution: {
       ...(caseStudy.contribution || {}),
       items: Array.isArray(caseStudy.contribution?.items) ? caseStudy.contribution.items : [],
-      process: Array.isArray(caseStudy.contribution?.process) ? caseStudy.contribution.process : [],
+      process: normalizeProcessStages(caseStudy.contribution?.process).map((stage) => ({
+        ...stage,
+        media: stage.media.map((item) => ({
+          ...item,
+          url: item.url ? (resolveAsset(item.url) || item.url) : '',
+        })),
+      })),
     },
     evidence: {
       ...evidence,

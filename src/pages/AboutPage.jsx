@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import MainLayout from '../layouts/MainLayout';
 import SEO from '../components/common/SEO';
 import PageRenderer from '../components/cms/PageRenderer';
-import { getPageBySlug, getPageSections, getAdminPages, getAdminPageSections } from '../services/siteCms';
+import { getPageBySlug, getPageSections, getAdminPageBySlug, getAdminPageSections } from '../services/siteCms';
 import { getPublishedPublicContentBySlug } from '../services/contentRegistry';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { useAuth } from '../admin/context/AuthContext';
@@ -12,32 +12,60 @@ import AboutSection from '../components/about/AboutSection';
 
 export default function AboutPage() {
   const [searchParams] = useSearchParams();
-  const { isAuthenticated, isEditor, loading: authLoading } = useAuth();
+  const { isAdmin, loading: authLoading } = useAuth();
   const isPreviewRequested = searchParams.get('preview') === 'true';
 
   const [aboutPage, setAboutPage] = useState(null);
   const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [previewSource, setPreviewSource] = useState(null);
+  const [previewError, setPreviewError] = useState(null);
 
-  const canPreviewDraft = isPreviewRequested && (isAuthenticated || isEditor || !isSupabaseConfigured);
+  const canPreviewDraft = isPreviewRequested;
 
   useEffect(() => {
     window.scrollTo(0, 0);
     let isMounted = true;
     async function loadAboutCms() {
       if (authLoading) return;
+      setLoading(true);
+      setPreviewError(null);
+      setPreviewSource(null);
+      setAboutPage(null);
+      setSections([]);
 
-      // Authenticated draft preview mode
+      // Saved draft preview: configured Supabase requires an admin session and reads only persisted rows.
       if (canPreviewDraft) {
-        const adminPagesRes = await getAdminPages();
-        const found = (adminPagesRes.data || []).find((p) => p.slug === 'about');
-        if (found && isMounted) {
-          setAboutPage(found);
-          const secRes = await getAdminPageSections(found.id);
-          setSections(secRes.data || []);
-          setLoading(false);
+        if (isSupabaseConfigured && !isAdmin) {
+          if (isMounted) {
+            setPreviewError('Preview blocked: sign in with an authorized admin account.');
+            setLoading(false);
+          }
           return;
         }
+        const pageRes = await getAdminPageBySlug('about');
+        if (pageRes.error || !pageRes.data || (isSupabaseConfigured && !['supabase', 'supabase_registry'].includes(pageRes.source))) {
+          if (isMounted) {
+            setPreviewError('No saved CMS page could be loaded. Local proposal content is not substituted in authenticated preview mode.');
+            setLoading(false);
+          }
+          return;
+        }
+        const secRes = await getAdminPageSections(pageRes.data.id, { allowFallback: !isSupabaseConfigured });
+        if (isSupabaseConfigured && (secRes.error || secRes.source !== 'supabase' || !Array.isArray(secRes.data) || secRes.data.length === 0)) {
+          if (isMounted) {
+            setPreviewError('Saved CMS sections are unavailable. Check the page row, section rows, and admin authorization.');
+            setLoading(false);
+          }
+          return;
+        }
+        if (isMounted) {
+          setAboutPage(pageRes.data);
+          setSections(secRes.data || []);
+          setPreviewSource(isSupabaseConfigured ? 'supabase' : 'local');
+          setLoading(false);
+        }
+        return;
       }
 
       // Step 1: Content Registry Single Publication Authority
@@ -70,33 +98,67 @@ export default function AboutPage() {
     return () => {
       isMounted = false;
     };
-  }, [canPreviewDraft, authLoading]);
+  }, [canPreviewDraft, isAdmin, authLoading]);
 
   const { t, i18n } = useTranslation();
   const currentLang = i18n?.language?.slice(0, 2) || 'en';
-  const pageTx = aboutPage?.i18n?.[currentLang] || aboutPage?.metadata?.i18n?.[currentLang] || {};
+  const pageTx = {
+    ...aboutPage?.i18n?.[currentLang],
+    ...aboutPage?.metadata?.i18n?.[currentLang],
+  };
+  const localizedTitle = pageTx.seo_title || pageTx.title || (currentLang === 'en' ? aboutPage?.seo_title : t('about.seoTitle'));
+  const localizedDescription = pageTx.seo_description || pageTx.description || (currentLang === 'en' ? aboutPage?.seo_description : t('about.seoDesc'));
+  const localizedTranslation = {
+    ...pageTx,
+    title: pageTx.title || localizedTitle,
+    seo_title: localizedTitle,
+    seo_description: localizedDescription,
+  };
+  const localizedPage = aboutPage ? {
+    ...aboutPage,
+    i18n: {
+      ...aboutPage.i18n,
+      [currentLang]: localizedTranslation,
+    },
+    metadata: {
+      ...aboutPage.metadata,
+      i18n: {
+        ...aboutPage.metadata?.i18n,
+        [currentLang]: localizedTranslation,
+      },
+    },
+  } : aboutPage;
   const hasCmsSections = Boolean(sections && sections.length > 0);
+  const previewNotice = previewSource === 'local'
+    ? t('localPreviewNotice')
+    : previewSource === 'supabase'
+      ? t('draftPreviewNotice', { title: pageTx.title || (currentLang === 'en' ? aboutPage?.title || t('nav.about') : t('nav.about')) })
+      : 'Loading saved page preview…';
 
   return (
     <MainLayout>
       <SEO
-        title={pageTx.seo_title || pageTx.title || aboutPage?.seo_title || t('about.seoTitle', 'About — Naïm Bsili | Product Designer & AI Builder')}
-        description={pageTx.seo_description || aboutPage?.seo_description || t('about.seoDesc', 'Career journey, product design philosophy, and AI automation expertise of Naïm Bsili.')}
+        title={localizedTitle || t('about.seoTitle', 'About — Naïm Bsili | Product Designer & AI Builder')}
+        description={localizedDescription || t('about.seoDesc', 'Career journey, product design philosophy, and AI automation expertise of Naïm Bsili.')}
         canonical="/about"
+        robots={isPreviewRequested ? 'noindex, nofollow' : undefined}
       />
 
       {canPreviewDraft && (
-        <div className="bg-warning text-dark text-center py-2 px-3 fw-semibold small shadow-sm position-sticky top-0 z-3">
-          <i className="bi bi-eye-fill me-2"></i> PREVIEW MODE — You are previewing the About page layout.
+        <div className="preview-mode-banner bg-warning text-dark text-center py-2 px-3 fw-semibold small shadow-sm">
+          <i className="bi bi-eye-fill me-2"></i> {previewError || previewNotice}
         </div>
       )}
 
-      {hasCmsSections ? (
-        <PageRenderer page={aboutPage} sections={sections} loading={loading} />
+      {canPreviewDraft && previewError ? (
+        <section className="section-pad" role="alert"><div className="container"><h2>Preview unavailable</h2><p>{previewError}</p></div></section>
+      ) : hasCmsSections ? (
+        <PageRenderer page={localizedPage} sections={sections} loading={loading} />
+      ) : canPreviewDraft && isSupabaseConfigured ? (
+        <section className="section-pad"><div className="container">{loading ? 'Loading saved CMS sections…' : 'No saved CMS sections are available for this page.'}</div></section>
       ) : (
-        <AboutSection pageData={aboutPage} />
+        <AboutSection pageData={localizedPage} />
       )}
     </MainLayout>
   );
 }
-

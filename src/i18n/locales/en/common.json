@@ -10,7 +10,18 @@
     "agents": "Agents",
     "resources": "Resources",
     "beta": "Beta",
-    "toggleNavigation": "Toggle navigation"
+    "toggleNavigation": "Toggle navigation",
+    "myJourney": "My Journey"
+  },
+  "caseStudyStages": {
+    "problem-context": "Problem & Context",
+    "discovery-investigation": "Discovery & Investigation",
+    "solution-design": "Solution Design",
+    "build-integration": "Build & Integration",
+    "validation-iteration": "Validation & Iteration",
+    "outcome-learnings": "Outcome & Learnings",
+    "custom": "Custom stage",
+    "technologies": "Relevant technologies"
   },
   "hero": {
     "eyebrow": "SENIOR UX/UI DESIGNER · AI PRODUCT BUILDER",
@@ -168,28 +179,23 @@
     "timeline": [
       {
         "title": "Mechanical design",
-        "subtitle": "& fabrication",
-        "small": null
+        "subtitle": "& fabrication"
       },
       {
         "title": "Industrial environments",
-        "subtitle": null,
         "small": "Process & maintenance · chlorine industry"
       },
       {
         "title": "Plastic injection",
-        "subtitle": null,
         "small": "Moulding & manufacturing"
       },
       {
         "title": "Digital design",
-        "subtitle": "& UX/UI",
-        "small": null
+        "subtitle": "& UX/UI"
       },
       {
         "title": "Product Design",
-        "subtitle": "& AI Product Building",
-        "small": null
+        "subtitle": "& AI Product Building"
       }
     ],
     "cardEyebrow": "ABOUT ME",
@@ -220,34 +226,114 @@
     "journeyTitle": "From Mechanical Design to AI",
     "journeySubtitle": "A visual progression connecting physical engineering, visual craft, human-centered UX, low-code delivery, and autonomous AI systems.",
     "stages": {
-      "1": { "title": "Mechanical Design & Fabrication", "tag": "Physical Engineering", "exp": "Learning how physical things are designed, manufactured, and refined under real-world constraints; developing a rigorous, practical approach to problem-solving.", "lesson": "Physical constraints teach you that every millimeter matters before production begins." },
-      "2": { "title": "Graphic & Visual Design", "tag": "Visual Communication", "exp": "Turning concepts into visual communication and developing a sharp intuition for typography, layout hierarchy, contrast, and visual clarity.", "lesson": "Clarity is kindness; design begins with how information is perceived and understood." },
-      "3": { "title": "UX/UI & Product Design", "tag": "Human-Centered Design", "exp": "Understanding human mental models, mapping user journeys, and structuring cohesive, accessible digital experiences across web and mobile platforms.", "lesson": "The best interface is the one that removes friction between the human and their goal." },
-      "4": { "title": "Low-Code & Implementation", "tag": "Mendix & OutSystems", "exp": "Connecting design decisions directly to production application behavior, data structures, and APIs—bridging the gap between design vision and engineered reality.", "lesson": "A design is only as strong as what actually ships and survives production." },
-      "5": { "title": "AI Product Building & Automation", "tag": "Agents & Orchestration", "exp": "Experimenting with agentic workflows, Model Context Protocol (MCP), API automations, and LLM orchestration to build connected, intelligent digital systems.", "lesson": "AI expands the leverage of one builder, but human discernment defines the taste and quality." }
+      "1": {
+        "title": "Mechanical Design & Fabrication",
+        "tag": "Physical Engineering",
+        "exp": "Learning how physical things are designed, manufactured, and refined under real-world constraints; developing a rigorous, practical approach to problem-solving.",
+        "lesson": "Physical constraints teach you that every millimeter matters before production begins."
+      },
+      "2": {
+        "title": "Graphic & Visual Design",
+        "tag": "Visual Communication",
+        "exp": "Turning concepts into visual communication and developing a sharp intuition for typography, layout hierarchy, contrast, and visual clarity.",
+        "lesson": "Clarity is kindness; design begins with how information is perceived and understood."
+      },
+      "3": {
+        "title": "UX/UI & Product Design",
+        "tag": "Human-Centered Design",
+        "exp": "Understanding human mental models, mapping user journeys, and structuring cohesive, accessible digital experiences across web and mobile platforms.",
+        "lesson": "The best interface is the one that removes friction between the human and their goal."
+      },
+      "4": {
+        "title": "Low-Code & Implementation",
+        "tag": "Mendix & OutSystems",
+        "exp": "Connecting design decisions directly to production application behavior, data structures, and APIs—bridging the gap between design vision and engineered reality.",
+        "lesson": "A design is only as strong as what actually ships and survives production."
+      },
+      "5": {
+        "title": "AI Product Building & Automation",
+        "tag": "Agents & Orchestration",
+        "exp": "Experimenting with agentic workflows, Model Context Protocol (MCP), API automations, and LLM orchestration to build connected, intelligent digital systems.",
+        "lesson": "AI expands the leverage of one builder, but human discernment defines the taste and quality."
+      }
     },
     "philosophyEyebrow": "HOW I THINK",
     "philosophyTitle": "Principles over trends.",
     "philosophyIntro": "Tools evolve every month, but how you approach problems remains your true craft. Here is how I think before touching any tool.",
     "principles": {
-      "1": { "title": "Understand before designing", "body": "Deconstruct the real problem and its operational context before deciding what to build. Avoid rushing to solutions before framing the root necessity." },
-      "2": { "title": "Design with implementation in mind", "body": "A design should account for real technical constraints, performance bottlenecks, and state transitions so that usability is preserved in production." },
-      "3": { "title": "Experiment to learn", "body": "Test assumptions through rapid functional prototypes, measure real behavior, and iterate relentlessly rather than assuming the first idea is optimal." }
+      "1": {
+        "title": "Understand before designing",
+        "body": "Deconstruct the real problem and its operational context before deciding what to build. Avoid rushing to solutions before framing the root necessity."
+      },
+      "2": {
+        "title": "Design with implementation in mind",
+        "body": "A design should account for real technical constraints, performance bottlenecks, and state transitions so that usability is preserved in production."
+      },
+      "3": {
+        "title": "Experiment to learn",
+        "body": "Test assumptions through rapid functional prototypes, measure real behavior, and iterate relentlessly rather than assuming the first idea is optimal."
+      }
     },
     "expertiseEyebrow": "AREAS OF EXPERTISE",
     "expertiseTitle": "What I Bring to Products",
     "expertise": {
-      "1": { "title": "Product & UX/UI Design", "desc": "Designing systems and human experiences from initial discovery to validated components." },
-      "2": { "title": "Low-Code Product Delivery", "desc": "Delivering enterprise apps with robust logic, data models, and clean UI." },
-      "3": { "title": "AI Product Building & Automation", "desc": "Building connected workflows and autonomous agentic interfaces." }
+      "1": {
+        "title": "Product & UX/UI Design",
+        "desc": "Designing systems and human experiences from initial discovery to validated components.",
+        "skills": [
+          "User research & discovery",
+          "Interaction and flow design",
+          "Wireframing & prototyping",
+          "Design systems & tokens",
+          "Accessibility (WCAG)"
+        ]
+      },
+      "2": {
+        "title": "Low-Code Product Delivery",
+        "desc": "Delivering enterprise apps with robust logic, data models, and clean UI.",
+        "skills": [
+          "Mendix rapid development",
+          "OutSystems platforms",
+          "Design-to-code translation",
+          "API & integration logic",
+          "Production quality assurance"
+        ]
+      },
+      "3": {
+        "title": "AI Product Building & Automation",
+        "desc": "Building connected workflows and autonomous agentic interfaces.",
+        "skills": [
+          "n8n & Make automation",
+          "Model Context Protocol (MCP)",
+          "Agentic workflow systems",
+          "Prompt design",
+          "Custom tool integration"
+        ]
+      }
     },
     "proofEyebrow": "PROOF, NOT CLAIMS",
     "proofTitle": "Selected Work & Artifacts",
     "projects": {
-      "1": { "badge": "Concept & Physical Identity", "desc": "A QR/NFC physical-to-digital lost-item recovery identity requiring zero finder accounts while keeping owner private.", "role": "Product Concept · Physical Form Factor · End-to-End Flow" },
-      "2": { "badge": "AI Assistant & Lab", "desc": "An autonomous conversational assistant and portfolio intelligence system built to answer questions and demonstrate live AI orchestration.", "role": "Agent Architecture · Prompt Design · Frontend UI" },
-      "3": { "badge": "Professional Client Work", "desc": "Enterprise-grade banking and government digital services designed under strict compliance, confidentiality, and scalability standards.", "role": "UX/UI Architecture · Component Library · Multi-Platform Guidelines" },
-      "4": { "badge": "Automation Experiment", "desc": "Real automation pipelines connecting LLMs, webhooks, and operations with proven, repeatable business outcomes.", "role": "Integration Architecture · n8n Pipelines · Outcome Verification" }
+      "1": {
+        "badge": "Concept & Physical Identity",
+        "desc": "A QR/NFC physical-to-digital lost-item recovery identity requiring zero finder accounts while keeping owner private.",
+        "role": "Product Concept · Physical Form Factor · End-to-End Flow"
+      },
+      "2": {
+        "badge": "AI Assistant & Lab",
+        "desc": "An autonomous conversational assistant and portfolio intelligence system built to answer questions and demonstrate live AI orchestration.",
+        "role": "Agent Architecture · Prompt Design · Frontend UI"
+      },
+      "3": {
+        "badge": "Professional Client Work",
+        "desc": "Enterprise-grade banking and government digital services designed under strict compliance, confidentiality, and scalability standards.",
+        "role": "UX/UI Architecture · Component Library · Multi-Platform Guidelines"
+      },
+      "4": {
+        "badge": "Automation Experiment",
+        "desc": "An experimental lab project connecting language models, webhooks, and operational workflows to explore practical automation.",
+        "role": "Integration architecture · n8n workflow experiments · evaluation in progress"
+      }
     },
     "shareEyebrow": "KNOWLEDGE SHARING",
     "shareTitle": "Beyond the Portfolio",
@@ -294,7 +380,15 @@
       "prototypeBody": "A tangible, working prototype answers design questions faster than hours of meetings.",
       "knowledgeTitle": "Shared knowledge compounds:",
       "knowledgeBody": "Teaching and writing force clarity and keep knowledge rigorous."
-    }
+    },
+    "seoTitle": "About — Naïm Bsili | Product Designer & AI Builder",
+    "seoDesc": "Career journey, product design philosophy, and AI automation expertise of Naïm Bsili.",
+    "expertiseSubtitle": "Three complementary ways I contribute to product work.",
+    "humanStory": "Behind every design system and agentic workflow is a deep curiosity about how things work. Whether dismantling a mechanical mechanism, observing how people handle friction in everyday tasks, or writing automation logic, the common thread is transforming ideas into something tangible and useful.",
+    "buildingTitle": "WINNI Identity & Autonomous Agent Protocols",
+    "buildingDescription": "Refining the physical-to-digital QR/NFC recovery flow and experimenting with autonomous agent orchestration via Model Context Protocol (MCP) to connect physical objects with intelligent workflows.",
+    "closingEyebrow": "GET IN TOUCH",
+    "buildingNote": "WINNI Identity Ecosystem · Naïm Copilot · AI Agent Protocols"
   },
   "copilot": {
     "kicker": "AI ASSISTANT",
@@ -377,16 +471,46 @@
     "resultsCount_other": "{{count}} resources",
     "resultsLabel": "matching resources",
     "types": {
-      "skill": { "label": "Agent Skill", "plural": "Skills" },
-      "template": { "label": "Template", "plural": "Templates" },
-      "figma": { "label": "Figma File", "plural": "Figma" },
-      "document": { "label": "Document / Report", "plural": "Documents" },
-      "guide": { "label": "Guide & Playbook", "plural": "Guides" },
-      "prompt": { "label": "System Prompt", "plural": "Prompts" },
-      "example": { "label": "Example / Artifact", "plural": "Examples" },
-      "spreadsheet": { "label": "Spreadsheet / Model", "plural": "Spreadsheets" },
-      "file": { "label": "File / Archive", "plural": "Files" },
-      "reference": { "label": "Reference / Link", "plural": "References" }
+      "skill": {
+        "label": "Agent Skill",
+        "plural": "Skills"
+      },
+      "template": {
+        "label": "Template",
+        "plural": "Templates"
+      },
+      "figma": {
+        "label": "Figma File",
+        "plural": "Figma"
+      },
+      "document": {
+        "label": "Document / Report",
+        "plural": "Documents"
+      },
+      "guide": {
+        "label": "Guide & Playbook",
+        "plural": "Guides"
+      },
+      "prompt": {
+        "label": "System Prompt",
+        "plural": "Prompts"
+      },
+      "example": {
+        "label": "Example / Artifact",
+        "plural": "Examples"
+      },
+      "spreadsheet": {
+        "label": "Spreadsheet / Model",
+        "plural": "Spreadsheets"
+      },
+      "file": {
+        "label": "File / Archive",
+        "plural": "Files"
+      },
+      "reference": {
+        "label": "Reference / Link",
+        "plural": "References"
+      }
     },
     "loading": "Loading resources...",
     "loadingSub": "Loading curated resources...",
@@ -488,7 +612,12 @@
     "bundleContentsBody": "The download is a ZIP containing {{count}} supporting file(s) listed below. Copying the prompt is a separate action and does not download the bundle.",
     "copyPromptHelp": "Copy the complete prompt and paste it into your coding assistant. Replace the bracketed context before sending it.",
     "promptReadOnlyNote": "Read-only first: keep write access disabled and review the report before approving implementation.",
-    "promptSteps": ["Open your project in a coding assistant with repository read access.", "Paste the complete prompt into the assistant.", "Replace the bracketed project variables with your context.", "Request analysis only, then review the report before approving any implementation."],
+    "promptSteps": [
+      "Open your project in a coding assistant with repository read access.",
+      "Paste the complete prompt into the assistant.",
+      "Replace the bracketed project variables with your context.",
+      "Request analysis only, then review the report before approving any implementation."
+    ],
     "overview": "Overview & Purpose",
     "whenToUse": "When to Use",
     "whenNotToUse": "When NOT to Use",
@@ -579,53 +708,9 @@
       "optionalNote": "Optional · No payment required to download"
     }
   },
-  "about": {
-    "eyebrow": "THE JOURNEY",
-    "titleLine1": "From making things with my hands",
-    "titleLine2": "to building intelligent products.",
-    "nowLabel": "NOW",
-    "timeline": [
-      {
-        "title": "Mechanical design",
-        "subtitle": "& fabrication"
-      },
-      {
-        "title": "Industrial environments",
-        "small": "Process & maintenance · chlorine industry"
-      },
-      {
-        "title": "Plastic injection",
-        "small": "Moulding & manufacturing"
-      },
-      {
-        "title": "Digital design",
-        "subtitle": "& UX/UI"
-      },
-      {
-        "title": "Product Design",
-        "subtitle": "& AI Product Building"
-      }
-    ],
-    "cardEyebrow": "ABOUT ME",
-    "cardTitleLine1": "Designing with curiosity.",
-    "cardTitleLine2": "Building with purpose.",
-    "bio": "I'm Naïm, a product designer and AI builder based in Tunisia. I enjoy taking ambiguous ideas, giving them structure, designing the experience, and turning them into something people can actually use.",
-    "skills": [
-      "UX/UI",
-      "Product Design",
-      "AI",
-      "Low-Code",
-      "Design Systems",
-      "Automation"
-    ],
-    "languagesLabel": "LANGUAGES",
-    "languagesLine1": "Arabic · French",
-    "languagesLine2": "English · Italian",
-    "certificationsLabel": "CERTIFICATIONS",
-    "certLine1": "PSM I",
-    "certLine2": "Mendix Rapid Developer",
-    "certLine3": "Design — ISSAT Sousse",
-    "seoTitle": "About — Naïm Bsili | Product Designer & AI Builder",
-    "seoDesc": "Career journey, product design philosophy, and AI automation expertise of Naïm Bsili."
-  }
+  "homeSeoTitle": "Naïm Bsili — Product Designer & AI Builder",
+  "homeSeoDescription": "Portfolio of Naïm Bsili, specializing in UX/UI, digital product design, AI, and automation.",
+  "localPreviewNotice": "Local-only preview — showing bundled fallback content, not a saved CMS draft.",
+  "draftPreviewNotice": "Draft preview: showing saved CMS content for “{{title}}”.",
+  "homePageTitle": "Home"
 }
