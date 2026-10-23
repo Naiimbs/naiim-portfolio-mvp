@@ -21,4 +21,19 @@ The original authenticated captures `03-mhaf-dashboard.webp` and `04-site-detail
 
 ## Portfolio publication state
 
-The `mhaf-accessibility` Content Registry row was verified as `published/public`, unfeatured, at `/work/mhaf-accessibility` on 2026-10-23. The code changes and referenced images are being pushed to a feature branch; the public portfolio renderer still requires deployment before the route can be validated end-to-end.
+The `mhaf-accessibility` Content Registry row was verified as `published/public`, unfeatured, at `/work/mhaf-accessibility` on 2026-10-23. The renderer and referenced images are on the portfolio feature branch; the production site still requires deployment before the route can be validated end-to-end.
+
+## Public installation example checked for the case study
+
+Source: <https://mhaf.naiimbsili.com/#install>. The public page provides a generic ES-module example and documents TXT verification before a per-site configuration is published. The example intentionally uses placeholders; no customer Site ID or backend schema is published there.
+
+```html
+<script type="module"
+  src="https://mhaf.naiimbsili.com/widgets/mhaf/mhaf.js"
+  data-site-id="generated-in-admin"
+  data-config-url="https://YOUR_PROJECT.supabase.co/functions/v1/mhaf-widget-config"
+  defer
+></script>
+```
+
+The product page also lists 12 visitor controls covering reading, text size and typography, spacing, contrast, reading focus, motion, visible interactive elements, and keyboard navigation. It describes four starter profiles as optional starting points that visitors can refine. These are product-page descriptions, not evidence of measured accessibility outcomes or conformance.

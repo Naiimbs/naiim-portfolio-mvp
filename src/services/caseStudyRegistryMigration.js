@@ -70,6 +70,9 @@ export function migrateCaseStudyToRegistry(legacyData) {
             desc: p.desc || '',
           }))
         : [],
+      ...(contribution?.codeExample && typeof contribution.codeExample === 'object'
+        ? { codeExample: { ...contribution.codeExample } }
+        : {}),
     },
     evidence: {
       eyebrow: evidence?.eyebrow || '',

@@ -20,6 +20,7 @@ export default function StandardCaseStudy({ data }) {
   const rawContribution = data.contribution || {};
   const rawEvidence = data.evidence || {};
   const rawTechnology = data.technology || {};
+  const rawCodeExample = rawContribution.codeExample || {};
 
   const hero = {
     ...rawHero,
@@ -27,6 +28,7 @@ export default function StandardCaseStudy({ data }) {
     eyebrow: txCase.hero?.eyebrow || rawHero.eyebrow,
     title: txCase.hero?.title || tx.title || rawHero.title,
     lead: txCase.hero?.lead || tx.description || rawHero.lead,
+    imageAlt: txCase.hero?.imageAlt || rawHero.imageAlt,
     caption: txCase.hero?.caption || rawHero.caption,
   };
 
@@ -46,6 +48,13 @@ export default function StandardCaseStudy({ data }) {
     items: Array.isArray(txCase.contribution?.items) && txCase.contribution.items.length > 0
       ? txCase.contribution.items
       : rawContribution.items,
+    codeExample: rawContribution.codeExample
+      ? {
+          ...rawCodeExample,
+          title: txCase.contribution?.codeExample?.title || rawCodeExample.title,
+          caption: txCase.contribution?.codeExample?.caption || rawCodeExample.caption,
+        }
+      : null,
   };
 
   const localizedEvidenceGallery = Array.isArray(txCase.evidence?.gallery) ? txCase.evidence.gallery : [];
@@ -133,6 +142,18 @@ export default function StandardCaseStudy({ data }) {
                 </div>
               ))}
             </div>
+          )}
+          {contribution.codeExample?.code && (
+            <figure className="case-code-example">
+              <div className="case-code-example-header">
+                <strong>{contribution.codeExample.title}</strong>
+                <span>HTML</span>
+              </div>
+              <pre dir="ltr"><code>{contribution.codeExample.code}</code></pre>
+              {contribution.codeExample.caption && (
+                <figcaption>{contribution.codeExample.caption}</figcaption>
+              )}
+            </figure>
           )}
         </div>
       </section>
