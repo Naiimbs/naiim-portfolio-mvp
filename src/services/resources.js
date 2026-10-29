@@ -23,6 +23,29 @@ export function getAssetDownloadUrl(asset) {
   return asset.file_url;
 }
 
+/** Resolve the default downloadable file for the visitor's selected language. */
+export function getResourceDownloadAsset(resource, locale, explicitAsset = null) {
+  if (explicitAsset) return explicitAsset;
+
+  const lang = String(locale || 'en').toLowerCase().split('-')[0];
+  const assets = Array.isArray(resource?.assets) ? resource.assets : [];
+  const downloadableAssets = assets.filter((asset) => asset?.is_downloadable !== false && asset?.file_url);
+  const localized = resource?.i18n?.[lang] || resource?.metadata?.i18n?.[lang] || {};
+  const selectedId = localized.download_asset_id;
+
+  if (selectedId) {
+    const selected = downloadableAssets.find((asset) => String(asset.id) === String(selectedId));
+    if (selected) return selected;
+  }
+
+  const isZip = (asset) => /\.zip(?:$|\?)/i.test(asset.name || asset.file_url || '');
+  const matchesLanguage = (asset) => String(asset.language || asset.locale || '').toLowerCase().split('-')[0] === lang;
+  return downloadableAssets.find((asset) => isZip(asset) && matchesLanguage(asset))
+    || downloadableAssets.find(isZip)
+    || downloadableAssets[0]
+    || null;
+}
+
 export const SEED_RESOURCES = [
   {
     id: 'res-app-ui-ux-auditor',

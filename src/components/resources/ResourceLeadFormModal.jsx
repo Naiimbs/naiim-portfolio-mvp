@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { captureLeadAndDownload, getLeadByEmail, validateResourceEmail } from '../../services/marketing';
-import { getAssetDownloadUrl } from '../../services/resources';
+import { getAssetDownloadUrl, getResourceDownloadAsset } from '../../services/resources';
 import ResourceSupportCard from './ResourceSupportCard';
 
 const EMPTY_FORM = {
@@ -41,11 +41,7 @@ export default function ResourceLeadFormModal({
 
   if (!isOpen || !resource) return null;
 
-  const targetAsset = asset || (
-    resource.assets?.find((a) => a.file_url?.endsWith('.zip') && (a.language === currentLang || a.locale === currentLang))
-    || resource.assets?.find((a) => a.file_url?.endsWith('.zip'))
-    || resource.assets?.[0]
-  );
+  const targetAsset = getResourceDownloadAsset(resource, currentLang, asset);
   const downloadUrl = targetAsset ? getAssetDownloadUrl(targetAsset) : resource.bundle_download_url;
   const downloadName = targetAsset?.name || `${resource.slug}.zip`;
   const localizedResource = resource.i18n?.[currentLang] || {};

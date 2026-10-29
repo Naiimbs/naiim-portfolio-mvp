@@ -165,6 +165,20 @@ export default function AdminResourceEditor() {
       [txLang]: { ...(prev[txLang] || {}), ...patch },
     }));
   };
+  const downloadLanguages = [
+    { code: 'en', label: 'English (EN)' },
+    { code: 'fr', label: 'Français (FR)' },
+    { code: 'ar', label: 'العربية (AR)' },
+  ];
+  const downloadableAssets = (formData.assets || []).filter(
+    (asset) => asset.is_downloadable !== false && Boolean(asset.file_url)
+  );
+  const setLocaleDownloadAsset = (language, assetId) => {
+    setTranslations((prev) => ({
+      ...prev,
+      [language]: { ...(prev[language] || {}), download_asset_id: assetId },
+    }));
+  };
 
   const handleSave = async (e) => {
     if (e) e.preventDefault();
@@ -200,7 +214,7 @@ export default function AdminResourceEditor() {
     const cleanTranslations = {};
     for (const [lng, tx] of Object.entries(translations || {})) {
       if (!tx) continue;
-      const hasContent = (tx.title && tx.title.trim()) || (tx.short_description && tx.short_description.trim()) || (tx.description && tx.description.trim()) || (tx.purpose && tx.purpose.trim()) || (tx.how_to_use && tx.how_to_use.trim());
+      const hasContent = (tx.title && tx.title.trim()) || (tx.short_description && tx.short_description.trim()) || (tx.description && tx.description.trim()) || (tx.purpose && tx.purpose.trim()) || (tx.how_to_use && tx.how_to_use.trim()) || (tx.download_asset_id && tx.download_asset_id.trim());
       if (!hasContent) continue;
       cleanTranslations[lng] = {
         ...(tx.title && tx.title.trim() ? { title: tx.title.trim() } : {}),
@@ -209,6 +223,7 @@ export default function AdminResourceEditor() {
         ...(tx.purpose && tx.purpose.trim() ? { purpose: tx.purpose.trim() } : {}),
         ...(tx.how_to_use && tx.how_to_use.trim() ? { how_to_use: tx.how_to_use.trim() } : {}),
         ...(tx.when_to_use && tx.when_to_use.trim() ? { when_to_use: tx.when_to_use.trim() } : {}),
+        ...(tx.download_asset_id && tx.download_asset_id.trim() ? { download_asset_id: tx.download_asset_id.trim() } : {}),
       };
     }
 
@@ -1301,6 +1316,33 @@ export default function AdminResourceEditor() {
 
           <div className="alert alert-light border small mb-4">
             <i className="bi bi-info-circle me-1"></i> Enter the {txLang === 'fr' ? 'French' : 'Arabic'} version of this resource. Leave any field empty to fall back to the default (English) text.
+          </div>
+
+          <div className="border rounded-3 p-3 mb-4 bg-light">
+            <h6 className="fw-bold mb-1"><i className="bi bi-file-earmark-arrow-down me-2 text-success"></i>Language-specific download file</h6>
+            <p className="text-muted small mb-3">Choose the downloadable file visitors receive when the site is set to each language. Leave a language on automatic fallback to use the existing default selection.</p>
+            {downloadableAssets.length > 0 ? (
+              <div className="row g-3">
+                {downloadLanguages.map(({ code, label }) => (
+                  <div className="col-12 col-md-4" key={code}>
+                    <label className="form-label fw-semibold small" htmlFor={`download-asset-${code}`}>{label}</label>
+                    <select
+                      id={`download-asset-${code}`}
+                      className="form-select form-select-sm"
+                      value={translations[code]?.download_asset_id || ''}
+                      onChange={(event) => setLocaleDownloadAsset(code, event.target.value)}
+                    >
+                      <option value="">Automatic fallback</option>
+                      {downloadableAssets.map((asset) => (
+                        <option key={asset.id} value={asset.id}>{asset.name || asset.file_url.split('/').pop()}</option>
+                      ))}
+                    </select>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-muted small">Attach at least one downloadable file in the Document Files tab to configure language-specific downloads.</div>
+            )}
           </div>
 
           <div className="row g-3" dir={txLang === 'ar' ? 'rtl' : 'ltr'}>
