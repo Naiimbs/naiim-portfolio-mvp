@@ -6,6 +6,7 @@ import ProjectGridSectionEditor from './ProjectGridSectionEditor';
 import AgentGridSectionEditor from './AgentGridSectionEditor';
 import CtaSectionEditor from './CtaSectionEditor';
 import StoryTimelineSectionEditor from './StoryTimelineSectionEditor';
+import LearningModuleSectionEditor from './LearningModuleSectionEditor';
 import MediaUploadField from '../MediaUploadField';
 import LayoutInspector from './LayoutInspector';
 import StyleInspector from './StyleInspector';
@@ -267,6 +268,9 @@ export default function SectionPropertyEditor({ section, onChange, onSave, onCan
 
       case 'story_timeline':
         return <StoryTimelineSectionEditor config={config} onChange={handleConfigChange} />;
+
+      case 'learning_module':
+        return <LearningModuleSectionEditor config={config} onChange={handleConfigChange} />;
 
       case 'timeline': {
         const items = Array.isArray(config.items) ? config.items : [];

@@ -6,6 +6,7 @@
 
 import { HERO_DEFAULTS } from '../hero/heroDefaults';
 import BEAUX_ARTS_STORY from '../../data/beauxArtsStory.json';
+import { normalizeLearningModule, validateLearningModule } from '../../utils/learningExperience';
 
 const HOME_BLOCK = (type, label, icon, description) => ({
   type,
@@ -716,6 +717,22 @@ export const PAGE_SECTION_TYPES = {
       return { valid: errors.length === 0, errors, advisories: ['This form is currently in visual preview mode.'] };
     },
   },
+  learning_module: {
+    type: 'learning_module',
+    label: 'Learning Module',
+    category: 'LEARNING',
+    icon: 'bi-journal-bookmark',
+    description: 'Structured lesson content, activities, resources, and optional practice QCM.',
+    hasEditor: true,
+    defaultConfig: {
+      title: '',
+      description: '',
+      objectives: [],
+      contentBlocks: [],
+      quiz: { questions: [] },
+    },
+    validate: (cfg = {}) => validateLearningModule(cfg),
+  },
 };
 
 /**
@@ -726,7 +743,7 @@ export const SECTION_SCHEMAS = PAGE_SECTION_TYPES;
 /**
  * Returns grouped section types for category-based pickers (e.g. AddSectionModal).
  */
-export function getCategorizedSectionTypes() {
+export function getCategorizedSectionTypes({ includeLearning = false } = {}) {
   const categoryMeta = {
     HOME: { category: 'HOME', icon: 'bi-house', items: [] },
     CONVERSION: { category: 'CONVERSION', icon: 'bi-bullseye', items: [] },
@@ -734,9 +751,11 @@ export function getCategorizedSectionTypes() {
     CONTENT: { category: 'CONTENT', icon: 'bi-file-text', items: [] },
     PRIMITIVES: { category: 'PRIMITIVES', icon: 'bi-grid-1x2', items: [] },
     LAYOUT: { category: 'LAYOUT', icon: 'bi-layout-text-window-reverse', items: [] },
+    LEARNING: { category: 'LEARNING', icon: 'bi-journal-bookmark', items: [] },
   };
 
   Object.values(PAGE_SECTION_TYPES).forEach((item) => {
+    if (item.category === 'LEARNING' && !includeLearning) return;
     const catKey = item.category || 'CONTENT';
     if (!categoryMeta[catKey]) {
       categoryMeta[catKey] = { category: catKey, icon: 'bi-folder', items: [] };
@@ -873,6 +892,10 @@ export function normalizeSectionConfig(sectionType, rawConfig = {}) {
 
   if (type === 'spacer') {
     config.height = Number(config.height) || 40;
+  }
+
+  if (type === 'learning_module') {
+    Object.assign(config, normalizeLearningModule(config));
   }
 
   return config;

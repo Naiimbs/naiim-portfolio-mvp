@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getAdminProjects } from '../../services/projects';
 import { getAdminAgents } from '../../services/agents';
 import StoryPresentationSection from './StoryPresentationSection';
+import LearningModuleSection from './LearningModuleSection';
 
 /**
  * Section Component Registry for Site-Wide CMS.
@@ -822,6 +823,7 @@ export const SECTION_REGISTRY = {
   metrics: MetricsSection,
   timeline: TimelineSection,
   story_timeline: StoryPresentationSection,
+  learning_module: LearningModuleSection,
   workflow: WorkflowSection,
   architecture: ArchitectureSection,
   cta: CtaSection,

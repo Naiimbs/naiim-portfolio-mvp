@@ -5,6 +5,8 @@ import SectionPropertyEditor from '../components/cms/editors/SectionPropertyEdit
 import StoryTimelineTranslationsEditor from './StoryTimelineTranslationsEditor';
 import AddSectionModal from '../components/cms/AddSectionModal';
 import BlogPageCanvasPreview from '../components/cms/BlogPageCanvasPreview';
+import LearningExperienceOverviewEditor from '../components/cms/LearningExperienceOverviewEditor';
+import { useAuth } from '../context/AuthContext';
 import {
   getAdminPages,
   updatePage,
@@ -18,10 +20,25 @@ import {
 import { getPagePublishingReadiness } from '../../utils/registryHealth';
 import { PAGE_SECTION_TYPES, validateSection, normalizeSectionConfig } from '../../components/cms/sectionSchemas';
 import { resolvePageRoute, isSectionBuilderLive, isCodeOwnedSlug } from '../utils/pageRoutes';
+import { LEARNING_EXPERIENCE_TEMPLATE, validateLearningExperienceMetadata } from '../../utils/learningExperience';
+
+function withLearningRegistryLifecycle(pageData) {
+  if (!pageData || pageData.template !== LEARNING_EXPERIENCE_TEMPLATE || !pageData.registryEntry) return pageData;
+  const status = pageData.status || pageData.registryEntry.status;
+  return {
+    ...pageData,
+    registryEntry: {
+      ...pageData.registryEntry,
+      status,
+      visibility: status === 'published' ? (pageData.registryEntry.visibility || 'public') : 'private',
+    },
+  };
+}
 
 export default function AdminPageEditor() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isAdmin } = useAuth();
 
   const [page, setPage] = useState(null);
   const [sections, setSections] = useState([]);
@@ -30,6 +47,7 @@ export default function AdminPageEditor() {
   const [txLang, setTxLang] = useState('fr'); // 'fr' | 'ar'
 
   const [loading, setLoading] = useState(true);
+  const [accessDenied, setAccessDenied] = useState(false);
   const [savingPage, setSavingPage] = useState(false);
   const [savingSection, setSavingSection] = useState(false);
   const [savingAll, setSavingAll] = useState(false);
@@ -55,7 +73,7 @@ export default function AdminPageEditor() {
 
   useEffect(() => {
     loadPageAndSections();
-  }, [id]);
+  }, [id, isAdmin]);
 
   useEffect(() => {
     if (page?.slug === 'my-journey') setTxLang('ar');
@@ -79,9 +97,17 @@ export default function AdminPageEditor() {
     const target = (pagesRes.data || []).find((p) => String(p.id) === String(id) || String(p.slug) === String(id));
     if (!target) {
       setPage(null);
+      setAccessDenied(false);
       setLoading(false);
       return;
     }
+    if (target.template === LEARNING_EXPERIENCE_TEMPLATE && !isAdmin) {
+      setPage(null);
+      setAccessDenied(true);
+      setLoading(false);
+      return;
+    }
+    setAccessDenied(false);
     setPage(target);
 
     const secRes = await getAdminPageSections(target.id);
@@ -98,7 +124,9 @@ export default function AdminPageEditor() {
     }
     setSections(loadedSecs);
 
-    if (target.slug === 'blog') {
+    if (target.template === LEARNING_EXPERIENCE_TEMPLATE) {
+      setActiveTab('course');
+    } else if (target.slug === 'blog') {
       setActiveTab('page');
     } else if (target.slug === 'about' && loadedSecs.length > 0) {
       setActiveSectionId(loadedSecs[0].id);
@@ -216,8 +244,11 @@ export default function AdminPageEditor() {
 
   // In-memory update of section config (updates center preview live)
   const handleSectionChange = (updatedSection) => {
-    setSections(sections.map((s) => (s.id === updatedSection.id ? updatedSection : s)));
-    setDirtySectionIds(new Set([...dirtySectionIds, updatedSection.id]));
+    const withModuleLabel = page?.template === LEARNING_EXPERIENCE_TEMPLATE && updatedSection.section_type === 'learning_module' && updatedSection.config?.title?.trim()
+      ? { ...updatedSection, label: updatedSection.config.title.trim() }
+      : updatedSection;
+    setSections(sections.map((s) => (s.id === withModuleLabel.id ? withModuleLabel : s)));
+    setDirtySectionIds(new Set([...dirtySectionIds, withModuleLabel.id]));
   };
 
   const handleSaveActiveSection = async () => {
@@ -256,7 +287,10 @@ export default function AdminPageEditor() {
     try {
       // 1. Save page settings if dirty
       if (isPageDirty && page) {
-        await updatePage(id, page);
+        const pageResult = await updatePage(id, page);
+        if (page.template === LEARNING_EXPERIENCE_TEMPLATE && pageResult.data) {
+          setPage(withLearningRegistryLifecycle(pageResult.data));
+        }
         setIsPageDirty(false);
       }
 
@@ -302,7 +336,7 @@ export default function AdminPageEditor() {
       setIsPageDirty(false);
       setSavedJustNow(true);
       setTimeout(() => setSavedJustNow(false), 3000);
-      if (res.data) setPage(res.data);
+      if (res.data) setPage(withLearningRegistryLifecycle(res.data));
     }
     setSavingPage(false);
   };
@@ -317,7 +351,7 @@ export default function AdminPageEditor() {
       setSaveError(res.error.message || 'Failed to save draft.');
       setFeedback({ type: 'danger', message: res.error.message || 'Failed to save draft.' });
     } else {
-      setPage(res.data || updated);
+      setPage(withLearningRegistryLifecycle(res.data || updated));
       setIsPageDirty(false);
       setSavedJustNow(true);
       setTimeout(() => setSavedJustNow(false), 3000);
@@ -330,6 +364,21 @@ export default function AdminPageEditor() {
     setSavingPage(true);
     setFeedback(null);
     setSaveError(null);
+
+    if (page.template === LEARNING_EXPERIENCE_TEMPLATE) {
+      const learningErrors = validateLearningExperienceMetadata(page.registryEntry?.metadata?.learningExperience).errors;
+      const visibleModules = sections.filter((section) => section.section_type === 'learning_module' && section.is_visible !== false);
+      if (visibleModules.length === 0) learningErrors.push('Add at least one visible learning module.');
+      visibleModules.forEach((section, index) => {
+        const moduleValidation = validateSection('learning_module', section.config || {});
+        moduleValidation.errors.forEach((message) => learningErrors.push(`Module ${index + 1}: ${message}`));
+      });
+      if (learningErrors.length > 0) {
+        setFeedback({ type: 'danger', message: `Cannot publish: ${learningErrors.join(' ')}` });
+        setSavingPage(false);
+        return;
+      }
+    }
 
     // 1. Publishing readiness check
     const readiness = getPagePublishingReadiness(page, sections);
@@ -369,7 +418,12 @@ export default function AdminPageEditor() {
       const res = await publishPageSnapshot(id);
       if (res.error) throw new Error(res.error.message);
 
-      setPage(res.data || { ...page, status: 'published' });
+      setPage((current) => {
+        const publishedPage = { ...current, ...(res.data || { status: 'published' }), registryEntry: current?.registryEntry };
+        return publishedPage.template === LEARNING_EXPERIENCE_TEMPLATE
+          ? withLearningRegistryLifecycle(publishedPage)
+          : (res.data || { ...page, status: 'published' });
+      });
       setSavedJustNow(true);
       setTimeout(() => setSavedJustNow(false), 3000);
       const publicUrl = resolvePageRoute(page.slug);
@@ -394,9 +448,10 @@ export default function AdminPageEditor() {
       ? layoutConfig
       : (typeof layoutConfig === 'string' ? getLayoutPresetById(layoutConfig) : null);
 
-    const safeLabel = typeof label === 'string' && label.trim()
-      ? label.trim()
-      : (PAGE_SECTION_TYPES[type]?.label || `${String(type).toUpperCase()} Section`);
+    const defaultLabel = PAGE_SECTION_TYPES[type]?.label || `${String(type).toUpperCase()} Section`;
+    const safeLabel = type === 'learning_module' && (!label?.trim() || label.trim() === defaultLabel)
+      ? `Module ${sections.filter((section) => section.section_type === 'learning_module').length + 1}`
+      : (typeof label === 'string' && label.trim() ? label.trim() : defaultLabel);
 
     let sortOrder = 10;
     if (insertAtIndex !== null && insertAtIndex >= 0 && sections.length > 0) {
@@ -598,6 +653,15 @@ export default function AdminPageEditor() {
         <div className="spinner-border text-primary" role="status">
           <span className="visually-hidden">Loading builder...</span>
         </div>
+      </div>
+    );
+  }
+
+  if (accessDenied) {
+    return (
+      <div className="p-4 text-center">
+        <div className="alert alert-warning d-inline-block" role="alert">Courses &amp; Workshops authoring is restricted to administrators.</div>
+        <div><Link to="/admin/courses" className="btn btn-outline-dark rounded-pill mt-2">Back to Courses &amp; Workshops</Link></div>
       </div>
     );
   }
@@ -1074,6 +1138,17 @@ export default function AdminPageEditor() {
             {/* Header Tabs */}
             <div className="d-flex align-items-center justify-content-between border-bottom bg-light px-2 pt-2">
               <ul className="nav nav-tabs border-0 flex-grow-1">
+                {page.template === LEARNING_EXPERIENCE_TEMPLATE && (
+                  <li className="nav-item">
+                    <button
+                      type="button"
+                      className={`nav-link small py-2 px-3 border-0 transition-all ${activeTab === 'course' ? 'active bg-white text-dark fw-bold shadow-xs' : 'text-secondary fw-semibold'}`}
+                      onClick={() => setActiveTab('course')}
+                    >
+                      <i className={`bi bi-journal-bookmark me-1 ${activeTab === 'course' ? 'text-primary' : 'text-muted'}`} />Overview
+                    </button>
+                  </li>
+                )}
                 {page.slug !== 'blog' && (
                   <li className="nav-item">
                     <button
@@ -1119,6 +1194,8 @@ export default function AdminPageEditor() {
                       backgroundColor: activeTab === 'translations' ? '#ffffff' : 'transparent',
                     }}
                     onClick={() => setActiveTab('translations')}
+                    disabled={page.template === LEARNING_EXPERIENCE_TEMPLATE}
+                    title={page.template === LEARNING_EXPERIENCE_TEMPLATE ? 'Translation authoring is not part of this phase.' : undefined}
                   >
                     <i className={`bi bi-translate me-1 ${activeTab === 'translations' ? 'text-primary' : 'text-muted'}`}></i>
                     Translations
@@ -1135,7 +1212,12 @@ export default function AdminPageEditor() {
             </div>
 
             <div className="properties-content flex-grow-1 overflow-auto">
-              {activeTab === 'section' ? (
+              {activeTab === 'course' ? (
+                <LearningExperienceOverviewEditor
+                  page={page}
+                  onSaved={(registryEntry) => setPage((current) => ({ ...current, registryEntry }))}
+                />
+              ) : activeTab === 'section' ? (
                 <SectionPropertyEditor
                   section={activeSection}
                   onChange={handleSectionChange}
@@ -1460,15 +1542,19 @@ export default function AdminPageEditor() {
                     </div>
                     <div className="mb-3">
                       <label className="form-label small fw-semibold">Template</label>
-                      <input
-                        type="text"
-                        className="form-control form-control-sm rounded-3"
-                        value={page.template || 'default'}
-                        onChange={(e) => {
-                          setPage({ ...page, template: e.target.value });
-                          setIsPageDirty(true);
-                        }}
-                      />
+                      {page.template === LEARNING_EXPERIENCE_TEMPLATE ? (
+                        <div className="form-control form-control-sm bg-light">Learning experience <span className="text-muted">(fixed template)</span></div>
+                      ) : (
+                        <input
+                          type="text"
+                          className="form-control form-control-sm rounded-3"
+                          value={page.template || 'default'}
+                          onChange={(e) => {
+                            setPage({ ...page, template: e.target.value });
+                            setIsPageDirty(true);
+                          }}
+                        />
+                      )}
                     </div>
                     <hr />
                     <h6 className="fw-bold mb-3">SEO Configuration</h6>
@@ -1743,6 +1829,7 @@ export default function AdminPageEditor() {
         show={showAddSectionModal}
         onClose={() => setShowAddSectionModal(false)}
         onAddSection={handleAddSection}
+        pageTemplate={page.template}
       />
     </div>
   );

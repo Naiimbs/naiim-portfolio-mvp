@@ -5,9 +5,13 @@ import {
   getLayoutPresetById,
   resolveResponsiveColumns,
 } from '../../../components/cms/layoutSystem';
+import { LEARNING_EXPERIENCE_TEMPLATE } from '../../../utils/learningExperience';
 
-export default function AddSectionModal({ show, onClose, onAddSection }) {
-  const CATEGORIZED_SECTIONS = useMemo(() => getCategorizedSectionTypes(), []);
+export default function AddSectionModal({ show, onClose, onAddSection, pageTemplate }) {
+  const CATEGORIZED_SECTIONS = useMemo(
+    () => getCategorizedSectionTypes({ includeLearning: pageTemplate === LEARNING_EXPERIENCE_TEMPLATE }),
+    [pageTemplate],
+  );
   const [step, setStep] = useState(1); // 1: Select Type, 2: Select Layout
   const [selectedType, setSelectedType] = useState('hero');
   const [selectedLayoutId, setSelectedLayoutId] = useState('12');
@@ -92,6 +96,12 @@ export default function AddSectionModal({ show, onClose, onAddSection }) {
 
   const handleItemSelectAndAdvance = (item) => {
     setSelectedType(item.type);
+    if (item.type === 'learning_module') {
+      setLabel(item.name);
+      onAddSection(item.type, item.name, null);
+      handleModalClose();
+      return;
+    }
     setStep(2);
   };
 

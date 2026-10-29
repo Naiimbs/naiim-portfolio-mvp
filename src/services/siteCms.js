@@ -397,7 +397,19 @@ export async function getAdminPageBySlug(slug) {
       .eq('slug', cleanSlug)
       .maybeSingle();
     if (error) return { data: null, error, source: 'error' };
-    if (data) return { data, error: null, source: 'supabase' };
+    if (data) {
+      const registryRes = await supabase
+        .from('content_registry')
+        .select('*')
+        .eq('content_type', 'page')
+        .eq('slug', cleanSlug)
+        .maybeSingle();
+      return {
+        data: { ...data, registryEntry: registryRes.error ? null : (registryRes.data || null) },
+        error: null,
+        source: 'supabase',
+      };
+    }
 
     const registryRes = await supabase
       .from('content_registry')

@@ -3,7 +3,7 @@ import { NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function AdminSidebar() {
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -59,9 +59,10 @@ export default function AdminSidebar() {
         isGroup: true,
         icon: 'bi-kanban',
         rootPath: '/admin/content',
-        activePrefixes: ['/admin/content', '/admin/pages', '/admin/projects', '/admin/case-studies', '/admin/navigation', '/admin/registry'],
+        activePrefixes: ['/admin/content', '/admin/pages', '/admin/courses', '/admin/projects', '/admin/case-studies', '/admin/navigation', '/admin/registry'],
         items: [
           { to: '/admin/pages', label: 'Pages', icon: 'bi-file-earmark-richtext' },
+          ...(isAdmin ? [{ to: '/admin/courses', label: 'Courses & Workshops', icon: 'bi-journal-bookmark' }] : []),
           { to: '/admin/content', label: 'Blog & Editorial', icon: 'bi-journal-text' },
           { to: '/admin/projects', label: 'Projects', icon: 'bi-folder2-open' },
           { to: '/admin/case-studies', label: 'Case Studies', icon: 'bi-journal-richtext' },
@@ -141,7 +142,7 @@ export default function AdminSidebar() {
         ],
       },
     ],
-    []
+    [isAdmin]
   );
 
   // Auto-expand parent group if current location is active inside it

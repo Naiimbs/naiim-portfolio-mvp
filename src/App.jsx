@@ -44,6 +44,7 @@ const AdminMCPConnectionEditor = lazy(() => import('./admin/pages/AdminMCPConnec
 const AdminRuntimeConsole = lazy(() => import('./admin/pages/AdminRuntimeConsole'));
 const AdminMedia = lazy(() => import('./admin/pages/AdminMedia'));
 const AdminPages = lazy(() => import('./admin/pages/AdminPages'));
+const AdminCourses = lazy(() => import('./admin/pages/AdminCourses'));
 const AdminPageEditor = lazy(() => import('./admin/pages/AdminPageEditor'));
 const AdminNavigation = lazy(() => import('./admin/pages/AdminNavigation'));
 const AdminSettings = lazy(() => import('./admin/pages/AdminSettings'));
@@ -175,6 +176,7 @@ export default function App() {
               {/* Media & Pages */}
               <Route path="media" element={<AdminMedia />} />
               <Route path="pages" element={<AdminPages />} />
+              <Route path="courses" element={<AdminCourses />} />
               <Route path="pages/:id" element={<AdminPageEditor />} />
               <Route path="navigation" element={<AdminNavigation />} />
 

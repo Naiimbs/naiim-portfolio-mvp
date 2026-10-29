@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import MainLayout from '../layouts/MainLayout';
 import PageRenderer from '../components/cms/PageRenderer';
+import LearningExperiencePage from './LearningExperiencePage';
 import {
   getPageBySlug,
   getPageSections,
@@ -13,6 +15,7 @@ import { useAuth } from '../admin/context/AuthContext';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { getPublishedPublicContentBySlug } from '../services/contentRegistry';
 import { isPagePubliclyAccessible } from '../utils/registryHealth';
+import { LEARNING_EXPERIENCE_TEMPLATE } from '../utils/learningExperience';
 
 /**
  * Dynamic CMS Page Route Component.
@@ -21,7 +24,9 @@ import { isPagePubliclyAccessible } from '../utils/registryHealth';
 export default function CmsDynamicPage() {
   const { slug } = useParams();
   const [searchParams] = useSearchParams();
+  const { i18n } = useTranslation();
   const { isAdmin, loading: authLoading } = useAuth();
+  const language = String(i18n?.resolvedLanguage || i18n?.language || 'en').split('-')[0];
   const isPreviewRequested = searchParams.get('preview') === 'true';
 
   const [page, setPage] = useState(null);
@@ -101,7 +106,10 @@ export default function CmsDynamicPage() {
         return;
       }
 
-      setPage(pageRes.data);
+      setPage({
+        ...pageRes.data,
+        registryEntry: pageRes.data.registryEntry || registryRes.data || null,
+      });
 
       // Live site renders the published snapshot (frozen at publish time);
       // fall back to live sections for pages published before snapshots existed.
@@ -126,7 +134,11 @@ export default function CmsDynamicPage() {
           {error ? error.message : previewSource === 'local' ? 'LOCAL PREVIEW — not connected to saved CMS data.' : previewSource === 'supabase' ? `SAVED CMS PREVIEW — ${page?.title || slug}; not the public snapshot.` : `Loading saved preview for ${slug}…`}
         </div>
       )}
-      <PageRenderer page={page} sections={sections} loading={loading} error={error} robots={canPreviewDraft ? 'noindex, nofollow' : null} />
+      {page?.template === LEARNING_EXPERIENCE_TEMPLATE && !loading && !error ? (
+        <LearningExperiencePage page={page} sections={sections} language={language} preview={canPreviewDraft} />
+      ) : (
+        <PageRenderer page={page} sections={sections} loading={loading} error={error} robots={canPreviewDraft ? 'noindex, nofollow' : null} />
+      )}
     </MainLayout>
   );
 }
