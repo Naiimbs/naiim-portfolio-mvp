@@ -1041,8 +1041,14 @@ html[lang="fr"] .hero h1 {
   .hero-visual {
     min-height: 520px;
   }
+  .editorial-hero .hero-copy {
+    padding: 52px 6vw 24px;
+  }
+  .editorial-hero-media {
+    min-height: 340px;
+  }
   .editorial-hero-stage {
-    min-height: 520px;
+    min-height: 340px;
     width: 100%;
     margin-left: 0;
     clip-path: none;
@@ -1063,18 +1069,29 @@ html[lang="fr"] .hero h1 {
   .hero {
     padding-top: 88px;
   }
+  .editorial-hero .hero-copy {
+    padding: 22px 22px 8px;
+  }
+  .editorial-hero .row {
+    --bs-gutter-y: 1.25rem;
+  }
   h1 {
-    font-size: clamp(2.65rem, 12vw, 3.45rem);
+    font-size: clamp(2rem, 8.6vw, 2.5rem);
   }
   .hero-lead {
-    font-size: 1rem;
+    font-size: 0.93rem;
+    line-height: 1.45;
+    margin-bottom: 18px;
   }
   .hero-visual {
-    min-height: 450px;
-    margin-top: 10px;
+    min-height: 200px;
+    margin-top: 0;
+  }
+  .editorial-hero-media {
+    min-height: 200px;
   }
   .editorial-hero-stage {
-    min-height: 450px;
+    min-height: 200px;
     width: 100%;
     margin-left: 0;
     border-radius: 0;
@@ -1094,6 +1111,10 @@ html[lang="fr"] .hero h1 {
     width: 92%;
     right: 4%;
     height: 94%;
+  }
+  .editorial-hero .hero-photo {
+    width: 84%;
+    right: 2%;
   }
   .hero-note {
     font-size: 0.8rem;
