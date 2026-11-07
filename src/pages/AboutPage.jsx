@@ -140,7 +140,7 @@ export default function AboutPage() {
       <SEO
         title={localizedTitle || t('about.seoTitle', 'About — Naïm Bsili | Product Designer & AI Builder')}
         description={localizedDescription || t('about.seoDesc', 'Career journey, product design philosophy, and AI automation expertise of Naïm Bsili.')}
-        canonical="/about"
+        canonical="/about/"
         robots={isPreviewRequested ? 'noindex, nofollow' : undefined}
       />
 

@@ -235,7 +235,7 @@ export async function saveAdminAgent(agentId, payload) {
       sort_order: payload.sort_order || 0,
       seo_title: payload.seo_title || `${payload.name} — AI Agent`,
       seo_description: payload.seo_description || payload.short_description || '',
-      canonical_path: payload.canonical_path || `/agents/${payload.slug}`,
+      canonical_path: payload.canonical_path || `/agents/${payload.slug}/`,
       updated_at: new Date().toISOString(),
     };
 

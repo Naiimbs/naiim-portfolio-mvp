@@ -65,7 +65,7 @@ export default function AgentCard({ agent }) {
         )}
 
         <div className="agent-footer-links">
-          <Link to={`/agents/${slug}`} className="agent-link">
+          <Link to={`/agents/${slug}/`} className="agent-link">
             <span>{t('agents.card.explore')}</span> <i className="bi bi-arrow-right"></i>
           </Link>
 

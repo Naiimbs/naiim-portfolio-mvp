@@ -43,7 +43,7 @@ export default function AgentsPage() {
       <SEO
         title="AI Agents & Intelligent Automations"
         description="Autonomous agents, n8n orchestration pipelines, and personal AI systems built by Naïm Bsili."
-        canonical="/agents"
+        canonical="/agents/"
         schema={agentsSchema}
       />
 

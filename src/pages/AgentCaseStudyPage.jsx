@@ -44,7 +44,7 @@ export default function AgentCaseStudyPage() {
           <div className="eyebrow text-danger mb-2"><span></span> {t('agents.detail.notFoundEyebrow')}</div>
           <h2>{t('agents.detail.notFoundTitle')}</h2>
           <p className="text-muted">{t('agents.detail.notFoundBody')}</p>
-          <Link to="/agents" className="btn btn-dark rounded-pill px-4 mt-3">
+          <Link to="/agents/" className="btn btn-dark rounded-pill px-4 mt-3">
             <i className="bi bi-arrow-left"></i> {t('agents.detail.back')}
           </Link>
         </div>
@@ -105,7 +105,7 @@ export default function AgentCaseStudyPage() {
       <SEO
         title={seo_title || `${name} — AI Agent`}
         description={seo_description || short_description}
-        canonical={canonical_path || `/agents/${slug}`}
+        canonical={canonical_path || `/agents/${slug}/`}
         image={resolvedHeroImage}
         schema={agentSchema}
       />
@@ -113,7 +113,7 @@ export default function AgentCaseStudyPage() {
       {/* 1. Hero Section */}
       <section className="case-hero">
         <div className="container">
-          <Link className="text-link" to="/agents">
+          <Link className="text-link" to="/agents/">
             <i className="bi bi-arrow-left"></i> {t('agents.detail.back')}
           </Link>
 
@@ -182,7 +182,7 @@ export default function AgentCaseStudyPage() {
       {/* 3. Navigation Footer */}
       <section className="case-nav">
         <div className="container d-flex justify-content-between align-items-center">
-          <Link to="/agents" className="text-link">
+          <Link to="/agents/" className="text-link">
             <i className="bi bi-arrow-left"></i> {t('agents.detail.back')}
           </Link>
           <a href="#contact" className="text-link">

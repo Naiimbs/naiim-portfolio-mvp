@@ -14,7 +14,7 @@ export default function AgentDemoShell({
       {/* Header Bar */}
       <div className="agent-demo-header">
         <div className="container d-flex justify-content-between align-items-center">
-          <Link to={`/agents/${agent?.slug || ''}`} className="agent-demo-back">
+          <Link to={`/agents/${agent?.slug || ''}/`} className="agent-demo-back">
             <i className="bi bi-arrow-left"></i> <span>{t('agents.demo.backToCase')}</span>
           </Link>
           <div className="agent-demo-badge-live">

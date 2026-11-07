@@ -32,7 +32,7 @@ export default function WinniCaseStudy() {
       <SEO
         title="WINNI — Case Study · Naïm Bsili"
         description="WINNI — Physical + digital identity system that helps people reconnect with lost belongings. Product design case study by Naïm Bsili."
-        canonical="/work/winni"
+        canonical="/work/winni/"
         schema={schema}
       />
 

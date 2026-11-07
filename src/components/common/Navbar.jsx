@@ -106,7 +106,7 @@ export default function Navbar() {
     }
 
     // Agents section
-    if (href === '/agents') {
+    if (href === '/agents' || href === '/agents/') {
       return currentPath === '/agents' || currentPath.startsWith('/agents/');
     }
 
@@ -141,9 +141,11 @@ export default function Navbar() {
     '#work': 'nav.work',
     '/#work': 'nav.work',
     '/about': 'nav.about',
+    '/about/': 'nav.about',
     '/p/my-journey': 'nav.myJourney',
     '/blog': 'nav.blog',
     '/agents': 'nav.agents',
+    '/agents/': 'nav.agents',
     '/resources': 'nav.resources',
     '#copilot': 'nav.copilot',
     '/#copilot': 'nav.copilot',
