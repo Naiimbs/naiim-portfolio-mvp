@@ -11,7 +11,9 @@
     "resources": "Ressources",
     "beta": "Bêta",
     "toggleNavigation": "Ouvrir la navigation",
-    "myJourney": "Mon parcours"
+    "myJourney": "Mon parcours",
+    "home": "Accueil",
+    "caseStudies": "Études de cas"
   },
   "caseStudyStages": {
     "problem-context": "Problème et contexte",
@@ -41,7 +43,8 @@
     "portraitAudio": "Portrait & Audio",
     "noteDesign": "Design",
     "noteTech": "Technologie",
-    "noteImpact": "Impact"
+    "noteImpact": "Impact",
+    "availability": "Disponible pour des missions freelance"
   },
   "footer": {
     "rights": "© 2026 Naïm Bsili. Tous droits réservés."
@@ -169,7 +172,8 @@
       "AI Product Designer",
       "Design Systems",
       "Remote"
-    ]
+    ],
+    "contactCta": "Parlons d’un projet"
   },
   "about": {
     "eyebrow": "LE PARCOURS",

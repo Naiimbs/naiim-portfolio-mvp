@@ -6,6 +6,17 @@ const SITE_URL = (process.env.VITE_SITE_URL || 'https://naiimbsili.com').replace
 const DEFAULT_IMAGE = `${SITE_URL}/naim-portrait.jpg`;
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
+const STATIC_ROUTES = [
+  { route: '/', title: 'Naïm Bsili — Product Designer & AI Builder', description: 'Portfolio of Naïm Bsili covering product design, UX/UI, AI and automation.' },
+  { route: '/about', title: 'About Naïm Bsili — Product Designer & AI Builder', description: 'Discover Naïm Bsili’s journey, approach and skills in product design and AI solutions.' },
+  { route: '/work', title: 'Selected Work — Naïm Bsili', description: 'Case studies and digital products designed and built by Naïm Bsili.' },
+  { route: '/resources', title: 'Resources, Skills & Systems — Naïm Bsili', description: 'Reusable resources, skills, templates and systems for designing and building better products.' },
+  { route: '/blog', title: 'Blog — Design, AI & Digital Craft — Naïm Bsili', description: 'Articles and analyses about product design, AI, workflows and digital craft.' },
+  { route: '/agents', title: 'AI Agents — Naïm Bsili', description: 'Intelligent agents and prototypes exploring workflows, knowledge and AI systems.' },
+  { route: '/p/my-journey', title: 'My Journey — Naïm Bsili', description: 'Naïm Bsili’s journey from mechanical engineering to digital product design and AI.' },
+  { route: '/work/mhaf-accessibility', title: 'MHAF Accessibility — Case Study — Naïm Bsili', description: 'A case study about MHAF Accessibility, an independent product connecting proprietary configuration with a visitor tool.' },
+  { route: '/work/naim-copilot', title: 'Naïm Copilot — Case Study — Naïm Bsili', description: 'An AI copilot prototype for exploring a portfolio and querying published work.' },
+];
 
 function escapeHtml(value = '') {
   return String(value)
@@ -145,8 +156,29 @@ function buildRouteHtml(template, entry, locale = 'en') {
   return html;
 }
 
+function buildStaticRouteHtml(template, routeEntry) {
+  const canonical = `${SITE_URL}${routeEntry.route === '/' ? '/' : routeEntry.route}`;
+  let html = template
+    .replace(/<html lang="[^"]*" dir="[^"]*">/, '<html lang="en" dir="ltr">')
+    .replace(/<title>[\s\S]*?<\/title>/, `<title>${escapeHtml(routeEntry.title)}</title>`)
+    .replace('<div id="root"></div>', `<div id="root"><main><h1>${escapeHtml(routeEntry.title)}</h1><p>${escapeHtml(routeEntry.description)}</p></main></div>`);
+  html = upsertMeta(html, 'name="description"', `<meta data-rh="true" name="description" content="${escapeHtml(routeEntry.description)}" />`);
+  html = upsertMeta(html, 'property="og:title"', `<meta data-rh="true" property="og:title" content="${escapeHtml(routeEntry.title)}" />`);
+  html = upsertMeta(html, 'property="og:description"', `<meta data-rh="true" property="og:description" content="${escapeHtml(routeEntry.description)}" />`);
+  html = upsertMeta(html, 'property="og:url"', `<meta data-rh="true" property="og:url" content="${escapeHtml(canonical)}" />`);
+  html = removeLinks(html, (tag) => /rel=["']canonical["']/i.test(tag) || /rel=["']alternate["']/i.test(tag));
+  return html.replace('</head>', `    <link data-rh="true" rel="canonical" href="${escapeHtml(canonical)}" />\n  </head>`);
+}
+
 try {
   const template = await readFile(join(DIST_DIR, 'index.html'), 'utf8');
+  for (const routeEntry of STATIC_ROUTES) {
+    const outputPath = routeEntry.route === '/'
+      ? join(DIST_DIR, 'index.html')
+      : join(DIST_DIR, routeEntry.route, 'index.html');
+    if (routeEntry.route !== '/') await mkdir(dirname(outputPath), { recursive: true });
+    await writeFile(outputPath, buildStaticRouteHtml(template, routeEntry));
+  }
   const entries = await fetchPublicEntries();
   for (const entry of entries) {
     if (!entry?.slug || !entry?.content_type) continue;
@@ -160,7 +192,7 @@ try {
       await writeFile(outputPath, buildRouteHtml(template, entry, locale));
     }
   }
-  console.log(`[seo] Generated ${entries.length} route-specific preview page(s).`);
+  console.log(`[seo] Generated ${STATIC_ROUTES.length} static page(s) and ${entries.length} CMS route page(s).`);
 } catch (error) {
   console.warn(`[seo] Route page generation skipped: ${error.message}`);
 }

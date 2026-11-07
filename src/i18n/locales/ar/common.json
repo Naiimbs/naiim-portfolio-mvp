@@ -11,7 +11,9 @@
     "resources": "الموارد",
     "beta": "تجريبي",
     "toggleNavigation": "فتح قائمة التنقل",
-    "myJourney": "مسيرتي"
+    "myJourney": "مسيرتي",
+    "home": "الرئيسية",
+    "caseStudies": "دراسات الحالة"
   },
   "caseStudyStages": {
     "problem-context": "المشكلة والسياق",
@@ -41,7 +43,8 @@
     "portraitAudio": "بورتريه وصوت",
     "noteDesign": "تصميم",
     "noteTech": "تكنولوجيا",
-    "noteImpact": "أثر"
+    "noteImpact": "أثر",
+    "availability": "متاح لمشاريع مستقلة"
   },
   "footer": {
     "rights": "© 2026 نعيم بسيلي. جميع الحقوق محفوظة."
@@ -130,7 +133,7 @@
       },
       {
         "title": "MCP",
-        "description": "Model Context Protocol"
+        "description": "بروتوكول سياق النموذج"
       },
       {
         "title": "RAG",
@@ -169,7 +172,8 @@
       "مصمم منتجات ذكاء اصطناعي",
       "أنظمة التصميم",
       "عن بعد"
-    ]
+    ],
+    "contactCta": "لنتحدث عن مشروع"
   },
   "about": {
     "eyebrow": "المسيرة والرحلة",

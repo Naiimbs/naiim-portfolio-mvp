@@ -136,6 +136,7 @@ export default function Navbar() {
 
   // Localized label for known default routes; custom CMS items keep their label.
   const NAV_LABEL_KEYS = {
+    '/': 'nav.home',
     '/work': 'nav.work',
     '#work': 'nav.work',
     '/#work': 'nav.work',

@@ -47,7 +47,7 @@ export default function HeroSection({ config = {} }) {
   };
 
   const buildingLabel = config?.buildingLabel || t('hero.currentlyBuilding');
-  const availabilityLabel = config?.availabilityLabel || t('hero.availability', 'Available for freelance projects');
+  const availabilityLabel = config?.availabilityLabel || t('hero.availability');
   const accentFromLine = Number.isInteger(cfg.accentFromLine)
     ? cfg.accentFromLine
     : (cfg.emphasizeLastLine ? titleLines.length - 1 : -1);

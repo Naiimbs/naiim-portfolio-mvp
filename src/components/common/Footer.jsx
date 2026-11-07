@@ -45,10 +45,23 @@ export default function Footer() {
 
   const displayNavItems = (navItems && Array.isArray(navItems) && navItems.length > 0 ? navItems : DEFAULT_FOOTER_NAV).filter(Boolean);
 
+  const FOOTER_LABEL_KEYS = {
+    '/': 'nav.home',
+    '/work': 'nav.work',
+    '/agents': 'nav.agents',
+    '/resources': 'nav.resources',
+    '/about': 'nav.about',
+    '/p/my-journey': 'nav.myJourney',
+    '#career': 'nav.career',
+    '/#career': 'nav.career',
+    '#lab': 'nav.lab',
+    '/#lab': 'nav.lab',
+  };
   const renderFooterLink = (item) => {
     if (!item) return null;
     const href = typeof item.href === 'string' ? item.href.trim() : '#';
-    const label = item.label || 'Link';
+    const labelKey = FOOTER_LABEL_KEYS[href];
+    const label = labelKey ? t(labelKey) : (item.label || t('nav.home', 'Link'));
     const isExternal = Boolean(item.open_in_new_tab) || href.startsWith('http://') || href.startsWith('https://');
 
     if (isExternal) {
