@@ -109,21 +109,21 @@ export const FALLBACK_PAGES = [
 export const DEFAULT_HEADER_NAV = [
   { id: 'nav-header-1', location: 'header', label: 'Work', href: '/work', item_type: 'link', parent_id: null, sort_order: 10, is_visible: true, open_in_new_tab: false },
   { id: 'nav-header-story', location: 'header', label: 'My Journey', href: '/p/my-journey', item_type: 'link', parent_id: null, sort_order: 15, is_visible: true, open_in_new_tab: false },
-  { id: 'nav-header-2', location: 'header', label: 'Agents', href: '/agents', item_type: 'link', parent_id: null, sort_order: 20, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-header-2', location: 'header', label: 'Agents', href: '/agents/', item_type: 'link', parent_id: null, sort_order: 20, is_visible: true, open_in_new_tab: false },
   { id: 'nav-header-3', location: 'header', label: 'Resources', href: '/resources', item_type: 'link', parent_id: null, sort_order: 25, is_visible: true, open_in_new_tab: false },
   { id: 'nav-header-5', location: 'header', label: 'Career', href: '#career', item_type: 'link', parent_id: null, sort_order: 40, is_visible: true, open_in_new_tab: false },
   { id: 'nav-header-6', location: 'header', label: 'Lab', href: '#lab', item_type: 'link', parent_id: null, sort_order: 50, is_visible: true, open_in_new_tab: false },
-  { id: 'nav-header-7', location: 'header', label: 'About', href: '/about', item_type: 'link', parent_id: null, sort_order: 60, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-header-7', location: 'header', label: 'About', href: '/about/', item_type: 'link', parent_id: null, sort_order: 60, is_visible: true, open_in_new_tab: false },
 ];
 
 export const DEFAULT_FOOTER_NAV = [
   { id: 'nav-footer-1', location: 'footer', label: 'Work', href: '/work', item_type: 'link', parent_id: null, sort_order: 10, is_visible: true, open_in_new_tab: false },
   { id: 'nav-footer-2', location: 'footer', label: 'Case Studies', href: '/work', item_type: 'link', parent_id: null, sort_order: 20, is_visible: true, open_in_new_tab: false },
-  { id: 'nav-footer-3', location: 'footer', label: 'Agents', href: '/agents', item_type: 'link', parent_id: null, sort_order: 30, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-footer-3', location: 'footer', label: 'Agents', href: '/agents/', item_type: 'link', parent_id: null, sort_order: 30, is_visible: true, open_in_new_tab: false },
   { id: 'nav-footer-4', location: 'footer', label: 'Resources', href: '/resources', item_type: 'link', parent_id: null, sort_order: 35, is_visible: true, open_in_new_tab: false },
   { id: 'nav-footer-6', location: 'footer', label: 'Career', href: '#career', item_type: 'link', parent_id: null, sort_order: 50, is_visible: true, open_in_new_tab: false },
   { id: 'nav-footer-7', location: 'footer', label: 'Lab', href: '#lab', item_type: 'link', parent_id: null, sort_order: 60, is_visible: true, open_in_new_tab: false },
-  { id: 'nav-footer-8', location: 'footer', label: 'About', href: '/about', item_type: 'link', parent_id: null, sort_order: 70, is_visible: true, open_in_new_tab: false },
+  { id: 'nav-footer-8', location: 'footer', label: 'About', href: '/about/', item_type: 'link', parent_id: null, sort_order: 70, is_visible: true, open_in_new_tab: false },
 ];
 
 export const FALLBACK_NAVIGATION = [...DEFAULT_HEADER_NAV, ...DEFAULT_FOOTER_NAV];

@@ -8,14 +8,24 @@ const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
 const STATIC_ROUTES = [
   { route: '/', title: 'Naïm Bsili — Product Designer & AI Builder', description: 'Portfolio of Naïm Bsili covering product design, UX/UI, AI and automation.' },
-  { route: '/about', title: 'About Naïm Bsili — Product Designer & AI Builder', description: 'Discover Naïm Bsili’s journey, approach and skills in product design and AI solutions.' },
+  { route: '/about/', title: 'About Naïm Bsili — Product Designer & AI Builder', description: 'Discover Naïm Bsili’s journey, approach and skills in product design and AI solutions.' },
   { route: '/work', title: 'Selected Work — Naïm Bsili', description: 'Case studies and digital products designed and built by Naïm Bsili.' },
   { route: '/resources', title: 'Resources, Skills & Systems — Naïm Bsili', description: 'Reusable resources, skills, templates and systems for designing and building better products.' },
   { route: '/blog', title: 'Blog — Design, AI & Digital Craft — Naïm Bsili', description: 'Articles and analyses about product design, AI, workflows and digital craft.' },
-  { route: '/agents', title: 'AI Agents — Naïm Bsili', description: 'Intelligent agents and prototypes exploring workflows, knowledge and AI systems.' },
+  { route: '/agents/', title: 'AI Agents & Automation Systems — Naïm Bsili', description: 'Explore intelligent agents, n8n workflows, and AI systems built by Naïm Bsili.' },
   { route: '/p/my-journey', title: 'My Journey — Naïm Bsili', description: 'Naïm Bsili’s journey from mechanical engineering to digital product design and AI.' },
-  { route: '/work/mhaf-accessibility', title: 'MHAF Accessibility — Case Study — Naïm Bsili', description: 'A case study about MHAF Accessibility, an independent product connecting proprietary configuration with a visitor tool.' },
-  { route: '/work/naim-copilot', title: 'Naïm Copilot — Case Study — Naïm Bsili', description: 'An AI copilot prototype for exploring a portfolio and querying published work.' },
+  { route: '/work/winni', title: 'WINNI — Product Case Study — Naïm Bsili', description: 'A product case study about WINNI, a QR and NFC recovery experience for lost items.' },
+  { route: '/work/assestini', title: 'Assestini — Operational Intelligence Case Study', description: 'An operational intelligence platform case study focused on connected workflows and actionable data.' },
+  { route: '/work/cha9a9a', title: 'Cha9a9a — Front-End Integration Case Study', description: 'A case study about translating a Figma direction into a responsive community platform interface.' },
+  { route: '/work/career-os', title: 'Career OS — AI Job Search Case Study', description: 'An automated job-search workflow that aggregates opportunities, scores fit, and delivers a focused digest.' },
+  { route: '/work/saudi-government', title: 'Saudi Government Services — Case Study', description: 'A digital government services case study focused on clearer journeys and usable service interfaces.' },
+  { route: '/work/saudi-banking', title: 'Saudi Banking — Product Case Study', description: 'A Saudi banking case study exploring trust, clarity, and usable digital service experiences.' },
+  { route: '/work/saudi-regulatory', title: 'Saudi Regulatory Healthcare — Case Study', description: 'A regulatory healthcare case study focused on evidence, workflows, and decision support.' },
+  { route: '/work/dga', title: 'Digital Government Authority — Case Study', description: 'A digital government case study about designing clearer, more reliable public-service experiences.' },
+  { route: '/work/mhaf-accessibility/', title: 'MHAF Accessibility — Case Study — Naïm Bsili', description: 'A case study about MHAF Accessibility, an independent product connecting proprietary configuration with a visitor tool.' },
+  { route: '/work/naim-copilot/', title: 'Naïm Copilot — Case Study — Naïm Bsili', description: 'An AI copilot prototype for exploring a portfolio and querying published work.' },
+  { route: '/agents/naim-copilot/', title: 'Naïm Copilot — AI Agent Case Study', description: 'A personal AI agent connecting memory, knowledge, projects, and actions through a conversational interface.' },
+  { route: '/agents/career-os/', title: 'Career OS — Job Search AI Agent', description: 'An automation agent that aggregates job opportunities, removes duplicates, scores fit, and delivers a daily digest.' },
 ];
 
 function escapeHtml(value = '') {

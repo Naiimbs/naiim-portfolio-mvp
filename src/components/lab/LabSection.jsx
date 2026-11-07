@@ -21,7 +21,7 @@ export default function LabSection() {
             <h2>{t('lab.title')}</h2>
             <p>{t('lab.subtitle')}</p>
           </div>
-          <Link to="/agents" className="text-link d-none d-md-inline">
+          <Link to="/agents/" className="text-link d-none d-md-inline">
             {t('lab.exploreAgents')} <i className="bi bi-arrow-right"></i>
           </Link>
         </div>

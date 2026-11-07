@@ -268,7 +268,7 @@ export default function StandardCaseStudy({ data }) {
       <SEO
         title={hero.title}
         description={hero.lead}
-        canonical={`/work/${slug}`}
+        canonical={`/work/${slug}/`}
         image={hero.image}
         schema={caseSchema}
       />

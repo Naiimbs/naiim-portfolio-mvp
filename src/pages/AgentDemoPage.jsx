@@ -105,7 +105,7 @@ export default function AgentDemoPage() {
         <div className="container text-center py-5 my-5">
           <h2>{t('agents.demo.notFoundTitle')}</h2>
           <p className="text-muted">{t('agents.demo.notFoundBody')}</p>
-          <Link to="/agents" className="btn btn-dark rounded-pill px-4 mt-3">
+          <Link to="/agents/" className="btn btn-dark rounded-pill px-4 mt-3">
             {t('agents.detail.back')}
           </Link>
         </div>

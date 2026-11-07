@@ -27,7 +27,7 @@ export default function AssestiniCaseStudy() {
       <SEO
         title="Assestini — Case Study · Naïm Bsili"
         description="Assestini — AI-powered Operational Intelligence Platform. Product design case study by Naïm Bsili. From estimation to payment in one connected workflow."
-        canonical="/work/assestini"
+        canonical="/work/assestini/"
         schema={schema}
       />
 

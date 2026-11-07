@@ -29,7 +29,7 @@ export const agents = [
     sort_order: 1,
     seo_title: 'Naïm Copilot — Personal AI System & Workflow Automation',
     seo_description: 'A personal AI agent that connects memory, knowledge, projects and actions through a single conversational interface.',
-    canonical_path: '/agents/naim-copilot',
+    canonical_path: '/agents/naim-copilot/',
     sections: [
       {
         id: 'sec-copilot-hero',
@@ -211,7 +211,7 @@ export const agents = [
     sort_order: 2,
     seo_title: 'Career OS · Daily Job Search Agent — Naïm Bsili',
     seo_description: 'An automated career search workflow that collects opportunities, removes duplicates, scores fit and delivers a daily digest.',
-    canonical_path: '/agents/career-os',
+    canonical_path: '/agents/career-os/',
     sections: [
       {
         id: 'sec-career-hero',

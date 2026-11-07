@@ -21,7 +21,7 @@ export default function AgentDemoStatus({
             <p className="mb-2 small text-muted">
               {t('agents.demo.inactiveBody')}
             </p>
-            <Link to={`/agents/${agentSlug}`} className="btn btn-sm btn-dark rounded-pill px-3">
+            <Link to={`/agents/${agentSlug}/`} className="btn btn-sm btn-dark rounded-pill px-3">
               <i className="bi bi-journal-text me-1"></i> {t('agents.demo.readCase')}
             </Link>
           </div>
@@ -56,7 +56,7 @@ export default function AgentDemoStatus({
                 <i className="bi bi-arrow-repeat me-1"></i> {t('agents.demo.tryAgain')}
               </button>
             )}
-            <Link to={`/agents/${agentSlug}`} className="btn btn-sm btn-outline-secondary rounded-pill px-3">
+            <Link to={`/agents/${agentSlug}/`} className="btn btn-sm btn-outline-secondary rounded-pill px-3">
               <i className="bi bi-journal-text me-1"></i> {t('agents.demo.viewCase')}
             </Link>
           </div>

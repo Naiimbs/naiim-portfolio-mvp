@@ -52,7 +52,7 @@ export default function CMSCaseStudyRenderer({ caseStudy }) {
       <SEO
         title={seo_title || effectiveTitle}
         description={seo_description || effectiveLead}
-        canonical={canonical_path || `/work/${effectiveSlug}`}
+        canonical={canonical_path || `/work/${effectiveSlug}/`}
         image={heroImage}
         schema={caseSchema}
       />
