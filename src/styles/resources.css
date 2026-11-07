@@ -35,7 +35,8 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 14px;
+  min-height: 44px;
+  padding: 9px 14px;
   border-radius: 50px;
   font-size: 0.82rem;
   font-weight: 600;
@@ -131,8 +132,9 @@
 }
 
 .resource-clear-filters {
+  min-height: 44px;
   border: 0;
-  padding: 0 0 8px;
+  padding: 8px 4px;
   color: var(--green);
   background: transparent;
   font-size: 0.78rem;

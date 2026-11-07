@@ -75,7 +75,7 @@ export default function CareerCard() {
         </div>
 
         <a href="#contact" className="download-cv">
-          <i className="bi bi-download"></i> {t('career.downloadCv')}
+          <i className="bi bi-chat-dots"></i> {t('career.contactCta')}
         </a>
       </div>
 

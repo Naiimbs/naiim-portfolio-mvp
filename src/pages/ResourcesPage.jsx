@@ -331,7 +331,7 @@ export default function ResourcesPage() {
                   </select>
                 </label>
                 <div className="resource-results-count" aria-live="polite">
-                  <strong>{filteredResources.length}</strong> {t('resources.resultsLabel')}
+                  {!loading && <><strong>{filteredResources.length}</strong> {t('resources.resultsLabel')}</>}
                 </div>
                 {(searchQuery || activeType !== 'all' || activePlatform !== 'all' || activeUseCase !== 'all' || activeSort !== 'recommended') && (
                   <button type="button" className="resource-clear-filters" onClick={handleResetFilters}>
