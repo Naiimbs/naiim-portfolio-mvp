@@ -67,6 +67,17 @@ export default function HomeHeroSectionEditor({ config = {}, onChange }) {
           />
           <label className="form-check-label small" htmlFor="hero-show-portrait">Offer “Portrait &amp; Audio”</label>
         </div>
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            id="hero-show-mode-toggle"
+            checked={config.showModeToggle === true}
+            disabled={config.showVisual === false}
+            onChange={(e) => set({ showModeToggle: e.target.checked })}
+          />
+          <label className="form-check-label small" htmlFor="hero-show-mode-toggle">Show the mode toggle buttons</label>
+        </div>
         <div className="small text-muted mt-1" style={{ fontSize: '0.72rem' }}>
           Uncheck both modes (or the panel) to hide the right-column visual entirely.
         </div>
@@ -87,7 +98,7 @@ export default function HomeHeroSectionEditor({ config = {}, onChange }) {
         <label className="form-label small fw-semibold">Title lines <span className="text-muted">(one per line)</span></label>
         <textarea
           className="form-control form-control-sm rounded-3"
-          rows="3"
+          rows="4"
           value={titleLines.join('\n')}
           placeholder={'I DESIGN.\nI BUILD.\nI EXPERIMENT.'}
           onChange={(e) => set({ titleLines: e.target.value.split('\n') })}
@@ -115,7 +126,7 @@ export default function HomeHeroSectionEditor({ config = {}, onChange }) {
           placeholder="I turn ambiguous problems into usable digital products at the intersection of "
           onChange={(e) => set({ lead: e.target.value })}
         />
-        <label className="form-label small fw-semibold mt-2">Lead bold tail <span className="text-muted">(optional, rendered in bold)</span></label>
+        <label className="form-label small fw-semibold mt-2">Legacy lead fallback <span className="text-muted">(optional; the main lead is preferred)</span></label>
         <input
           type="text"
           className="form-control form-control-sm rounded-3"
@@ -178,6 +189,28 @@ export default function HomeHeroSectionEditor({ config = {}, onChange }) {
           placeholder="CURRENTLY BUILDING"
           onChange={(e) => set({ buildingLabel: e.target.value })}
         />
+      </div>
+
+      <div className="mb-3">
+        <label className="form-label small fw-semibold">Availability badge</label>
+        <input
+          type="text"
+          className="form-control form-control-sm rounded-3"
+          value={config.availabilityLabel || ''}
+          placeholder="Available for freelance projects"
+          onChange={(e) => set({ availabilityLabel: e.target.value })}
+        />
+      </div>
+
+      <div className="form-check mb-3">
+        <input
+          className="form-check-input"
+          type="checkbox"
+          id="hero-show-building"
+          checked={config.showBuilding === true}
+          onChange={(e) => set({ showBuilding: e.target.checked })}
+        />
+        <label className="form-check-label small" htmlFor="hero-show-building">Show “Currently building” items</label>
       </div>
 
       <div className="d-flex justify-content-between align-items-center mb-2">
@@ -250,7 +283,7 @@ export default function HomeHeroSectionEditor({ config = {}, onChange }) {
         <div className="mb-2" dir={txLang === 'ar' ? 'rtl' : 'ltr'}>
           <label className="form-label small fw-semibold">Lead paragraph</label>
           <textarea className="form-control form-control-sm rounded-3" rows="2" value={tx.lead || ''} placeholder={config.lead || ''} onChange={(e) => setTx({ lead: e.target.value })} />
-          <label className="form-label small fw-semibold mt-2">Lead bold tail</label>
+          <label className="form-label small fw-semibold mt-2">Legacy lead fallback</label>
           <input type="text" className="form-control form-control-sm rounded-3" value={tx.leadStrong || ''} placeholder={config.leadStrong || ''} onChange={(e) => setTx({ leadStrong: e.target.value })} />
         </div>
         <div className="row g-2 mb-2" dir={txLang === 'ar' ? 'rtl' : 'ltr'}>
@@ -266,6 +299,10 @@ export default function HomeHeroSectionEditor({ config = {}, onChange }) {
         <div className="mb-1" dir={txLang === 'ar' ? 'rtl' : 'ltr'}>
           <label className="form-label small fw-semibold">"Currently building" label</label>
           <input type="text" className="form-control form-control-sm rounded-3" value={tx.buildingLabel || ''} placeholder={config.buildingLabel || ''} onChange={(e) => setTx({ buildingLabel: e.target.value })} />
+        </div>
+        <div className="mb-1 mt-2" dir={txLang === 'ar' ? 'rtl' : 'ltr'}>
+          <label className="form-label small fw-semibold">Availability badge</label>
+          <input type="text" className="form-control form-control-sm rounded-3" value={tx.availabilityLabel || ''} placeholder={config.availabilityLabel || 'Available for freelance projects'} onChange={(e) => setTx({ availabilityLabel: e.target.value })} />
         </div>
       </div>
     </div>

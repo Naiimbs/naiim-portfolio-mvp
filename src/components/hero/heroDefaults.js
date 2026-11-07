@@ -11,16 +11,20 @@
  */
 export const HERO_DEFAULTS = {
   eyebrow: 'SENIOR UX/UI DESIGNER · AI PRODUCT BUILDER',
-  titleLines: ['I DESIGN.', 'I BUILD.', 'I EXPERIMENT.'],
-  emphasizeLastLine: true,
-  lead: 'I turn ambiguous problems into usable digital products at the intersection of ',
-  leadStrong: 'product design, AI, low-code and automation.',
-  primaryCta: { label: 'Explore my work', href: '#work' },
-  secondaryCta: { label: 'Talk to Naïm Copilot', href: '#copilot' },
+  titleLines: ['I design and build', 'digital products that', 'make complex work', 'feel simple.'],
+  accentFromLine: 2,
+  emphasizeLastLine: false,
+  lead: 'Product design, AI workflows, and digital experiences for ambitious teams and founders.',
+  leadStrong: '',
+  primaryCta: { label: 'View selected work', href: '#work' },
+  secondaryCta: { label: "Let’s work together", href: '/about#contact' },
+  availabilityLabel: 'Available for freelance projects',
+  showBuilding: false,
   // Right-column visual controls
   showVisual: true, // master toggle for the whole right-column visual
   showMotion: true, // offer the "Motion Sequence" mode
   showPortrait: true, // offer the "Portrait & Audio" mode
+  showModeToggle: false, // keep the reference composition clean by default
   buildingLabel: 'CURRENTLY BUILDING',
   buildingItems: [
     { iconText: 'W', iconClass: 'winni', label: 'WINNI', href: '#work', note: '' },
