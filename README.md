@@ -206,7 +206,6 @@ Senior UX/UI Designer · AI Product Builder
 I work across product design, front-end implementation, low-code platforms, and AI-assisted workflows. I enjoy understanding complex problems, shaping useful experiences, and building systems that make ideas tangible.
 
 - Website: [naiimbsili.com](https://naiimbsili.com)
-- LinkedIn: [Connect with me](https://www.linkedin.com/)
 - GitHub: [Naiimbs](https://github.com/Naiimbs)
 
 ---
