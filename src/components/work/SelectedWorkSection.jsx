@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ProjectCard from './ProjectCard';
 import MiniProjectCard from './MiniProjectCard';
@@ -68,13 +69,24 @@ export default function SelectedWorkSection() {
   // ── Loading ───────────────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <section className="section-pad pt-5 homepage-work-section" id="work">
+      <section className="section-pad pt-5 homepage-work-section" id="work" aria-busy="true">
         <div className="container">
           <SectionHeading />
-          <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '20vh' }}>
-            <div className="spinner-border text-success" role="status">
-              <span className="visually-hidden">{t('work.loading')}</span>
-            </div>
+          <div className="visually-hidden" role="status" aria-live="polite">{t('work.loading')}</div>
+          <div className="row g-4 homepage-featured-projects" aria-hidden="true">
+            {Array.from({ length: 4 }, (_, index) => (
+              <div className="col-md-6 col-xl-3" key={index}>
+                <div className="work-card-skeleton">
+                  <div className="work-card-skeleton-image" />
+                  <div className="work-card-skeleton-copy">
+                    <span />
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -120,7 +132,7 @@ export default function SelectedWorkSection() {
         {featuredEntries.length > 0 && (
           <div className="row g-4 homepage-featured-projects">
             {featuredEntries.map((project) => (
-              <div className="col-lg-4" key={project.id || project.slug}>
+              <div className="col-md-6 col-xl-3" key={project.id || project.slug}>
                 <ProjectCard project={project} />
               </div>
             ))}
@@ -131,7 +143,7 @@ export default function SelectedWorkSection() {
         {miniEntries.length > 0 && (
           <div className="row g-3 mt-1 homepage-mini-projects">
             {miniEntries.map((project) => (
-              <div className="col-md-6 col-lg-3" key={project.id || project.slug}>
+              <div className="col-md-6 col-lg-4" key={project.id || project.slug}>
                 <MiniProjectCard project={project} />
               </div>
             ))}
@@ -155,9 +167,9 @@ function SectionHeading() {
         <h2>{t('work.homeTitle', 'Projects, brought to life.')}</h2>
         <p>{t('work.homeSubtitle', 'Selected products and digital experiences.')}</p>
       </div>
-      <a href="#contact" className="text-link d-none d-md-inline">
-        {t('work.talk')} <i className="bi bi-arrow-up-right"></i>
-      </a>
+      <Link to="/work" className="text-link work-all-link">
+        {t('work.viewAll')} <i className="bi bi-arrow-up-right" aria-hidden="true"></i>
+      </Link>
     </div>
   );
 }

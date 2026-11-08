@@ -43,7 +43,7 @@ export default function ProjectCard({ project }) {
     <article className="project-card">
       {heroImage && (
         <div className="project-image">
-          <img src={heroImage} alt={heroImageAlt || displayTitle} />
+          <img src={heroImage} alt={heroImageAlt || displayTitle} loading="lazy" decoding="async" />
           {displayBadge && <span className="project-badge">{displayBadge}</span>}
         </div>
       )}
