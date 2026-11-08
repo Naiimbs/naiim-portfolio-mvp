@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getFooterNavigation, getPublicSiteSettings, DEFAULT_FOOTER_NAV } from '../../services/siteCms';
+import BrandMark from './BrandMark';
 
 export default function Footer() {
   const { t } = useTranslation();
@@ -96,7 +97,9 @@ export default function Footer() {
     <footer className="footer">
       <div className="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
         <Link className="brand" to="/">
-          {brandName} <span className="beta-badge">Beta</span>
+          <BrandMark className="brand-mark--footer" />
+          <span className="brand-wordmark">{brandName}</span>
+          <span className="beta-badge">Beta</span>
         </Link>
         <div className="footer-links">
           {displayNavItems.map((item) => renderFooterLink(item))}

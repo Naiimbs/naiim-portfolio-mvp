@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getHeaderNavigation, getPublicSiteSettings, DEFAULT_HEADER_NAV } from '../../services/siteCms';
 import LanguageSwitcher from './LanguageSwitcher';
+import BrandMark from './BrandMark';
 
 export default function Navbar() {
   const { t, i18n } = useTranslation();
@@ -265,10 +266,9 @@ export default function Navbar() {
     <nav className={`navbar navbar-expand-lg fixed-top site-nav ${isScrolled ? 'scrolled' : ''}`} id="siteNav">
       <div className="container">
         <Link className="navbar-brand brand" to="/" onClick={closeNav}>
-          {siteSettings?.logo_url ? (
-            <img src={siteSettings.logo_url} alt={brandName} height="28" className="me-2 rounded" />
-          ) : null}
-          {brandName} <span className="beta-badge">{t('nav.beta', 'Beta')}</span>
+          <BrandMark className="brand-mark--nav" />
+          <span className="brand-wordmark">{brandName}</span>
+          <span className="beta-badge">{t('nav.beta', 'Beta')}</span>
         </Link>
 
         <button

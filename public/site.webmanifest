@@ -6,16 +6,11 @@
   "display": "standalone",
   "background_color": "#f8f9f6",
   "theme_color": "#087f66",
-  "icons": [
-    {
-      "src": "/naim-portrait.jpg",
+    "icons": [
+      {
+      "src": "/brand-icon-192.png",
       "sizes": "192x192",
-      "type": "image/jpeg"
-    },
-    {
-      "src": "/naim-portrait.jpg",
-      "sizes": "512x512",
-      "type": "image/jpeg"
+      "type": "image/png"
     }
   ]
 }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import portraitCutout from '../../assets/images/naim-portrait.webp';
+import BrandMark from '../common/BrandMark';
 
 // -----------------------------------------------------------------------------
 // 1. About · Hero
@@ -65,6 +66,7 @@ export function AboutHeroSection({ config = {} }) {
 
           <div className="col-lg-5 text-center">
             <div className="position-relative d-inline-block">
+              <BrandMark variant="monogram" className="about-hero-brand-stamp" />
               <div className="rounded-4 overflow-hidden shadow-lg border bg-white" style={{ maxWidth: '380px', margin: '0 auto' }}>
                 <img
                   src={config.portraitUrl || portraitCutout || '/naim-portrait.jpg'}
