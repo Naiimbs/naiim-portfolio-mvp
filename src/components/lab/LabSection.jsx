@@ -11,7 +11,7 @@ export default function LabSection() {
   const { t } = useTranslation();
   const experiments = t('lab.experiments', { returnObjects: true }) || [];
   return (
-    <section className="section-pad" id="lab">
+    <section className="section-pad homepage-lab-section" id="lab">
       <div className="container">
         <div className="section-heading d-flex justify-content-between align-items-end mb-4">
           <div>

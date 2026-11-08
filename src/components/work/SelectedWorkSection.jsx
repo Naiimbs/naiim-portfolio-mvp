@@ -68,7 +68,7 @@ export default function SelectedWorkSection() {
   // ── Loading ───────────────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <section className="section-pad pt-5" id="work">
+      <section className="section-pad pt-5 homepage-work-section" id="work">
         <div className="container">
           <SectionHeading />
           <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '20vh' }}>
@@ -84,7 +84,7 @@ export default function SelectedWorkSection() {
   // ── Error or unconfigured — do not silently fall back to local catalog ────────
   if (error) {
     return (
-      <section className="section-pad pt-5" id="work">
+      <section className="section-pad pt-5 homepage-work-section" id="work">
         <div className="container">
           <SectionHeading />
           <p className="text-muted text-center py-4">
@@ -98,7 +98,7 @@ export default function SelectedWorkSection() {
   // ── Empty — Registry has no published+public entries yet ──────────────────────
   if (empty) {
     return (
-      <section className="section-pad pt-5" id="work">
+      <section className="section-pad pt-5 homepage-work-section" id="work">
         <div className="container">
           <SectionHeading />
           <p className="text-muted text-center py-4">{t('work.empty')}</p>
@@ -112,13 +112,13 @@ export default function SelectedWorkSection() {
   const miniEntries = entries.filter((e) => !e.featured);
 
   return (
-    <section className="section-pad pt-5" id="work">
+    <section className="section-pad pt-5 homepage-work-section" id="work">
       <div className="container">
         <SectionHeading />
 
         {/* Featured projects */}
         {featuredEntries.length > 0 && (
-          <div className="row g-4">
+          <div className="row g-4 homepage-featured-projects">
             {featuredEntries.map((project) => (
               <div className="col-lg-4" key={project.id || project.slug}>
                 <ProjectCard project={project} />
@@ -129,7 +129,7 @@ export default function SelectedWorkSection() {
 
         {/* Mini (non-featured) projects */}
         {miniEntries.length > 0 && (
-          <div className="row g-3 mt-1">
+          <div className="row g-3 mt-1 homepage-mini-projects">
             {miniEntries.map((project) => (
               <div className="col-md-6 col-lg-3" key={project.id || project.slug}>
                 <MiniProjectCard project={project} />
@@ -147,7 +147,7 @@ export default function SelectedWorkSection() {
 function SectionHeading() {
   const { t } = useTranslation();
   return (
-    <div className="section-heading d-flex justify-content-between align-items-end mb-4">
+    <div className="section-heading section-heading--split d-flex justify-content-between align-items-end mb-4">
       <div>
         <div className="eyebrow">
           <span></span> {t('work.eyebrow')}

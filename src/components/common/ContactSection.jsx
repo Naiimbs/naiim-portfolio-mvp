@@ -5,7 +5,7 @@ export default function ContactSection() {
   const { t } = useTranslation();
 
   return (
-    <section className="contact-section" id="contact">
+    <section className="contact-section homepage-contact-section" id="contact">
       <div className="container">
         <div className="contact-box">
           <div>
