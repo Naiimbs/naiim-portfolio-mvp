@@ -13,7 +13,7 @@ import { HERO_DEFAULTS } from './heroDefaults';
  * default config renders localized content in EN, FR, and AR. The right
  * column (Motion / Portrait + audio) is presentation and stays as-is.
  */
-export default function HeroSection({ config = {} }) {
+export default function HeroSection({ config = {}, homepage = false }) {
   const { t } = useTranslation();
   const [heroMode, setHeroMode] = useState('portrait'); // 'motion' | 'portrait'
 
@@ -37,13 +37,17 @@ export default function HeroSection({ config = {} }) {
   const primaryCta = {
     ...HERO_DEFAULTS.primaryCta,
     ...(cfg.primaryCta || {}),
-    label: config?.primaryCta?.label || HERO_DEFAULTS.primaryCta.label || t('hero.exploreWork'),
+    label: homepage
+      ? t('hero.exploreWork', 'Explore projects')
+      : (config?.primaryCta?.label || HERO_DEFAULTS.primaryCta.label || t('hero.exploreWork')),
   };
 
   const secondaryCta = {
     ...HERO_DEFAULTS.secondaryCta,
     ...(cfg.secondaryCta || {}),
-    label: config?.secondaryCta?.label || HERO_DEFAULTS.secondaryCta.label || t('hero.talkCopilot'),
+    label: homepage
+      ? t('hero.talk', 'Let’s talk')
+      : (config?.secondaryCta?.label || HERO_DEFAULTS.secondaryCta.label || t('hero.talkCopilot')),
   };
 
   const buildingLabel = config?.buildingLabel || t('hero.currentlyBuilding');
@@ -93,16 +97,22 @@ export default function HeroSection({ config = {} }) {
 
             <div className="d-flex flex-wrap gap-3 mb-4">
               {primaryCta.label && (
-                <a className="btn btn-primary-custom btn-lg rounded-pill px-4" href={primaryCta.href || '#work'}>
-                  {primaryCta.label} <i className="bi bi-arrow-right"></i>
+                <a className="btn btn-primary-custom btn-lg rounded-pill px-4" href={homepage ? '#work' : (primaryCta.href || '#work')}>
+                  {primaryCta.label} <i className={`bi ${homepage ? 'bi-arrow-down' : 'bi-arrow-right'}`}></i>
                 </a>
               )}
               {secondaryCta.label && (
-                <a className="btn btn-outline-custom btn-lg rounded-pill px-4" href={secondaryCta.href || '#copilot'}>
-                  <i className="bi bi-stars"></i> {secondaryCta.label}
+                <a className="btn btn-outline-custom btn-lg rounded-pill px-4" href={homepage ? '/about#contact' : (secondaryCta.href || '#copilot')}>
+                  {homepage ? <i className="bi bi-arrow-up-right"></i> : <i className="bi bi-stars"></i>} {secondaryCta.label}
                 </a>
               )}
             </div>
+
+            {homepage && availabilityLabel && (
+              <div className="homepage-availability">
+                <span aria-hidden="true"></span>{availabilityLabel}
+              </div>
+            )}
 
             {cfg.showBuilding && buildingLabel && <div className="building-label">{buildingLabel}</div>}
             {cfg.showBuilding && buildingItems.length > 0 && (
@@ -164,7 +174,7 @@ export default function HeroSection({ config = {} }) {
                   <img src={heroCutout} alt="Naïm Bsili" className="hero-photo" />
                 </div>
 
-                {availabilityLabel && (
+                {!homepage && availabilityLabel && (
                   <div className="editorial-hero-availability">
                     <span aria-hidden="true"></span>{availabilityLabel}
                   </div>

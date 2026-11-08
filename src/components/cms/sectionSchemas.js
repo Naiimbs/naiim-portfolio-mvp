@@ -40,7 +40,7 @@ export const PAGE_SECTION_TYPES = {
   },
   selected_work: HOME_BLOCK('selected_work', 'Home · Selected Work', 'bi-grid-3x3-gap', 'Homepage "Selected Work" showcase, rendered from the live component.'),
   case_studies_strip: HOME_BLOCK('case_studies_strip', 'Home · Case Studies Strip', 'bi-collection', 'Homepage case-studies strip, rendered from the live component.'),
-  copilot_career: HOME_BLOCK('copilot_career', 'Home · Copilot + Career', 'bi-stars', 'Homepage two-column block: Naïm Copilot widget + Career card.'),
+  copilot_career: HOME_BLOCK('copilot_career', 'Home · Career', 'bi-stars', 'Homepage career card; the Naïm Copilot widget is hidden unless showCopilot is explicitly enabled.'),
   lab: HOME_BLOCK('lab', 'Home · Lab', 'bi-beaker', 'Homepage "Lab" section, rendered from the live component.'),
   home_about: HOME_BLOCK('home_about', 'Home · About', 'bi-person-badge', 'Homepage About section, rendered from the live component.'),
   home_contact: HOME_BLOCK('home_contact', 'Home · Contact', 'bi-envelope-heart', 'Homepage contact section, rendered from the live component.'),

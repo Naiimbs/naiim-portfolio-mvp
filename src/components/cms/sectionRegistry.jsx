@@ -764,7 +764,7 @@ function FormSectionComponent({ config = {} }) {
 // Fine-grained per-block content editing can be layered on later.
 // ---------------------------------------------------------------------------
 function HomeHeroBlock({ config = {} }) {
-  return <HomeHero config={config} />;
+  return <HomeHero config={config} homepage />;
 }
 
 function SelectedWorkBlock() {
@@ -775,15 +775,18 @@ function CaseStudiesStripBlock() {
   return <HomeCaseStudiesStrip />;
 }
 
-function CopilotCareerBlock() {
+function CopilotCareerBlock({ config = {} }) {
+  const showCopilot = config.showCopilot === true;
   return (
-    <section className="section-pad pt-4" id="copilot">
+    <section className="section-pad pt-4" id={showCopilot ? 'copilot' : 'career'}>
       <div className="container">
         <div className="row g-4 align-items-stretch">
-          <div className="col-lg-7">
-            <HomeCopilotWidget />
-          </div>
-          <div className="col-lg-5" id="career">
+          {showCopilot && (
+            <div className="col-lg-7">
+              <HomeCopilotWidget />
+            </div>
+          )}
+          <div className={showCopilot ? 'col-lg-5' : 'col-12'}>
             <HomeCareerCard />
           </div>
         </div>

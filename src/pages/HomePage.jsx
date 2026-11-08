@@ -13,11 +13,11 @@ import {
 import { getPublishedPublicContentBySlug } from '../services/contentRegistry';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { useAuth } from '../admin/context/AuthContext';
+import { prioritizeHomepageSections } from '../utils/homepageSections';
 
 import HeroSection from '../components/hero/HeroSection';
 import SelectedWorkSection from '../components/work/SelectedWorkSection';
 import CaseStudiesStrip from '../components/work/CaseStudiesStrip';
-import CopilotWidget from '../components/copilot/CopilotWidget';
 import CareerCard from '../components/career/CareerCard';
 import LabSection from '../components/lab/LabSection';
 import AboutSection from '../components/about/AboutSection';
@@ -142,9 +142,11 @@ export default function HomePage() {
   }, [canPreviewDraft, isAdmin, authLoading]);
 
   const hasCmsSections = Boolean(sections && sections.length > 0);
+  const homepageSections = canPreviewDraft ? sections : prioritizeHomepageSections(sections);
 
   return (
     <MainLayout>
+      <div className="homepage-redesign">
       <SEO
         title={localizedSeoTitle || t('homeSeoTitle', 'Naïm Bsili — Product Designer & AI Builder')}
         description={localizedSeoDescription || t('homeSeoDescription', 'Portfolio of Naïm Bsili, specializing in UX/UI, digital product design, AI, and automation.')}
@@ -162,26 +164,19 @@ export default function HomePage() {
       {canPreviewDraft && previewError ? (
         <section className="section-pad" role="alert"><div className="container"><h2>Preview unavailable</h2><p>{previewError}</p></div></section>
       ) : hasCmsSections ? (
-        <PageRenderer page={localizedHomePage} sections={sections} loading={loading} />
+        <PageRenderer page={localizedHomePage} sections={homepageSections} loading={loading} />
       ) : canPreviewDraft && isSupabaseConfigured ? (
         <section className="section-pad"><div className="container">Loading saved CMS sections…</div></section>
       ) : (
         <>
-          <HeroSection />
+          <HeroSection homepage />
           <SelectedWorkSection />
           <CaseStudiesStrip />
 
-          {/* COPILOT + CAREER */}
-          <section className="section-pad pt-4" id="copilot">
+          {/* Keep the career CTA while removing the Copilot widget from home. */}
+          <section className="section-pad pt-4" id="career">
             <div className="container">
-              <div className="row g-4 align-items-stretch">
-                <div className="col-lg-7">
-                  <CopilotWidget />
-                </div>
-                <div className="col-lg-5" id="career">
-                  <CareerCard />
-                </div>
-              </div>
+              <CareerCard />
             </div>
           </section>
 
@@ -190,6 +185,7 @@ export default function HomePage() {
           <ContactSection />
         </>
       )}
+      </div>
     </MainLayout>
   );
 }

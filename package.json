@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && node scripts/generate-seo-pages.mjs",
+    "test:homepage-priority": "node scripts/test-homepage-priority.mjs",
     "validate:i18n": "node scripts/validate-locales.mjs",
     "test:case-study-stages": "node scripts/test-case-study-stages.mjs",
     "test:learning-experience": "node scripts/test-learning-experience.mjs",

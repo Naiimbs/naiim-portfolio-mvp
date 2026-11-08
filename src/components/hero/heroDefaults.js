@@ -6,8 +6,8 @@
  *  - the CMS section schema (src/components/cms/sectionSchemas.js) for the
  *    builder's editor defaults.
  *
- * These values mirror the original hardcoded hero exactly, so an un-edited
- * `home_hero` section renders identically to the previous static homepage.
+ * These English fallbacks are shared by the live hero and CMS section schema.
+ * The homepage variant supplies localized, project-first CTA labels at render time.
  */
 export const HERO_DEFAULTS = {
   eyebrow: 'SENIOR UX/UI DESIGNER · AI PRODUCT BUILDER',
@@ -16,8 +16,8 @@ export const HERO_DEFAULTS = {
   emphasizeLastLine: false,
   lead: 'Product design, AI workflows, and digital experiences for ambitious teams and founders.',
   leadStrong: '',
-  primaryCta: { label: 'View selected work', href: '#work' },
-  secondaryCta: { label: "Let’s work together", href: '/about#contact' },
+  primaryCta: { label: 'Explore projects', href: '#work' },
+  secondaryCta: { label: "Let’s talk", href: '/about#contact' },
   availabilityLabel: 'Available for freelance projects',
   showBuilding: false,
   // Right-column visual controls
