@@ -2372,3 +2372,196 @@ html { scroll-padding-top: calc(var(--topbar-h, 0px) + 90px); }
   .homepage-contact-section .contact-box { align-items: flex-start; min-height: 360px; }
   .homepage-contact-section .contact-box .btn { width: 100%; }
 }
+
+
+/* Creative hero + How I Build redesign. */
+.homepage-redesign .hero-creative {
+  isolation: isolate;
+}
+.homepage-redesign .hero-creative .hero-copy {
+  position: relative;
+}
+.homepage-redesign .hero-creative-index {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+  color: var(--muted);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+.homepage-redesign .hero-creative-index::before {
+  content: "";
+  width: 34px;
+  height: 1px;
+  background: var(--green);
+}
+.homepage-redesign .hero-creative .hero-copy h1 {
+  position: relative;
+  z-index: 2;
+  text-wrap: balance;
+}
+.homepage-redesign .hero-creative .hero-lead {
+  max-width: 520px;
+  font-size: clamp(1rem, 1.35vw, 1.2rem);
+}
+.homepage-redesign .editorial-hero-stage {
+  isolation: isolate;
+}
+.homepage-redesign .hero-creative-grid {
+  position: absolute;
+  inset: 7% 8% 8% 8%;
+  z-index: 0;
+  opacity: 0.55;
+  background-image: linear-gradient(rgba(8, 127, 102, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(8, 127, 102, 0.08) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: radial-gradient(ellipse at center, #000 0%, transparent 70%);
+  pointer-events: none;
+}
+.homepage-redesign .hero-creative-label {
+  position: absolute;
+  z-index: 3;
+  color: rgba(8, 127, 102, 0.76);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  writing-mode: vertical-rl;
+}
+.homepage-redesign .hero-creative-label-top {
+  top: 17%;
+  left: 9%;
+}
+.homepage-redesign .hero-creative-label-bottom {
+  right: 8%;
+  bottom: 18%;
+  transform: rotate(180deg);
+}
+.homepage-redesign .hero-creative-cross {
+  position: absolute;
+  z-index: 3;
+  color: var(--green);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1.3rem;
+  font-weight: 300;
+}
+.homepage-redesign .hero-creative-cross-one { top: 14%; right: 21%; }
+.homepage-redesign .hero-creative-cross-two { left: 18%; bottom: 21%; }
+.homepage-redesign .hero-creative .hero-photo {
+  filter: saturate(1.03) contrast(1.04) drop-shadow(0 22px 24px rgba(16, 36, 42, 0.08));
+}
+.homepage-workflow-redesign {
+  position: relative;
+  overflow: hidden;
+  padding-top: clamp(76px, 8vw, 116px) !important;
+  padding-bottom: clamp(76px, 8vw, 116px) !important;
+  background: #f1f7f4;
+}
+.homepage-workflow-redesign::before {
+  content: "";
+  position: absolute;
+  width: 42vw;
+  height: 42vw;
+  right: -20vw;
+  top: -20vw;
+  border: 1px solid rgba(8, 127, 102, 0.13);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.homepage-workflow-redesign .workflow-heading,
+.homepage-workflow-redesign .workflow-steps {
+  position: relative;
+  z-index: 1;
+}
+.homepage-workflow-redesign .workflow-heading {
+  max-width: 720px;
+  margin-bottom: 34px;
+}
+.homepage-workflow-redesign .workflow-heading > .eyebrow {
+  color: var(--green);
+}
+.homepage-workflow-redesign .workflow-heading h2 {
+  max-width: 650px;
+  font-size: clamp(2.35rem, 4.5vw, 4.2rem);
+  line-height: 0.98;
+  letter-spacing: -0.065em;
+}
+.homepage-workflow-redesign .workflow-heading > p {
+  max-width: 520px;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 1rem;
+}
+.homepage-workflow-redesign .workflow-step-col {
+  flex: 1 0 0;
+}
+.homepage-workflow-redesign .workflow-step-card {
+  position: relative;
+  min-height: 205px;
+  padding: 24px;
+  border: 1px solid #d6e6df;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 10px 28px rgba(20, 48, 53, 0.045);
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+.homepage-workflow-redesign .workflow-step-card:hover {
+  transform: translateY(-5px);
+  border-color: #8fc7b6;
+  box-shadow: 0 20px 36px rgba(20, 48, 53, 0.1);
+}
+.homepage-workflow-redesign .workflow-step-number {
+  display: inline-flex;
+  color: var(--green);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+.homepage-workflow-redesign .workflow-step-line {
+  display: block;
+  width: 44px;
+  height: 2px;
+  margin: 22px 0 20px;
+  background: var(--green);
+}
+.homepage-workflow-redesign .workflow-step-card h3 {
+  margin-bottom: 8px;
+  font-size: 1.18rem;
+}
+.homepage-workflow-redesign .workflow-step-card p {
+  max-width: 19rem;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+[dir="rtl"] .homepage-redesign .hero-creative-index::before {
+  order: 2;
+}
+@media (max-width: 767.98px) {
+  .homepage-redesign .hero-creative-index {
+    margin-bottom: 16px;
+    font-size: 0.56rem;
+  }
+  .homepage-redesign .hero-creative-label,
+  .homepage-redesign .hero-creative-cross {
+    display: none;
+  }
+  .homepage-redesign .hero-creative-grid {
+    inset: 5%;
+    background-size: 28px 28px;
+  }
+  .homepage-workflow-redesign .workflow-heading h2 {
+    font-size: clamp(2.2rem, 10vw, 3rem);
+  }
+  .homepage-workflow-redesign .workflow-step-card {
+    min-height: 150px;
+    padding: 20px;
+  }
+  .homepage-workflow-redesign .workflow-step-line {
+    margin: 14px 0 12px;
+  }
+}

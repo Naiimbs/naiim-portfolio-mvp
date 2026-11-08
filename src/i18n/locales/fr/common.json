@@ -437,25 +437,25 @@
     "notFoundBody": "Aucune étude de cas ne correspond à l'URL /work/{{slug}}."
   },
   "caseStrip": {
-    "eyebrow": "ÉTUDES DE CAS",
-    "title": "Comment je résous les problèmes produit",
-    "subtitle": "Chaque récit se concentre sur le problème, mon rôle, les décisions de design et la technologie utilisée pour rendre l’idée utilisable.",
+    "eyebrow": "COMMENT JE CONSTRUIS",
+    "title": "Du signal à quelque chose d’utile.",
+    "subtitle": "Une boucle concrète pour transformer l’ambiguïté en direction produit claire et testée.",
     "steps": [
       {
-        "strong": "Problème",
-        "span": "Qu’est-ce qui devait changer ?"
+        "strong": "Découvrir",
+        "span": "Cadrer le besoin réel et les contraintes."
       },
       {
-        "strong": "Rôle",
-        "span": "Ce dont j’étais responsable."
+        "strong": "Concevoir",
+        "span": "Rendre le parcours visible et utilisable."
       },
       {
-        "strong": "Approche",
-        "span": "Comment j’ai cadré la solution."
+        "strong": "Construire",
+        "span": "Transformer la direction choisie en comportement."
       },
       {
-        "strong": "Build",
-        "span": "Comment le design a rencontré la technologie."
+        "strong": "Apprendre",
+        "span": "Tester, écouter et améliorer la prochaine version."
       }
     ]
   },

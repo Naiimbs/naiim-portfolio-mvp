@@ -466,16 +466,21 @@ function TimelineSection({ config = {} }) {
 function WorkflowSection({ config = {} }) {
   const { title, steps = [] } = config;
   return (
-    <section className="cms-section cms-section-workflow py-5">
+    <section className="cms-section cms-section-workflow homepage-workflow-redesign py-5">
       <div className="container">
-        {title && <h2 className="mb-4 fw-bold">{title}</h2>}
-        <div className="row g-4">
+        <div className="workflow-heading">
+          <span className="eyebrow"><span></span> THE BUILDING LOOP</span>
+          {title && <h2 className="mb-3 fw-bold">{title}</h2>}
+          <p>From an unclear signal to a tested product direction.</p>
+        </div>
+        <div className="row g-3 workflow-steps" role="list">
           {steps.map((step, idx) => (
-            <div key={idx} className="col-12 col-md-4">
-              <div className="p-4 border rounded-4 h-100">
-                <span className="badge bg-secondary mb-3">{String(idx + 1).padStart(2, '0')}</span>
-                <h5 className="fw-bold">{step.title}</h5>
-                <p className="text-muted small mb-0">{step.description}</p>
+            <div key={idx} className="col-12 col-md-6 col-lg workflow-step-col" role="listitem">
+              <div className="workflow-step-card h-100">
+                <span className="workflow-step-number">{String(idx + 1).padStart(2, '0')}</span>
+                <span className="workflow-step-line" aria-hidden="true"></span>
+                <h3 className="fw-bold">{step.title}</h3>
+                <p>{step.description}</p>
               </div>
             </div>
           ))}
