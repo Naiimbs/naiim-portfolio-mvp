@@ -174,7 +174,7 @@ export default function HomePage() {
           <CaseStudiesStrip />
 
           {/* Keep the career CTA while removing the Copilot widget from home. */}
-          <section className="section-pad pt-4" id="career">
+          <section className="section-pad pt-4 homepage-career-section" id="career">
             <div className="container">
               <CareerCard />
             </div>

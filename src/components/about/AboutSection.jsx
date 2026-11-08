@@ -31,7 +31,7 @@ export default function AboutSection({ pageData, variant = 'full' }) {
   };
 
   return (
-    <section className="section-pad pt-2" id="about">
+    <section className="section-pad pt-2 homepage-about-section" id="about">
       <div className="container">
         <div className="row g-5">
           <div className="col-lg-7">

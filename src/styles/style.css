@@ -2205,3 +2205,170 @@ html { scroll-padding-top: calc(var(--topbar-h, 0px) + 90px); }
   }
   .occasion-label { margin-top: 2px; }
 }
+
+/* Homepage section redesign — scoped to preserve all other routes. */
+.homepage-work-section {
+  background: #fff;
+  padding-top: clamp(72px, 8vw, 112px) !important;
+  padding-bottom: clamp(72px, 8vw, 112px) !important;
+}
+.homepage-work-section .section-heading { margin-bottom: 34px !important; }
+.homepage-work-section .section-heading h2,
+.homepage-process-section .section-heading h2,
+.homepage-about-section h2,
+.homepage-lab-section .section-heading h2 {
+  max-width: 700px;
+  font-size: clamp(2.2rem, 4.2vw, 4rem);
+  line-height: 1;
+  letter-spacing: -0.065em;
+}
+.homepage-work-section .section-heading p,
+.homepage-process-section .section-heading p,
+.homepage-lab-section .section-heading p { max-width: 520px; font-size: 0.98rem; }
+.homepage-featured-projects > div { display: flex; }
+.homepage-featured-projects .project-card {
+  width: 100%; border-radius: 26px; border-color: #dbe7e2;
+  box-shadow: 0 14px 40px rgba(20, 48, 53, 0.055);
+}
+.homepage-featured-projects .project-image { height: clamp(230px, 21vw, 330px); background: #edf4f1; }
+.homepage-featured-projects .project-body {
+  display: flex; flex: 1; flex-direction: column; padding: clamp(22px, 2.2vw, 32px);
+}
+.homepage-featured-projects .project-body p { max-width: 34rem; min-height: 0; margin-bottom: 14px; }
+.homepage-featured-projects .project-body .tag-row { margin-top: auto; }
+.homepage-featured-projects .card-link { width: fit-content; min-height: 44px; align-items: center; }
+.homepage-mini-projects { margin-top: 18px !important; }
+.homepage-mini-projects .mini-project-card {
+  min-height: 146px; border-radius: 20px; padding: 22px;
+  background: #f7faf8; border-color: #dce9e4;
+}
+.homepage-mini-projects .mini-project-card:hover,
+.homepage-featured-projects .project-card:hover {
+  transform: translateY(-6px); border-color: #9bcdbd;
+  box-shadow: 0 22px 48px rgba(20, 48, 53, 0.11);
+}
+.homepage-process-section {
+  background: #f1f7f4;
+  padding-top: clamp(70px, 8vw, 108px) !important;
+  padding-bottom: clamp(70px, 8vw, 108px) !important;
+}
+.homepage-process-section .section-heading { max-width: 760px; }
+.homepage-process-section .case-strip {
+  grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px;
+  border: 0; background: transparent; overflow: visible;
+}
+.homepage-process-section .case-strip > div {
+  position: relative; min-height: 164px; padding: 24px 22px;
+  border: 1px solid #d6e6df; border-radius: 20px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 8px 22px rgba(20, 48, 53, 0.035);
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+.homepage-process-section .case-strip > div:hover {
+  transform: translateY(-4px); border-color: #9bcdbd;
+  box-shadow: 0 18px 32px rgba(20, 48, 53, 0.08);
+}
+.homepage-process-section .case-strip > div:last-child { border-right: 1px solid #d6e6df; }
+.homepage-process-section .case-strip-index {
+  display: block; margin: 0 0 24px; color: var(--green);
+  font-family: "Space Grotesk", sans-serif; font-size: 0.72rem;
+  font-weight: 700; letter-spacing: 0.12em;
+}
+.homepage-process-section .case-strip strong { font-size: 1rem; line-height: 1.2; }
+.homepage-process-section .case-strip > div > span:last-child { max-width: 18rem; margin-top: 8px; line-height: 1.45; }
+.homepage-career-section {
+  background: #fff;
+  padding-top: clamp(70px, 8vw, 112px) !important;
+  padding-bottom: clamp(70px, 8vw, 112px) !important;
+}
+.homepage-career-section .career-card {
+  position: relative; overflow: hidden; border-radius: 28px; border-color: #d4e4de;
+  background: linear-gradient(135deg, #f3faf7 0%, #ffffff 56%, #edf6f2 100%);
+  box-shadow: 0 18px 50px rgba(20, 48, 53, 0.07);
+  display: grid;
+  grid-template-columns: minmax(240px, 0.8fr) minmax(0, 1.2fr);
+  column-gap: clamp(28px, 5vw, 72px);
+}
+.homepage-career-section .career-card::after {
+  content: ""; position: absolute; width: 260px; height: 260px; right: -100px; top: -120px;
+  border: 1px solid rgba(8, 127, 102, 0.16); border-radius: 50%; pointer-events: none;
+}
+.homepage-career-section .career-card > * { position: relative; z-index: 1; }
+.homepage-career-section .feature-head { grid-column: 1; }
+.homepage-career-section .career-profile { grid-column: 1; }
+.homepage-career-section .career-list { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
+.homepage-career-section .career-card > .btn { grid-column: 2; grid-row: 3; }
+.homepage-career-section .looking-for { grid-column: 2; grid-row: 4; }
+.homepage-career-section .download-cv { grid-column: 1; grid-row: 3; align-self: center; }
+.homepage-career-section .feature-head h2 { font-size: clamp(2rem, 4vw, 3.2rem); letter-spacing: -0.06em; }
+.homepage-career-section .career-profile { max-width: 420px; padding: 24px 0; }
+.homepage-career-section .career-profile img { width: 68px; height: 68px; border-radius: 18px; }
+.homepage-career-section .career-list { max-width: 760px; }
+.homepage-career-section .career-list div { grid-template-columns: 30px minmax(82px, 120px) 1fr; min-height: 52px; font-size: 0.76rem; }
+.homepage-career-section .career-list strong { font-size: 0.8rem; }
+.homepage-career-section .career-card > .btn { max-width: 280px; min-height: 48px; }
+.homepage-lab-section {
+  background: var(--navy); color: #fff;
+  padding-top: clamp(76px, 8vw, 116px) !important;
+  padding-bottom: clamp(76px, 8vw, 116px) !important;
+}
+.homepage-lab-section .eyebrow { color: #91d4bd; }
+.homepage-lab-section .eyebrow span { background: #35b990; }
+.homepage-lab-section h2,
+.homepage-lab-section h3,
+.homepage-lab-section h4 { color: #fff; }
+.homepage-lab-section .section-heading p { color: #b7cbc5; }
+.homepage-lab-section .text-link { color: #91d4bd; }
+.homepage-lab-section .lab-card,
+.homepage-lab-section .plugin-card { border-color: rgba(210, 235, 226, 0.16); background: rgba(255, 255, 255, 0.07); color: #fff; }
+.homepage-lab-section .lab-card:hover,
+.homepage-lab-section .plugin-card:hover { border-color: rgba(145, 212, 189, 0.72); background: rgba(255, 255, 255, 0.12); box-shadow: none; }
+.homepage-lab-section .lab-card i,
+.homepage-lab-section .plugin-icon { background: rgba(91, 205, 169, 0.16); color: #91d4bd; }
+.homepage-lab-section .lab-card p,
+.homepage-lab-section .plugin-card p { color: #b7cbc5; }
+.homepage-lab-section .plugin-showcase { border-top-color: rgba(210, 235, 226, 0.18); }
+.homepage-lab-section .plugin-card span { color: #91d4bd; }
+.homepage-about-section {
+  background: #fff;
+  padding-top: clamp(76px, 8vw, 116px) !important;
+  padding-bottom: clamp(76px, 8vw, 116px) !important;
+}
+.homepage-about-section > .container > .row { align-items: center; }
+.homepage-about-section .timeline { margin-top: 42px; }
+.homepage-about-section .about-card { padding: 30px 0 30px 42px; border-inline-start: 1px solid #d7e5df; }
+.homepage-about-section .about-card h3 { font-size: clamp(2rem, 3.6vw, 3rem); line-height: 1.02; }
+.homepage-contact-section { padding: clamp(28px, 4vw, 54px) 0; background: #f1f6f3; }
+.homepage-contact-section .contact-box {
+  min-height: 300px; padding: clamp(34px, 5vw, 64px); border-radius: 30px;
+  background: linear-gradient(120deg, #09252d 0%, #0b554b 100%);
+  box-shadow: 0 24px 60px rgba(10, 48, 49, 0.18);
+}
+.homepage-contact-section .contact-box h2 { max-width: 720px; font-size: clamp(2.35rem, 5vw, 4.6rem); line-height: 0.98; }
+.homepage-contact-section .contact-box h2 { color: #fff; }
+.homepage-contact-section .contact-box .btn { min-height: 50px; }
+@media (max-width: 991.98px) {
+  .homepage-process-section .case-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .homepage-process-section .case-strip > div:nth-child(2) { border-right: 1px solid #d6e6df; }
+  .homepage-about-section .about-card { padding-inline-start: 0; padding-top: 12px; border-inline-start: 0; border-top: 1px solid #d7e5df; }
+}
+@media (max-width: 767.98px) {
+  .homepage-work-section .section-heading--split,
+  .homepage-process-section .section-heading,
+  .homepage-lab-section .section-heading { align-items: flex-start !important; }
+  .homepage-work-section .section-heading h2,
+  .homepage-process-section .section-heading h2,
+  .homepage-about-section h2,
+  .homepage-lab-section .section-heading h2 { font-size: clamp(2rem, 10vw, 2.8rem); }
+  .homepage-process-section .case-strip { grid-template-columns: 1fr; gap: 10px; }
+  .homepage-process-section .case-strip > div,
+  .homepage-process-section .case-strip > div:nth-child(2) { min-height: 132px; border-right: 1px solid #d6e6df; }
+  .homepage-process-section .case-strip-index { margin-bottom: 17px; }
+  .homepage-career-section .career-card { padding: 22px; }
+  .homepage-career-section .career-card { display: block; }
+  .homepage-career-section .career-list div { grid-template-columns: 26px 76px 1fr; gap: 6px; }
+  .homepage-lab-section .row.g-3 > [class*="col-6"] { width: 50%; }
+  .homepage-about-section .timeline { margin-top: 30px; }
+  .homepage-contact-section .contact-box { align-items: flex-start; min-height: 360px; }
+  .homepage-contact-section .contact-box .btn { width: 100%; }
+}

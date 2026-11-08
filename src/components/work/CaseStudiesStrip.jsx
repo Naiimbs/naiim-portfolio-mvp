@@ -6,7 +6,7 @@ export default function CaseStudiesStrip() {
   const steps = t('caseStrip.steps', { returnObjects: true }) || [];
 
   return (
-    <section className="section-pad pt-5 pb-4" id="case-studies">
+    <section className="section-pad pt-5 pb-4 homepage-process-section" id="case-studies">
       <div className="container">
         <div className="section-heading mb-4">
           <div className="eyebrow">
@@ -15,9 +15,10 @@ export default function CaseStudiesStrip() {
           <h2>{t('caseStrip.title')}</h2>
           <p>{t('caseStrip.subtitle')}</p>
         </div>
-        <div className="case-strip">
+        <div className="case-strip" role="list">
           {steps.map((step, index) => (
-            <div key={index}>
+            <div key={index} role="listitem">
+              <span className="case-strip-index">0{index + 1}</span>
               <strong>{step.strong}</strong>
               <span>{step.span}</span>
             </div>
