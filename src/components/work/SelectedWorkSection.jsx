@@ -152,8 +152,8 @@ function SectionHeading() {
         <div className="eyebrow">
           <span></span> {t('work.eyebrow')}
         </div>
-        <h2>{t('work.title')}</h2>
-        <p>{t('work.subtitle')}</p>
+        <h2>{t('work.homeTitle', 'Projects, brought to life.')}</h2>
+        <p>{t('work.homeSubtitle', 'Selected products and digital experiences.')}</p>
       </div>
       <a href="#contact" className="text-link d-none d-md-inline">
         {t('work.talk')} <i className="bi bi-arrow-up-right"></i>
