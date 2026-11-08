@@ -5,21 +5,17 @@ import heroCutout from '../../assets/images/naim-hero-img1371.png';
 import { HERO_DEFAULTS } from './heroDefaults';
 
 /**
- * Homepage Hero.
+ * Homepage hero.
  *
- * Content (left column: eyebrow, title, lead, CTAs, "currently building")
- * is driven by `config` when rendered as the `home_hero` CMS section, and
- * falls back to i18n translations (and then HERO_DEFAULTS) so an empty or
- * default config renders localized content in EN, FR, and AR. The right
- * column (Motion / Portrait + audio) is presentation and stays as-is.
+ * The content remains CMS/i18n-driven while the presentation is scoped to this
+ * component. The portrait and motion modes are preserved for existing CMS
+ * configurations; the default homepage presentation uses the redesigned hero.
  */
 export default function HeroSection({ config = {}, homepage = false }) {
   const { t } = useTranslation();
-  const [heroMode, setHeroMode] = useState('portrait'); // 'motion' | 'portrait'
+  const [heroMode, setHeroMode] = useState('portrait');
 
   const cfg = { ...HERO_DEFAULTS, ...(config || {}) };
-
-  // Localized fallbacks
   const eyebrow = config?.eyebrow || HERO_DEFAULTS.eyebrow || t('hero.eyebrow');
   const titleLines = Array.isArray(config?.titleLines) && config.titleLines.length
     ? config.titleLines
@@ -32,7 +28,6 @@ export default function HeroSection({ config = {}, homepage = false }) {
   const lead = legacyLead
     ? (config?.leadStrong || HERO_DEFAULTS.lead || t('hero.lead'))
     : (hasConfiguredLead ? config.lead : (config?.leadStrong || HERO_DEFAULTS.lead || t('hero.lead')));
-  const leadStrong = '';
 
   const primaryCta = {
     ...HERO_DEFAULTS.primaryCta,
@@ -41,7 +36,6 @@ export default function HeroSection({ config = {}, homepage = false }) {
       ? t('hero.exploreWork', 'Explore projects')
       : (config?.primaryCta?.label || HERO_DEFAULTS.primaryCta.label || t('hero.exploreWork')),
   };
-
   const secondaryCta = {
     ...HERO_DEFAULTS.secondaryCta,
     ...(cfg.secondaryCta || {}),
@@ -50,146 +44,149 @@ export default function HeroSection({ config = {}, homepage = false }) {
       : (config?.secondaryCta?.label || HERO_DEFAULTS.secondaryCta.label || t('hero.talkCopilot')),
   };
 
-  const buildingLabel = config?.buildingLabel || t('hero.currentlyBuilding');
   const availabilityLabel = config?.availabilityLabel || t('hero.availability');
   const accentFromLine = Number.isInteger(cfg.accentFromLine)
     ? cfg.accentFromLine
     : (cfg.emphasizeLastLine ? titleLines.length - 1 : -1);
+  const buildingLabel = config?.buildingLabel || t('hero.currentlyBuilding');
+  const buildingItems = Array.isArray(cfg.buildingItems) && cfg.buildingItems.length
+    ? cfg.buildingItems
+    : HERO_DEFAULTS.buildingItems;
 
-  const buildingItems = Array.isArray(cfg.buildingItems) && cfg.buildingItems.length ? cfg.buildingItems : HERO_DEFAULTS.buildingItems;
-
-  // Right-column visual controls
   const showVisual = cfg.showVisual !== false;
   const showMotion = cfg.showMotion !== false;
   const showPortrait = cfg.showPortrait !== false;
   const modes = [showMotion ? 'motion' : null, showPortrait ? 'portrait' : null].filter(Boolean);
-  const activeMode = modes.includes(heroMode) ? heroMode : modes[0] || 'motion';
+  const activeMode = modes.includes(heroMode) ? heroMode : modes[0] || 'portrait';
   const showToggle = modes.length > 1 && cfg.showModeToggle === true;
 
   return (
-    <section className="hero editorial-hero hero-creative section-pad">
-      <div className="container">
-        <div className="row align-items-center g-5">
-          <div className="col-lg-6 hero-copy">
-            <div className="hero-creative-index" aria-hidden="true">01 — PRODUCT / AI / SYSTEMS</div>
-            {eyebrow && (
-              <div className="eyebrow">
-                <span></span> {eyebrow}
-              </div>
-            )}
-
-            <h1>
-              {titleLines.map((line, i) => {
-                return (
-                  <React.Fragment key={i}>
-                    {i >= accentFromLine ? <em>{line}</em> : line}
-                    {i < titleLines.length - 1 && <br />}
-                  </React.Fragment>
-                );
-              })}
-            </h1>
-
-            {(lead || leadStrong) && (
-              <p className="hero-lead">
-                {lead}
-                {leadStrong && <span>{leadStrong}</span>}
-              </p>
-            )}
-
-            <div className="d-flex flex-wrap gap-3 mb-4">
-              {primaryCta.label && (
-                <a className="btn btn-primary-custom btn-lg rounded-pill px-4" href={homepage ? '#work' : (primaryCta.href || '#work')}>
-                  {primaryCta.label} <i className={`bi ${homepage ? 'bi-arrow-down' : 'bi-arrow-right'}`}></i>
-                </a>
-              )}
-              {secondaryCta.label && (
-                <a className="btn btn-outline-custom btn-lg rounded-pill px-4" href={homepage ? '/about#contact' : (secondaryCta.href || '#copilot')}>
-                  {homepage ? <i className="bi bi-arrow-up-right"></i> : <i className="bi bi-stars"></i>} {secondaryCta.label}
-                </a>
-              )}
+    <section className={`hero hero-redesign ${homepage ? 'hero-redesign--home' : ''}`} aria-labelledby="hero-title">
+      <div className="hero-redesign__grid" aria-hidden="true" />
+      <div className="hero-redesign__wrap">
+        <div className="hero-redesign__copy">
+          {homepage && availabilityLabel && (
+            <div className="hero-redesign__status">
+              <span aria-hidden="true" />
+              {availabilityLabel}
             </div>
+          )}
 
-            {homepage && availabilityLabel && (
-              <div className="homepage-availability">
-                <span aria-hidden="true"></span>{availabilityLabel}
-              </div>
+          {eyebrow && <p className="hero-redesign__eyebrow">{eyebrow}</p>}
+
+          <h1 id="hero-title" className="hero-redesign__title">
+            {titleLines.map((line, i) => (
+              <span key={i} className={i >= accentFromLine ? 'is-accent' : ''}>
+                {line}
+              </span>
+            ))}
+          </h1>
+
+          {lead && <p className="hero-redesign__lead">{lead}</p>}
+
+          <div className="hero-redesign__actions">
+            {primaryCta.label && (
+              <a
+                className="hero-redesign__primary"
+                href={homepage ? '#work' : (primaryCta.href || '#work')}
+              >
+                {primaryCta.label}
+                <span aria-hidden="true">{homepage ? '↓' : '→'}</span>
+              </a>
             )}
-
-            {cfg.showBuilding && buildingLabel && <div className="building-label">{buildingLabel}</div>}
-            {cfg.showBuilding && buildingItems.length > 0 && (
-              <div className="building-list">
-                {buildingItems.map((item, i) => (
-                  <a key={i} href={item.href || '#'}>
-                    {item.iconText && (
-                      <span className={`mini-icon ${item.iconClass || ''}`.trim()}>{item.iconText}</span>
-                    )}{' '}
-                    {item.label} {item.note && <small>{item.note}</small>}
-                  </a>
-                ))}
-              </div>
+            {secondaryCta.label && (
+              <a
+                className="hero-redesign__secondary"
+                href={homepage ? '/about#contact' : (secondaryCta.href || '#copilot')}
+              >
+                {secondaryCta.label}
+                <span aria-hidden="true">↗</span>
+              </a>
             )}
           </div>
 
-          {showVisual && modes.length > 0 && (
-          <div className="col-lg-6 editorial-hero-media">
-            {showToggle && (
-            <div className="d-flex justify-content-end mb-3 gap-2 editorial-hero-mode-toggle">
-              {showMotion && (
-              <button
-                type="button"
-                className={`btn btn-sm rounded-pill px-3 ${
-                  activeMode === 'motion'
-                    ? 'btn-primary-custom'
-                    : 'btn-outline-secondary text-dark'
-                }`}
-                style={{ fontSize: '0.75rem', fontWeight: 600 }}
-                onClick={() => setHeroMode('motion')}
-              >
-                <i className="bi bi-play-circle-fill me-1"></i> {t('hero.motionSequence', 'Motion Sequence (24s)')}
-              </button>
-              )}
-              {showPortrait && (
-              <button
-                type="button"
-                className={`btn btn-sm rounded-pill px-3 ${
-                  activeMode === 'portrait'
-                    ? 'btn-primary-custom'
-                    : 'btn-outline-secondary text-dark'
-                }`}
-                style={{ fontSize: '0.75rem', fontWeight: 600 }}
-                onClick={() => setHeroMode('portrait')}
-              >
-                <i className="bi bi-person-fill me-1"></i> {t('hero.portraitAudio', 'Portrait & Audio')}
-              </button>
-              )}
+          {homepage && (
+            <ul className="hero-redesign__proof" aria-label="Experience highlights">
+              <li>
+                <strong>KSA enterprise &amp; government</strong>
+                <span>Delivered on-site and remotely</span>
+              </li>
+              <li>
+                <strong>UX/UI + low-code</strong>
+                <span>OutSystems · Mendix · UnifyApps</span>
+              </li>
+              <li>
+                <strong>AI-native workflows</strong>
+                <span>From idea to shipped product</span>
+              </li>
+            </ul>
+          )}
+
+          {cfg.showBuilding && buildingLabel && (
+            <div className="building-label">{buildingLabel}</div>
+          )}
+          {cfg.showBuilding && buildingItems.length > 0 && (
+            <div className="building-list">
+              {buildingItems.map((item, i) => (
+                <a key={i} href={item.href || '#'}>
+                  {item.iconText && (
+                    <span className={`mini-icon ${item.iconClass || ''}`.trim()}>{item.iconText}</span>
+                  )}{' '}
+                  {item.label} {item.note && <small>{item.note}</small>}
+                </a>
+              ))}
             </div>
-            )}
+          )}
+        </div>
 
-            {activeMode === 'motion' ? (
-              <MotionHero />
-            ) : (
-              <div className="hero-visual editorial-hero-stage">
-                <div className="hero-creative-grid" aria-hidden="true"></div>
-                <div className="editorial-hero-arc editorial-hero-arc-one" aria-hidden="true"></div>
-                <div className="editorial-hero-arc editorial-hero-arc-two" aria-hidden="true"></div>
-                <div className="hero-creative-label hero-creative-label-top" aria-hidden="true">THINK / 01</div>
-                <div className="hero-creative-label hero-creative-label-bottom" aria-hidden="true">SHIP / 02</div>
-                <div className="hero-creative-cross hero-creative-cross-one" aria-hidden="true">+</div>
-                <div className="hero-creative-cross hero-creative-cross-two" aria-hidden="true">+</div>
-                <div className="hero-photo-wrap">
-                  <img src={heroCutout} alt="Naïm Bsili" className="hero-photo" />
-                </div>
-
-                {!homepage && availabilityLabel && (
-                  <div className="editorial-hero-availability">
-                    <span aria-hidden="true"></span>{availabilityLabel}
-                  </div>
+        {showVisual && modes.length > 0 && (
+          <div className="hero-redesign__visual-column">
+            {showToggle && (
+              <div className="hero-redesign__mode-toggle" role="group" aria-label="Hero visual mode">
+                {showMotion && (
+                  <button
+                    type="button"
+                    className={activeMode === 'motion' ? 'is-active' : ''}
+                    onClick={() => setHeroMode('motion')}
+                  >
+                    {t('hero.motionSequence', 'Motion Sequence (24s)')}
+                  </button>
+                )}
+                {showPortrait && (
+                  <button
+                    type="button"
+                    className={activeMode === 'portrait' ? 'is-active' : ''}
+                    onClick={() => setHeroMode('portrait')}
+                  >
+                    {t('hero.portraitAudio', 'Portrait & Audio')}
+                  </button>
                 )}
               </div>
             )}
+
+            {activeMode === 'motion' ? (
+              <div className="hero-redesign__motion"><MotionHero /></div>
+            ) : (
+              <div className="hero-redesign__visual" aria-label="Portrait of Naïm Bsili">
+                <div className="hero-redesign__orbit hero-redesign__orbit--outer" aria-hidden="true" />
+                <div className="hero-redesign__orbit hero-redesign__orbit--inner" aria-hidden="true" />
+                <div className="hero-redesign__portrait-frame">
+                  <img src={heroCutout} alt="Naïm Bsili" className="hero-redesign__portrait" />
+                  <span className="hero-redesign__visual-label">PRODUCT DESIGN<br />AI · SYSTEMS · IMPACT</span>
+                </div>
+                <div className="hero-redesign__chip hero-redesign__chip--one">
+                  <span aria-hidden="true" /> Design systems
+                </div>
+                <div className="hero-redesign__chip hero-redesign__chip--two">
+                  <span aria-hidden="true" /> AI workflows
+                </div>
+                <div className="hero-redesign__chip hero-redesign__chip--three">
+                  <span aria-hidden="true" /> Design → Build
+                </div>
+              </div>
+            )}
           </div>
-          )}
-        </div>
+        )}
       </div>
     </section>
   );
