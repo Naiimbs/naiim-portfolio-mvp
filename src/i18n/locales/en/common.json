@@ -151,9 +151,9 @@
     ]
   },
   "career": {
-    "kicker": "CAREER SEARCH",
-    "title": "What's next?",
-    "subtitle": "Explore the kind of opportunities I'm targeting.",
+    "kicker": "OPEN TO THE RIGHT PROBLEM",
+    "title": "What could we build next?",
+    "subtitle": "I'm interested in ambitious products where design, technology and AI need to work together.",
     "role": "Product Designer & AI Builder",
     "openTo": "Open to KSA · UAE · Europe · Remote",
     "targetLabel": "Target",
@@ -162,19 +162,12 @@
     "marketsValue": "KSA · UAE · Europe · Remote",
     "focusLabel": "Focus",
     "focusValue": "Product · UX/UI · AI · Digital Products",
-    "exploreBtn": "Explore opportunities",
-    "lookingFor": "WHAT I'M LOOKING FOR",
-    "downloadCv": "Download CV",
-    "toastTitle": "Career Search",
-    "toastBody": "This is the MVP UI. The real n8n job-search workflow can be connected here later.",
-    "tags": [
-      "Senior Product Designer",
-      "Lead Product Designer",
-      "AI Product Designer",
-      "Design Systems",
-      "Remote"
+    "opportunities": [
+      { "title": "Design leadership", "description": "Shape product direction from strategy to shipped experience.", "icon": "bi-compass" },
+      { "title": "AI-native products", "description": "Turn intelligent capabilities into clear, useful interactions.", "icon": "bi-stars" },
+      { "title": "Complex digital systems", "description": "Make ambitious workflows understandable and usable.", "icon": "bi-diagram-3" }
     ],
-    "contactCta": "Let’s discuss a project"
+    "contactCta": "Start a conversation"
   },
   "about": {
     "eyebrow": "THE JOURNEY",

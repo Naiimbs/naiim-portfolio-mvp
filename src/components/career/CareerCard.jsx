@@ -1,23 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import portraitPhoto from '../../assets/images/naim-portrait.webp';
 
 export default function CareerCard() {
   const { t } = useTranslation();
-  const targetTags = t('career.tags', { returnObjects: true }) || [];
-  const [showToast, setShowToast] = useState(false);
-
-  useEffect(() => {
-    if (!showToast) return;
-    const timer = setTimeout(() => {
-      setShowToast(false);
-    }, 4500);
-    return () => clearTimeout(timer);
-  }, [showToast]);
+  const opportunities = t('career.opportunities', { returnObjects: true }) || [];
 
   return (
     <>
-      <div className="feature-card career-card h-100">
+      <div className="feature-card career-card career-opportunity-card h-100">
         <div className="feature-head">
           <div className="feature-icon dark">
             <i className="bi bi-briefcase"></i>
@@ -38,66 +29,22 @@ export default function CareerCard() {
           </div>
         </div>
 
-        <div className="career-list">
-          <div>
-            <i className="bi bi-bullseye"></i>
-            <span>{t('career.targetLabel')}</span>
-            <strong>{t('career.targetValue')}</strong>
-          </div>
-          <div>
-            <i className="bi bi-geo-alt"></i>
-            <span>{t('career.marketsLabel')}</span>
-            <strong>{t('career.marketsValue')}</strong>
-          </div>
-          <div>
-            <i className="bi bi-layers"></i>
-            <span>{t('career.focusLabel')}</span>
-            <strong>{t('career.focusValue')}</strong>
-          </div>
+        <div className="career-opportunities" role="list">
+          {opportunities.map((opportunity, idx) => (
+            <div className="career-opportunity" key={opportunity.title || idx} role="listitem">
+              <span className="career-opportunity-icon"><i className={`bi ${opportunity.icon || 'bi-arrow-up-right'}`}></i></span>
+              <div>
+                <strong>{opportunity.title}</strong>
+                <span>{opportunity.description}</span>
+              </div>
+            </div>
+          ))}
         </div>
 
-        <button
-          className="btn btn-primary-custom rounded-pill w-100"
-          id="careerButton"
-          type="button"
-          onClick={() => setShowToast(true)}
-        >
-          {t('career.exploreBtn')} <i className="bi bi-arrow-right"></i>
-        </button>
-
-        <div className="looking-for">
-          <small>{t('career.lookingFor')}</small>
-          <div className="tag-row">
-            {targetTags.map((tag, idx) => (
-              <span key={idx}>{tag}</span>
-            ))}
-          </div>
-        </div>
-
-        <a href="#contact" className="download-cv">
-          <i className="bi bi-chat-dots"></i> {t('career.contactCta')}
+        <a href="#contact" className="btn btn-primary-custom rounded-pill career-contact-button">
+          {t('career.contactCta')} <i className="bi bi-arrow-up-right"></i>
         </a>
       </div>
-
-      {showToast && (
-        <div className="toast-container position-fixed bottom-0 end-0 p-3" style={{ zIndex: 1080 }}>
-          <div id="careerToast" className="toast show border-0 shadow" role="alert">
-            <div className="toast-header">
-              <i className="bi bi-stars me-2"></i>
-              <strong className="me-auto">{t('career.toastTitle')}</strong>
-              <button
-                type="button"
-                className="btn-close"
-                onClick={() => setShowToast(false)}
-                aria-label="Close"
-              ></button>
-            </div>
-            <div className="toast-body">
-              {t('career.toastBody')}
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }
