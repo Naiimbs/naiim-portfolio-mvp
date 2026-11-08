@@ -67,10 +67,11 @@ export default function HeroSection({ config = {}, homepage = false }) {
   const showToggle = modes.length > 1 && cfg.showModeToggle === true;
 
   return (
-    <section className="hero editorial-hero section-pad">
+    <section className="hero editorial-hero hero-creative section-pad">
       <div className="container">
         <div className="row align-items-center g-5">
           <div className="col-lg-6 hero-copy">
+            <div className="hero-creative-index" aria-hidden="true">01 — PRODUCT / AI / SYSTEMS</div>
             {eyebrow && (
               <div className="eyebrow">
                 <span></span> {eyebrow}
@@ -168,8 +169,13 @@ export default function HeroSection({ config = {}, homepage = false }) {
               <MotionHero />
             ) : (
               <div className="hero-visual editorial-hero-stage">
+                <div className="hero-creative-grid" aria-hidden="true"></div>
                 <div className="editorial-hero-arc editorial-hero-arc-one" aria-hidden="true"></div>
                 <div className="editorial-hero-arc editorial-hero-arc-two" aria-hidden="true"></div>
+                <div className="hero-creative-label hero-creative-label-top" aria-hidden="true">THINK / 01</div>
+                <div className="hero-creative-label hero-creative-label-bottom" aria-hidden="true">SHIP / 02</div>
+                <div className="hero-creative-cross hero-creative-cross-one" aria-hidden="true">+</div>
+                <div className="hero-creative-cross hero-creative-cross-two" aria-hidden="true">+</div>
                 <div className="hero-photo-wrap">
                   <img src={heroCutout} alt="Naïm Bsili" className="hero-photo" />
                 </div>

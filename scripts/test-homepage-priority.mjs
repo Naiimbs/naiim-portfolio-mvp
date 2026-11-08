@@ -29,4 +29,13 @@ const noHero = prioritizeHomepageSections([
 ]);
 assert.equal(noHero[0].section_type, 'selected_work', 'Selected Work should lead when no hero exists');
 
+const removedSections = prioritizeHomepageSections([
+  { id: 'hero', section_type: 'home_hero', sort_order: 0 },
+  { id: 'mhaf-use-case', section_type: 'text', label: 'Use Case · MHAF Accessibility', sort_order: 1 },
+  { id: 'independent-builds', section_type: 'workflow', label: 'Independent Builds & Prototypes', sort_order: 2 },
+  { id: 'contact', section_type: 'home_contact', sort_order: 3 },
+]);
+assert.equal(removedSections.some((section) => section.id === 'mhaf-use-case'), false, 'MHAF use case must be removed from the public homepage');
+assert.equal(removedSections.some((section) => section.id === 'independent-builds'), false, 'Independent builds must be removed from the public homepage');
+
 console.log('Homepage priority checks passed.');

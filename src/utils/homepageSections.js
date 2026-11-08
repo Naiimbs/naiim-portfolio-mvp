@@ -1,6 +1,21 @@
 const HOME_HERO_TYPE = 'home_hero';
 const SELECTED_WORK_TYPE = 'selected_work';
 
+function isRemovedHomepageSection(section) {
+  const searchable = [
+    section?.label,
+    section?.title,
+    section?.config?.title,
+    section?.config?.eyebrow,
+    section?.config?.description,
+  ].filter(Boolean).join(' ').toLowerCase();
+
+  return (
+    (searchable.includes('use case') && searchable.includes('mhaf'))
+    || (searchable.includes('independent builds') && searchable.includes('prototype'))
+  );
+}
+
 /**
  * The public homepage always puts Selected Work directly after its hero.
  * Preserve the CMS order for all other blocks, but make the requested portfolio
@@ -10,6 +25,7 @@ const SELECTED_WORK_TYPE = 'selected_work';
 export function prioritizeHomepageSections(sections) {
   const sorted = (Array.isArray(sections) ? sections : [])
     .filter(Boolean)
+    .filter((section) => !isRemovedHomepageSection(section))
     .slice()
     .sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0));
 

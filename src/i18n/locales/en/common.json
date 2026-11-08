@@ -437,25 +437,25 @@
     "notFoundBody": "No project case study matches the URL /work/{{slug}}."
   },
   "caseStrip": {
-    "eyebrow": "CASE STUDIES",
-    "title": "How I solve product problems",
-    "subtitle": "Each story focuses on the problem, my role, the design decisions and the technology used to turn the idea into something usable.",
+    "eyebrow": "HOW I BUILD",
+    "title": "From signal to something useful.",
+    "subtitle": "A practical loop for turning ambiguity into a clear, tested product direction.",
     "steps": [
       {
-        "strong": "Problem",
-        "span": "What needed to change?"
+        "strong": "Discover",
+        "span": "Frame the real need and constraints."
       },
       {
-        "strong": "Role",
-        "span": "What I owned."
-      },
-      {
-        "strong": "Approach",
-        "span": "How I framed the solution."
+        "strong": "Design",
+        "span": "Make the journey visible and usable."
       },
       {
         "strong": "Build",
-        "span": "How design met technology."
+        "span": "Turn the chosen direction into behavior."
+      },
+      {
+        "strong": "Learn",
+        "span": "Test, listen, and improve the next version."
       }
     ]
   },
