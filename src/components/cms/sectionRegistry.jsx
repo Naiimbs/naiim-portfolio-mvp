@@ -783,7 +783,7 @@ function CaseStudiesStripBlock() {
 function CopilotCareerBlock({ config = {} }) {
   const showCopilot = config.showCopilot === true;
   return (
-    <section className="section-pad pt-4" id={showCopilot ? 'copilot' : 'career'}>
+    <section className={`section-pad pt-4${showCopilot ? '' : ' homepage-career-section'}`} id={showCopilot ? 'copilot' : 'career'}>
       <div className="container">
         <div className="row g-4 align-items-stretch">
           {showCopilot && (
