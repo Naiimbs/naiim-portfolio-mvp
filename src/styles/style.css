@@ -2565,3 +2565,63 @@ html { scroll-padding-top: calc(var(--topbar-h, 0px) + 90px); }
     margin: 14px 0 12px;
   }
 }
+
+/* Career positioning: Open to the Right Problem. */
+.homepage-career-section .career-opportunity-card {
+  grid-template-columns: minmax(250px, 0.8fr) minmax(0, 1.2fr);
+  column-gap: clamp(28px, 5vw, 76px);
+  background: linear-gradient(135deg, #f4faf7 0%, #ffffff 52%, #e9f5f0 100%);
+}
+.homepage-career-section .career-opportunity-card .feature-head { grid-column: 1; }
+.homepage-career-section .career-opportunity-card .career-profile { grid-column: 1; }
+.homepage-career-section .career-opportunities {
+  display: grid;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  gap: 10px;
+}
+.homepage-career-section .career-opportunity {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 14px;
+  align-items: start;
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(123, 173, 158, 0.28);
+}
+.homepage-career-section .career-opportunity:first-child { padding-top: 0; }
+.homepage-career-section .career-opportunity:last-child { border-bottom: 0; }
+.homepage-career-section .career-opportunity-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid rgba(8, 127, 102, 0.2);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.75);
+  color: var(--green);
+  font-size: 1.05rem;
+}
+.homepage-career-section .career-opportunity strong,
+.homepage-career-section .career-opportunity div span { display: block; }
+.homepage-career-section .career-opportunity strong { margin-bottom: 4px; font-size: 0.9rem; }
+.homepage-career-section .career-opportunity div span { color: var(--ink-soft); font-size: 0.76rem; line-height: 1.45; }
+.homepage-career-section .career-contact-button {
+  grid-column: 2;
+  grid-row: 3;
+  width: fit-content !important;
+  min-height: 48px;
+  padding-inline: 24px;
+}
+.homepage-career-section .career-opportunity-card .looking-for,
+.homepage-career-section .career-opportunity-card .download-cv,
+.homepage-career-section .career-opportunity-card .career-list { display: none; }
+@media (max-width: 767.98px) {
+  .homepage-career-section .career-opportunity-card { display: block; }
+  .homepage-career-section .career-opportunities { margin: 14px 0 20px; }
+  .homepage-career-section .career-opportunity:first-child {
+    padding-top: 18px;
+    border-top: 1px solid rgba(123, 173, 158, 0.28);
+  }
+  .homepage-career-section .career-contact-button { width: 100% !important; }
+}

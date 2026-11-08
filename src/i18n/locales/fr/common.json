@@ -151,9 +151,9 @@
     ]
   },
   "career": {
-    "kicker": "RECHERCHE D’EMPLOI",
-    "title": "Et après ?",
-    "subtitle": "Découvrez le type d’opportunités que je vise.",
+    "kicker": "OUVERT AU BON PROBLÈME",
+    "title": "Que pourrions-nous construire ensuite ?",
+    "subtitle": "Je m’intéresse aux produits ambitieux où design, technologie et IA doivent fonctionner ensemble.",
     "role": "Product Designer & Bâtisseur IA",
     "openTo": "Ouvert à KSA · UAE · Europe · Remote",
     "targetLabel": "Objectif",
@@ -162,19 +162,12 @@
     "marketsValue": "KSA · UAE · Europe · Remote",
     "focusLabel": "Focus",
     "focusValue": "Produit · UX/UI · IA · Produits numériques",
-    "exploreBtn": "Explorer les opportunités",
-    "lookingFor": "CE QUE JE RECHERCHE",
-    "downloadCv": "Télécharger le CV",
-    "toastTitle": "Recherche d’emploi",
-    "toastBody": "Ceci est l’UI du MVP. Le vrai workflow n8n de recherche d’emploi pourra être connecté ici plus tard.",
-    "tags": [
-      "Senior Product Designer",
-      "Lead Product Designer",
-      "AI Product Designer",
-      "Design Systems",
-      "Remote"
+    "opportunities": [
+      { "title": "Leadership design", "description": "Orienter le produit de la stratégie jusqu’à l’expérience livrée.", "icon": "bi-compass" },
+      { "title": "Produits natifs IA", "description": "Transformer les capacités intelligentes en interactions claires et utiles.", "icon": "bi-stars" },
+      { "title": "Systèmes numériques complexes", "description": "Rendre les workflows ambitieux compréhensibles et utilisables.", "icon": "bi-diagram-3" }
     ],
-    "contactCta": "Parlons d’un projet"
+    "contactCta": "Commençons la conversation"
   },
   "about": {
     "eyebrow": "LE PARCOURS",
