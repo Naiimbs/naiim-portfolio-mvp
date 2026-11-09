@@ -17,6 +17,11 @@ export function AuthProvider({ children }) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const withTimeout = (promise, timeoutMs = 8000) => Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Authentication request timed out.')), timeoutMs)),
+  ]);
+
   // Helper to fetch user profile
   const fetchProfile = async (userId) => {
     if (!supabase || !userId) return null;
@@ -44,29 +49,35 @@ export function AuthProvider({ children }) {
       return;
     }
 
-    // 1. Get current session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      const currentUser = session?.user ?? null;
-      setUser(currentUser);
-      if (currentUser) {
-        const userProfile = await fetchProfile(currentUser.id);
-        setProfile(userProfile);
-      }
-      setLoading(false);
-    });
+    // 1. Get current session, but never block the whole admin shell forever if
+    // Supabase is unavailable, blocked, or misconfigured on the deployment.
+    withTimeout(supabase.auth.getSession())
+      .then(({ data: { session } }) => {
+        const currentUser = session?.user ?? null;
+        setUser(currentUser);
+        setLoading(false);
+        if (currentUser) {
+          fetchProfile(currentUser.id).then(setProfile).catch(() => setProfile(null));
+        }
+      })
+      .catch((error) => {
+        console.warn('[AuthProvider] Session bootstrap failed:', error);
+        setUser(null);
+        setProfile(null);
+        setLoading(false);
+      });
 
     // 2. Listen to auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      (_event, session) => {
         const currentUser = session?.user ?? null;
         setUser(currentUser);
+        setLoading(false);
         if (currentUser) {
-          const userProfile = await fetchProfile(currentUser.id);
-          setProfile(userProfile);
+          fetchProfile(currentUser.id).then(setProfile).catch(() => setProfile(null));
         } else {
           setProfile(null);
         }
-        setLoading(false);
       }
     );
 

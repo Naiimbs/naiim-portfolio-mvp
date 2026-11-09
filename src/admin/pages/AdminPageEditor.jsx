@@ -94,7 +94,10 @@ export default function AdminPageEditor() {
 
   async function loadPageAndSections() {
     setLoading(true);
-    await ensureHomepageCms();
+    await Promise.race([
+      ensureHomepageCms(),
+      new Promise((resolve) => setTimeout(resolve, 8000)),
+    ]);
     const pagesRes = await getAdminPages();
     const target = (pagesRes.data || []).find((p) => String(p.id) === String(id) || String(p.slug) === String(id));
     if (!target) {
