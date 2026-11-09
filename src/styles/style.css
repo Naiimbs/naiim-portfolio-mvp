@@ -3065,6 +3065,46 @@ html { scroll-padding-top: calc(var(--topbar-h, 0px) + 90px); }
 }
 .hero-redesign__mode-toggle button.is-active { border-color: var(--hero-brand); background: var(--hero-brand); color: #fff; }
 .hero-redesign__motion { min-height: 500px; }
+.hero-redesign[dir="rtl"] .hero-redesign__title {
+  font-family: "Cairo", "Tajawal", sans-serif;
+  letter-spacing: 0;
+  line-height: 1.12;
+}
+.hero-redesign[dir="rtl"] .hero-redesign__eyebrow {
+  letter-spacing: 0.02em;
+}
+.hero-redesign[dir="rtl"] .hero-redesign__eyebrow::before {
+  order: 2;
+}
+.hero-redesign[dir="rtl"] .hero-redesign__portrait-frame {
+  right: auto;
+  left: 7%;
+}
+.hero-redesign[dir="rtl"] .hero-redesign__portrait {
+  right: auto;
+  left: -8%;
+  transform: scaleX(-1);
+}
+.hero-redesign[dir="rtl"] .hero-redesign__orbit--outer {
+  right: auto;
+  left: -175px;
+}
+.hero-redesign[dir="rtl"] .hero-redesign__orbit--inner {
+  right: auto;
+  left: -80px;
+}
+.hero-redesign[dir="rtl"] .hero-redesign__chip--one {
+  left: auto;
+  right: 0;
+}
+.hero-redesign[dir="rtl"] .hero-redesign__chip--two {
+  right: auto;
+  left: 0;
+}
+.hero-redesign[dir="rtl"] .hero-redesign__chip--three {
+  left: auto;
+  right: 9%;
+}
 
 @media (max-width: 991.98px) {
   .hero-redesign__wrap { grid-template-columns: minmax(0, 1fr) minmax(300px, 0.82fr); gap: 28px; }
@@ -3074,6 +3114,11 @@ html { scroll-padding-top: calc(var(--topbar-h, 0px) + 90px); }
   .hero-redesign__orbit--outer { width: 520px; height: 520px; right: -155px; }
   .hero-redesign__orbit--inner { width: 380px; height: 380px; right: -85px; }
   .hero-redesign__chip { font-size: 0.68rem; }
+}
+@media (max-width: 991.98px) {
+  .hero-redesign[dir="rtl"] .hero-redesign__portrait-frame { right: auto; left: 0; }
+  .hero-redesign[dir="rtl"] .hero-redesign__orbit--outer { right: auto; left: -155px; }
+  .hero-redesign[dir="rtl"] .hero-redesign__orbit--inner { right: auto; left: -85px; }
 }
 @media (max-width: 767.98px) {
   .hero-redesign { min-height: auto; padding: 94px 22px 52px; }
@@ -3097,6 +3142,12 @@ html { scroll-padding-top: calc(var(--topbar-h, 0px) + 90px); }
   .hero-redesign__chip--two { right: 0; top: 47%; }
   .hero-redesign__chip--three { left: 5%; bottom: 1%; }
   .hero-redesign__mode-toggle { justify-content: flex-start; }
+}
+@media (max-width: 767.98px) {
+  .hero-redesign[dir="rtl"] .hero-redesign__portrait-frame { right: 13%; left: auto; }
+  .hero-redesign[dir="rtl"] .hero-redesign__orbit--outer { right: -9px; left: auto; }
+  .hero-redesign[dir="rtl"] .hero-redesign__orbit--inner { right: 45px; left: auto; }
+  .hero-redesign[dir="rtl"] .hero-redesign__chip--three { right: 5%; left: auto; }
 }
 @media (prefers-reduced-motion: reduce) {
   .hero-redesign__primary, .hero-redesign__secondary { transition: none; }

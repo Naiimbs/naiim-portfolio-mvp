@@ -12,22 +12,24 @@ import { HERO_DEFAULTS } from './heroDefaults';
  * configurations; the default homepage presentation uses the redesigned hero.
  */
 export default function HeroSection({ config = {}, homepage = false }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [heroMode, setHeroMode] = useState('portrait');
 
   const cfg = { ...HERO_DEFAULTS, ...(config || {}) };
-  const eyebrow = config?.eyebrow || HERO_DEFAULTS.eyebrow || t('hero.eyebrow');
+  const eyebrow = config?.eyebrow || t('hero.eyebrow', HERO_DEFAULTS.eyebrow);
+  const localizedTitleLines = t('hero.redesignTitleLines', { returnObjects: true });
   const titleLines = Array.isArray(config?.titleLines) && config.titleLines.length
     ? config.titleLines
-    : HERO_DEFAULTS.titleLines;
+    : (Array.isArray(localizedTitleLines) ? localizedTitleLines : HERO_DEFAULTS.titleLines);
 
   const legacyLead = config?.lead === 'I turn ambiguous ideas into clear product experiences, combining UX strategy, interface design, AI workflows and hands-on building.'
     || config?.lead === 'I turn ambiguous problems into usable digital products at the intersection of '
     || config?.lead === 'I turn ambiguous problems into usable digital products at the intersection of product design, AI, low-code and automation.';
   const hasConfiguredLead = Object.prototype.hasOwnProperty.call(config || {}, 'lead');
+  const localizedLead = t('hero.redesignLead', { defaultValue: HERO_DEFAULTS.lead });
   const lead = legacyLead
-    ? (config?.leadStrong || HERO_DEFAULTS.lead || t('hero.lead'))
-    : (hasConfiguredLead ? config.lead : (config?.leadStrong || HERO_DEFAULTS.lead || t('hero.lead')));
+    ? localizedLead
+    : (hasConfiguredLead ? config.lead : localizedLead);
 
   const primaryCta = {
     ...HERO_DEFAULTS.primaryCta,
@@ -52,6 +54,7 @@ export default function HeroSection({ config = {}, homepage = false }) {
   const buildingItems = Array.isArray(cfg.buildingItems) && cfg.buildingItems.length
     ? cfg.buildingItems
     : HERO_DEFAULTS.buildingItems;
+  const proofItems = t('hero.proofItems', { returnObjects: true });
 
   const showVisual = cfg.showVisual !== false;
   const showMotion = cfg.showMotion !== false;
@@ -61,7 +64,11 @@ export default function HeroSection({ config = {}, homepage = false }) {
   const showToggle = modes.length > 1 && cfg.showModeToggle === true;
 
   return (
-    <section className={`hero hero-redesign ${homepage ? 'hero-redesign--home' : ''}`} aria-labelledby="hero-title">
+    <section
+      className={`hero hero-redesign ${homepage ? 'hero-redesign--home' : ''}`}
+      dir={i18n.language?.slice(0, 2) === 'ar' ? 'rtl' : 'ltr'}
+      aria-labelledby="hero-title"
+    >
       <div className="hero-redesign__grid" aria-hidden="true" />
       <div className="hero-redesign__wrap">
         <div className="hero-redesign__copy">
@@ -106,19 +113,13 @@ export default function HeroSection({ config = {}, homepage = false }) {
           </div>
 
           {homepage && (
-            <ul className="hero-redesign__proof" aria-label="Experience highlights">
-              <li>
-                <strong>KSA enterprise &amp; government</strong>
-                <span>Delivered on-site and remotely</span>
-              </li>
-              <li>
-                <strong>UX/UI + low-code</strong>
-                <span>OutSystems · Mendix · UnifyApps</span>
-              </li>
-              <li>
-                <strong>AI-native workflows</strong>
-                <span>From idea to shipped product</span>
-              </li>
+            <ul className="hero-redesign__proof" aria-label={t('hero.proofLabel', 'Experience highlights')}>
+              {(Array.isArray(proofItems) ? proofItems : []).map((item, index) => (
+                <li key={index}>
+                  <strong>{item.title}</strong>
+                  <span>{item.description}</span>
+                </li>
+              ))}
             </ul>
           )}
 
@@ -172,16 +173,19 @@ export default function HeroSection({ config = {}, homepage = false }) {
                 <div className="hero-redesign__orbit hero-redesign__orbit--inner" aria-hidden="true" />
                 <div className="hero-redesign__portrait-frame">
                   <img src={heroCutout} alt="Naïm Bsili" className="hero-redesign__portrait" />
-                  <span className="hero-redesign__visual-label">PRODUCT DESIGN<br />AI · SYSTEMS · IMPACT</span>
+                  <span className="hero-redesign__visual-label">
+                    {t('hero.visualLabelLine1', 'PRODUCT DESIGN')}<br />
+                    {t('hero.visualLabelLine2', 'AI · SYSTEMS · IMPACT')}
+                  </span>
                 </div>
                 <div className="hero-redesign__chip hero-redesign__chip--one">
-                  <span aria-hidden="true" /> Design systems
+                  <span aria-hidden="true" /> {t('hero.chipDesignSystems', 'Design systems')}
                 </div>
                 <div className="hero-redesign__chip hero-redesign__chip--two">
-                  <span aria-hidden="true" /> AI workflows
+                  <span aria-hidden="true" /> {t('hero.chipAiWorkflows', 'AI workflows')}
                 </div>
                 <div className="hero-redesign__chip hero-redesign__chip--three">
-                  <span aria-hidden="true" /> Design → Build
+                  <span aria-hidden="true" /> {t('hero.chipDesignBuild', 'Design → Build')}
                 </div>
               </div>
             )}
