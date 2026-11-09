@@ -54,7 +54,15 @@ export default function HeroSection({ config = {}, homepage = false }) {
   const buildingItems = Array.isArray(cfg.buildingItems) && cfg.buildingItems.length
     ? cfg.buildingItems
     : HERO_DEFAULTS.buildingItems;
-  const proofItems = t('hero.proofItems', { returnObjects: true });
+  const localizedProofItems = t('hero.proofItems', { returnObjects: true });
+  const proofItems = Array.isArray(config?.proofItems)
+    ? config.proofItems
+    : (Array.isArray(localizedProofItems) ? localizedProofItems : HERO_DEFAULTS.proofItems);
+  const visualLabelLine1 = config?.visualLabelLine1 || t('hero.visualLabelLine1', HERO_DEFAULTS.visualLabelLine1);
+  const visualLabelLine2 = config?.visualLabelLine2 || t('hero.visualLabelLine2', HERO_DEFAULTS.visualLabelLine2);
+  const chipDesignSystems = config?.chipDesignSystems || t('hero.chipDesignSystems', HERO_DEFAULTS.chipDesignSystems);
+  const chipAiWorkflows = config?.chipAiWorkflows || t('hero.chipAiWorkflows', HERO_DEFAULTS.chipAiWorkflows);
+  const chipDesignBuild = config?.chipDesignBuild || t('hero.chipDesignBuild', HERO_DEFAULTS.chipDesignBuild);
 
   const showVisual = cfg.showVisual !== false;
   const showMotion = cfg.showMotion !== false;
@@ -174,18 +182,18 @@ export default function HeroSection({ config = {}, homepage = false }) {
                 <div className="hero-redesign__portrait-frame">
                   <img src={heroCutout} alt="Naïm Bsili" className="hero-redesign__portrait" />
                   <span className="hero-redesign__visual-label">
-                    {t('hero.visualLabelLine1', 'PRODUCT DESIGN')}<br />
-                    {t('hero.visualLabelLine2', 'AI · SYSTEMS · IMPACT')}
+                    {visualLabelLine1}<br />
+                    {visualLabelLine2}
                   </span>
                 </div>
                 <div className="hero-redesign__chip hero-redesign__chip--one">
-                  <span aria-hidden="true" /> {t('hero.chipDesignSystems', 'Design systems')}
+                  <span aria-hidden="true" /> {chipDesignSystems}
                 </div>
                 <div className="hero-redesign__chip hero-redesign__chip--two">
-                  <span aria-hidden="true" /> {t('hero.chipAiWorkflows', 'AI workflows')}
+                  <span aria-hidden="true" /> {chipAiWorkflows}
                 </div>
                 <div className="hero-redesign__chip hero-redesign__chip--three">
-                  <span aria-hidden="true" /> {t('hero.chipDesignBuild', 'Design → Build')}
+                  <span aria-hidden="true" /> {chipDesignBuild}
                 </div>
               </div>
             )}

@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 export default function HomeHeroSectionEditor({ config = {}, onChange }) {
   const titleLines = Array.isArray(config.titleLines) ? config.titleLines : [];
   const buildingItems = Array.isArray(config.buildingItems) ? config.buildingItems : [];
+  const proofItems = Array.isArray(config.proofItems) ? config.proofItems : [];
   const primaryCta = config.primaryCta || {};
   const secondaryCta = config.secondaryCta || {};
 
@@ -21,10 +22,19 @@ export default function HomeHeroSectionEditor({ config = {}, onChange }) {
   const setTxCta = (key, label) =>
     setTx({ [key]: { ...(tx[key] || {}), label } });
   const txTitleLines = Array.isArray(tx.titleLines) ? tx.titleLines : [];
+  const txProofItems = Array.isArray(tx.proofItems) ? tx.proofItems : proofItems.map((item) => ({ ...item }));
 
   const updateItem = (index, field, val) => {
     const updated = buildingItems.map((it, i) => (i === index ? { ...it, [field]: val } : it));
     set({ buildingItems: updated });
+  };
+  const updateProofItem = (index, field, val) => {
+    const updated = proofItems.map((it, i) => (i === index ? { ...it, [field]: val } : it));
+    set({ proofItems: updated });
+  };
+  const updateTxProofItem = (index, field, val) => {
+    const updated = txProofItems.map((it, i) => (i === index ? { ...it, [field]: val } : it));
+    setTx({ proofItems: updated });
   };
   const addItem = () => set({ buildingItems: [...buildingItems, { iconText: '', iconClass: '', label: 'New item', href: '#', note: '' }] });
   const removeItem = (index) => set({ buildingItems: buildingItems.filter((_, i) => i !== index) });
@@ -202,6 +212,25 @@ export default function HomeHeroSectionEditor({ config = {}, onChange }) {
         />
       </div>
 
+      <div className="mb-3 p-2 border rounded-3 bg-white">
+        <span className="small text-uppercase fw-bold text-muted d-block mb-2">Hero visual labels</span>
+        <input type="text" className="form-control form-control-sm rounded-3 mb-2" value={config.visualLabelLine1 || ''} placeholder="PRODUCT DESIGN" onChange={(e) => set({ visualLabelLine1: e.target.value })} />
+        <input type="text" className="form-control form-control-sm rounded-3 mb-2" value={config.visualLabelLine2 || ''} placeholder="AI · SYSTEMS · IMPACT" onChange={(e) => set({ visualLabelLine2: e.target.value })} />
+        <input type="text" className="form-control form-control-sm rounded-3 mb-2" value={config.chipDesignSystems || ''} placeholder="Design systems" onChange={(e) => set({ chipDesignSystems: e.target.value })} />
+        <input type="text" className="form-control form-control-sm rounded-3 mb-2" value={config.chipAiWorkflows || ''} placeholder="AI workflows" onChange={(e) => set({ chipAiWorkflows: e.target.value })} />
+        <input type="text" className="form-control form-control-sm rounded-3" value={config.chipDesignBuild || ''} placeholder="Design → Build" onChange={(e) => set({ chipDesignBuild: e.target.value })} />
+      </div>
+
+      <div className="mb-3 p-2 border rounded-3 bg-white">
+        <span className="small text-uppercase fw-bold text-muted d-block mb-2">Experience proof cards</span>
+        {proofItems.map((item, idx) => (
+          <div key={idx} className="row g-2 mb-2">
+            <div className="col-5"><input type="text" className="form-control form-control-sm rounded-3" value={item.title || ''} placeholder="Card title" onChange={(e) => updateProofItem(idx, 'title', e.target.value)} /></div>
+            <div className="col-7"><input type="text" className="form-control form-control-sm rounded-3" value={item.description || ''} placeholder="Card description" onChange={(e) => updateProofItem(idx, 'description', e.target.value)} /></div>
+          </div>
+        ))}
+      </div>
+
       <div className="form-check mb-3">
         <input
           className="form-check-input"
@@ -303,6 +332,23 @@ export default function HomeHeroSectionEditor({ config = {}, onChange }) {
         <div className="mb-1 mt-2" dir={txLang === 'ar' ? 'rtl' : 'ltr'}>
           <label className="form-label small fw-semibold">Availability badge</label>
           <input type="text" className="form-control form-control-sm rounded-3" value={tx.availabilityLabel || ''} placeholder={config.availabilityLabel || 'Available for freelance projects'} onChange={(e) => setTx({ availabilityLabel: e.target.value })} />
+        </div>
+        <div className="mb-2 mt-2" dir={txLang === 'ar' ? 'rtl' : 'ltr'}>
+          <label className="form-label small fw-semibold">Visual labels</label>
+          <input type="text" className="form-control form-control-sm rounded-3 mb-1" value={tx.visualLabelLine1 || ''} placeholder={config.visualLabelLine1 || 'PRODUCT DESIGN'} onChange={(e) => setTx({ visualLabelLine1: e.target.value })} />
+          <input type="text" className="form-control form-control-sm rounded-3 mb-1" value={tx.visualLabelLine2 || ''} placeholder={config.visualLabelLine2 || 'AI · SYSTEMS · IMPACT'} onChange={(e) => setTx({ visualLabelLine2: e.target.value })} />
+          <input type="text" className="form-control form-control-sm rounded-3 mb-1" value={tx.chipDesignSystems || ''} placeholder={config.chipDesignSystems || 'Design systems'} onChange={(e) => setTx({ chipDesignSystems: e.target.value })} />
+          <input type="text" className="form-control form-control-sm rounded-3 mb-1" value={tx.chipAiWorkflows || ''} placeholder={config.chipAiWorkflows || 'AI workflows'} onChange={(e) => setTx({ chipAiWorkflows: e.target.value })} />
+          <input type="text" className="form-control form-control-sm rounded-3" value={tx.chipDesignBuild || ''} placeholder={config.chipDesignBuild || 'Design → Build'} onChange={(e) => setTx({ chipDesignBuild: e.target.value })} />
+        </div>
+        <div className="mb-1" dir={txLang === 'ar' ? 'rtl' : 'ltr'}>
+          <label className="form-label small fw-semibold">Experience proof cards</label>
+          {txProofItems.map((item, idx) => (
+            <div key={idx} className="row g-2 mb-1">
+              <div className="col-5"><input type="text" className="form-control form-control-sm rounded-3" value={item.title || ''} placeholder={`Card ${idx + 1} title`} onChange={(e) => updateTxProofItem(idx, 'title', e.target.value)} /></div>
+              <div className="col-7"><input type="text" className="form-control form-control-sm rounded-3" value={item.description || ''} placeholder="Card description" onChange={(e) => updateTxProofItem(idx, 'description', e.target.value)} /></div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
