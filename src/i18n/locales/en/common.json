@@ -34,6 +34,24 @@
     ],
     "lead": "I turn ambiguous problems into usable digital products at the intersection of ",
     "leadStrong": "product design, AI, low-code and automation.",
+    "redesignTitleLines": [
+      "I design and build",
+      "digital products that",
+      "make complex work",
+      "feel simple."
+    ],
+    "redesignLead": "Product design, AI workflows, and digital experiences for ambitious teams and founders.",
+    "proofLabel": "Experience highlights",
+    "proofItems": [
+      { "title": "KSA enterprise & government", "description": "Delivered on-site and remotely" },
+      { "title": "UX/UI + low-code", "description": "OutSystems · Mendix · UnifyApps" },
+      { "title": "AI-native workflows", "description": "From idea to shipped product" }
+    ],
+    "visualLabelLine1": "PRODUCT DESIGN",
+    "visualLabelLine2": "AI · SYSTEMS · IMPACT",
+    "chipDesignSystems": "Design systems",
+    "chipAiWorkflows": "AI workflows",
+    "chipDesignBuild": "Design → Build",
     "exploreWork": "Explore projects",
     "talk": "Let’s talk",
     "talkCopilot": "Talk to Naïm Copilot",

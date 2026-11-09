@@ -34,6 +34,24 @@
     ],
     "lead": "Je transforme des problèmes complexes en produits numériques intuitifs, à l'intersection du ",
     "leadStrong": "design de produit, de l'IA, du low-code et de l'automatisation.",
+    "redesignTitleLines": [
+      "Je conçois et je construis",
+      "des produits numériques",
+      "qui rendent le travail complexe",
+      "simple."
+    ],
+    "redesignLead": "Design produit, workflows IA et expériences numériques pour les équipes et fondateurs ambitieux.",
+    "proofLabel": "Expertise en bref",
+    "proofItems": [
+      { "title": "Entreprises & secteur public en Arabie saoudite", "description": "Sur site et à distance" },
+      { "title": "UX/UI + low-code", "description": "OutSystems · Mendix · UnifyApps" },
+      { "title": "Workflows natifs IA", "description": "De l'idée au produit livré" }
+    ],
+    "visualLabelLine1": "DESIGN PRODUIT",
+    "visualLabelLine2": "IA · SYSTÈMES · IMPACT",
+    "chipDesignSystems": "Systèmes de design",
+    "chipAiWorkflows": "Workflows IA",
+    "chipDesignBuild": "Concevoir → Construire",
     "exploreWork": "Découvrir mes projets",
     "talk": "Discutons",
     "talkCopilot": "Parler à Naïm Copilot",
