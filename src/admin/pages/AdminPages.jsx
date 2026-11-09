@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getAdminPages, createPage, deletePage, getAllAdminPageSections, syncPageWithRegistry } from '../../services/siteCms';
+import { getAdminPages, createPage, deletePage, getAllAdminPageSections, syncPageWithRegistry, ensureHomepageCms } from '../../services/siteCms';
 import { getPagePublishingReadiness, getPageRegistryConsistency, getPageContentIntegrity } from '../../utils/registryHealth';
 import { PAGE_SECTION_TYPES } from '../../components/cms/sectionSchemas';
 import {
@@ -57,6 +57,7 @@ export default function AdminPages() {
 
   async function loadData() {
     setLoading(true);
+    await ensureHomepageCms();
     const [pagesRes, sectionsRes] = await Promise.all([
       getAdminPages(),
       getAllAdminPageSections(),
@@ -533,4 +534,3 @@ export default function AdminPages() {
     </div>
   );
 }
-

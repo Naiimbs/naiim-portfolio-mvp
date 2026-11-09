@@ -14,6 +14,7 @@ import {
   createPageSection,
   updatePageSection,
   deletePageSection,
+  ensureHomepageCms,
   publishPageSnapshot,
   ABOUT_PROPOSAL_SECTIONS,
 } from '../../services/siteCms';
@@ -93,6 +94,7 @@ export default function AdminPageEditor() {
 
   async function loadPageAndSections() {
     setLoading(true);
+    await ensureHomepageCms();
     const pagesRes = await getAdminPages();
     const target = (pagesRes.data || []).find((p) => String(p.id) === String(id) || String(p.slug) === String(id));
     if (!target) {
@@ -128,7 +130,7 @@ export default function AdminPageEditor() {
       setActiveTab('course');
     } else if (target.slug === 'blog') {
       setActiveTab('page');
-    } else if (target.slug === 'about' && loadedSecs.length > 0) {
+    } else if (loadedSecs.length > 0) {
       setActiveSectionId(loadedSecs[0].id);
       setActiveTab('section');
     }

@@ -3,6 +3,7 @@ import { getCanonicalRoute } from './contentRouteResolver.js';
 import BEAUX_ARTS_STORY from '../data/beauxArtsStory.json';
 import frCommon from '../i18n/locales/fr/common.json';
 import arCommon from '../i18n/locales/ar/common.json';
+import { HERO_DEFAULTS } from '../components/hero/heroDefaults';
 
 /**
  * Service for Pages, Page Sections, Navigation Items, and Site Settings.
@@ -254,7 +255,38 @@ export const ABOUT_PROPOSAL_SECTIONS = [
   },
 ];
 
+const HOME_HERO_CONFIG = {
+  ...HERO_DEFAULTS,
+  primaryCta: { ...HERO_DEFAULTS.primaryCta },
+  secondaryCta: { ...HERO_DEFAULTS.secondaryCta },
+  proofItems: HERO_DEFAULTS.proofItems.map((item) => ({ ...item })),
+  buildingItems: HERO_DEFAULTS.buildingItems.map((item) => ({ ...item })),
+  i18n: {
+    fr: frCommon.hero,
+    ar: arCommon.hero,
+  },
+};
+
+export const FALLBACK_HOME_SECTIONS = [
+  {
+    id: 'sec-home-hero',
+    page_id: 'page-home',
+    section_type: 'home_hero',
+    label: 'Home · Hero',
+    sort_order: 10,
+    is_visible: true,
+    config: HOME_HERO_CONFIG,
+  },
+  { id: 'sec-home-work', page_id: 'page-home', section_type: 'selected_work', label: 'Home · Selected Work', sort_order: 20, is_visible: true, config: {} },
+  { id: 'sec-home-case-studies', page_id: 'page-home', section_type: 'case_studies_strip', label: 'Home · Case Studies Strip', sort_order: 30, is_visible: true, config: {} },
+  { id: 'sec-home-career', page_id: 'page-home', section_type: 'copilot_career', label: 'Home · Career', sort_order: 40, is_visible: true, config: { showCopilot: false } },
+  { id: 'sec-home-lab', page_id: 'page-home', section_type: 'lab', label: 'Home · Lab', sort_order: 50, is_visible: true, config: {} },
+  { id: 'sec-home-about', page_id: 'page-home', section_type: 'home_about', label: 'Home · About', sort_order: 60, is_visible: true, config: {} },
+  { id: 'sec-home-contact', page_id: 'page-home', section_type: 'home_contact', label: 'Home · Contact', sort_order: 70, is_visible: true, config: {} },
+];
+
 export const FALLBACK_SECTIONS = [
+  ...FALLBACK_HOME_SECTIONS,
   ...ABOUT_PROPOSAL_SECTIONS,
   {
     id: 'sec-blog-1',
@@ -279,6 +311,53 @@ export const FALLBACK_SECTIONS = [
     config: { ...BEAUX_ARTS_STORY, channelName: 'beaux-arts-nabeul' },
   },
 ];
+
+/** Ensure Home exists as a real editable CMS page with its canonical sections. */
+export async function ensureHomepageCms() {
+  if (!isSupabaseConfigured || !supabase) {
+    const page = localPagesStore.find((item) => item.slug === 'home') || FALLBACK_PAGES[0];
+    if (!localPagesStore.some((item) => item.slug === 'home')) localPagesStore.unshift(page);
+    if (!localSectionsStore.some((item) => item.page_id === page.id && item.section_type === 'home_hero')) {
+      localSectionsStore = [...FALLBACK_HOME_SECTIONS, ...localSectionsStore];
+    }
+    return { data: { page, sections: localSectionsStore.filter((item) => item.page_id === page.id) }, error: null, source: 'local' };
+  }
+
+  try {
+    let { data: page, error: pageError } = await supabase.from('pages').select('*').eq('slug', 'home').maybeSingle();
+    if (pageError) return { data: null, error: pageError, source: 'error' };
+
+    if (!page) {
+      const fallbackPage = FALLBACK_PAGES.find((item) => item.slug === 'home');
+      const { data: createdPage, error: createError } = await supabase
+        .from('pages')
+        .insert([{ ...fallbackPage, id: undefined, status: 'draft', published_at: null }])
+        .select('*')
+        .single();
+      if (createError) return { data: null, error: createError, source: 'error' };
+      page = createdPage;
+      await syncPageWithRegistry(page);
+    }
+
+    const { data: existingSections, error: sectionError } = await supabase
+      .from('page_sections')
+      .select('*')
+      .eq('page_id', page.id)
+      .order('sort_order', { ascending: true });
+    if (sectionError) return { data: { page, sections: [] }, error: sectionError, source: 'error' };
+
+    let sections = existingSections || [];
+    if (sections.length === 0) {
+      const payload = FALLBACK_HOME_SECTIONS.map(({ id, page_id, ...section }) => ({ ...section, page_id: page.id }));
+      const { data: insertedSections, error: insertError } = await supabase.from('page_sections').insert(payload).select('*');
+      if (insertError) return { data: { page, sections: [] }, error: insertError, source: 'error' };
+      sections = insertedSections || [];
+    }
+    return { data: { page, sections }, error: null, source: 'supabase' };
+  } catch (error) {
+    return { data: null, error, source: 'error' };
+  }
+}
 
 // In-memory admin store for local development when offline
 let localPagesStore = [...FALLBACK_PAGES];
