@@ -57,7 +57,10 @@ export default function AdminPages() {
 
   async function loadData() {
     setLoading(true);
-    await ensureHomepageCms();
+    await Promise.race([
+      ensureHomepageCms(),
+      new Promise((resolve) => setTimeout(resolve, 8000)),
+    ]);
     const [pagesRes, sectionsRes] = await Promise.all([
       getAdminPages(),
       getAllAdminPageSections(),
