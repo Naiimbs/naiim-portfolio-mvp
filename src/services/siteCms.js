@@ -562,9 +562,11 @@ export async function createPage(pageData) {
     return { data: newPage, error: null };
   }
   try {
+    // Translations belong in metadata.i18n; pages has no top-level i18n column.
+    const { i18n, registryEntry, isOrphanRegistry, ...validPageData } = pageData;
     const { data, error } = await supabase
       .from('pages')
-      .insert([pageData])
+      .insert([validPageData])
       .select()
       .single();
 
@@ -580,8 +582,9 @@ export async function createPage(pageData) {
 }
 
 export async function updatePage(id, updates) {
-  // Sanitize out virtual/injected properties
-  const { registryEntry, isOrphanRegistry, ...validUpdates } = updates;
+  // Sanitize virtual/injected properties and keep translations in metadata.i18n.
+  // The pages table has no top-level i18n column.
+  const { registryEntry, isOrphanRegistry, i18n, ...validUpdates } = updates;
   const updatedPayload = { ...validUpdates, updated_at: new Date().toISOString() };
 
   if (!isSupabaseConfigured || !supabase) {

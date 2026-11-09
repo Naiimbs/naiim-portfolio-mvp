@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import PageRenderer from '../../components/cms/PageRenderer';
 import SectionPropertyEditor from '../components/cms/editors/SectionPropertyEditor';
+import SectionTranslationsEditor from '../components/cms/SectionTranslationsEditor';
 import StoryTimelineTranslationsEditor from './StoryTimelineTranslationsEditor';
 import AddSectionModal from '../components/cms/AddSectionModal';
 import BlogPageCanvasPreview from '../components/cms/BlogPageCanvasPreview';
@@ -1223,12 +1224,42 @@ export default function AdminPageEditor() {
                   onSaved={(registryEntry) => setPage((current) => ({ ...current, registryEntry }))}
                 />
               ) : activeTab === 'section' ? (
-                <SectionPropertyEditor
-                  section={activeSection}
-                  onChange={handleSectionChange}
-                  onSave={handleSaveActiveSection}
-                  dirty={activeSection ? dirtySectionIds.has(activeSection.id) : false}
-                />
+                <>
+                  <SectionPropertyEditor
+                    section={activeSection}
+                    onChange={handleSectionChange}
+                    onSave={handleSaveActiveSection}
+                    dirty={activeSection ? dirtySectionIds.has(activeSection.id) : false}
+                  />
+                  <div className="p-3 border-top">
+                    <div className="d-flex align-items-center justify-content-between gap-2 mb-2">
+                      <span className="small fw-semibold">Translate this section</span>
+                      <div className="btn-group btn-group-sm" role="group" aria-label="Section translation language">
+                        <button
+                          type="button"
+                          className={`btn ${txLang === 'fr' ? 'btn-dark' : 'btn-outline-secondary'}`}
+                          onClick={() => setTxLang('fr')}
+                        >
+                          FR
+                        </button>
+                        <button
+                          type="button"
+                          className={`btn ${txLang === 'ar' ? 'btn-dark' : 'btn-outline-secondary'}`}
+                          onClick={() => setTxLang('ar')}
+                        >
+                          AR
+                        </button>
+                      </div>
+                    </div>
+                    <SectionTranslationsEditor
+                      section={activeSection}
+                      lang={txLang}
+                      onChange={handleSectionChange}
+                      onSave={handleSaveActiveSection}
+                      saving={savingSection}
+                    />
+                  </div>
+                </>
               ) : activeTab === 'translations' ? (
                 <div className="p-3">
                   <div className="d-flex justify-content-between align-items-center mb-3">
