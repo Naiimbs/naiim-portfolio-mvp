@@ -19,6 +19,16 @@ export const HERO_DEFAULTS = {
   primaryCta: { label: 'Explore projects', href: '#work' },
   secondaryCta: { label: "Let’s talk", href: '/about#contact' },
   availabilityLabel: 'Available for freelance projects',
+  proofItems: [
+    { title: 'KSA enterprise & government', description: 'Delivered on-site and remotely' },
+    { title: 'UX/UI + low-code', description: 'OutSystems · Mendix · UnifyApps' },
+    { title: 'AI-native workflows', description: 'From idea to shipped product' },
+  ],
+  visualLabelLine1: 'PRODUCT DESIGN',
+  visualLabelLine2: 'AI · SYSTEMS · IMPACT',
+  chipDesignSystems: 'Design systems',
+  chipAiWorkflows: 'AI workflows',
+  chipDesignBuild: 'Design → Build',
   showBuilding: false,
   // Right-column visual controls
   showVisual: true, // master toggle for the whole right-column visual
