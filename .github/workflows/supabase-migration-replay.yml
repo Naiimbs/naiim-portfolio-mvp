@@ -33,6 +33,11 @@ jobs:
       - name: Replay every migration on a clean local database
         run: supabase db reset
 
+      - name: Build the React application
+        run: |
+          npm ci
+          npm run build
+
       - name: Stop local Supabase stack
         if: always()
         run: supabase stop --no-backup
