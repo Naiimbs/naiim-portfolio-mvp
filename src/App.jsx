@@ -24,6 +24,7 @@ const CmsDynamicPage = lazy(() => import('./pages/CmsDynamicPage'));
 
 // Lazy: entire Admin CMS (never shipped to public visitors)
 const AdminGuard = lazy(() => import('./admin/components/AdminGuard'));
+const AdminOnlyGuard = lazy(() => import('./admin/components/AdminOnlyGuard'));
 const AdminLayout = lazy(() => import('./admin/layouts/AdminLayout'));
 const AdminLogin = lazy(() => import('./admin/pages/AdminLogin'));
 const AdminDashboard = lazy(() => import('./admin/pages/AdminDashboard'));
@@ -146,10 +147,10 @@ export default function App() {
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="content" element={<AdminContent />} />
-              <Route path="academy" element={<AcademyDashboard />} />
-              <Route path="academy/courses" element={<AcademyCourses />} />
-              <Route path="academy/enrollments" element={<AcademyEnrollments />} />
-              <Route path="academy/courses/:id" element={<AcademyCurriculum />} />
+              <Route path="academy" element={<AdminOnlyGuard><AcademyDashboard /></AdminOnlyGuard>} />
+              <Route path="academy/courses" element={<AdminOnlyGuard><AcademyCourses /></AdminOnlyGuard>} />
+              <Route path="academy/enrollments" element={<AdminOnlyGuard><AcademyEnrollments /></AdminOnlyGuard>} />
+              <Route path="academy/courses/:id" element={<AdminOnlyGuard><AcademyCurriculum /></AdminOnlyGuard>} />
               <Route path="content/blog/new" element={<AdminBlogEditor />} />
               <Route path="content/blog/:id" element={<AdminBlogEditor />} />
               <Route path="registry" element={<AdminRegistry />} />
