@@ -47,6 +47,7 @@ const AdminPages = lazy(() => import('./admin/pages/AdminPages'));
 const AdminCourses = lazy(() => import('./admin/pages/AdminCourses'));
 const AcademyDashboard = lazy(() => import('./admin/pages/AcademyDashboard'));
 const AcademyCourses = lazy(() => import('./admin/pages/AcademyCourses'));
+const AcademyEnrollments = lazy(() => import('./admin/pages/AcademyEnrollments'));
 const AcademyCurriculum = lazy(() => import('./admin/pages/AcademyCurriculum'));
 const AdminPageEditor = lazy(() => import('./admin/pages/AdminPageEditor'));
 const AdminNavigation = lazy(() => import('./admin/pages/AdminNavigation'));
@@ -147,6 +148,7 @@ export default function App() {
               <Route path="content" element={<AdminContent />} />
               <Route path="academy" element={<AcademyDashboard />} />
               <Route path="academy/courses" element={<AcademyCourses />} />
+              <Route path="academy/enrollments" element={<AcademyEnrollments />} />
               <Route path="academy/courses/:id" element={<AcademyCurriculum />} />
               <Route path="content/blog/new" element={<AdminBlogEditor />} />
               <Route path="content/blog/:id" element={<AdminBlogEditor />} />
