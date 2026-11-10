@@ -104,7 +104,7 @@ Use the Supabase CLI, not direct SQL writes to `supabase_migrations.schema_migra
 3. Finish the schema **and data** comparison for every migration version.
 4. Recover/review the two timestamped hardening migrations that are already in the remote ledger.
 5. Only for a migration whose complete effects are verified as already present, run:
-   `supabase migration repair --status applied <version>`
+   `supabase migration repair <version> --status applied`
 6. Re-run `supabase migration list`; confirm there are no unexplained local/remote versions or pending migrations.
 7. From then on, create new migrations with `supabase migration new <name>` and deploy them through the reviewed release workflow.
 
@@ -135,7 +135,7 @@ The branch is a code-preparation branch, not a production deployment.
 The Production Auth audit previously found **Leaked Password Protection disabled**. Supabase documents this setting as using Have I Been Pwned's Pwned Passwords API to reject known-compromised passwords. It is available on Supabase Pro and above.
 
 Enable it in the Supabase Dashboard:
-1. Open **Authentication → Settings** (the project's Auth password settings).
+1. Open **Authentication → Providers → Email** (the project's Auth password settings).
 2. Set a minimum password length of at least 12 characters.
 3. Require lowercase, uppercase, digits and symbols.
 4. Enable **Prevent the use of leaked passwords / Leaked password protection**.
