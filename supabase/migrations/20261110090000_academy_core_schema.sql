@@ -90,6 +90,20 @@ DECLARE
   v_assessment_id uuid;
   v_question_assessment_id uuid;
 BEGIN
+  IF public.is_admin() THEN
+    RETURN NEW;
+  END IF;
+
+  IF TG_OP = 'UPDATE' AND (
+    NEW.id IS DISTINCT FROM OLD.id
+    OR NEW.attempt_id IS DISTINCT FROM OLD.attempt_id
+    OR NEW.question_id IS DISTINCT FROM OLD.question_id
+    OR NEW.created_at IS DISTINCT FROM OLD.created_at
+  ) THEN
+    RAISE EXCEPTION 'Answer identity fields cannot be changed'
+      USING ERRCODE = '42501';
+  END IF;
+
   SELECT a.assessment_id
     INTO v_assessment_id
   FROM public.academy_attempts a
@@ -396,16 +410,13 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON
   public.academy_attempts,
   public.academy_attempt_answers
 TO authenticated;
--- Learners can create an attempt for themselves; triggers assign the attempt
--- number and enforce max_attempts atomically. They can only change its status.
-REVOKE INSERT, UPDATE ON public.academy_attempts FROM authenticated;
-GRANT INSERT (assessment_id, student_id) ON public.academy_attempts TO authenticated;
-GRANT UPDATE (status) ON public.academy_attempts TO authenticated;
--- Learners can submit answer payloads but cannot re-point an answer to another
--- attempt/question after creation.
-REVOKE INSERT, UPDATE ON public.academy_attempt_answers FROM authenticated;
-GRANT INSERT (attempt_id, question_id, answer) ON public.academy_attempt_answers TO authenticated;
-GRANT UPDATE (answer) ON public.academy_attempt_answers TO authenticated;
+-- Table grants are constrained by RLS and the immutable-field/transition
+-- triggers below. This also lets the existing admin UI manage these records.
+GRANT SELECT, INSERT, UPDATE, DELETE ON
+  public.academy_attempts,
+  public.academy_attempt_answers,
+  public.academy_attempt_results
+TO authenticated;
 GRANT SELECT, INSERT, UPDATE ON public.academy_lesson_progress TO authenticated;
 GRANT SELECT ON public.academy_attempt_results TO authenticated;
 GRANT ALL ON TABLE
