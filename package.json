@@ -13,7 +13,8 @@
     "test:learning-player": "node scripts/test-learning-player.mjs",
     "preview": "vite preview",
     "api": "node server/apiServer.js",
-    "mcp:check": "node server/mcpCheck.js"
+    "mcp:check": "node server/mcpCheck.js",
+    "test:academy-access": "node scripts/test-academy-access.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.109.0",
