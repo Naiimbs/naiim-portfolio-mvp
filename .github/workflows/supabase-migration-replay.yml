@@ -6,9 +6,13 @@ on:
       - feature/my-academy-mvp
     paths:
       - "supabase/**"
+      - "src/App.jsx"
+      - "src/admin/pages/Academy*.jsx"
   pull_request:
     paths:
       - "supabase/**"
+      - "src/App.jsx"
+      - "src/admin/pages/Academy*.jsx"
   workflow_dispatch:
 
 permissions:
