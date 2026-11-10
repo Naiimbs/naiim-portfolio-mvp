@@ -257,6 +257,7 @@ export default function AcademyCourses() {
                       <td><StatusBadge status={course.status} /></td>
                       <td className="small text-secondary">{course.updated_at ? new Date(course.updated_at).toLocaleDateString() : '—'}</td>
                       <td className="text-end pe-4">
+                        <Link to={`/admin/academy/courses/${course.id}`} className="btn btn-sm btn-outline-success me-2">Curriculum</Link>
                         <button type="button" className="btn btn-sm btn-outline-secondary me-2" onClick={() => startEdit(course)}>Edit</button>
                         {course.status !== 'archived' && <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => archiveCourse(course)}>Archive</button>}
                       </td>
