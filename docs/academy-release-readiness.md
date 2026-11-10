@@ -29,7 +29,7 @@ The four public enums are present:
 - `agent_demo_type`: `none, external, embedded, internal`
 - `content_status`: `draft, published, archived, in_review, ready`
 
-Storage currently has the public `portfolio-media` bucket and two object policies (public read and admin/editor management). Do not alter these as part of Academy.
+Storage currently has the public `portfolio-media` bucket, **153 stored objects**, and two object policies (public read and admin/editor management). Database backups do not contain those file bytes; keep a separate copy of all 153 objects. Do not alter this bucket as part of Academy.
 
 ### Existing data — do not overwrite
 
