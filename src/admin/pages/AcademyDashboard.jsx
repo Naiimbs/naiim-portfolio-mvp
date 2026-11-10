@@ -4,27 +4,34 @@ import { Link } from 'react-router-dom';
 const phases = [
   {
     number: '01',
-    title: 'Core LMS',
+    title: 'Admin foundation',
     status: 'In progress',
-    description: 'Course structure, modules, lessons, student enrollment, persistent progress, quizzes and results.',
-    items: ['Course management', 'Student portal & enrollment', 'Lesson progress', 'Assessments'],
+    description: 'The current private preview focuses on administrator workflows for course authoring and learner enrollment.',
+    items: ['Course management', 'Module and lesson authoring', 'Enrollment management'],
   },
   {
     number: '02',
-    title: 'Knowledge Processing',
+    title: 'Learner experience',
     status: 'Planned',
-    description: 'Ingest learning material and preserve its structure and source references.',
-    items: ['PDF and document ingestion', 'MinerU extraction adapter', 'Source and page references'],
+    description: 'The learner-facing experience will be implemented and tested before any course is opened to learners.',
+    items: ['Student portal', 'Lesson player and progress', 'Assessments and results'],
   },
   {
     number: '03',
+    title: 'Knowledge Processing',
+    status: 'Planned',
+    description: 'Ingest learning material while preserving its structure and source references.',
+    items: ['PDF and document ingestion', 'MinerU extraction adapter', 'Source and page references'],
+  },
+  {
+    number: '04',
     title: 'AI Course Builder',
     status: 'Planned',
     description: 'Turn reviewed knowledge sources into editable course drafts. Nothing is published without instructor approval.',
     items: ['Course outline generation', 'Lesson draft generation', 'Quiz suggestions'],
   },
   {
-    number: '04',
+    number: '05',
     title: 'RAG & AI Tutor',
     status: 'Planned',
     description: 'Retrieve relevant course knowledge and provide source-grounded answers to learners.',
@@ -46,14 +53,19 @@ export default function AcademyDashboard() {
     <div className="container-fluid py-4 px-3 px-lg-4">
       <div className="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
         <div>
-          <div className="text-uppercase small fw-semibold text-success mb-2">Learning platform</div>
+          <div className="text-uppercase small fw-semibold text-success mb-2">Private admin preview</div>
           <h1 className="h2 fw-bold mb-2">My Academy</h1>
           <p className="text-secondary mb-0" style={{ maxWidth: 720 }}>
-            A dedicated learning management system, separate from the website CMS.
-            Build the teaching and learning foundation first; add document intelligence and AI workflows in later phases.
+            A dedicated learning management module inside the existing CMS admin.
+            Academy data and learning workflows use their own data model, separate from CMS page content.
           </p>
         </div>
         <Link to="/admin" className="btn btn-outline-secondary rounded-pill">Back to Admin</Link>
+      </div>
+
+      <div className="alert alert-info border-0" role="status">
+        <strong>Private preview:</strong> This area is restricted to administrator accounts. New courses and lessons start as drafts.
+        The learner portal and assessments are not part of the current admin-preview build.
       </div>
 
       <div className="row g-3 mb-4">
@@ -70,8 +82,8 @@ export default function AcademyDashboard() {
           <div className="card border-0 shadow-sm h-100">
             <div className="card-body">
               <div className="small text-secondary mb-2">Architecture</div>
-              <div className="h5 fw-bold mb-1">Dedicated LMS domain</div>
-              <p className="small text-secondary mb-0">Academy data and workflows do not depend on CMS page sections.</p>
+              <div className="h5 fw-bold mb-1">Dedicated LMS module</div>
+              <p className="small text-secondary mb-0">Integrated into the CMS admin shell, with separate LMS tables and workflows.</p>
             </div>
           </div>
         </div>
@@ -80,7 +92,7 @@ export default function AcademyDashboard() {
             <div className="card-body">
               <div className="small text-secondary mb-2">AI strategy</div>
               <div className="h5 fw-bold mb-1">Phased integration</div>
-              <p className="small text-secondary mb-0">MinerU, Course Builder and RAG remain separate services.</p>
+              <p className="small text-secondary mb-0">MinerU, Course Builder and RAG remain separate services and later phases.</p>
             </div>
           </div>
         </div>
@@ -89,9 +101,12 @@ export default function AcademyDashboard() {
       <div className="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
         <div>
           <h2 className="h5 fw-bold mb-1">Delivery roadmap</h2>
-          <p className="small text-secondary mb-0">The agreed implementation sequence.</p>
+          <p className="small text-secondary mb-0">Current implementation status, not a claim that every phase is complete.</p>
         </div>
-        <div className="d-flex gap-2 flex-wrap"><Link to="/admin/academy/courses" className="btn btn-success btn-sm rounded-pill px-3">Manage courses <i className="bi bi-arrow-right ms-1" /></Link><Link to="/admin/academy/enrollments" className="btn btn-outline-success btn-sm rounded-pill px-3">Manage enrollments</Link></div>
+        <div className="d-flex gap-2 flex-wrap">
+          <Link to="/admin/academy/courses" className="btn btn-success btn-sm rounded-pill px-3">Manage courses <i className="bi bi-arrow-right ms-1" /></Link>
+          <Link to="/admin/academy/enrollments" className="btn btn-outline-success btn-sm rounded-pill px-3">Manage enrollments</Link>
+        </div>
       </div>
 
       <div className="row g-3">
@@ -112,10 +127,6 @@ export default function AcademyDashboard() {
             </section>
           </div>
         ))}
-      </div>
-
-      <div className="alert alert-light border mt-4 mb-0" role="note">
-        <strong>Implementation note:</strong> Course management and the admin enrollment workflow are implemented on the feature branch. They remain gated by the verified Academy database migration; production schema changes are intentionally not applied yet. The legacy CMS-based learning experiment remains untouched.
       </div>
     </div>
   );
