@@ -34,7 +34,13 @@ CREATE TABLE public.academy_courses (
   archived_at timestamptz,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now(),
-  CONSTRAINT academy_courses_slug_format CHECK (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*
+  CONSTRAINT academy_courses_slug_format CHECK (
+    slug = lower(slug)
+    AND slug !~ '[^a-z0-9-]'
+    AND left(slug, 1) <> '-'
+    AND right(slug, 1) <> '-'
+    AND position('--' in slug) = 0
+  ),
   CONSTRAINT academy_courses_title_not_blank CHECK (length(btrim(title)) > 0)
 );
 
@@ -75,7 +81,8 @@ CREATE TABLE public.academy_lessons (
   CONSTRAINT academy_lessons_content_schema_version CHECK (
     content ? 'schema_version'
     AND jsonb_typeof(content->'schema_version') = 'number'
-    AND (content->>'schema_version') ~ '^[1-9][0-9]*
+    AND (content->>'schema_version')::numeric >= 1
+    AND trunc((content->>'schema_version')::numeric) = (content->>'schema_version')::numeric
   )
 );
 
