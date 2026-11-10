@@ -309,3 +309,66 @@ BEGIN
         is_enabled = EXCLUDED.is_enabled;
 
 END $$;
+
+
+-- ==============================================================================
+-- MY ACADEMY: LOCAL DEMO COURSE
+-- No auth users or student enrollments are created by this seed.
+-- Idempotent: safe to execute repeatedly on a local development database.
+-- ==============================================================================
+
+WITH course AS (
+  INSERT INTO public.academy_courses (
+    slug, title, summary, description, status
+  )
+  VALUES (
+    'academy-demo-getting-started',
+    'Getting Started with My Academy',
+    'A sample course for validating the learning experience.',
+    'Demo-only course content. Replace it with real teaching material before publishing.',
+    'draft'
+  )
+  ON CONFLICT (lower(slug)) DO UPDATE
+    SET title = EXCLUDED.title,
+        summary = EXCLUDED.summary,
+        description = EXCLUDED.description,
+        status = 'draft',
+        updated_at = now()
+  RETURNING id
+),
+module AS (
+  INSERT INTO public.academy_modules (course_id, title, description, position)
+  SELECT id, 'Welcome', 'A short introduction to the Academy learning space.', 1
+  FROM course
+  ON CONFLICT (course_id, position) DO UPDATE
+    SET title = EXCLUDED.title,
+        description = EXCLUDED.description,
+        updated_at = now()
+  RETURNING id
+)
+INSERT INTO public.academy_lessons (
+  module_id, title, summary, position, status, duration_minutes, content
+)
+SELECT
+  id,
+  'How to use this learning space',
+  'A placeholder lesson used to test lesson rendering and progress tracking.',
+  1,
+  'draft',
+  5,
+  '{
+    "schema_version": 1,
+    "blocks": [
+      {"type": "paragraph", "text": "Welcome. This is demo content for validating the My Academy MVP."},
+      {"type": "heading", "level": 2, "text": "What you can do"},
+      {"type": "paragraph", "text": "Explore course modules, open lessons, and test progress tracking after a learner account is enrolled."}
+    ]
+  }'::jsonb
+FROM module
+ON CONFLICT (module_id, position) DO UPDATE
+  SET title = EXCLUDED.title,
+      summary = EXCLUDED.summary,
+      status = 'draft',
+      duration_minutes = EXCLUDED.duration_minutes,
+      content = EXCLUDED.content,
+      updated_at = now();
