@@ -5,6 +5,15 @@
 **Feature branch:** `feature/my-academy-mvp`  
 **Database:** existing Supabase project `mywebsite` (eu-west-1)
 
+## Implementation progress — 2026-11-10
+
+- Added the initial additive Academy schema migration and a follow-up attempt-integrity migration.
+- Added a clean local Supabase migration replay workflow. The replay has succeeded on an earlier commit after correcting the historical content_registry page-type constraint; the latest schema hardening changes are still being revalidated.
+- Preserved the existing CMS supabase/seed.sql content and appended an idempotent, draft-only Academy demo course/module/lesson. It creates no auth users or enrollments.
+- Added the first Course Management screen at /admin/academy/courses: list, create, edit, publish/draft status, and archive/restore lifecycle. It reports a clear setup message while Academy tables are not installed.
+- No Academy migration has been applied to the production Supabase project. No merge or production deploy has occurred.
+- Remaining MVP work: curriculum editor (modules and lessons), admin-managed enrollment, student portal, lesson progress, then assessments.
+
 ## Product boundary
 
 My Academy is a dedicated LMS domain inside the existing React application and Supabase project. It is not a CMS page template and must not store course delivery state in `pages`, `page_sections`, or `content_registry`.
