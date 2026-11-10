@@ -41,6 +41,8 @@ CREATE UNIQUE INDEX academy_courses_slug_lower_uidx
   ON public.academy_courses (lower(slug));
 CREATE INDEX academy_courses_status_created_idx
   ON public.academy_courses (status, created_at DESC);
+CREATE INDEX academy_courses_created_by_idx
+  ON public.academy_courses (created_by);
 
 CREATE TABLE public.academy_modules (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -201,6 +203,8 @@ CREATE TABLE public.academy_attempt_results (
   graded_by uuid REFERENCES auth.users(id) ON DELETE SET NULL,
   graded_at timestamptz NOT NULL DEFAULT now()
 );
+CREATE INDEX academy_attempt_results_graded_by_idx
+  ON public.academy_attempt_results (graded_by);
 
 -- Consistent updated_at behavior without exposing a callable public RPC.
 CREATE TRIGGER academy_courses_set_updated_at
