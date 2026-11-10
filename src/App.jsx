@@ -46,6 +46,7 @@ const AdminMedia = lazy(() => import('./admin/pages/AdminMedia'));
 const AdminPages = lazy(() => import('./admin/pages/AdminPages'));
 const AdminCourses = lazy(() => import('./admin/pages/AdminCourses'));
 const AcademyDashboard = lazy(() => import('./admin/pages/AcademyDashboard'));
+const AcademyCourses = lazy(() => import('./admin/pages/AcademyCourses'));
 const AdminPageEditor = lazy(() => import('./admin/pages/AdminPageEditor'));
 const AdminNavigation = lazy(() => import('./admin/pages/AdminNavigation'));
 const AdminSettings = lazy(() => import('./admin/pages/AdminSettings'));
@@ -144,6 +145,7 @@ export default function App() {
               <Route index element={<AdminDashboard />} />
               <Route path="content" element={<AdminContent />} />
               <Route path="academy" element={<AcademyDashboard />} />
+              <Route path="academy/courses" element={<AcademyCourses />} />
               <Route path="content/blog/new" element={<AdminBlogEditor />} />
               <Route path="content/blog/:id" element={<AdminBlogEditor />} />
               <Route path="registry" element={<AdminRegistry />} />
