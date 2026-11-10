@@ -279,7 +279,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON
   public.academy_attempt_answers
 TO authenticated;
 GRANT SELECT, INSERT, UPDATE ON public.academy_lesson_progress TO authenticated;
-GRANT SELECT ON public.academy_attempt_results TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.academy_attempt_results TO authenticated;
 GRANT ALL ON TABLE
   public.academy_courses,
   public.academy_modules,
