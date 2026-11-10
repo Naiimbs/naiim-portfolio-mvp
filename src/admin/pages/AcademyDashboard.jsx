@@ -91,7 +91,7 @@ export default function AcademyDashboard() {
           <h2 className="h5 fw-bold mb-1">Delivery roadmap</h2>
           <p className="small text-secondary mb-0">The agreed implementation sequence.</p>
         </div>
-        <Link to="/admin/academy/courses" className="btn btn-success btn-sm rounded-pill px-3">Manage courses <i className="bi bi-arrow-right ms-1" /></Link>
+        <div className="d-flex gap-2 flex-wrap"><Link to="/admin/academy/courses" className="btn btn-success btn-sm rounded-pill px-3">Manage courses <i className="bi bi-arrow-right ms-1" /></Link><Link to="/admin/academy/enrollments" className="btn btn-outline-success btn-sm rounded-pill px-3">Manage enrollments</Link></div>
       </div>
 
       <div className="row g-3">
@@ -115,9 +115,7 @@ export default function AcademyDashboard() {
       </div>
 
       <div className="alert alert-light border mt-4 mb-0" role="note">
-        <strong>Implementation note:</strong> This is the Academy entry point and roadmap only.
-        LMS tables and student workflows will be added after the live Supabase schema and migration history are reconciled.
-        The legacy CMS-based learning experiment remains untouched.
+        <strong>Implementation note:</strong> Course management and the admin enrollment workflow are implemented on the feature branch. They remain gated by the verified Academy database migration; production schema changes are intentionally not applied yet. The legacy CMS-based learning experiment remains untouched.
       </div>
     </div>
   );
