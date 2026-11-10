@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS public.content_registry (
 
     -- Constraints
     CONSTRAINT chk_registry_content_type CHECK (
-        content_type IN ('case-study', 'agent', 'plugin', 'blog', 'other')
+        content_type IN ('case-study', 'agent', 'plugin', 'blog', 'page', 'other')
     ),
     CONSTRAINT chk_registry_status CHECK (
         status IN ('draft', 'published', 'archived')
