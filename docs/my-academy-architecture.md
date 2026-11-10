@@ -99,3 +99,11 @@ The live database has 23 public tables and no Academy/LMS tables. This discrepan
 ## Current implementation status
 
 The first code slice adds the separate Admin Academy entry point and this architecture record. It does not yet create tables, alter authentication, deploy, or change existing CMS learning content.
+
+## Database reconciliation and resilient schema
+
+The live database audit is documented in [Database Reconciliation](./database-reconciliation.md). The LMS data model and security contract are documented in [My Academy Database Design](./my-academy-database-design.md).
+
+The live project currently has 23 public tables with RLS enabled and no Academy tables. Repository migrations 001–025 structurally correspond to the existing CMS tables and later schema extensions, but the remote migration ledger contains only two later security-hardening entries. This is migration-history drift; it is not a reason to replay the old SQL. Reconcile the full remote schema and migration effects, then repair the migration ledger with the supported Supabase CLI before introducing new DDL.
+
+Academy must use dedicated tables, explicit client grants, per-role RLS policies, ownership/enrollment indexes, private answer keys, and pgTAP allow/deny tests. Do not alter existing CMS enums or policies to implement student access. No Academy SQL has been applied yet.
