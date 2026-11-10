@@ -149,14 +149,14 @@ export default function AcademyEnrollments() {
                 <label className="form-label" htmlFor="academy-enrollment-course">Course *</label>
                 <select id="academy-enrollment-course" className="form-select" required value={form.courseId}
                   onChange={(event) => setForm((current) => ({ ...current, courseId: event.target.value }))}>
-                  <option value="">Select a course</option>
-                  {courses.filter((course) => course.status !== 'archived').map((course) => (
+                  <option value="">Select a published course</option>
+                  {courses.filter((course) => course.status === 'published').map((course) => (
                     <option key={course.id} value={course.id}>{course.title} ({course.status})</option>
                   ))}
                 </select>
               </div>
               <div className="col-12 col-lg-2 d-grid">
-                <button type="submit" className="btn btn-success" disabled={saving || loading || courses.length === 0}>
+                <button type="submit" className="btn btn-success" disabled={saving || loading || !courses.some((course) => course.status === 'published')}>
                   {saving ? 'Saving…' : 'Enroll'}
                 </button>
               </div>
