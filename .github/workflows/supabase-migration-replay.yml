@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/my-academy-mvp
+      - release/my-academy-clean
     paths:
       - ".github/workflows/supabase-migration-replay.yml"
       - "supabase/**"
