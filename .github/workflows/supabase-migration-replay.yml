@@ -14,6 +14,7 @@ on:
       - "src/admin/context/**"
       - "scripts/test-academy-access.mjs"
       - "package.json"
+      - "package-lock.json"
   pull_request:
     paths:
       - ".github/workflows/supabase-migration-replay.yml"
@@ -24,12 +25,35 @@ on:
       - "src/admin/context/**"
       - "scripts/test-academy-access.mjs"
       - "package.json"
+      - "package-lock.json"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
+  app-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Verify Academy access boundaries
+        run: npm run test:academy-access
+
+      - name: Build the React application
+        run: npm run build
+
   migration-replay:
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -47,15 +71,6 @@ jobs:
 
       - name: Replay every migration on a clean local database
         run: supabase db reset
-
-      - name: Install Node dependencies
-        run: npm ci
-
-      - name: Verify Academy access boundaries
-        run: npm run test:academy-access
-
-      - name: Build the React application
-        run: npm run build
 
       - name: Stop local Supabase stack
         if: always()
