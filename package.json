@@ -11,6 +11,7 @@
     "test:case-study-stages": "node scripts/test-case-study-stages.mjs",
     "test:learning-experience": "node scripts/test-learning-experience.mjs",
     "test:learning-player": "node scripts/test-learning-player.mjs",
+    "test:academy-access": "node scripts/test-academy-access.mjs",
     "preview": "vite preview",
     "api": "node server/apiServer.js",
     "mcp:check": "node server/mcpCheck.js"
