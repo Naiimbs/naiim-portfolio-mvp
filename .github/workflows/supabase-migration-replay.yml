@@ -11,6 +11,8 @@ on:
       - "src/admin/pages/Academy*.jsx"
       - "src/admin/components/**"
       - "src/admin/context/**"
+      - "scripts/test-academy-access.mjs"
+      - "package.json"
   pull_request:
     paths:
       - ".github/workflows/supabase-migration-replay.yml"
@@ -18,6 +20,9 @@ on:
       - "src/App.jsx"
       - "src/admin/pages/Academy*.jsx"
       - "src/admin/components/**"
+      - "src/admin/context/**"
+      - "scripts/test-academy-access.mjs"
+      - "package.json"
   workflow_dispatch:
 
 permissions:
@@ -42,10 +47,14 @@ jobs:
       - name: Replay every migration on a clean local database
         run: supabase db reset
 
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Verify Academy access boundaries
+        run: npm run test:academy-access
+
       - name: Build the React application
-        run: |
-          npm ci
-          npm run build
+        run: npm run build
 
       - name: Stop local Supabase stack
         if: always()
