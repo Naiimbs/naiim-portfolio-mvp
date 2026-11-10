@@ -1,4 +1,5 @@
 -- My Academy core schema (MVP)
+-- Validated by the clean local Supabase migration replay workflow.
 -- Additive only: does not alter existing CMS tables, enums, policies or functions.
 -- Apply only after the remote migration-history baseline has been reconciled.
 -- CI must replay the full migration history on a clean local Supabase database.
