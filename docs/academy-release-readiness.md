@@ -129,7 +129,7 @@ The branch is based directly on `migration/react-phase-1` and contains Academy-s
 - seed.sql changes,
 - the unrelated legacy AI Lab.
 
-The branch is a code-preparation branch, not a production deployment.
+The branch is a code-preparation branch, not a production deployment. Its draft review is [PR #35](https://github.com/Naiimbs/naiim-portfolio-mvp/pull/35). The independent legacy replay fix is tracked in [draft PR #34](https://github.com/Naiimbs/naiim-portfolio-mvp/pull/34).
 
 ## Supabase Auth password protection
 
