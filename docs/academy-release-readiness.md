@@ -114,8 +114,9 @@ The available connected Supabase operations do not expose the CLI migration-repa
 
 Before repair or Academy DDL:
 - Confirm a recent successful Supabase-managed backup/snapshot exists in the project's **Database → Backups** page, or take a manual backup using the supported project backup process.
-- Confirm retention/restore-point availability for the current plan.
+- Supabase documents daily automated database backups for Pro, Team and Enterprise plans (7, 14 and up to 30 days of retention respectively); Free projects should export data regularly with the CLI. Verify the actual plan and backup timestamp in the Dashboard.
 - Record the backup timestamp and verify the restore path (ideally restore to a separate project before production work).
+- **Storage object files are not included in database backups.** Back up the actual files in the `portfolio-media` bucket separately (for example through Storage/S3-compatible export); the database backup only contains Storage metadata.
 - Do not treat a schema-only dump as a full production backup; existing CMS rows and Storage objects matter.
 
 No backup was created or verified through the connected tools in this session.
