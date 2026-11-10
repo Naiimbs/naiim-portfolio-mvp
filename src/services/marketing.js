@@ -162,7 +162,7 @@ export async function submitCmsForm({ formId = 'cms-form', formTitle = 'CMS Form
     throw new Error(emailValidation.reason === 'disposable' ? 'Disposable email addresses are not accepted.' : 'Please provide a valid email address.');
   }
 
-  const name = normalizedValues.name || normalizedValues.full_name || [normalizedValues.firstName, normalizedValues.lastName].filter(Boolean).join(' ');
+  const name = normalizedValues.name || normalizedValues.full_name || normalizedValues.f_name || normalizedValues.fName || [normalizedValues.firstName, normalizedValues.lastName].filter(Boolean).join(' ');
   const role = normalizedValues.role || normalizedValues.job_title || '';
   const company = normalizedValues.company || '';
   const submittedAt = new Date().toISOString();
