@@ -105,7 +105,12 @@ export default function AcademyCourses() {
       summary: form.summary.trim() || null,
       description: form.description.trim() || null,
       status: form.status,
-      published_at: form.status === 'published' ? new Date().toISOString() : null,
+      published_at: form.status === 'published'
+        ? (courses.find((course) => course.id === editingId)?.published_at || new Date().toISOString())
+        : null,
+      archived_at: form.status === 'archived'
+        ? (courses.find((course) => course.id === editingId)?.archived_at || new Date().toISOString())
+        : null,
     };
 
     let result;
@@ -205,6 +210,7 @@ export default function AcademyCourses() {
                     onChange={(e) => setForm({ ...form, status: e.target.value })}>
                     <option value="draft">Draft</option>
                     <option value="published">Published</option>
+                    <option value="archived">Archived</option>
                   </select>
                   <div className="form-text">Archived courses are restored from the course list.</div>
                 </div>
