@@ -2,6 +2,7 @@
 
 **Repository:** `Naiimbs/naiim-portfolio-mvp`  
 **Production/release branch:** `migration/react-phase-1`  
+**Academy isolation branch:** `release/my-academy-clean`  
 **Feature branch:** `feature/my-academy-mvp`  
 **Supabase project:** `mywebsite` (`eu-west-1`)  
 **Last reviewed:** 2026-11-10
@@ -73,9 +74,9 @@ The current execution tools do not provide the Supabase CLI migration-repair com
 
 ## Release-branch caution
 
-The feature branch is **54 commits ahead** of `migration/react-phase-1` and its comparison includes 20 changed files. It also modifies an existing historical CMS migration (`007_cms_registry.sql`) and Supabase config/seed files.
+The development branch is **55 commits ahead** of `migration/react-phase-1`. Its diff includes historical migration (`007_cms_registry.sql`), Supabase config and seed changes, so it must not be merged wholesale.
 
-Do not merge the feature branch wholesale into the release branch. First isolate or cherry-pick the Academy-specific changes into a clean release branch, review the historical migration/config/seed diffs, and keep the CMS database baseline untouched.
+The Academy work has now been isolated into `release/my-academy-clean` (20 commits ahead; Academy UI, access guard, migrations, tests and documentation only). The historical `007` replay defect is being handled separately in draft PR #34. The clean Academy branch intentionally does not contain that baseline fix until it is reviewed and merged independently.
 
 ## Security audit notes
 
