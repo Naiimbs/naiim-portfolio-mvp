@@ -10,6 +10,7 @@ on:
       - "src/App.jsx"
       - "src/admin/pages/Academy*.jsx"
       - "src/admin/components/**"
+      - "src/admin/context/**"
   pull_request:
     paths:
       - ".github/workflows/supabase-migration-replay.yml"
