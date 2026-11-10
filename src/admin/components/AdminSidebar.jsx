@@ -211,6 +211,7 @@ export default function AdminSidebar() {
 
       <nav className="admin-nav overflow-auto">
         {navSections.map((section) => {
+          if (section.id === 'ACADEMY' && !isAdmin) return null;
           if (!section.isGroup) {
             // Standalone top-level family
             return (
