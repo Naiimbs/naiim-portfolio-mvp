@@ -78,7 +78,9 @@ export default function AdminSidebar() {
         rootPath: '/admin/academy',
         activePrefixes: ['/admin/academy'],
         items: [
-          { to: '/admin/academy', label: 'Academy Overview', icon: 'bi-grid-1x2' },
+          { to: '/admin/academy', label: 'Academy Overview', icon: 'bi-grid-1x2', end: true },
+          { to: '/admin/academy/courses', label: 'Courses', icon: 'bi-journal-richtext' },
+          { to: '/admin/academy/enrollments', label: 'Enrollments', icon: 'bi-people' },
         ],
       },
       {
