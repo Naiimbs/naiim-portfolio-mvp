@@ -1,119 +1,105 @@
 # My Academy — Architecture & MVP Delivery Plan
 
 **Repository:** `Naiimbs/naiim-portfolio-mvp`  
-**Starting branch:** `migration/react-phase-1`  
+**Production/release branch:** `migration/react-phase-1`  
 **Feature branch:** `feature/my-academy-mvp`  
-**Database:** existing Supabase project `mywebsite` (eu-west-1)
+**Supabase project:** `mywebsite` (`eu-west-1`)  
+**Last reviewed:** 2026-11-10
 
-## Implementation progress — 2026-11-10
+## Product and architecture decision
 
-- Added the initial additive Academy schema migration and a follow-up attempt-integrity migration.
-- Added a clean local Supabase migration replay workflow. The replay has succeeded on an earlier commit after correcting the historical content_registry page-type constraint; the latest schema hardening changes are still being revalidated.
-- Preserved the existing CMS supabase/seed.sql content and appended an idempotent, draft-only Academy demo course/module/lesson. It creates no auth users or enrollments.
-- Added Course Management at /admin/academy/courses: list, create, edit, publish/draft status, and archive/restore lifecycle.
-- Added a curriculum editor at /admin/academy/courses/:id for ordered modules and draft lessons, including editable lesson text stored in the versioned JSONB content format. Both screens report a clear setup message while Academy tables are not installed.
-- No Academy migration has been applied to the production Supabase project. No merge or production deploy has occurred.
-- Remaining MVP work: curriculum editor (modules and lessons), admin-managed enrollment, student portal, lesson progress, then assessments.
+My Academy is a dedicated LMS module inside the existing React CMS admin. It is not a separate website/domain and it is not a CMS page template.
 
-## Product boundary
+- **CMS:** portfolio pages, blog, projects, media, SEO and editorial content.
+- **My Academy:** its own `academy_*` data model and learning workflows.
+- **Legacy learning experiment:** leave the old CMS-based learning page untouched until a separate keep/archive/remove decision.
+- **AI services:** MinerU/document processing, AI Course Builder, RAG and AI Tutor are later integrations around the LMS, not dependencies of the core LMS.
 
-My Academy is a dedicated LMS domain inside the existing React application and Supabase project. It is not a CMS page template and must not store course delivery state in `pages`, `page_sections`, or `content_registry`.
+V1 is single-instructor: one administrator manages the academy. Multi-instructor, multi-tenant, marketplace, payments and subscriptions are out of scope.
 
-- **Admin CMS:** marketing pages, blog, projects, media, SEO.
-- **My Academy:** courses, modules, lessons, students, enrollments, assessments and progress.
-- **Student Portal:** learner-facing experience, separated from the admin authoring UI.
-- **AI services (later phases):** document processing, AI Course Builder, retrieval and AI Tutor. These are integrations around the LMS, not LMS table concerns.
+## Current implementation on the feature branch
 
-## MVP scope (Phase 1)
+### Implemented in the admin preview
 
-- One instructor/admin.
-- Course lifecycle: draft, published, archived.
-- Course → modules → lessons.
-- Student authentication and enrollment.
-- Persistent lesson progress.
-- Assessments: quizzes, questions, attempts and results.
-- No marketplace, multi-instructor, multi-tenant, subscriptions or payments.
-- No AI generation or vector/RAG tables in the MVP.
+- Admin-only Academy routes under `/admin/academy`.
+- Academy navigation is shown only to administrator accounts.
+- Course management: list, create, edit, status and archive lifecycle.
+- New courses default to `draft`.
+- Curriculum editor: ordered modules and lessons; new lessons are saved as drafts in versioned JSONB content.
+- Admin-managed enrollment UI for existing learner Auth accounts; it does not create users or send invitations.
+- Attempt-integrity SQL migration: learner ownership checks, attempt-limit enforcement and immutable attempt identity fields.
+- Separate administrator-only answer-key table in the schema design.
 
-## Proposed data model
+### Not implemented yet
 
-Create a dedicated `academy_` namespace in the public schema. Final DDL is deliberately deferred until the live database and migration history are reconciled.
+- Learner-facing Student Portal and lesson player.
+- Learner progress UI and completion workflow.
+- Assessment authoring UI and trusted grading service.
+- MinerU document ingestion, AI Course Builder, embeddings, RAG and AI Tutor.
 
-| Table | Responsibility |
-|---|---|
-| `academy_courses` | Course metadata, slug, lifecycle, publication |
-| `academy_modules` | Ordered modules belonging to a course |
-| `academy_lessons` | Ordered lessons; versioned JSONB lesson body |
-| `academy_enrollments` | Student ↔ course enrollment |
-| `academy_lesson_progress` | Per-student lesson state and completion |
-| `academy_assessments` | Quiz configuration attached to course/module/lesson |
-| `academy_questions` | Question prompt, options and protected answer key |
-| `academy_attempts` | Attempt lifecycle, score and submission timestamps |
-| `academy_attempt_answers` | Optional per-question submitted answers and grading details |
+The dashboard now labels these as planned rather than presenting them as completed features.
 
-Use UUID primary keys, explicit foreign keys, uniqueness constraints for ordering/slug/enrollment, and indexes on foreign-key and learner lookup columns. Store lesson content as validated, versioned JSONB initially; keep binary files in a dedicated private Storage bucket and reference storage paths rather than public URLs.
+## Validation completed
 
-## Security model
+GitHub Actions **Run #21** passed on feature commit `4789b61c8be897fa23fd1881132c0f13222ae74f`:
 
-- Admin-only authoring and publishing.
-- Students may read published courses and lessons only when public or enrolled, according to the final course visibility rule.
-- Students may read/write only their own enrollment, progress and attempts.
-- Correct answers must not be exposed through client-readable question rows. Evaluate answers through a trusted server-side function or split answer keys into a separately protected table.
-- Do not add `student` to the existing `user_role` enum until the current Auth/profile assumptions and admin guard are reviewed. Student authorization should be based on authenticated identity plus Academy enrollment, not CMS editor roles.
-- RLS is required on every Academy table. Test policies as anon, authenticated student A, student B and admin.
+1. Start a clean local Supabase stack.
+2. Replay all repository migrations on a clean local database.
+3. Install Node dependencies.
+4. Run `npm run test:academy-access` to check admin-only routes, private-schema access, RLS coverage, answer-key isolation and attempt-integrity safeguards.
+5. Run the React production build.
+6. Stop the local test stack.
 
-## AI extension points (Phase 2+)
+This proves the repository migrations replay cleanly locally and the static access-boundary checks/build pass. It does **not** prove the remote Production database is reconciled, nor does it constitute a production deployment.
 
-### Knowledge Processing
-- Ingestion job records and source metadata.
-- MinerU adapter for PDF parsing/OCR/layout extraction.
-- Persist original file, extraction artifact, page references and processing status.
-- Do not couple MinerU internals to the LMS lesson schema.
+## Production database status and release blocker
 
-### AI Course Builder
-- Generate editable course/module/lesson/quiz drafts from approved sources.
-- Preserve provenance to source document and page.
-- Require instructor review before saving as course content and explicit publish action.
+The live project is healthy and currently has 23 public tables, all with RLS enabled. No `academy_*` tables exist in Production.
 
-### RAG & AI Tutor
-- Chunk and embed approved knowledge sources.
-- Scope retrieval by course and learner enrollment.
-- Return source-grounded answers with citations.
-- Keep vector schema and provider-specific details out of Phase 1.
-
-## Existing code and migration caution
-
-The current `/admin/courses` screen creates CMS pages using the learning-experience template. It is a legacy CMS authoring path and is not the new LMS. Keep it separate while My Academy is implemented.
-
-The legacy `from-idea-to-mvp` learning page is excluded from this architecture and must remain untouched until a separate keep/archive/remove decision.
-
-At the start of this implementation, repository migration files numbered 001–025 exist, while the live Supabase migration history reports only:
+The remote Supabase migration ledger contains only:
 - `20261110072535_security_hardening_phase_1`
 - `20261110072557_function_search_path_hardening`
 
-The live database has 23 public tables and no Academy/LMS tables. This discrepancy is a release blocker for DDL, not proof of a specific schema failure. Do not replay the repository migrations or create Academy tables until the live schema, policies, and migration ledger are reconciled.
+The repository contains older migrations `001–025` whose schema effects already exist in the live database. Do **not** replay those migrations blindly, and do not insert rows directly into Supabase's migration-history table.
+
+Before applying Academy DDL:
+1. Take/verify a recoverable Production backup.
+2. Compare the complete remote schema (columns, defaults, constraints, indexes, triggers, functions, policies and storage objects) with the effects of migrations `001–025`.
+3. Repair migration tracking with the supported Supabase CLI only after each migration's full effects are verified.
+4. Re-run local/remote migration-list checks.
+5. Apply only the reviewed Academy migrations.
+
+The current execution tools do not provide the Supabase CLI migration-repair command. No Academy migration has been applied to Production, and no production deployment has occurred.
+
+## Release-branch caution
+
+The feature branch is **54 commits ahead** of `migration/react-phase-1` and its comparison includes 20 changed files. It also modifies an existing historical CMS migration (`007_cms_registry.sql`) and Supabase config/seed files.
+
+Do not merge the feature branch wholesale into the release branch. First isolate or cherry-pick the Academy-specific changes into a clean release branch, review the historical migration/config/seed diffs, and keep the CMS database baseline untouched.
+
+## Security audit notes
+
+- Every existing public table has RLS enabled.
+- `resource_ingest_rate_limits` has no RLS policies and no `anon`/`authenticated` table grants; it is service-role-only. Keep it that way.
+- `public.is_admin()` is used by existing CMS RLS policies whose role is `public`. Do not revoke its execute permission without redesigning and testing those legacy policies.
+- `get_post_rating_summary` and `increment_post_view` are public-facing RPCs; inspect their implementations/call sites before changing permissions.
+- Supabase Auth leaked-password protection is currently disabled. This is an Auth dashboard setting, not an Academy SQL migration.
+- Existing performance-advisor findings include legacy CMS foreign keys without covering indexes and multiple permissive policies. Keep those separate from the Academy foundation unless a dedicated CMS remediation is approved.
 
 ## Delivery sequence
 
-1. Admin feature boundary and navigation.
-2. Schema/migration reconciliation and reviewed Academy migration.
-3. Admin course/module/lesson CRUD.
-4. Student auth/enrollment and Student Portal.
-5. Progress persistence.
-6. Assessment authoring, attempts and secure grading.
-7. End-to-end RLS and regression tests.
-8. Phase 2: MinerU document ingestion.
-9. Phase 3: AI Course Builder.
-10. Phase 4: RAG and AI Tutor.
+1. Finish remote schema and migration-history reconciliation.
+2. Isolate Academy changes into a clean release branch.
+3. Apply reviewed Academy migrations after backup and validation.
+4. Deploy the admin-only preview; keep new courses and lessons in Draft.
+5. Implement Student Portal, lesson player and progress.
+6. Implement assessment authoring, attempts and trusted grading.
+7. Run end-to-end RLS tests as anon, learner A, learner B and admin.
+8. Add MinerU document ingestion.
+9. Add AI Course Builder.
+10. Add course-scoped RAG and AI Tutor with source citations.
 
-## Current implementation status
+## References
 
-The first code slice adds the separate Admin Academy entry point and this architecture record. It does not yet create tables, alter authentication, deploy, or change existing CMS learning content.
-
-## Database reconciliation and resilient schema
-
-The live database audit is documented in [Database Reconciliation](./database-reconciliation.md). The LMS data model and security contract are documented in [My Academy Database Design](./my-academy-database-design.md).
-
-The live project currently has 23 public tables with RLS enabled and no Academy tables. Repository migrations 001–025 structurally correspond to the existing CMS tables and later schema extensions, but the remote migration ledger contains only two later security-hardening entries. This is migration-history drift; it is not a reason to replay the old SQL. Reconcile the full remote schema and migration effects, then repair the migration ledger with the supported Supabase CLI before introducing new DDL.
-
-Academy must use dedicated tables, explicit client grants, per-role RLS policies, ownership/enrollment indexes, private answer keys, and pgTAP allow/deny tests. Do not alter existing CMS enums or policies to implement student access. No Academy SQL has been applied yet.
+- [Database Reconciliation](./database-reconciliation.md)
+- [My Academy Database Design](./my-academy-database-design.md)
