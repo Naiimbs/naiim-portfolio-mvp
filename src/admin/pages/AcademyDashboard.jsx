@@ -91,7 +91,7 @@ export default function AcademyDashboard() {
           <h2 className="h5 fw-bold mb-1">Delivery roadmap</h2>
           <p className="small text-secondary mb-0">The agreed implementation sequence.</p>
         </div>
-        <span className="small text-secondary">MVP first · AI capabilities next</span>
+        <Link to="/admin/academy/courses" className="btn btn-success btn-sm rounded-pill px-3">Manage courses <i className="bi bi-arrow-right ms-1" /></Link>
       </div>
 
       <div className="row g-3">
