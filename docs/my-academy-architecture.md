@@ -10,7 +10,8 @@
 - Added the initial additive Academy schema migration and a follow-up attempt-integrity migration.
 - Added a clean local Supabase migration replay workflow. The replay has succeeded on an earlier commit after correcting the historical content_registry page-type constraint; the latest schema hardening changes are still being revalidated.
 - Preserved the existing CMS supabase/seed.sql content and appended an idempotent, draft-only Academy demo course/module/lesson. It creates no auth users or enrollments.
-- Added the first Course Management screen at /admin/academy/courses: list, create, edit, publish/draft status, and archive/restore lifecycle. It reports a clear setup message while Academy tables are not installed.
+- Added Course Management at /admin/academy/courses: list, create, edit, publish/draft status, and archive/restore lifecycle.
+- Added a curriculum editor at /admin/academy/courses/:id for ordered modules and draft lessons, including editable lesson text stored in the versioned JSONB content format. Both screens report a clear setup message while Academy tables are not installed.
 - No Academy migration has been applied to the production Supabase project. No merge or production deploy has occurred.
 - Remaining MVP work: curriculum editor (modules and lessons), admin-managed enrollment, student portal, lesson progress, then assessments.
 
