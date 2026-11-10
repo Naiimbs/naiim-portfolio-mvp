@@ -3,6 +3,7 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
 const LOCAL_LEADS_KEY = 'portfolio_marketing_leads';
 const LOCAL_DOWNLOADS_KEY = 'portfolio_resource_downloads';
 const LOCAL_DONATIONS_KEY = 'portfolio_donations';
+const LOCAL_FORM_SUBMISSIONS_KEY = 'portfolio_cms_form_submissions';
 
 const DISPOSABLE_EMAIL_DOMAINS = new Set([
   '10minutemail.com', 'guerrillamail.com', 'mailinator.com', 'tempmail.com',
@@ -136,6 +137,64 @@ function saveLocalLeads(list) {
       localStorage.setItem(LOCAL_LEADS_KEY, JSON.stringify(list));
     }
   } catch (err) {}
+}
+
+function saveLocalFormSubmission(submission) {
+  try {
+    if (typeof window !== 'undefined') {
+      const raw = localStorage.getItem(LOCAL_FORM_SUBMISSIONS_KEY);
+      const current = raw ? JSON.parse(raw) : [];
+      localStorage.setItem(LOCAL_FORM_SUBMISSIONS_KEY, JSON.stringify([submission, ...(Array.isArray(current) ? current : [])]));
+    }
+  } catch (err) {
+    console.warn('[marketing] LocalStorage form submission error:', err);
+  }
+}
+
+/** Persist a public CMS form submission as a lead with structured metadata. */
+export async function submitCmsForm({ formId = 'cms-form', formTitle = 'CMS Form', variant = 'custom', values = {}, marketingConsent = false }) {
+  const normalizedValues = Object.fromEntries(
+    Object.entries(values || {}).map(([key, value]) => [key, typeof value === 'string' ? value.trim() : value]),
+  );
+  const email = normalizeEmail(normalizedValues.email || normalizedValues.f_email || '');
+  const emailValidation = email ? validateResourceEmail(email) : { valid: true, email: '' };
+  if (email && !emailValidation.valid) {
+    throw new Error(emailValidation.reason === 'disposable' ? 'Disposable email addresses are not accepted.' : 'Please provide a valid email address.');
+  }
+
+  const name = normalizedValues.name || normalizedValues.full_name || [normalizedValues.firstName, normalizedValues.lastName].filter(Boolean).join(' ');
+  const role = normalizedValues.role || normalizedValues.job_title || '';
+  const company = normalizedValues.company || '';
+  const submittedAt = new Date().toISOString();
+  const metadata = { form_id: formId, form_title: formTitle, form_variant: variant, fields: normalizedValues, submitted_at: submittedAt };
+
+  if (isSupabaseConfigured && supabase) {
+    const { data, error } = await supabase.from('marketing_leads').insert([{
+      email: email || null,
+      name: name || null,
+      role: role || null,
+      company: company || null,
+      marketing_consent: Boolean(marketingConsent),
+      source: 'cms_form',
+      metadata,
+    }]).select('id, email, name, source').single();
+    if (error) throw error;
+    return { success: true, data };
+  }
+
+  const submission = { id: `form-${Date.now()}`, email, name, role, company, marketing_consent: Boolean(marketingConsent), source: 'cms_form', metadata, created_at: submittedAt };
+  saveLocalFormSubmission(submission);
+  if (email || name) {
+    const leads = getLocalLeads();
+    const existingIndex = email ? leads.findIndex((lead) => normalizeEmail(lead.email) === email) : -1;
+    if (existingIndex >= 0) {
+      leads[existingIndex] = { ...leads[existingIndex], name: name || leads[existingIndex].name, last_seen_at: submittedAt, metadata };
+    } else {
+      leads.unshift({ ...submission, first_seen_at: submittedAt, last_seen_at: submittedAt });
+    }
+    saveLocalLeads(leads);
+  }
+  return { success: true, data: submission };
 }
 
 function getLocalDownloads() {

@@ -29,6 +29,7 @@ import LearningModuleSection from './LearningModuleSection';
 
 import MotionHero from '../../motion/MotionHero';
 import Markdown from './Markdown';
+import CmsFormSection from './CmsFormSection';
 
 // Real homepage block components — wrapped as composite CMS sections (Approach A).
 // These render the exact live components so the builder mirrors the real page.
@@ -722,44 +723,9 @@ function AccordionSectionComponent({ config = {} }) {
   );
 }
 
-// 22. Form Primitive Section (Visual Preview Only)
+// 22. Reusable CMS Form Section
 function FormSectionComponent({ config = {} }) {
-  const { title = 'Form', description = '', submitLabel = 'Submit', fields = [] } = config;
-
-  return (
-    <section className="cms-section cms-section-form py-5">
-      <div className="container max-w-xl mx-auto">
-        <div className="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
-          <div className="text-center mb-4">
-            <h3 className="fw-bold font-heading mb-1">{title}</h3>
-            {description && <p className="text-muted small mb-0">{description}</p>}
-          </div>
-
-          <div className="alert alert-light border small text-muted text-center py-2 mb-4 rounded-3">
-            <i className="bi bi-info-circle me-1 text-primary"></i> Preview Interface · Form fields are configurable for layout testing.
-          </div>
-
-          <form onSubmit={(e) => { e.preventDefault(); alert('Form is currently in visual preview mode.'); }}>
-            {fields.map((f, idx) => (
-              <div key={f.id || idx} className="mb-3">
-                <label className="form-label small fw-semibold">
-                  {f.label} {f.required && <span className="text-danger">*</span>}
-                </label>
-                {f.type === 'textarea' ? (
-                  <textarea className="form-control rounded-3" rows="3" placeholder={f.placeholder} />
-                ) : (
-                  <input type={f.type || 'text'} className="form-control rounded-3" placeholder={f.placeholder} />
-                )}
-              </div>
-            ))}
-            <button type="submit" className="btn btn-primary rounded-pill w-100 py-2 fw-semibold mt-2 shadow-sm">
-              {submitLabel}
-            </button>
-          </form>
-        </div>
-      </div>
-    </section>
-  );
+  return <CmsFormSection config={config} />;
 }
 
 // ---------------------------------------------------------------------------

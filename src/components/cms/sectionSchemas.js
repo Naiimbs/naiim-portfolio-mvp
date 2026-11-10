@@ -698,13 +698,23 @@ export const PAGE_SECTION_TYPES = {
     label: 'Form (UI Primitive)',
     category: 'PRIMITIVES',
     icon: 'bi-ui-checks',
-    description: 'Configurable form interface (visual preview mode).',
+    description: 'Reusable contact, registration, newsletter, and resource-download lead forms.',
     hasEditor: true,
     defaultConfig: {
+      variant: 'contact',
+      formId: 'contact-form',
+      eyebrow: '',
       title: 'Get in Touch',
       description: 'Send a message or inquiry directly.',
       submitLabel: 'Send Message',
-      isNonSubmittingPreview: true,
+      submittingLabel: 'Sending…',
+      successTitle: 'Thank you.',
+      successMessage: 'Your submission has been received.',
+      validationMessage: 'Please complete the required fields.',
+      emailValidationMessage: 'Please enter a valid email address.',
+      submissionMode: 'lead',
+      marketingConsent: false,
+      showVariantBadge: false,
       fields: [
         { id: 'f_name', label: 'Your Name', type: 'text', placeholder: 'e.g. Jane Doe', required: true },
         { id: 'f_email', label: 'Email Address', type: 'email', placeholder: 'jane@example.com', required: true },
@@ -714,7 +724,10 @@ export const PAGE_SECTION_TYPES = {
     validate: (cfg = {}) => {
       const errors = [];
       if (!cfg.title?.trim()) errors.push('Form title is required.');
-      return { valid: errors.length === 0, errors, advisories: ['This form is currently in visual preview mode.'] };
+      if (!Array.isArray(cfg.fields) || cfg.fields.length === 0) errors.push('At least one form field is required.');
+      const validVariants = ['contact', 'registration', 'newsletter', 'resource_download', 'custom'];
+      if (cfg.variant && !validVariants.includes(cfg.variant)) errors.push('Form variant is not supported.');
+      return { valid: errors.length === 0, errors, advisories: [] };
     },
   },
   learning_module: {
@@ -832,6 +845,17 @@ export function normalizeSectionConfig(sectionType, rawConfig = {}) {
 
   if (type === 'form') {
     if (!Array.isArray(config.fields)) config.fields = defaults.fields;
+    config.fields = config.fields.map((field, index) => ({
+      id: field.id || `field-${index + 1}`,
+      label: field.label || `Field ${index + 1}`,
+      type: field.type || 'text',
+      placeholder: field.placeholder || '',
+      required: Boolean(field.required),
+      options: Array.isArray(field.options) ? field.options : [],
+      ...field,
+    }));
+    if (!['contact', 'registration', 'newsletter', 'resource_download', 'custom'].includes(config.variant)) config.variant = defaults.variant;
+    if (!['lead', 'preview'].includes(config.submissionMode)) config.submissionMode = 'lead';
   }
 
   if (type === 'project_grid') {

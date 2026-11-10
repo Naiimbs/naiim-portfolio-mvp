@@ -1082,35 +1082,90 @@ export default function SectionPropertyEditor({ section, onChange, onSave, onCan
         );
       }
 
-      case 'form':
+      case 'form': {
+        const fields = Array.isArray(config.fields) ? config.fields : [];
+        const updateForm = (patch) => handleConfigChange({ ...config, ...patch });
+        const applyPreset = (variant) => {
+          const presets = {
+            contact: { title: 'Get in Touch', description: 'Send a message or inquiry directly.', submitLabel: 'Send Message', fields: [{ id: 'f_name', label: 'Your Name', type: 'text', placeholder: 'e.g. Jane Doe', required: true }, { id: 'f_email', label: 'Email Address', type: 'email', placeholder: 'jane@example.com', required: true }, { id: 'f_msg', label: 'Your Message', type: 'textarea', placeholder: 'Write your message...', required: false }] },
+            registration: { title: 'Register for the Experience', description: 'Reserve your place and tell us a little about your interest.', submitLabel: 'Register', fields: [{ id: 'f_name', label: 'Full Name', type: 'text', placeholder: 'Your full name', required: true }, { id: 'f_email', label: 'Email Address', type: 'email', placeholder: 'you@example.com', required: true }, { id: 'f_interest', label: 'Your interest', type: 'textarea', placeholder: 'What would you like to learn or build?', required: false }] },
+            newsletter: { title: 'Stay in the Loop', description: 'Receive occasional notes, resources, and new experiments.', submitLabel: 'Subscribe', fields: [{ id: 'f_email', label: 'Email Address', type: 'email', placeholder: 'you@example.com', required: true }] },
+            resource_download: { title: 'Download the Resource', description: 'Enter your details to unlock the source file.', submitLabel: 'Unlock Download', fields: [{ id: 'f_email', label: 'Email Address', type: 'email', placeholder: 'you@example.com', required: true }, { id: 'f_name', label: 'Full Name', type: 'text', placeholder: 'Your full name', required: true }, { id: 'f_role', label: 'Role / Company', type: 'text', placeholder: 'Product Designer, Studio…', required: false }] },
+          };
+          updateForm({ variant, ...(presets[variant] || {}), submissionMode: 'lead', isNonSubmittingPreview: false });
+        };
+        const addField = () => updateForm({ fields: [...fields, { id: `field-${Date.now()}`, label: 'New field', type: 'text', placeholder: '', required: false, options: [] }] });
+        const updateField = (idx, patch) => updateForm({ fields: fields.map((field, fieldIndex) => fieldIndex === idx ? { ...field, ...patch } : field) });
+        const removeField = (idx) => updateForm({ fields: fields.filter((_, fieldIndex) => fieldIndex !== idx) });
         return (
           <div className="card border-0 bg-light rounded-3 p-3 mb-3">
-            <h6 className="fw-bold mb-3 small text-uppercase">Form (Visual Primitive)</h6>
-            <div className="alert alert-info py-2 px-3 small rounded-3 mb-3">
-              <i className="bi bi-info-circle me-1" /> Visual Form Component · For design/layout testing.
+            <div className="d-flex justify-content-between align-items-center mb-2">
+              <h6 className="fw-bold mb-0 small text-uppercase">CMS Form Component</h6>
+              <span className="badge bg-success-subtle text-success border">Submissions enabled</span>
+            </div>
+            <p className="text-muted small mb-3">Use the same lead-capture pattern as resource downloads, or keep this form in preview mode.</p>
+            <div className="row g-2 mb-3">
+              <div className="col-6">
+                <label className="form-label small fw-semibold">Preset</label>
+                <select className="form-select form-select-sm rounded-3" value={config.variant || 'contact'} onChange={(e) => e.target.value === 'custom' ? updateForm({ variant: 'custom' }) : applyPreset(e.target.value)}>
+                  <option value="contact">Contact</option><option value="registration">Registration</option><option value="resource_download">Resource download</option><option value="newsletter">Newsletter</option><option value="custom">Custom</option>
+                </select>
+              </div>
+              <div className="col-6">
+                <label className="form-label small fw-semibold">Submission</label>
+                <select className="form-select form-select-sm rounded-3" value={config.submissionMode || 'lead'} onChange={(e) => updateForm({ submissionMode: e.target.value, isNonSubmittingPreview: e.target.value === 'preview' })}>
+                  <option value="lead">Save to Leads</option>
+                  <option value="preview">Preview only</option>
+                </select>
+              </div>
+            </div>
+            <div className="mb-2">
+              <label className="form-label small fw-semibold">Form ID</label>
+              <input type="text" className="form-control form-control-sm rounded-3" value={config.formId || ''} onChange={(e) => updateForm({ formId: e.target.value })} placeholder="e.g. ai-lab-registration" />
+            </div>
+            <div className="mb-2">
+              <label className="form-label small fw-semibold">Eyebrow</label>
+              <input type="text" className="form-control form-control-sm rounded-3" value={config.eyebrow || ''} onChange={(e) => updateForm({ eyebrow: e.target.value })} placeholder="Optional label" />
+            </div>
+            <div className="mb-2">
+              <label className="form-label small fw-semibold">Title</label>
+              <input type="text" className="form-control form-control-sm rounded-3" value={config.title || ''} onChange={(e) => updateForm({ title: e.target.value })} placeholder="e.g. Join AI LAB" />
             </div>
             <div className="mb-3">
-              <label className="form-label small fw-semibold">Form Title</label>
-              <input
-                type="text"
-                className="form-control form-control-sm rounded-3"
-                value={config.title || ''}
-                onChange={(e) => handleConfigChange({ ...config, title: e.target.value })}
-                placeholder="e.g. Contact Form"
-              />
+              <label className="form-label small fw-semibold">Description</label>
+              <textarea rows="2" className="form-control form-control-sm rounded-3" value={config.description || ''} onChange={(e) => updateForm({ description: e.target.value })} placeholder="Explain what happens after submission." />
             </div>
-            <div className="mb-3">
-              <label className="form-label small fw-semibold">Submit Button Text</label>
-              <input
-                type="text"
-                className="form-control form-control-sm rounded-3"
-                value={config.submitLabel || ''}
-                onChange={(e) => handleConfigChange({ ...config, submitLabel: e.target.value })}
-                placeholder="e.g. Submit"
-              />
+            {config.variant === 'resource_download' && <div className="row g-2 mb-3"><div className="col-8"><label className="form-label small fw-semibold">Download URL</label><input type="url" className="form-control form-control-sm rounded-3" value={config.downloadUrl || ''} onChange={(e) => updateForm({ downloadUrl: e.target.value })} placeholder="https://… or /manus-storage/…" /></div><div className="col-4"><label className="form-label small fw-semibold">Filename</label><input type="text" className="form-control form-control-sm rounded-3" value={config.downloadName || ''} onChange={(e) => updateForm({ downloadName: e.target.value })} placeholder="source.zip" /></div></div>}
+
+            <div className="d-flex justify-content-between align-items-center mb-2">
+              <h6 className="fw-bold mb-0 small text-uppercase">Fields ({fields.length})</h6>
+              <button type="button" className="btn btn-sm btn-outline-primary py-0 px-2" onClick={addField}><i className="bi bi-plus-lg me-1" />Add field</button>
             </div>
+            <div className="d-flex flex-column gap-2 mb-3">
+              {fields.map((field, idx) => (
+                <div key={field.id || idx} className="p-2 border rounded-3 bg-white">
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <span className="badge bg-secondary-subtle text-secondary small">Field #{idx + 1}</span>
+                    <button type="button" className="btn btn-sm btn-link text-danger p-0" onClick={() => removeField(idx)} title="Remove field"><i className="bi bi-trash" /></button>
+                  </div>
+                  <div className="row g-2">
+                    <div className="col-7"><input type="text" className="form-control form-control-sm" value={field.label || ''} onChange={(e) => updateField(idx, { label: e.target.value })} placeholder="Label" /></div>
+                    <div className="col-5"><select className="form-select form-select-sm" value={field.type || 'text'} onChange={(e) => updateField(idx, { type: e.target.value })}><option value="text">Text</option><option value="email">Email</option><option value="textarea">Long text</option><option value="select">Select</option><option value="checkbox">Checkbox</option></select></div>
+                    <div className="col-8"><input type="text" className="form-control form-control-sm" value={field.placeholder || ''} onChange={(e) => updateField(idx, { placeholder: e.target.value })} placeholder="Placeholder" /></div>
+                    <div className="col-4 d-flex align-items-center"><div className="form-check small"><input type="checkbox" className="form-check-input" checked={Boolean(field.required)} onChange={(e) => updateField(idx, { required: e.target.checked })} id={`required-${section.id}-${idx}`} /><label className="form-check-label" htmlFor={`required-${section.id}-${idx}`}>Required</label></div></div>
+                    {field.type === 'select' && <div className="col-12"><input type="text" className="form-control form-control-sm" value={(field.options || []).map((option) => option.label || option).join(', ')} onChange={(e) => updateField(idx, { options: e.target.value.split(',').map((option) => option.trim()).filter(Boolean) })} placeholder="Options, comma-separated" /></div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="row g-2">
+              <div className="col-6"><label className="form-label small fw-semibold">Submit label</label><input type="text" className="form-control form-control-sm rounded-3" value={config.submitLabel || ''} onChange={(e) => updateForm({ submitLabel: e.target.value })} /></div>
+              <div className="col-6"><label className="form-label small fw-semibold">Success title</label><input type="text" className="form-control form-control-sm rounded-3" value={config.successTitle || ''} onChange={(e) => updateForm({ successTitle: e.target.value })} /></div>
+            </div>
+            <div className="form-check mt-3 small"><input type="checkbox" className="form-check-input" checked={Boolean(config.marketingConsent)} onChange={(e) => updateForm({ marketingConsent: e.target.checked })} id={`marketing-consent-${section.id}`} /><label className="form-check-label" htmlFor={`marketing-consent-${section.id}`}>Record marketing consent when submitted</label></div>
           </div>
         );
+      }
 
       // -----------------------------------------------------------------------
       // 1. About · Hero
