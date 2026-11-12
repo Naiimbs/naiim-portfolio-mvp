@@ -44,7 +44,7 @@ export default function AcademyCourses() {
     setError('');
     const { data, error: queryError } = await supabase
       .from('iqra_courses')
-      .select('id, slug, title, summary, status, created_at, updated_at, published_at')
+      .select('id, slug, title, summary, description, status, created_at, updated_at, published_at, archived_at')
       .order('created_at', { ascending: false });
 
     if (queryError) {
