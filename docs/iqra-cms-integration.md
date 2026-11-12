@@ -80,6 +80,8 @@ The separate `iqra-admin-e2e` CI job starts a disposable local Supabase stack, c
 
 The companion IQRA repository's disposable local Supabase suite separately validates the actual IQRA schema, CMS role downgrade/deletion trigger, stale-token RLS denial, re-promotion behavior, 43 pgTAP assertions, attempt concurrency and Storage API policies.
 
+The actual local Auth/Edge Function E2E workflow passed on implementation commit `977d5f7c22825ae06ad0cebb6dfa7125de7e4aa7`: [GitHub Actions #43192226155](https://github.com/Naiimbs/naiim-portfolio-mvp/actions/runs/43192226155). It verified anonymous/invalid-token rejection, CMS editor denial, self-only bootstrap, real database grant creation, admin revocation, removal of the stored IQRA claim, and preservation of unrelated app metadata.
+
 All local tests run against disposable containers only. They do not validate a hosted Supabase deployment, do not apply migrations and do not authorize Production changes.
 
 ## Explicit Production hold
