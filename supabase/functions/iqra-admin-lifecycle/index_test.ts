@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
-import { createIqraAdminBootstrapHandler } from "./iqra-admin-bootstrap/index.ts";
-import { createIqraAdminRevokeHandler } from "./iqra-admin-revoke/index.ts";
+import { createIqraAdminBootstrapHandler } from "../iqra-admin-bootstrap/index.ts";
+import { createIqraAdminRevokeHandler } from "../iqra-admin-revoke/index.ts";
 
 function fakeDependencies({
   callerId = "10000000-0000-4000-8000-000000000001",
