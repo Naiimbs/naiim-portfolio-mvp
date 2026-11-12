@@ -13,7 +13,15 @@ function jsonResponse(body: Record<string, unknown>, status = 200) {
   });
 }
 
-Deno.serve(async (request: Request) => {
+export function createIqraAdminBootstrapHandler(
+  dependencies: {
+    createClientFn?: typeof createClient;
+    getEnv?: (name: string) => string | undefined;
+  } = {},
+) {
+  const createClientFn = dependencies.createClientFn ?? createClient;
+  const getEnv = dependencies.getEnv ?? ((name: string) => Deno.env.get(name));
+  return async (request: Request) => {
   if (request.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
@@ -21,9 +29,9 @@ Deno.serve(async (request: Request) => {
     return jsonResponse({ error: "Method not allowed." }, 405);
   }
 
-  const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
-  const anonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
-  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+  const supabaseUrl = getEnv("SUPABASE_URL") ?? "";
+  const anonKey = getEnv("SUPABASE_ANON_KEY") ?? "";
+  const serviceRoleKey = getEnv("SUPABASE_SERVICE_ROLE_KEY") ?? "";
   const authorization = request.headers.get("Authorization") ?? "";
   const token = authorization.replace(/^Bearer\s+/i, "");
 
@@ -35,7 +43,7 @@ Deno.serve(async (request: Request) => {
   }
 
   // Verify the caller's JWT with Supabase Auth; never trust a user ID from the request body.
-  const authClient = createClient(supabaseUrl, anonKey, {
+  const authClient = createClientFn(supabaseUrl, anonKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
   const { data: authData, error: authError } = await authClient.auth.getUser(token);
@@ -45,7 +53,7 @@ Deno.serve(async (request: Request) => {
 
   // Service role is used only inside this Edge Function to read the trusted CMS role
   // and update the caller's server-managed app_metadata.
-  const adminClient = createClient(supabaseUrl, serviceRoleKey, {
+  const adminClient = createClientFn(supabaseUrl, serviceRoleKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
   const { data: profile, error: profileError } = await adminClient
@@ -98,4 +106,9 @@ Deno.serve(async (request: Request) => {
   }
 
   return jsonResponse({ ok: true, iqra_role: "admin", grant: "active" });
-});
+  };
+}
+
+if (import.meta.main) {
+  Deno.serve(createIqraAdminBootstrapHandler());
+}
