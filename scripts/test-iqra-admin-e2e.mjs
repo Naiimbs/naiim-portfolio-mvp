@@ -7,12 +7,12 @@ const status = JSON.parse(statusResult.stdout);
 const env = status.env ?? status;
 const apiUrl = env.API_URL;
 const anonKey = env.ANON_KEY || env.PUBLISHABLE_KEY;
-const serviceRoleKey = env.SERVICE_ROLE_KEY || env.SUPABASE_SERVICE_ROLE_KEY;
+const serviceRoleKey = env.SERVICE_ROLE_KEY || env.SUPABASE_SERVICE_ROLE_KEY || env.SECRET_KEY;
 assert.ok(apiUrl && anonKey && serviceRoleKey, 'Local Supabase URL and keys are required.');
 
 const password = 'Iqra-E2E-' + Date.now() + '-SafePass!';
 const users = [];
-const headers = (key, token = key) => ({ apikey: key, Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' });
+const headers = (key, token = key) => ({ apikey: key, ...(token ? { Authorization: 'Bearer ' + token } : {}), 'Content-Type': 'application/json' });
 
 async function api(path, options = {}) {
   const method = options.method || 'GET';
@@ -41,7 +41,7 @@ async function createUser(label, role, appMetadata = {}) {
 }
 
 async function signIn(user) {
-  const signedIn = await api('/auth/v1/token?grant_type=password', { method: 'POST', key: anonKey, token: anonKey, body: { email: user.email, password } });
+  const signedIn = await api('/auth/v1/token?grant_type=password', { method: 'POST', key: anonKey, token: '', body: { email: user.email, password } });
   assert.equal(signedIn.response.status, 200, 'Sign in ' + user.email + ': ' + JSON.stringify(signedIn.data));
   return signedIn.data.access_token;
 }
