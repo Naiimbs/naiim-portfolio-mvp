@@ -12,7 +12,6 @@ on:
   pull_request:
     paths:
       - "supabase/migrations/**"
-      - "supabase/config.toml"
       - "supabase/seed.sql"
   workflow_dispatch:
 
