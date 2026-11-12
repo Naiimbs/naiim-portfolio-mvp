@@ -27,7 +27,7 @@ for (const route of academyRoutes) {
   );
 }
 
-assert.match(guard, /const \{ isAdmin, loading \} = useAuth\(\)/);
+assert.match(guard, /const \{ isAdmin, isIqraAdmin, loading \} = useAuth\(\)/);
 assert.match(guard, /if \(!isAdmin\) return <Navigate to="\/admin" replace \/>/);
 assert.match(sidebar, /section\.id === 'ACADEMY' && !isAdmin/);
 assert.match(courses, /status: 'draft'/);
