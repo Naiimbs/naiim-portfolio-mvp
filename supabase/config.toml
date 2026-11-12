@@ -2,3 +2,9 @@ project_id = "naim-portfolio-mvp"
 
 [functions.resource-ingest]
 verify_jwt = false
+
+[functions.iqra-admin-bootstrap]
+verify_jwt = true
+
+[functions.iqra-admin-revoke]
+verify_jwt = true
