@@ -8,6 +8,7 @@ const AuthContext = createContext({
   isAuthenticated: false,
   isAdmin: false,
   isEditor: false,
+  isIqraAdmin: false,
   signIn: async () => {},
   signOut: async () => {},
 });
@@ -119,6 +120,8 @@ export function AuthProvider({ children }) {
   const isAuthenticated = Boolean(user);
   const isAdmin = profile?.role === 'admin';
   const isEditor = profile?.role === 'editor' || isAdmin;
+  // IQRA authorization is a separate server-managed JWT claim, not a CMS profile role.
+  const isIqraAdmin = user?.app_metadata?.iqra_role === 'admin';
 
   return (
     <AuthContext.Provider
@@ -129,6 +132,7 @@ export function AuthProvider({ children }) {
         isAuthenticated,
         isAdmin,
         isEditor,
+        isIqraAdmin,
         signIn,
         signOut,
       }}
