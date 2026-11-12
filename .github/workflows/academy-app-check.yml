@@ -8,6 +8,8 @@ on:
       - "src/App.jsx"
       - "src/admin/**"
       - "scripts/test-academy-access.mjs"
+      - "scripts/test-iqra-cms-integration.mjs"
+      - "supabase/functions/iqra-admin-bootstrap/**"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/academy-app-check.yml"
@@ -42,6 +44,9 @@ jobs:
 
       - name: Verify Academy admin access boundaries
         run: npm run test:academy-access
+
+      - name: Verify IQRA CMS integration boundaries
+        run: npm run test:iqra-cms
 
       - name: Build production bundle
         run: npm run build
