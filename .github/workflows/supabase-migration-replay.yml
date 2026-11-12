@@ -8,7 +8,6 @@ on:
     paths:
       - ".github/workflows/supabase-migration-replay.yml"
       - "supabase/migrations/**"
-      - "supabase/config.toml"
       - "supabase/seed.sql"
   pull_request:
     paths:
