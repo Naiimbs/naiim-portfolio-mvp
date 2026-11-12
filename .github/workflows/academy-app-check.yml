@@ -93,6 +93,9 @@ jobs:
           if [ -d supabase/migrations ]; then
             mv supabase/migrations /tmp/iqra-cms-legacy-migrations
           fi
+          if [ -f supabase/seed.sql ]; then
+            mv supabase/seed.sql /tmp/iqra-cms-legacy-seed.sql
+          fi
           mkdir -p supabase/migrations
 
       - name: Start disposable local Supabase
