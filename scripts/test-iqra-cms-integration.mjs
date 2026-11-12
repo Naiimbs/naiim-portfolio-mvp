@@ -10,6 +10,7 @@ const courses = read('src/admin/pages/AcademyCourses.jsx');
 const curriculum = read('src/admin/pages/AcademyCurriculum.jsx');
 const enrollments = read('src/admin/pages/AcademyEnrollments.jsx');
 const bootstrap = read('supabase/functions/iqra-admin-bootstrap/index.ts');
+const supabaseConfig = read('supabase/config.toml');
 
 for (const route of ['academy', 'academy/courses', 'academy/enrollments', 'academy/courses/:id']) {
   assert.ok(app.includes(`path="${route}" element={<IqraAdminGuard>`), `Missing IQRA guard on ${route}`);
@@ -30,6 +31,8 @@ assert.match(bootstrap, /\.from\("profiles"\)/);
 assert.match(bootstrap, /profile\?\.role !== "admin"/);
 assert.match(bootstrap, /auth\.admin\.updateUserById/);
 assert.match(bootstrap, /iqra_role: "admin"/);
+assert.match(bootstrap, /npm:@supabase\\/supabase-js@2\\.109\\.0/);
+assert.doesNotMatch(supabaseConfig, /^\\[functions\\.iqra-admin-bootstrap\\]\\s*\\nverify_jwt\\s*=\\s*false/m);
 assert.doesNotMatch(guard, /SERVICE_ROLE|SUPABASE_SERVICE_ROLE_KEY/i);
 
 console.log('IQRA CMS integration trust-boundary checks passed.');
