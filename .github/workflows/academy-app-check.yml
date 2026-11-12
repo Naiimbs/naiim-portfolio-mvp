@@ -100,9 +100,11 @@ jobs:
       - name: Serve actual IQRA Edge Functions
         shell: bash
         run: |
+          anon_key="$(supabase status --output-format json | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const v=JSON.parse(s);const e=v.env||v;process.stdout.write(e.ANON_KEY||e.PUBLISHABLE_KEY||'')})")"
+          test -n "$anon_key"
           nohup supabase functions serve > /tmp/iqra-functions.log 2>&1 &
           for attempt in $(seq 1 45); do
-            status="$(curl -sS -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:54321/functions/v1/iqra-admin-bootstrap || true)"
+            status="$(curl -sS -o /dev/null -w '%{http_code}' -H "apikey: $anon_key" -X POST http://127.0.0.1:54321/functions/v1/iqra-admin-bootstrap || true)"
             if [ "$status" = "401" ]; then
               echo "IQRA Edge Function gateway is ready."
               exit 0
