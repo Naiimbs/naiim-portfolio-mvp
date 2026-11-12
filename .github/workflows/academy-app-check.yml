@@ -87,6 +87,14 @@ jobs:
         with:
           version: latest
 
+      - name: Isolate E2E stack from unrelated legacy CMS migrations
+        shell: bash
+        run: |
+          if [ -d supabase/migrations ]; then
+            mv supabase/migrations /tmp/iqra-cms-legacy-migrations
+          fi
+          mkdir -p supabase/migrations
+
       - name: Start disposable local Supabase
         run: supabase start
 
