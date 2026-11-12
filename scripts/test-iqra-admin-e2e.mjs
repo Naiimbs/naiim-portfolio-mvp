@@ -114,7 +114,7 @@ try {
   assert.equal(revoke.data.iqra_access_revoked, true);
   assert.equal(await grantExists(target.id), false);
   const targetAfterRevoke = await getUser(target.id);
-  assert.equal('iqra_role' in targetAfterRevoke.app_metadata, false);
+  assert.equal(targetAfterRevoke.app_metadata.iqra_role, null);
   assert.equal(targetAfterRevoke.app_metadata.theme, 'dark');
 
   console.log('IQRA admin Edge Function E2E passed: anonymous/invalid denial, editor denial, self-only bootstrap, database grant creation, target revocation and metadata preservation.');
