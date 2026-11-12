@@ -31,8 +31,8 @@ assert.match(bootstrap, /\.from\("profiles"\)/);
 assert.match(bootstrap, /profile\?\.role !== "admin"/);
 assert.match(bootstrap, /auth\.admin\.updateUserById/);
 assert.match(bootstrap, /iqra_role: "admin"/);
-assert.match(bootstrap, /npm:@supabase\\/supabase-js@2\\.109\\.0/);
-assert.doesNotMatch(supabaseConfig, /^\\[functions\\.iqra-admin-bootstrap\\]\\s*\\nverify_jwt\\s*=\\s*false/m);
+assert.ok(bootstrap.includes("npm:@supabase/supabase-js@2.109.0"));
+const iqraFunctionConfig = supabaseConfig.split("[functions.iqra-admin-bootstrap]")[1]?.split("\\n[")[0] || "";\nassert.doesNotMatch(iqraFunctionConfig, /verify_jwt\\s*=\\s*false/);
 assert.doesNotMatch(guard, /SERVICE_ROLE|SUPABASE_SERVICE_ROLE_KEY/i);
 
 console.log('IQRA CMS integration trust-boundary checks passed.');
