@@ -46,7 +46,7 @@ The `iqra-admin-revoke` Edge Function:
 4. Removes only `app_metadata.iqra_role`, preserving unrelated metadata.
 5. Returns a successful-but-pending cleanup response if metadata cleanup fails; the database grant is already gone, so stale JWTs remain denied.
 
-The IQRA database predicate requires all three signals: the server-managed JWT claim, an active `iqra_admin_grants` row, and the current CMS profile role `admin`. A database trigger removes the IQRA grant when the CMS profile role is downgraded or the profile is deleted. Promoting the CMS profile again does not silently restore IQRA access; the trusted bootstrap flow must be run again.
+The IQRA RLS predicate requires both the server-managed JWT claim and an active `iqra_admin_grants` row. The separate shared-project integration trigger keeps that grant synchronized with the CMS role by deleting it when the profile is downgraded or deleted. Promoting the CMS profile again does not silently restore IQRA access; the trusted bootstrap flow must be run again.
 
 Both functions require JWT verification at the platform boundary and verify the bearer token again in the handler. Their source is not deployed by this branch. The Edge Function dependency is pinned to the CMS project's current `@supabase/supabase-js` version.
 
