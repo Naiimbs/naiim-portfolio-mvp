@@ -35,10 +35,20 @@ The `iqra-admin-bootstrap` Edge Function:
 1. Verifies the caller's bearer token with Supabase Auth.
 2. Looks up the caller's `profiles.role` using the service-role client.
 3. Rejects anyone whose CMS role is not exactly `admin`.
-4. Updates only the authenticated caller's `app_metadata`, preserving existing metadata and setting `iqra_role=admin`.
-5. The client refreshes its session and checks the new claim.
+4. Creates or refreshes the caller's row in `iqra_admin_grants`.
+5. Updates only the authenticated caller's `app_metadata`, preserving existing metadata and setting `iqra_role=admin`.
+6. The client refreshes its session and checks the new claim.
 
-The function source is not deployed by this branch. Deployment and the first role activation require a separate reviewed release step. The platform's default JWT verification remains enabled for this function; it also verifies the bearer token with Supabase Auth inside the handler. The Edge Function dependency is pinned to the CMS project's current `@supabase/supabase-js` version.
+The `iqra-admin-revoke` Edge Function:
+1. Verifies the caller's bearer token and trusted CMS `profiles.role = 'admin'`.
+2. Accepts a target account ID only after caller authorization; learners and CMS editors cannot revoke grants.
+3. Deletes the target's `iqra_admin_grants` row first, immediately closing the IQRA RLS authorization gate.
+4. Removes only `app_metadata.iqra_role`, preserving unrelated metadata.
+5. Returns a successful-but-pending cleanup response if metadata cleanup fails; the database grant is already gone, so stale JWTs remain denied.
+
+The IQRA database predicate requires all three signals: the server-managed JWT claim, an active `iqra_admin_grants` row, and the current CMS profile role `admin`. A database trigger removes the IQRA grant when the CMS profile role is downgraded or the profile is deleted. Promoting the CMS profile again does not silently restore IQRA access; the trusted bootstrap flow must be run again.
+
+Both functions require JWT verification at the platform boundary and verify the bearer token again in the handler. Their source is not deployed by this branch. The Edge Function dependency is pinned to the CMS project's current `@supabase/supabase-js` version.
 
 ## Security constraints
 
@@ -46,7 +56,7 @@ The function source is not deployed by this branch. Deployment and the first rol
 - Never trust `user_metadata` or a role value supplied by the browser.
 - Never accept a target user ID in the bootstrap request; it can only activate the authenticated CMS admin.
 - Keep the service-role key inside the Edge Function environment.
-- Role revocation must remove `app_metadata.iqra_role` through a trusted server-side administrative process and invalidate/refresh sessions. This is a separate lifecycle task before Production.
+- Role revocation deletes the database-backed grant first, so stale access tokens cannot pass IQRA RLS. Metadata cleanup is performed server-side; no client-side role writes are permitted.
 
 ## Validation
 
@@ -55,8 +65,11 @@ Run:
 ```bash
 npm run test:academy-access
 npm run test:iqra-cms
+deno test --allow-env supabase/functions/iqra-admin-lifecycle/index_test.ts
 npm run build
 ```
+
+The Deno handler tests cover anonymous/invalid tokens, editor grant/revoke rejection, admin grant, target validation, and metadata preservation. IQRA's separate disposable Supabase validation replays the schema and pgTAP suite, including stale-token revocation and CMS role downgrade/re-promotion.
 
 These checks validate the CMS integration source and build. They do not validate a hosted Supabase deployment, do not apply migrations and do not authorize Production changes.
 
