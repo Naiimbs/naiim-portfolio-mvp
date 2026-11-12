@@ -24,14 +24,13 @@ function fakeDependencies({
   const adminClient = {
     from: (table: string) => {
       if (table === "profiles") {
-        const query = {
-          select: (_columns: string) => query,
-          eq: (_column: string, _value: string) => query,
-          maybeSingle: async () => ({
-            data: { id: callerId, role: callerRole },
-            error: null,
-          }),
-        };
+        const query: any = {};
+        query.select = (_columns: string) => query;
+        query.eq = (_column: string, _value: string) => query;
+        query.maybeSingle = async () => ({
+          data: { id: callerId, role: callerRole },
+          error: null,
+        });
         return query;
       }
       if (table === "iqra_admin_grants") {
