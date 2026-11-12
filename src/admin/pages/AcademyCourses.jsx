@@ -43,14 +43,14 @@ export default function AcademyCourses() {
     setLoading(true);
     setError('');
     const { data, error: queryError } = await supabase
-      .from('academy_courses')
+      .from('iqra_courses')
       .select('id, slug, title, summary, status, created_at, updated_at, published_at')
       .order('created_at', { ascending: false });
 
     if (queryError) {
       setError(
         queryError.code === '42P01' || queryError.code === 'PGRST205'
-          ? 'Academy database tables are not installed yet. Apply and verify the Academy migrations before managing courses.'
+          ? 'IQRA database tables are not installed yet. Apply and verify the Academy migrations before managing courses.'
           : queryError.message
       );
       setCourses([]);
@@ -115,7 +115,7 @@ export default function AcademyCourses() {
 
     let result;
     if (editingId) {
-      result = await supabase.from('academy_courses').update(payload).eq('id', editingId);
+      result = await supabase.from('iqra_courses').update(payload).eq('id', editingId);
     } else {
       const { data: authData, error: authError } = await supabase.auth.getUser();
       if (authError || !authData?.user) {
@@ -123,7 +123,7 @@ export default function AcademyCourses() {
         setError('Your admin session could not be verified. Sign in again and retry.');
         return;
       }
-      result = await supabase.from('academy_courses').insert({
+      result = await supabase.from('iqra_courses').insert({
         ...payload,
         created_by: authData.user.id,
       });
@@ -146,7 +146,7 @@ export default function AcademyCourses() {
     setError('');
     setNotice('');
     const { error: updateError } = await supabase
-      .from('academy_courses')
+      .from('iqra_courses')
       .update({ status: 'archived', archived_at: new Date().toISOString() })
       .eq('id', course.id);
     if (updateError) setError(updateError.message);
