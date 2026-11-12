@@ -38,7 +38,7 @@ The `iqra-admin-bootstrap` Edge Function:
 4. Updates only the authenticated caller's `app_metadata`, preserving existing metadata and setting `iqra_role=admin`.
 5. The client refreshes its session and checks the new claim.
 
-The function source is not deployed by this branch. Deployment and the first role activation require a separate reviewed release step.
+The function source is not deployed by this branch. Deployment and the first role activation require a separate reviewed release step. The platform's default JWT verification remains enabled for this function; it also verifies the bearer token with Supabase Auth inside the handler. The Edge Function dependency is pinned to the CMS project's current `@supabase/supabase-js` version.
 
 ## Security constraints
 
