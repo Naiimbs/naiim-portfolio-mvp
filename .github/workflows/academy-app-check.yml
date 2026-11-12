@@ -10,6 +10,8 @@ on:
       - "scripts/test-academy-access.mjs"
       - "scripts/test-iqra-cms-integration.mjs"
       - "supabase/functions/iqra-admin-bootstrap/**"
+      - "supabase/functions/iqra-admin-revoke/**"
+      - "supabase/functions/iqra-admin-lifecycle/**"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/academy-app-check.yml"
@@ -19,6 +21,11 @@ on:
       - "src/App.jsx"
       - "src/admin/**"
       - "scripts/test-academy-access.mjs"
+      - "scripts/test-iqra-cms-integration.mjs"
+      - "supabase/functions/iqra-admin-bootstrap/**"
+      - "supabase/functions/iqra-admin-revoke/**"
+      - "supabase/functions/iqra-admin-lifecycle/**"
+      - "supabase/config.toml"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/academy-app-check.yml"
@@ -48,6 +55,14 @@ jobs:
 
       - name: Verify IQRA CMS integration boundaries
         run: npm run test:iqra-cms
+
+      - name: Set up Deno for Edge Function lifecycle tests
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Test IQRA admin grant and revocation handlers
+        run: deno test --allow-env supabase/functions/iqra-admin-lifecycle/index_test.ts
 
       - name: Build production bundle
         run: npm run build
