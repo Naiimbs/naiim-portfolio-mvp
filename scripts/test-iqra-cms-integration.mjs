@@ -41,7 +41,7 @@ assert.match(revoke, /authClient\.auth\.getUser\(token\)/);
 assert.match(revoke, /callerProfile\?\.role !== "admin"/);
 assert.match(revoke, /target_user_id/);
 assert.match(revoke, /from\("iqra_admin_grants"\)/);
-assert.match(revoke, /delete nextAppMetadata\.iqra_role/);
+assert.match(revoke, /iqra_role:\s*null/);
 assert.match(revoke, /iqra_access_revoked: true/);
 
 assert.match(lifecycleTests, /bootstrap rejects anonymous callers/);
