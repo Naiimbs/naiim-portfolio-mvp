@@ -9,6 +9,10 @@ on:
       - "src/admin/**"
       - "scripts/test-academy-access.mjs"
       - "scripts/test-iqra-cms-integration.mjs"
+      - "scripts/test-iqra-admin-e2e.mjs"
+      - "supabase/tests/fixtures/iqra-admin-e2e.sql"
+      - "scripts/test-iqra-admin-e2e.mjs"
+      - "supabase/tests/fixtures/iqra-admin-e2e.sql"
       - "supabase/functions/iqra-admin-bootstrap/**"
       - "supabase/functions/iqra-admin-revoke/**"
       - "supabase/functions/iqra-admin-lifecycle/**"
@@ -66,3 +70,51 @@ jobs:
 
       - name: Build production bundle
         run: npm run build
+  iqra-admin-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Start disposable local Supabase
+        run: supabase start
+
+      - name: Create minimal local IQRA authorization schema
+        shell: bash
+        run: |
+          db_container="$(docker ps --format '{{.Names}}' | grep '^supabase_db_' | head -n 1)"
+          test -n "$db_container"
+          docker exec -i "$db_container" psql -U postgres -d postgres -v ON_ERROR_STOP=1 < supabase/tests/fixtures/iqra-admin-e2e.sql
+
+      - name: Serve actual IQRA Edge Functions
+        shell: bash
+        run: |
+          nohup supabase functions serve > /tmp/iqra-functions.log 2>&1 &
+          for attempt in $(seq 1 45); do
+            status="$(curl -sS -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:54321/functions/v1/iqra-admin-bootstrap || true)"
+            if [ "$status" = "401" ]; then
+              echo "IQRA Edge Function gateway is ready."
+              exit 0
+            fi
+            sleep 2
+          done
+          cat /tmp/iqra-functions.log
+          exit 1
+
+      - name: Verify real Auth and IQRA admin grant/revoke lifecycle
+        run: node scripts/test-iqra-admin-e2e.mjs
+
+      - name: Stop disposable local Supabase
+        if: always()
+        run: supabase stop --no-backup
