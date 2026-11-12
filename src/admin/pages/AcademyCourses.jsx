@@ -50,7 +50,7 @@ export default function AcademyCourses() {
     if (queryError) {
       setError(
         queryError.code === '42P01' || queryError.code === 'PGRST205'
-          ? 'IQRA database tables are not installed yet. Apply and verify the Academy migrations before managing courses.'
+          ? 'IQRA database tables are not installed yet. Apply and verify the IQRA migrations before managing courses.'
           : queryError.message
       );
       setCourses([]);
