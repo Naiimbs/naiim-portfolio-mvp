@@ -27,13 +27,13 @@ export default function AcademyCurriculum() {
     setLoading(true);
     setError('');
     const [courseResult, moduleResult] = await Promise.all([
-      supabase.from('academy_courses').select('*').eq('id', courseId).maybeSingle(),
-      supabase.from('academy_modules').select('*').eq('course_id', courseId).order('position'),
+      supabase.from('iqra_courses').select('*').eq('id', courseId).maybeSingle(),
+      supabase.from('iqra_modules').select('*').eq('course_id', courseId).order('position'),
     ]);
     if (courseResult.error || moduleResult.error) {
       const err = courseResult.error || moduleResult.error;
       setError(err.code === '42P01' || err.code === 'PGRST205'
-        ? 'Academy tables are not installed yet. Apply the verified migrations before editing curriculum.'
+        ? 'IQRA tables are not installed yet. Apply the verified migrations before editing curriculum.'
         : err.message);
       setLoading(false);
       return;
@@ -42,7 +42,7 @@ export default function AcademyCurriculum() {
     setModules(moduleResult.data || []);
     if ((moduleResult.data || []).length) {
       const { data, error: lessonError } = await supabase
-        .from('academy_lessons')
+        .from('iqra_lessons')
         .select('*')
         .in('module_id', moduleResult.data.map((item) => item.id))
         .order('position');
@@ -61,7 +61,7 @@ export default function AcademyCurriculum() {
     if (!moduleTitle.trim() || !supabase) return;
     setSaving(true);
     setError('');
-    const { error: insertError } = await supabase.from('academy_modules').insert({
+    const { error: insertError } = await supabase.from('iqra_modules').insert({
       course_id: courseId,
       title: moduleTitle.trim(),
       description: moduleDescription.trim() || null,
@@ -90,7 +90,7 @@ export default function AcademyCurriculum() {
         ? [{ type: 'paragraph', text: form.body.trim() }]
         : [],
     };
-    const { error: insertError } = await supabase.from('academy_lessons').insert({
+    const { error: insertError } = await supabase.from('iqra_lessons').insert({
       module_id: module.id,
       title: form.title.trim(),
       summary: form.summary.trim() || null,
@@ -119,7 +119,7 @@ export default function AcademyCurriculum() {
         ? [{ type: 'paragraph', text: editingLesson.body.trim() }]
         : [],
     };
-    const { error: updateError } = await supabase.from('academy_lessons').update({
+    const { error: updateError } = await supabase.from('iqra_lessons').update({
       title: editingLesson.title.trim(),
       summary: editingLesson.summary.trim() || null,
       duration_minutes: Number(editingLesson.duration_minutes) || null,
