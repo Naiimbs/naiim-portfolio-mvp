@@ -158,7 +158,7 @@ Deno.test("revoke removes the database grant before clearing only the IQRA claim
   const metadataIndex = calls.findIndex((call) => call.action === "auth-update");
   assert(deleteIndex >= 0 && metadataIndex > deleteIndex);
   const update = calls[metadataIndex].attributes as { app_metadata: Record<string, unknown> };
-  assertEqual("iqra_role" in update.app_metadata, false);
+  assertEqual(update.app_metadata.iqra_role, null);
   assertEqual(update.app_metadata.theme, "dark");
   assertEqual(update.app_metadata.provider, "email");
 });
