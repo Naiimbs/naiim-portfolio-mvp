@@ -94,8 +94,12 @@ export function createIqraAdminRevokeHandler(
     return jsonResponse({ error: "Could not revoke the IQRA administrator grant." }, 500);
   }
 
-  const nextAppMetadata = { ...(targetResult.user.app_metadata ?? {}) };
-  delete nextAppMetadata.iqra_role;
+  // Auth metadata updates merge fields; set the claim to null explicitly so
+  // omission cannot leave a previously stored admin claim active.
+  const nextAppMetadata = {
+    ...(targetResult.user.app_metadata ?? {}),
+    iqra_role: null,
+  };
   const { error: metadataError } = await adminClient.auth.admin.updateUserById(
     targetUserId,
     { app_metadata: nextAppMetadata },
