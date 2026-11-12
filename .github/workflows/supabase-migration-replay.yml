@@ -7,25 +7,12 @@ on:
       - release/my-academy-clean
     paths:
       - ".github/workflows/supabase-migration-replay.yml"
-      - "supabase/**"
-      - "src/App.jsx"
-      - "src/admin/pages/Academy*.jsx"
-      - "src/admin/components/**"
-      - "src/admin/context/**"
-      - "scripts/test-academy-access.mjs"
-      - "package.json"
-      - "package-lock.json"
+      - "supabase/migrations/**"
+      - "supabase/seed.sql"
   pull_request:
     paths:
-      - ".github/workflows/supabase-migration-replay.yml"
-      - "supabase/**"
-      - "src/App.jsx"
-      - "src/admin/pages/Academy*.jsx"
-      - "src/admin/components/**"
-      - "src/admin/context/**"
-      - "scripts/test-academy-access.mjs"
-      - "package.json"
-      - "package-lock.json"
+      - "supabase/migrations/**"
+      - "supabase/seed.sql"
   workflow_dispatch:
 
 permissions:
