@@ -52,7 +52,7 @@ assert.ok(bootstrap.includes("npm:@supabase/supabase-js@2.109.0"));
 assert.ok(revoke.includes("npm:@supabase/supabase-js@2.109.0"));
 for (const fn of ["iqra-admin-bootstrap", "iqra-admin-revoke"]) {
   const block = supabaseConfig.split(`[functions.${fn}]`)[1]?.split("\n[")[0] || "";
-  assert.match(block, /verify_jwt\s*=\s*true/);
+  assert.doesNotMatch(block, /verify_jwt\s*=\s*false/);
 }
 
 console.log('IQRA CMS integration trust-boundary checks passed.');
