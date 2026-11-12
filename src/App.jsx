@@ -25,6 +25,7 @@ const CmsDynamicPage = lazy(() => import('./pages/CmsDynamicPage'));
 // Lazy: entire Admin CMS (never shipped to public visitors)
 const AdminGuard = lazy(() => import('./admin/components/AdminGuard'));
 const AdminOnlyGuard = lazy(() => import('./admin/components/AdminOnlyGuard'));
+const IqraAdminGuard = lazy(() => import('./admin/components/IqraAdminGuard'));
 const AcademyDashboard = lazy(() => import('./admin/pages/AcademyDashboard'));
 const AcademyCourses = lazy(() => import('./admin/pages/AcademyCourses'));
 const AcademyEnrollments = lazy(() => import('./admin/pages/AcademyEnrollments'));
@@ -147,10 +148,10 @@ export default function App() {
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="content" element={<AdminContent />} />
-              <Route path="academy" element={<AdminOnlyGuard><AcademyDashboard /></AdminOnlyGuard>} />
-              <Route path="academy/courses" element={<AdminOnlyGuard><AcademyCourses /></AdminOnlyGuard>} />
-              <Route path="academy/enrollments" element={<AdminOnlyGuard><AcademyEnrollments /></AdminOnlyGuard>} />
-              <Route path="academy/courses/:id" element={<AdminOnlyGuard><AcademyCurriculum /></AdminOnlyGuard>} />
+              <Route path="academy" element={<IqraAdminGuard><AcademyDashboard /></IqraAdminGuard>} />
+              <Route path="academy/courses" element={<IqraAdminGuard><AcademyCourses /></IqraAdminGuard>} />
+              <Route path="academy/enrollments" element={<IqraAdminGuard><AcademyEnrollments /></IqraAdminGuard>} />
+              <Route path="academy/courses/:id" element={<IqraAdminGuard><AcademyCurriculum /></IqraAdminGuard>} />
               <Route path="content/blog/new" element={<AdminBlogEditor />} />
               <Route path="content/blog/:id" element={<AdminBlogEditor />} />
               <Route path="registry" element={<AdminRegistry />} />
