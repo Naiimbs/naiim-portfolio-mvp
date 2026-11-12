@@ -10,6 +10,8 @@ const courses = read('src/admin/pages/AcademyCourses.jsx');
 const curriculum = read('src/admin/pages/AcademyCurriculum.jsx');
 const enrollments = read('src/admin/pages/AcademyEnrollments.jsx');
 const bootstrap = read('supabase/functions/iqra-admin-bootstrap/index.ts');
+const revoke = read('supabase/functions/iqra-admin-revoke/index.ts');
+const lifecycleTests = read('supabase/functions/iqra-admin-lifecycle/index_test.ts');
 const supabaseConfig = read('supabase/config.toml');
 
 for (const route of ['academy', 'academy/courses', 'academy/enrollments', 'academy/courses/:id']) {
@@ -31,8 +33,26 @@ assert.match(bootstrap, /\.from\("profiles"\)/);
 assert.match(bootstrap, /profile\?\.role !== "admin"/);
 assert.match(bootstrap, /auth\.admin\.updateUserById/);
 assert.match(bootstrap, /iqra_role: "admin"/);
+assert.match(bootstrap, /from\("iqra_admin_grants"\)/);
+assert.match(bootstrap, /\.upsert\(/);
+assert.match(bootstrap, /\.delete\(\)/);
+
+assert.match(revoke, /authClient\.auth\.getUser\(token\)/);
+assert.match(revoke, /callerProfile\?\.role !== "admin"/);
+assert.match(revoke, /target_user_id/);
+assert.match(revoke, /from\("iqra_admin_grants"\)/);
+assert.match(revoke, /delete nextAppMetadata\.iqra_role/);
+assert.match(revoke, /iqra_access_revoked: true/);
+
+assert.match(lifecycleTests, /bootstrap rejects anonymous callers/);
+assert.match(lifecycleTests, /bootstrap rejects CMS editors/);
+assert.match(lifecycleTests, /revoke rejects non-admin callers/);
+assert.match(lifecycleTests, /revoke removes the database grant before clearing only the IQRA claim/);
 assert.ok(bootstrap.includes("npm:@supabase/supabase-js@2.109.0"));
-const iqraFunctionConfig = supabaseConfig.split("[functions.iqra-admin-bootstrap]")[1]?.split("\n[")[0] || "";
-assert.doesNotMatch(iqraFunctionConfig, /verify_jwt\s*=\s*false/);
+assert.ok(revoke.includes("npm:@supabase/supabase-js@2.109.0"));
+for (const fn of ["iqra-admin-bootstrap", "iqra-admin-revoke"]) {
+  const block = supabaseConfig.split(`[functions.${fn}]`)[1]?.split("\n[")[0] || "";
+  assert.match(block, /verify_jwt\s*=\s*true/);
+}
 
 console.log('IQRA CMS integration trust-boundary checks passed.');
