@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHmac } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 
 const statusResult = spawnSync('supabase', ['status', '--output-format', 'json'], { encoding: 'utf8' });
@@ -7,8 +8,23 @@ const status = JSON.parse(statusResult.stdout);
 const env = status.env ?? status;
 const apiUrl = env.API_URL;
 const anonKey = env.ANON_KEY || env.PUBLISHABLE_KEY;
-const serviceRoleKey = env.SERVICE_ROLE_KEY || env.SUPABASE_SERVICE_ROLE_KEY || env.SECRET_KEY;
-assert.ok(apiUrl && anonKey && serviceRoleKey, 'Local Supabase URL and keys are required.');
+const jwtSecret = env.JWT_SECRET || status.JWT_SECRET;
+assert.ok(apiUrl && anonKey && jwtSecret, 'Local Supabase URL, publishable key and JWT secret are required.');
+
+function issueServiceRoleToken() {
+  const now = Math.floor(Date.now() / 1000);
+  const encode = (value) => Buffer.from(JSON.stringify(value)).toString('base64url');
+  const unsigned = encode({ alg: 'HS256', typ: 'JWT' }) + '.' + encode({
+    aud: 'authenticated',
+    exp: now + 600,
+    iat: now,
+    iss: 'supabase',
+    role: 'service_role',
+  });
+  const signature = createHmac('sha256', jwtSecret).update(unsigned).digest('base64url');
+  return unsigned + '.' + signature;
+}
+const serviceRoleToken = issueServiceRoleToken();
 
 const password = 'Iqra-E2E-' + Date.now() + '-SafePass!';
 const users = [];
@@ -16,8 +32,8 @@ const headers = (key, token = key) => ({ apikey: key, ...(token ? { Authorizatio
 
 async function api(path, options = {}) {
   const method = options.method || 'GET';
-  const key = options.key || serviceRoleKey;
-  const token = options.token === undefined ? key : options.token;
+  const key = options.key || anonKey;
+  const token = options.token === undefined ? serviceRoleToken : options.token;
   const response = await fetch(apiUrl + path, {
     method,
     headers: headers(key, token),
