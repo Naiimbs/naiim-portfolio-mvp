@@ -60,7 +60,7 @@ Both functions require JWT verification at the platform boundary and verify the 
 
 ## Validation
 
-Run:
+The app-check job runs:
 
 ```bash
 npm run test:academy-access
@@ -69,9 +69,18 @@ deno test --allow-env supabase/functions/iqra-admin-lifecycle/index_test.ts
 npm run build
 ```
 
-The Deno handler tests cover anonymous/invalid tokens, editor grant/revoke rejection, admin grant, target validation, and metadata preservation. IQRA's separate disposable Supabase validation replays the schema and pgTAP suite, including stale-token revocation and CMS role downgrade/re-promotion.
+The Deno handler tests cover anonymous/invalid tokens, editor grant/revoke rejection, admin grant, target validation, and metadata preservation.
 
-These checks validate the CMS integration source and build. They do not validate a hosted Supabase deployment, do not apply migrations and do not authorize Production changes.
+The separate `iqra-admin-e2e` CI job starts a disposable local Supabase stack, creates only the minimal test `profiles` and `iqra_admin_grants` tables, serves the actual Edge Function source, and runs `scripts/test-iqra-admin-e2e.mjs` against real local Supabase Auth and the Functions HTTP gateway. It verifies:
+- anonymous and invalid JWT denial;
+- CMS editor bootstrap and revoke denial;
+- bootstrap is self-only even if a target ID is supplied;
+- real Auth user metadata is updated and the database grant is created;
+- an authorized CMS admin revokes another account's grant first, then removes only `app_metadata.iqra_role`, preserving unrelated metadata.
+
+The companion IQRA repository's disposable local Supabase suite separately validates the actual IQRA schema, CMS role downgrade/deletion trigger, stale-token RLS denial, re-promotion behavior, 43 pgTAP assertions, attempt concurrency and Storage API policies.
+
+All local tests run against disposable containers only. They do not validate a hosted Supabase deployment, do not apply migrations and do not authorize Production changes.
 
 ## Explicit Production hold
 
