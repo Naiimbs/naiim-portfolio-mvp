@@ -58,10 +58,17 @@ function fakeDependencies({
     },
     auth: {
       admin: {
-        getUserById: async (id: string) => ({
-          data: { user: targetFound && id === targetId ? targetUser : null },
-          error: targetFound && id === targetId ? null : { message: "not found" },
-        }),
+        getUserById: async (id: string) => {
+          const user = id === callerId
+            ? { id: callerId, app_metadata: { provider: "email", theme: "dark" } }
+            : targetFound && id === targetId
+              ? targetUser
+              : null;
+          return {
+            data: { user },
+            error: user ? null : { message: "not found" },
+          };
+        },
         updateUserById: async (id: string, attributes: unknown) => {
           calls.push({ action: "auth-update", id, attributes });
           return { error: null };
