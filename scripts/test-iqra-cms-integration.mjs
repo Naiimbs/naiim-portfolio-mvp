@@ -12,7 +12,7 @@ const enrollments = read('src/admin/pages/AcademyEnrollments.jsx');
 const bootstrap = read('supabase/functions/iqra-admin-bootstrap/index.ts');
 
 for (const route of ['academy', 'academy/courses', 'academy/enrollments', 'academy/courses/:id']) {
-  assert.match(app, new RegExp(`path="${route.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')}" element={<IqraAdminGuard>`));
+  assert.ok(app.includes(`path="${route}" element={<IqraAdminGuard>`), `Missing IQRA guard on ${route}`);
 }
 
 assert.match(auth, /user\?\.app_metadata\?\.iqra_role === 'admin'/);
