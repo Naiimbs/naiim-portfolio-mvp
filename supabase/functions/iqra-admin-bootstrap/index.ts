@@ -67,6 +67,18 @@ Deno.serve(async (request: Request) => {
     return jsonResponse({ error: "Could not load the authenticated account." }, 500);
   }
 
+  // Create the database-backed grant first. IQRA RLS checks this row on every
+  // request, so deleting it revokes access immediately even for an unexpired JWT.
+  const { error: grantError } = await adminClient
+    .from("iqra_admin_grants")
+    .upsert(
+      { user_id: authData.user.id, granted_by: authData.user.id },
+      { onConflict: "user_id" },
+    );
+  if (grantError) {
+    return jsonResponse({ error: "Could not create the IQRA administrator grant." }, 500);
+  }
+
   const nextAppMetadata = {
     ...(existingUser.user.app_metadata ?? {}),
     iqra_role: "admin",
@@ -77,8 +89,13 @@ Deno.serve(async (request: Request) => {
   );
 
   if (updateError) {
+    // Compensate so a failed claim update cannot leave an active grant behind.
+    await adminClient
+      .from("iqra_admin_grants")
+      .delete()
+      .eq("user_id", authData.user.id);
     return jsonResponse({ error: "Could not activate the IQRA administrator claim." }, 500);
   }
 
-  return jsonResponse({ ok: true, iqra_role: "admin" });
+  return jsonResponse({ ok: true, iqra_role: "admin", grant: "active" });
 });
