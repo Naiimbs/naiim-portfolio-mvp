@@ -34,25 +34,29 @@ export default function IqraAdminGuard({ children }) {
     setError('');
     setNotice('');
 
-    const { error: invokeError } = await supabase.functions.invoke('iqra-admin-bootstrap', {
-      body: {},
-    });
+    try {
+      const { error: invokeError } = await supabase.functions.invoke('iqra-admin-bootstrap', {
+        body: {},
+      });
 
-    if (invokeError) {
-      setError(invokeError.message || 'Could not verify IQRA administrator access.');
+      if (invokeError) {
+        setError(invokeError.message || 'Could not verify IQRA administrator access.');
+        return;
+      }
+
+      const { data, error: refreshError } = await supabase.auth.refreshSession();
+      if (refreshError) {
+        setError(refreshError.message);
+      } else if (data?.session?.user?.app_metadata?.iqra_role !== 'admin') {
+        setError('The refreshed session does not contain the IQRA admin claim. Contact the system owner.');
+      } else {
+        setNotice('IQRA administrator access is active. Loading the module…');
+      }
+    } catch (requestError) {
+      setError(requestError?.message || 'The IQRA access request failed.');
+    } finally {
       setWorking(false);
-      return;
     }
-
-    const { data, error: refreshError } = await supabase.auth.refreshSession();
-    if (refreshError) {
-      setError(refreshError.message);
-    } else if (data?.session?.user?.app_metadata?.iqra_role !== 'admin') {
-      setError('The refreshed session does not contain the IQRA admin claim. Contact the system owner.');
-    } else {
-      setNotice('IQRA administrator access is active. Loading the module…');
-    }
-    setWorking(false);
   };
 
   return (
