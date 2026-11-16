@@ -179,19 +179,30 @@ export default function AcademyAssessments() {
     const { data: authData, error: authError } = await supabase.auth.getUser();
     if (authError || !authData?.user) { setError('Your admin session could not be verified.'); return; }
     setSaving(true); setError(''); setNotice('');
-    const { error: resultError } = await supabase.from('iqra_attempt_results').upsert({
-      attempt_id: attempt.id,
-      score_percent: score,
-      passed: score >= Number(assessment?.pass_score || 70),
-      feedback: form.feedback.trim() || null,
-      graded_by: authData.user.id,
-      graded_at: new Date().toISOString(),
-    }, { onConflict: 'attempt_id' });
-    if (resultError) setError(resultError.message);
-    else {
-      const { error: attemptError } = await supabase.from('iqra_attempts').update({ status: 'graded' }).eq('id', attempt.id).eq('status', 'submitted');
-      if (attemptError) setError(attemptError.message);
-      else { setNotice('Manual grade saved.'); await load(); }
+    const { data: claimedAttempt, error: claimError } = await supabase.from('iqra_attempts')
+      .update({ status: 'graded' })
+      .eq('id', attempt.id)
+      .eq('status', 'submitted')
+      .select('id')
+      .maybeSingle();
+    if (claimError || !claimedAttempt) {
+      setError(claimError?.message || 'This attempt has already been graded or changed. Refresh the queue.');
+    } else {
+      const { error: resultError } = await supabase.from('iqra_attempt_results').upsert({
+        attempt_id: attempt.id,
+        score_percent: score,
+        passed: score >= Number(assessment?.pass_score || 70),
+        feedback: form.feedback.trim() || null,
+        graded_by: authData.user.id,
+        graded_at: new Date().toISOString(),
+      }, { onConflict: 'attempt_id' });
+      if (resultError) {
+        await supabase.from('iqra_attempts').update({ status: 'submitted' }).eq('id', attempt.id).eq('status', 'graded');
+        setError(resultError.message);
+      } else {
+        setNotice('Manual grade saved.');
+        await load();
+      }
     }
     setSaving(false);
   };
