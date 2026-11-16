@@ -43,7 +43,7 @@ export default function AcademyAssessments() {
       supabase.from('iqra_lessons').select('id,module_id,title,status,position').order('position'),
       supabase.from('iqra_assessments').select('id,lesson_id,title,description,pass_score,max_attempts,is_published,created_at').order('created_at', { ascending: false }),
       supabase.from('profiles').select('id,email,full_name,role'),
-      supabase.from('iqra_attempts').select('id,assessment_id,student_id,attempt_number,status,submitted_at').eq('status', 'submitted').order('submitted_at'),
+      supabase.from('iqra_attempts').select('id,assessment_id,student_id,attempt_number,status,submitted_at').order('submitted_at'),
     ]);
     const failed = [courseResult, moduleResult, lessonResult, assessmentResult, profileResult, attemptResult].find((item) => item.error);
     if (failed) {
@@ -107,6 +107,10 @@ export default function AcademyAssessments() {
     event.preventDefault();
     const form = questionForms[assessment.id] || EMPTY_QUESTION;
     if (!supabase || !form.prompt.trim()) return;
+    if (assessment.is_published || attempts.some((item) => item.assessment_id === assessment.id)) {
+      setError('Unpublish the assessment before editing, and do not change its question set after a learner has attempted it.');
+      return;
+    }
     const objective = ['single_choice', 'multiple_choice'].includes(form.type);
     const options = objective ? parseOptions(form.options) : [];
     const answers = form.answer.split(',').map((item) => item.trim()).filter(Boolean);
@@ -237,7 +241,7 @@ export default function AcademyAssessments() {
               <div className="d-flex align-items-center gap-2"><span className={`badge rounded-pill ${assessment.is_published ? 'text-bg-success' : 'text-bg-secondary'}`}>{assessment.is_published ? 'Published' : 'Draft'}</span><button type="button" className="btn btn-sm btn-outline-success" onClick={() => togglePublished(assessment)} disabled={saving}>{assessment.is_published ? 'Unpublish' : 'Publish'}</button></div>
             </div>
             {assessmentQuestions.map((question, index) => <div className="border rounded-3 p-3 mb-2" key={question.id}><div className="small text-secondary">QUESTION {index + 1} · {question.question_type} · {question.points} pts</div><strong>{question.prompt}</strong>{question.options?.length > 0 && <ul className="small text-secondary mb-0 mt-2">{question.options.map((option) => <li key={option.value}>{option.label}</li>)}</ul>}</div>)}
-            <form className="bg-light rounded-3 p-3 mt-3" onSubmit={(event) => addQuestion(event, assessment)}>
+            {!assessment.is_published && !attempts.some((item) => item.assessment_id === assessment.id) ? <form className="bg-light rounded-3 p-3 mt-3" onSubmit={(event) => addQuestion(event, assessment)}>
               <h4 className="h6 fw-bold mb-3">Add question</h4><div className="row g-2">
                 <div className="col-12 col-lg-3"><label className="form-label small" htmlFor={`question-type-${assessment.id}`}>Type</label><select id={`question-type-${assessment.id}`} className="form-select form-select-sm" value={form.type} onChange={(event) => setQuestionForms((current) => ({ ...current, [assessment.id]: { ...form, type: event.target.value } }))}><option value="single_choice">Single choice</option><option value="multiple_choice">Multiple choice</option><option value="short_text">Short answer (manual)</option><option value="long_text">Long answer (manual)</option></select></div>
                 <div className="col-12 col-lg-7"><label className="form-label small" htmlFor={`question-prompt-${assessment.id}`}>Question prompt *</label><input id={`question-prompt-${assessment.id}`} className="form-control form-control-sm" required value={form.prompt} onChange={(event) => setQuestionForms((current) => ({ ...current, [assessment.id]: { ...form, prompt: event.target.value } }))} /></div>
@@ -245,13 +249,13 @@ export default function AcademyAssessments() {
                 {['single_choice', 'multiple_choice'].includes(form.type) && <><div className="col-12 col-lg-7"><label className="form-label small" htmlFor={`question-options-${assessment.id}`}>Options (one per line: value|label)</label><textarea id={`question-options-${assessment.id}`} className="form-control form-control-sm" rows={3} value={form.options} onChange={(event) => setQuestionForms((current) => ({ ...current, [assessment.id]: { ...form, options: event.target.value } }))} /></div><div className="col-12 col-lg-5"><label className="form-label small" htmlFor={`question-answer-${assessment.id}`}>Correct value{form.type === 'multiple_choice' ? 's (comma separated)' : ''}</label><input id={`question-answer-${assessment.id}`} className="form-control form-control-sm" value={form.answer} onChange={(event) => setQuestionForms((current) => ({ ...current, [assessment.id]: { ...form, answer: event.target.value } }))} /></div></>}
                 <div className="col-12 text-end"><button type="submit" className="btn btn-sm btn-success" disabled={saving}>{saving ? 'Saving…' : 'Add question'}</button></div>
               </div>
-            </form>
+            </form> : <div className="alert alert-info mt-3 mb-0">{assessment.is_published ? 'Unpublish this assessment before editing its questions.' : 'This question set is locked because learners have already started an attempt. Keep it unchanged to preserve historical grading integrity.'}</div>}
           </article>;
         })}
       </div></section>
 
-      <section className="card border-0 shadow-sm"><div className="card-header bg-white border-0 px-4 pt-4 pb-2"><h2 className="h5 fw-bold mb-0">Manual grading queue</h2><span className="small text-secondary">{attempts.length} submitted attempts awaiting review</span></div><div className="card-body p-0">
-        {!attempts.length ? <div className="text-center py-5 text-secondary">No submitted attempts are waiting for manual grading.</div> : attempts.map((attempt) => {
+      <section className="card border-0 shadow-sm"><div className="card-header bg-white border-0 px-4 pt-4 pb-2"><h2 className="h5 fw-bold mb-0">Manual grading queue</h2><span className="small text-secondary">{attempts.filter((item) => item.status === 'submitted').length} submitted attempts awaiting review</span></div><div className="card-body p-0">
+        {!attempts.some((item) => item.status === 'submitted') ? <div className="text-center py-5 text-secondary">No submitted attempts are waiting for manual grading.</div> : attempts.filter((item) => item.status === 'submitted').map((attempt) => {
           const assessment = assessments.find((item) => item.id === attempt.assessment_id);
           const learner = profileById.get(attempt.student_id);
           const attemptAnswers = answers.filter((item) => item.attempt_id === attempt.id);
