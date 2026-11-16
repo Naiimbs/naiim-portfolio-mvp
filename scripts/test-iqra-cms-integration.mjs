@@ -22,6 +22,11 @@ assert.match(auth, /user\?\.app_metadata\?\.iqra_role === 'admin'/);
 assert.match(guard, /if \(!isAdmin\) return <Navigate to="\/admin" replace \/>/);
 assert.match(guard, /supabase\.functions\.invoke\('iqra-admin-bootstrap'/);
 assert.match(guard, /supabase\.auth\.refreshSession\(\)/);
+assert.match(curriculum, /const toggleLessonStatus = async \(lesson\) =>/);
+assert.match(curriculum, /\.update\(\{ status: nextStatus \}\)/);
+assert.match(curriculum, /lesson\.status === 'published' \? 'Move to draft'/);
+assert.match(curriculum, /'Publish'/);
+
 
 for (const [name, source] of [['courses', courses], ['curriculum', curriculum], ['enrollments', enrollments]]) {
   assert.doesNotMatch(source, /\.from\('academy_/);
