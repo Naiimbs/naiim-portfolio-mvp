@@ -89,3 +89,14 @@ All local tests run against disposable containers only. They do not validate a h
 - No IQRA migration or Storage bucket has been applied to hosted Supabase.
 - This branch does not deploy the Edge Function.
 - Do not merge, deploy, grant Production roles or apply SQL until the full role grant/revocation lifecycle, migration diff, backup/rollback plan and end-to-end tests are reviewed and explicitly approved.
+
+
+## Admin operations now implemented on the integration branch
+
+- Lesson publishing is explicit; new lessons start as drafts and can be returned to draft.
+- Enrollment administration grants access only to existing learner accounts, preserves learning history on revocation, and supports reactivation.
+- Learning progress is a read-only report sourced from learner-owned `iqra_lesson_progress` rows.
+- Assessment authoring supports single-choice, multiple-choice, short-text and long-text questions. Choice answer keys are stored separately from learner-readable questions.
+- Assessment publication is blocked unless its parent course and lesson are published, at least one question exists, and every objective question has a protected answer key.
+- Submitted attempts with written responses are exposed in a manual grading queue. Admin grading writes the trusted result and closes the attempt.
+- These workflows are development-branch code only. They depend on the IQRA schema being applied and the trusted grading function being deployed; neither action is included here.
