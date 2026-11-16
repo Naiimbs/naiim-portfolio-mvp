@@ -61,7 +61,7 @@ assert.match(assessments, /iqra_assessments/);
 assert.match(assessments, /iqra_questions/);
 assert.match(assessments, /iqra_question_answer_keys/);
 assert.match(assessments, /iqra_attempt_results/);
-assert.match(assessments, /manual grading queue/);
+assert.match(assessments, /Manual grading queue/);
 assert.match(lifecycleTests, /bootstrap rejects anonymous callers/);
 assert.match(lifecycleTests, /bootstrap rejects CMS editors/);
 assert.match(lifecycleTests, /revoke rejects non-admin callers/);
