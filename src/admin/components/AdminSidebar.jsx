@@ -72,15 +72,17 @@ export default function AdminSidebar() {
       },
       {
         id: 'ACADEMY',
-        title: 'MY ACADEMY',
+        title: 'IQRA',
         isGroup: true,
         icon: 'bi-mortarboard',
         rootPath: '/admin/academy',
         activePrefixes: ['/admin/academy'],
         items: [
-          { to: '/admin/academy', label: 'Academy Overview', icon: 'bi-grid-1x2', end: true },
+          { to: '/admin/academy', label: 'IQRA Overview', icon: 'bi-grid-1x2', end: true },
           { to: '/admin/academy/courses', label: 'Courses', icon: 'bi-journal-richtext' },
           { to: '/admin/academy/enrollments', label: 'Enrollments', icon: 'bi-people' },
+          { to: '/admin/academy/progress', label: 'Learning Progress', icon: 'bi-graph-up-arrow' },
+          { to: '/admin/academy/assessments', label: 'Assessments', icon: 'bi-ui-checks-grid' },
         ],
       },
       {

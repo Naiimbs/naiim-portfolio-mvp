@@ -12,9 +12,9 @@ const phases = [
   {
     number: '02',
     title: 'Learner experience',
-    status: 'Planned',
-    description: 'The learner-facing experience will be implemented and tested before any course is opened to learners.',
-    items: ['Student portal', 'Lesson player and progress', 'Assessments and results'],
+    status: 'In progress',
+    description: 'The independent learner portal and the core tracking and assessment workflows are being connected to the IQRA backend.',
+    items: ['Authenticated learner portal', 'Lesson progress tracking', 'Assessment authoring and grading'],
   },
   {
     number: '03',
@@ -65,7 +65,7 @@ export default function AcademyDashboard() {
 
       <div className="alert alert-info border-0" role="status">
         <strong>Private preview:</strong> This area is restricted to administrator accounts. New courses and lessons start as drafts.
-        The learner portal and assessments are not part of the current admin-preview build.
+        The learner portal is developed as a separate IQRA application. Course, enrollment, progress and assessment administration are available here as backend integrations are validated.
       </div>
 
       <div className="row g-3 mb-4">
@@ -106,6 +106,8 @@ export default function AcademyDashboard() {
         <div className="d-flex gap-2 flex-wrap">
           <Link to="/admin/academy/courses" className="btn btn-success btn-sm rounded-pill px-3">Manage courses <i className="bi bi-arrow-right ms-1" /></Link>
           <Link to="/admin/academy/enrollments" className="btn btn-outline-success btn-sm rounded-pill px-3">Manage enrollments</Link>
+          <Link to="/admin/academy/progress" className="btn btn-outline-success btn-sm rounded-pill px-3">Learning progress</Link>
+          <Link to="/admin/academy/assessments" className="btn btn-outline-success btn-sm rounded-pill px-3">Assessments</Link>
         </div>
       </div>
 

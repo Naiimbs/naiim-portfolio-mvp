@@ -8,14 +8,28 @@ on:
       - "src/App.jsx"
       - "src/admin/**"
       - "scripts/test-academy-access.mjs"
+      - "scripts/test-iqra-cms-integration.mjs"
+      - "scripts/test-iqra-admin-e2e.mjs"
+      - "supabase/tests/fixtures/iqra-admin-e2e.sql"
+      - "supabase/functions/iqra-admin-bootstrap/**"
+      - "supabase/functions/iqra-admin-revoke/**"
+      - "supabase/functions/iqra-admin-lifecycle/**"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/academy-app-check.yml"
+      - ".github/workflows/supabase-migration-replay.yml"
   pull_request:
     paths:
       - "src/App.jsx"
       - "src/admin/**"
       - "scripts/test-academy-access.mjs"
+      - "scripts/test-iqra-cms-integration.mjs"
+      - "scripts/test-iqra-admin-e2e.mjs"
+      - "supabase/tests/fixtures/iqra-admin-e2e.sql"
+      - "supabase/functions/iqra-admin-bootstrap/**"
+      - "supabase/functions/iqra-admin-revoke/**"
+      - "supabase/functions/iqra-admin-lifecycle/**"
+      - "supabase/config.toml"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/academy-app-check.yml"
@@ -43,5 +57,77 @@ jobs:
       - name: Verify Academy admin access boundaries
         run: npm run test:academy-access
 
+      - name: Verify IQRA CMS integration boundaries
+        run: npm run test:iqra-cms
+
+      - name: Set up Deno for Edge Function lifecycle tests
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Test IQRA admin grant and revocation handlers
+        run: deno test --allow-env supabase/functions/iqra-admin-lifecycle/index_test.ts
+
       - name: Build production bundle
         run: npm run build
+  iqra-admin-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Isolate E2E stack from unrelated legacy CMS migrations
+        shell: bash
+        run: |
+          if [ -d supabase/migrations ]; then
+            mv supabase/migrations /tmp/iqra-cms-legacy-migrations
+          fi
+          if [ -f supabase/seed.sql ]; then
+            mv supabase/seed.sql /tmp/iqra-cms-legacy-seed.sql
+          fi
+          mkdir -p supabase/migrations
+
+      - name: Start disposable local Supabase
+        run: supabase start
+
+      - name: Create minimal local IQRA authorization schema
+        shell: bash
+        run: |
+          db_container="$(docker ps --format '{{.Names}}' | grep '^supabase_db_' | head -n 1)"
+          test -n "$db_container"
+          docker exec -i "$db_container" psql -U postgres -d postgres -v ON_ERROR_STOP=1 < supabase/tests/fixtures/iqra-admin-e2e.sql
+
+      - name: Serve actual IQRA Edge Functions
+        shell: bash
+        run: |
+          anon_key="$(supabase status --output-format json | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const v=JSON.parse(s);const e=v.env||v;process.stdout.write(e.ANON_KEY||e.PUBLISHABLE_KEY||'')})")"
+          test -n "$anon_key"
+          nohup supabase functions serve > /tmp/iqra-functions.log 2>&1 &
+          for attempt in $(seq 1 45); do
+            status="$(curl -sS -o /dev/null -w '%{http_code}' -H "apikey: $anon_key" -X POST http://127.0.0.1:54321/functions/v1/iqra-admin-bootstrap || true)"
+            if [ "$status" = "401" ]; then
+              echo "IQRA Edge Function gateway is ready."
+              exit 0
+            fi
+            sleep 2
+          done
+          cat /tmp/iqra-functions.log
+          exit 1
+
+      - name: Verify real Auth and IQRA admin grant/revoke lifecycle
+        run: node scripts/test-iqra-admin-e2e.mjs
+
+      - name: Stop disposable local Supabase
+        if: always()
+        run: supabase stop --no-backup

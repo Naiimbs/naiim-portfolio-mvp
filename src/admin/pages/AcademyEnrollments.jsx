@@ -25,13 +25,13 @@ export default function AcademyEnrollments() {
     setError('');
     const [profileResult, courseResult, enrollmentResult] = await Promise.all([
       supabase.from('profiles').select('id,email,full_name,role').order('email'),
-      supabase.from('academy_courses').select('id,title,slug,status').order('title'),
-      supabase.from('academy_enrollments').select('id,course_id,student_id,status,enrolled_at,completed_at').order('enrolled_at', { ascending: false }),
+      supabase.from('iqra_courses').select('id,title,slug,status').order('title'),
+      supabase.from('iqra_enrollments').select('id,course_id,student_id,status,enrolled_at,completed_at').order('enrolled_at', { ascending: false }),
     ]);
     const failed = profileResult.error || courseResult.error || enrollmentResult.error;
     if (failed) {
       setError(failed.code === '42P01' || failed.code === 'PGRST205'
-        ? 'Academy tables are not installed in this database yet. Keep working on the feature branch until the migration baseline is verified.'
+        ? 'IQRA tables are not installed in this database yet. Keep working on the feature branch until the migration baseline is verified.'
         : failed.message);
       setLoading(false);
       return;
@@ -88,7 +88,7 @@ export default function AcademyEnrollments() {
       setSaving(false);
       return;
     }
-    const { error: insertError } = await supabase.from('academy_enrollments').upsert({
+    const { error: insertError } = await supabase.from('iqra_enrollments').upsert({
       course_id: form.courseId,
       student_id: profile.id,
       status: 'active',
@@ -107,7 +107,7 @@ export default function AcademyEnrollments() {
     if (!supabase) return;
     setError('');
     setNotice('');
-    const { error: updateError } = await supabase.from('academy_enrollments')
+    const { error: updateError } = await supabase.from('iqra_enrollments')
       .update({ status, completed_at: status === 'completed' ? new Date().toISOString() : null })
       .eq('id', enrollment.id);
     if (updateError) setError(updateError.message);

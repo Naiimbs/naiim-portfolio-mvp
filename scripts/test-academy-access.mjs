@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 
 const app = read('src/App.jsx');
-const guard = read('src/admin/components/AdminOnlyGuard.jsx');
+const guard = read('src/admin/components/IqraAdminGuard.jsx');
 const sidebar = read('src/admin/components/AdminSidebar.jsx');
 const courses = read('src/admin/pages/AcademyCourses.jsx');
 const curriculum = read('src/admin/pages/AcademyCurriculum.jsx');
@@ -23,11 +23,11 @@ for (const route of academyRoutes) {
   const escaped = route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   assert.match(
     app,
-    new RegExp(`<Route path="${escaped}" element={<AdminOnlyGuard><Academy`)
+    new RegExp(`<Route path="${escaped}" element={<IqraAdminGuard><Academy`)
   );
 }
 
-assert.match(guard, /const \{ isAdmin, loading \} = useAuth\(\)/);
+assert.match(guard, /const \{ isAdmin, isIqraAdmin, loading \} = useAuth\(\)/);
 assert.match(guard, /if \(!isAdmin\) return <Navigate to="\/admin" replace \/>/);
 assert.match(sidebar, /section\.id === 'ACADEMY' && !isAdmin/);
 assert.match(courses, /status: 'draft'/);
