@@ -134,6 +134,25 @@ export default function AcademyCurriculum() {
     setSaving(false);
   };
 
+  const toggleLessonStatus = async (lesson) => {
+    if (!supabase || saving) return;
+    const nextStatus = lesson.status === 'published' ? 'draft' : 'published';
+    setSaving(true);
+    setError('');
+    setNotice('');
+    const { error: updateError } = await supabase
+      .from('iqra_lessons')
+      .update({ status: nextStatus })
+      .eq('id', lesson.id);
+    if (updateError) {
+      setError(updateError.message);
+    } else {
+      setNotice(nextStatus === 'published' ? 'Lesson published.' : 'Lesson moved back to draft.');
+      await loadCurriculum();
+    }
+    setSaving(false);
+  };
+
   const setLessonForm = (moduleId, key, value) => {
     setLessonForms((current) => ({
       ...current,
@@ -229,7 +248,17 @@ export default function AcademyCurriculum() {
                                   <div className="small text-secondary">{lesson.duration_minutes || '—'} min · {lesson.status}</div>
                                   {lesson.summary && <div className="small text-secondary mt-1">{lesson.summary}</div>}
                                 </div>
-                                <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => beginEditLesson(lesson)}>Edit</button>
+                                <div className="d-flex gap-2 flex-shrink-0">
+                                  <button
+                                    type="button"
+                                    className={`btn btn-sm ${lesson.status === 'published' ? 'btn-outline-warning' : 'btn-outline-success'}`}
+                                    onClick={() => toggleLessonStatus(lesson)}
+                                    disabled={saving}
+                                  >
+                                    {lesson.status === 'published' ? 'Move to draft' : lesson.status === 'archived' ? 'Restore draft' : 'Publish'}
+                                  </button>
+                                  <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => beginEditLesson(lesson)}>Edit</button>
+                                </div>
                               </div>
                             </div>
                           ))}
