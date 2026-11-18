@@ -391,6 +391,44 @@ export async function captureLeadAndDownload({
   return { success: true, lead: leadRecord };
 }
 
+
+/** Capture an email-gated CV download without requiring a full resource profile. */
+export async function captureCvDownload({ email, marketingConsent = false } = {}) {
+  const validation = validateResourceEmail(email);
+  if (!validation.valid) {
+    throw new Error(validation.reason === 'disposable'
+      ? 'Disposable email addresses are not accepted.'
+      : 'Please provide a valid email address.');
+  }
+
+  const cleanEmail = validation.email;
+  const now = new Date().toISOString();
+  const resourceSlug = 'naiim-bsili-cv-v2-3-1';
+  const assetName = 'Naiim_Bsili_CV_v2.3.1.pdf';
+
+  if (isSupabaseConfigured && supabase) {
+    const { data, error } = await supabase.functions.invoke('resource-ingest', {
+      body: { action: 'cv_download', email: cleanEmail, marketing_consent: Boolean(marketingConsent), resource_slug: resourceSlug, asset_name: assetName },
+    });
+    if (error) throw error;
+    if (data?.error) throw new Error(data.message || 'Failed to register the CV download.');
+    return { success: true, data };
+  }
+
+  const leads = getLocalLeads();
+  const existingIndex = leads.findIndex((lead) => normalizeEmail(lead.email) === cleanEmail);
+  const lead = existingIndex >= 0
+    ? { ...leads[existingIndex], last_seen_at: now, marketing_consent: Boolean(marketingConsent) || leads[existingIndex].marketing_consent }
+    : { id: `lead-${Date.now()}`, email: cleanEmail, name: cleanEmail, role: null, company: null, marketing_consent: Boolean(marketingConsent), source: 'cv_download', first_seen_at: now, last_seen_at: now, downloads_count: 0, created_at: now };
+  if (existingIndex >= 0) leads[existingIndex] = lead; else leads.unshift(lead);
+  saveLocalLeads(leads);
+
+  const downloads = getLocalDownloads();
+  downloads.unshift({ id: `dl-${Date.now()}`, lead_id: lead.id, lead_email: cleanEmail, lead_name: lead.name, resource_id: resourceSlug, resource_slug: resourceSlug, resource_type: 'cv', asset_name: assetName, source: 'web', downloaded_at: now });
+  saveLocalDownloads(downloads);
+  return { success: true, data: { lead } };
+}
+
 /**
  * Fetch Marketing Leads (Admin)
  */

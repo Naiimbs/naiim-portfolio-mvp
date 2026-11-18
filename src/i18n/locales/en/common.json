@@ -13,7 +13,8 @@
     "toggleNavigation": "Toggle navigation",
     "myJourney": "My Journey",
     "home": "Home",
-    "caseStudies": "Case Studies"
+    "caseStudies": "Case Studies",
+    "downloadCv": "Download CV"
   },
   "caseStudyStages": {
     "problem-context": "Problem & Context",
@@ -26,7 +27,7 @@
     "technologies": "Relevant technologies"
   },
   "hero": {
-    "eyebrow": "SENIOR UX/UI DESIGNER · AI PRODUCT BUILDER",
+    "eyebrow": "PRODUCT ENGINEER · UX/UI · AI BUILDER",
     "titleLines": [
       "I DESIGN.",
       "I BUILD.",
@@ -43,9 +44,18 @@
     "redesignLead": "Product design, AI workflows, and digital experiences for ambitious teams and founders.",
     "proofLabel": "Experience highlights",
     "proofItems": [
-      { "title": "KSA enterprise & government", "description": "Delivered on-site and remotely" },
-      { "title": "UX/UI + low-code", "description": "OutSystems · Mendix · UnifyApps" },
-      { "title": "AI-native workflows", "description": "From idea to shipped product" }
+      {
+        "title": "KSA enterprise & government",
+        "description": "Delivered on-site and remotely"
+      },
+      {
+        "title": "UX/UI + low-code",
+        "description": "OutSystems · Mendix · UnifyApps"
+      },
+      {
+        "title": "AI-native workflows",
+        "description": "From idea to shipped product"
+      }
     ],
     "visualLabelLine1": "PRODUCT DESIGN",
     "visualLabelLine2": "AI · SYSTEMS · IMPACT",
@@ -181,9 +191,21 @@
     "focusLabel": "Focus",
     "focusValue": "Product · UX/UI · AI · Digital Products",
     "opportunities": [
-      { "title": "Design leadership", "description": "Shape product direction from strategy to shipped experience.", "icon": "bi-compass" },
-      { "title": "AI-native products", "description": "Turn intelligent capabilities into clear, useful interactions.", "icon": "bi-stars" },
-      { "title": "Complex digital systems", "description": "Make ambitious workflows understandable and usable.", "icon": "bi-diagram-3" }
+      {
+        "title": "Design leadership",
+        "description": "Shape product direction from strategy to shipped experience.",
+        "icon": "bi-compass"
+      },
+      {
+        "title": "AI-native products",
+        "description": "Turn intelligent capabilities into clear, useful interactions.",
+        "icon": "bi-stars"
+      },
+      {
+        "title": "Complex digital systems",
+        "description": "Make ambitious workflows understandable and usable.",
+        "icon": "bi-diagram-3"
+      }
     ],
     "contactCta": "Start a conversation"
   },
@@ -358,7 +380,7 @@
     "closingTitle": "Let's Build Something Meaningful",
     "closingDesc": "I'm interested in meaningful product challenges where design, technology, and AI come together. Whether you are building an ambitious system or exploring workflow automation, let's talk.",
     "displayName": "Naïm Bsili",
-    "portraitRole": "Product Builder · UX/UI · AI & Automation",
+    "portraitRole": "Product Engineer · UX/UI · AI Builder",
     "currentBuildingLabel": "CURRENTLY BUILDING",
     "stageLabel": "STAGE",
     "keyLessonLabel": "Key lesson learned",
@@ -397,7 +419,7 @@
       "knowledgeTitle": "Shared knowledge compounds:",
       "knowledgeBody": "Teaching and writing force clarity and keep knowledge rigorous."
     },
-    "seoTitle": "About — Naïm Bsili | Product Designer & AI Builder",
+    "seoTitle": "About — Naïm Bsili | Product Engineer & AI Builder",
     "seoDesc": "Career journey, product design philosophy, and AI automation expertise of Naïm Bsili.",
     "expertiseSubtitle": "Three complementary ways I contribute to product work.",
     "humanStory": "Behind every design system and agentic workflow is a deep curiosity about how things work. Whether dismantling a mechanical mechanism, observing how people handle friction in everyday tasks, or writing automation logic, the common thread is transforming ideas into something tangible and useful.",
@@ -727,9 +749,26 @@
       "optionalNote": "Optional · No payment required to download"
     }
   },
-  "homeSeoTitle": "Naïm Bsili — Product Designer & AI Builder",
-  "homeSeoDescription": "Portfolio of Naïm Bsili, specializing in UX/UI, digital product design, AI, and automation.",
+  "homeSeoTitle": "Naïm Bsili — Product Engineer & AI Builder",
+  "homeSeoDescription": "Portfolio of Naïm Bsili, a Product Engineer and AI Builder working across UX/UI, low-code delivery, AI workflows, and digital products.",
   "localPreviewNotice": "Local-only preview — showing bundled fallback content, not a saved CMS draft.",
   "draftPreviewNotice": "Draft preview: showing saved CMS content for “{{title}}”.",
-  "homePageTitle": "Home"
+  "homePageTitle": "Home",
+  "cvDownload": {
+    "title": "Download my CV",
+    "intro": "Enter your email to download the current Product Engineer & AI Builder CV.",
+    "email": "Email address",
+    "emailPlaceholder": "you@example.com",
+    "emailPrivacy": "Your email is used to register the download. It is not displayed publicly.",
+    "marketingConsent": "Send me occasional updates about new work and experiments.",
+    "download": "Download CV",
+    "cancel": "Cancel",
+    "readyTitle": "Your CV is ready",
+    "successBody": "The download should start automatically.",
+    "downloadAgain": "Download again",
+    "emailError": "Please enter a valid email address.",
+    "disposableEmailError": "Temporary or disposable email addresses are not accepted.",
+    "downloadError": "We could not register the download. Please try again.",
+    "close": "Close"
+  }
 }

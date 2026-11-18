@@ -77,6 +77,10 @@ export default function Navbar() {
   }, [location.pathname, location.hash]);
 
   const closeNav = () => setIsNavOpen(false);
+  const openCvDownload = () => {
+    closeNav();
+    window.dispatchEvent(new Event('open-cv-download'));
+  };
 
   const isHome = location.pathname === '/';
 
@@ -292,6 +296,9 @@ export default function Navbar() {
           </ul>
           <div className="d-flex align-items-center gap-2 mt-3 mt-lg-0">
             <LanguageSwitcher />
+            <button type="button" className="btn btn-outline-dark rounded-pill px-3" onClick={openCvDownload}>
+              <i className="bi bi-file-earmark-person me-1"></i>{t('nav.downloadCv', 'Download CV')}
+            </button>
             {renderCtaButton()}
           </div>
         </div>

@@ -95,6 +95,53 @@ Deno.serve(async (req) => {
     const payload = await req.json();
     const { action, lead, download } = payload;
 
+    if (action === "cv_download") {
+      const validation = await validateEmailAddress(payload.email);
+      if (!validation.valid) {
+        return new Response(JSON.stringify({ error: "invalid_email", message: errorMessage(validation.reason) }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 422,
+        });
+      }
+
+      const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
+      const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+      const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, { auth: { autoRefreshToken: false, persistSession: false } });
+      const now = new Date().toISOString();
+      const email = validation.email;
+      const { data: lead, error: leadError } = await supabaseAdmin
+        .from("marketing_leads")
+        .upsert({
+          email,
+          name: email,
+          role: null,
+          company: null,
+          marketing_consent: Boolean(payload.marketing_consent),
+          consent_at: payload.marketing_consent ? now : null,
+          last_seen_at: now,
+          source: "cv_download",
+        }, { onConflict: "email" })
+        .select("id")
+        .single();
+
+      if (leadError) throw leadError;
+      const { error: downloadError } = await supabaseAdmin.from("resource_downloads").insert({
+        lead_id: lead.id,
+        resource_id: "naiim-bsili-cv-v2-3-1",
+        resource_slug: "naiim-bsili-cv-v2-3-1",
+        resource_type: "cv",
+        asset_name: payload.asset_name || "Naiim_Bsili_CV_v2.3.1.pdf",
+        source: "web",
+        downloaded_at: now,
+      });
+      if (downloadError) throw downloadError;
+
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
+
     if (action !== "lead_and_download") {
       if (action === "check_lead") {
         const validation = await validateEmailAddress(payload.email);

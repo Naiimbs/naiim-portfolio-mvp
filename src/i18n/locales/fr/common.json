@@ -13,7 +13,8 @@
     "toggleNavigation": "Ouvrir la navigation",
     "myJourney": "Mon parcours",
     "home": "Accueil",
-    "caseStudies": "Études de cas"
+    "caseStudies": "Études de cas",
+    "downloadCv": "Télécharger le CV"
   },
   "caseStudyStages": {
     "problem-context": "Problème et contexte",
@@ -26,7 +27,7 @@
     "technologies": "Technologies associées"
   },
   "hero": {
-    "eyebrow": "DESIGNER UX/UI SENIOR · BÂTISSEUR DE PRODUITS IA",
+    "eyebrow": "PRODUCT ENGINEER · UX/UI · CRÉATEUR IA",
     "titleLines": [
       "JE CONÇOIS.",
       "JE CONSTRUIS.",
@@ -43,9 +44,18 @@
     "redesignLead": "Design produit, workflows IA et expériences numériques pour les équipes et fondateurs ambitieux.",
     "proofLabel": "Expertise en bref",
     "proofItems": [
-      { "title": "Entreprises & secteur public en Arabie saoudite", "description": "Sur site et à distance" },
-      { "title": "UX/UI + low-code", "description": "OutSystems · Mendix · UnifyApps" },
-      { "title": "Workflows natifs IA", "description": "De l'idée au produit livré" }
+      {
+        "title": "Entreprises & secteur public en Arabie saoudite",
+        "description": "Sur site et à distance"
+      },
+      {
+        "title": "UX/UI + low-code",
+        "description": "OutSystems · Mendix · UnifyApps"
+      },
+      {
+        "title": "Workflows natifs IA",
+        "description": "De l'idée au produit livré"
+      }
     ],
     "visualLabelLine1": "DESIGN PRODUIT",
     "visualLabelLine2": "IA · SYSTÈMES · IMPACT",
@@ -181,9 +191,21 @@
     "focusLabel": "Focus",
     "focusValue": "Produit · UX/UI · IA · Produits numériques",
     "opportunities": [
-      { "title": "Leadership design", "description": "Orienter le produit de la stratégie jusqu’à l’expérience livrée.", "icon": "bi-compass" },
-      { "title": "Produits natifs IA", "description": "Transformer les capacités intelligentes en interactions claires et utiles.", "icon": "bi-stars" },
-      { "title": "Systèmes numériques complexes", "description": "Rendre les workflows ambitieux compréhensibles et utilisables.", "icon": "bi-diagram-3" }
+      {
+        "title": "Leadership design",
+        "description": "Orienter le produit de la stratégie jusqu’à l’expérience livrée.",
+        "icon": "bi-compass"
+      },
+      {
+        "title": "Produits natifs IA",
+        "description": "Transformer les capacités intelligentes en interactions claires et utiles.",
+        "icon": "bi-stars"
+      },
+      {
+        "title": "Systèmes numériques complexes",
+        "description": "Rendre les workflows ambitieux compréhensibles et utilisables.",
+        "icon": "bi-diagram-3"
+      }
     ],
     "contactCta": "Commençons la conversation"
   },
@@ -358,7 +380,7 @@
     "closingTitle": "Bâtissons quelque chose qui compte",
     "closingDesc": "Je m'intéresse aux défis de produits ambitieux où le design, la technologie et l'IA se rencontrent. Que vous construisiez un système complexe ou exploriez l'automatisation, parlons-en.",
     "displayName": "Naïm Bsili",
-    "portraitRole": "Créateur de produits · UX/UI · IA et automatisation",
+    "portraitRole": "Product Engineer · UX/UI · Créateur IA",
     "currentBuildingLabel": "EN COURS D’EXPLORATION",
     "stageLabel": "ÉTAPE",
     "keyLessonLabel": "Leçon à retenir",
@@ -397,7 +419,7 @@
       "knowledgeTitle": "Le savoir partagé se renforce :",
       "knowledgeBody": "Enseigner et écrire obligent à clarifier ses idées et à garder des connaissances rigoureuses."
     },
-    "seoTitle": "À propos — Naïm Bsili | Product Designer & Créateur IA",
+    "seoTitle": "À propos — Naïm Bsili | Product Engineer & AI Builder",
     "seoDesc": "Parcours professionnel, philosophie de design produit et expertise en IA et automatisation de Naïm Bsili.",
     "expertiseSubtitle": "Trois axes complémentaires de contribution aux produits.",
     "humanStory": "Derrière chaque système de design et chaque workflow d’agents IA se trouve une curiosité profonde pour le fonctionnement des choses. Qu’il s’agisse de démonter un mécanisme, d’observer les irritants du quotidien ou d’écrire une logique d’automatisation, le fil conducteur est de rendre les idées concrètes et utiles.",
@@ -727,9 +749,26 @@
       "optionalNote": "Facultatif · Aucun paiement requis pour télécharger"
     }
   },
-  "homeSeoTitle": "Naïm Bsili — Designer produit & créateur IA",
-  "homeSeoDescription": "Portfolio de Naïm Bsili, spécialisé en UX/UI, conception de produits numériques, IA et automatisation.",
+  "homeSeoTitle": "Naïm Bsili — Product Engineer & AI Builder",
+  "homeSeoDescription": "Portfolio de Naïm Bsili, Product Engineer et créateur IA, à l’intersection de l’UX/UI, du low-code, des workflows IA et des produits numériques.",
   "localPreviewNotice": "Aperçu local uniquement — contenu de secours intégré, pas un brouillon CMS enregistré.",
   "draftPreviewNotice": "Aperçu du brouillon : contenu CMS enregistré pour « {{title}} ».",
-  "homePageTitle": "Accueil"
+  "homePageTitle": "Accueil",
+  "cvDownload": {
+    "title": "Télécharger mon CV",
+    "intro": "Saisissez votre e-mail pour télécharger le CV Product Engineer & AI Builder.",
+    "email": "Adresse e-mail",
+    "emailPlaceholder": "vous@exemple.com",
+    "emailPrivacy": "Votre e-mail sert à enregistrer le téléchargement. Il ne sera pas affiché publiquement.",
+    "marketingConsent": "Recevoir occasionnellement des nouvelles sur mes projets et expériences.",
+    "download": "Télécharger le CV",
+    "cancel": "Annuler",
+    "readyTitle": "Votre CV est prêt",
+    "successBody": "Le téléchargement devrait commencer automatiquement.",
+    "downloadAgain": "Télécharger à nouveau",
+    "emailError": "Saisissez une adresse e-mail valide.",
+    "disposableEmailError": "Les adresses temporaires ou jetables ne sont pas acceptées.",
+    "downloadError": "Impossible d’enregistrer le téléchargement. Réessayez.",
+    "close": "Fermer"
+  }
 }
