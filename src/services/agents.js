@@ -1,12 +1,13 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { agents as localAgents } from '../data/agents';
+import { isHiddenPublicSlug } from '../config/publicVisibility';
 
 /**
  * Fetch all published agents for the public /agents page.
  */
 export async function getPublishedAgents() {
   if (!isSupabaseConfigured || !supabase) {
-    const published = localAgents.filter((a) => a.status === 'published');
+    const published = localAgents.filter((a) => a.status === 'published' && !isHiddenPublicSlug(a.slug));
     return { data: published, isCMS: false, source: 'local' };
   }
 
@@ -22,13 +23,13 @@ export async function getPublishedAgents() {
       .order('sort_order', { ascending: true });
 
     if (error || !data || data.length === 0) {
-      const published = localAgents.filter((a) => a.status === 'published');
+      const published = localAgents.filter((a) => a.status === 'published' && !isHiddenPublicSlug(a.slug));
       return { data: published, isCMS: false, source: 'local_fallback' };
     }
 
-    return { data, isCMS: true, source: 'supabase' };
+    return { data: (data || []).filter((a) => !isHiddenPublicSlug(a.slug)), isCMS: true, source: 'supabase' };
   } catch (err) {
-    const published = localAgents.filter((a) => a.status === 'published');
+    const published = localAgents.filter((a) => a.status === 'published' && !isHiddenPublicSlug(a.slug));
     return { data: published, isCMS: false, source: 'local_fallback' };
   }
 }
@@ -38,8 +39,10 @@ export async function getPublishedAgents() {
  */
 export async function getPublishedAgentBySlug(slug) {
   if (!slug) return { data: null, isCMS: false };
+  if (isHiddenPublicSlug(slug)) return { data: null, isCMS: false, source: 'hidden' };
 
   if (!isSupabaseConfigured || !supabase) {
+    if (isHiddenPublicSlug(slug)) return { data: null, isCMS: false, source: 'hidden' };
     const match = localAgents.find((a) => a.slug === slug) || null;
     return { data: match, isCMS: false, source: 'local' };
   }

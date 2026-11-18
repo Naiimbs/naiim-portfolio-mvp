@@ -11,9 +11,6 @@ import { setAppLanguage } from './i18n';
 
 // Lazy: secondary public pages (loaded on navigation, not on first paint)
 const WorkPage = lazy(() => import('./pages/WorkPage'));
-const AgentsPage = lazy(() => import('./pages/AgentsPage'));
-const AgentCaseStudyPage = lazy(() => import('./pages/AgentCaseStudyPage'));
-const AgentDemoPage = lazy(() => import('./pages/AgentDemoPage'));
 const CaseStudyRenderer = lazy(() => import('./components/case-study/CaseStudyRenderer'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const BlogPage = lazy(() => import('./pages/BlogPage'));
@@ -108,9 +105,10 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/work" element={<WorkPage />} />
           <Route path="/work/:slug" element={<CaseStudyRenderer />} />
-          <Route path="/agents" element={<AgentsPage />} />
-          <Route path="/agents/:slug" element={<AgentCaseStudyPage />} />
-          <Route path="/agents/:slug/demo" element={<AgentDemoPage />} />
+          {/* Public AI-agent pages are intentionally hidden; admin management remains below. */}
+          <Route path="/agents" element={<Navigate to="/work" replace />} />
+          <Route path="/agents/:slug" element={<Navigate to="/work" replace />} />
+          <Route path="/agents/:slug/demo" element={<Navigate to="/work" replace />} />
           <Route path="/resources" element={<ResourcesPage />} />
           <Route path="/resources/:slug" element={<ResourceDetailPage />} />
           <Route path="/ar/resources" element={<LocalizedPublicRoute><ResourcesPage /></LocalizedPublicRoute>} />
@@ -125,7 +123,7 @@ export default function App() {
           <Route path="/fr/blog" element={<LocalizedPublicRoute><BlogPage /></LocalizedPublicRoute>} />
           <Route path="/fr/blog/:slug" element={<LocalizedPublicRoute><BlogPostPage /></LocalizedPublicRoute>} />
           <Route path="/about" element={<AboutPage />} />
-          <Route path="/copilot" element={<PlaceholderPage title="Naïm Copilot" description="Interactive AI Assistant." />} />
+          <Route path="/copilot" element={<Navigate to="/work" replace />} />
           <Route path="/p/:slug" element={<CmsDynamicPage />} />
 
           {/* Legacy redirects for old static URLs */}

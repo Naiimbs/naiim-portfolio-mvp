@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getFooterNavigation, getPublicSiteSettings, DEFAULT_FOOTER_NAV } from '../../services/siteCms';
 import BrandMark from './BrandMark';
+import { isHiddenPublicRoute } from '../../config/publicVisibility';
 
 export default function Footer() {
   const { t } = useTranslation();
@@ -44,7 +45,9 @@ export default function Footer() {
   const behanceUrl = siteSettings?.behance || '';
   const dribbbleUrl = siteSettings?.dribbble || '';
 
-  const displayNavItems = (navItems && Array.isArray(navItems) && navItems.length > 0 ? navItems : DEFAULT_FOOTER_NAV).filter(Boolean);
+  const displayNavItems = (navItems && Array.isArray(navItems) && navItems.length > 0 ? navItems : DEFAULT_FOOTER_NAV)
+    .filter(Boolean)
+    .filter((item) => !isHiddenPublicRoute(item.href));
 
   const FOOTER_LABEL_KEYS = {
     '/': 'nav.home',
@@ -103,6 +106,9 @@ export default function Footer() {
         </Link>
         <div className="footer-links">
           {displayNavItems.map((item) => renderFooterLink(item))}
+          <button type="button" className="btn btn-link p-0 text-decoration-none" onClick={() => window.dispatchEvent(new Event('open-cv-download'))}>
+            {t('nav.downloadCv', 'Download CV')}
+          </button>
         </div>
         <div className="socials">
           {linkedinUrl && (

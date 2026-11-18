@@ -422,11 +422,11 @@
     "seoTitle": "À propos — Naïm Bsili | Product Engineer & AI Builder",
     "seoDesc": "Parcours professionnel, philosophie de design produit et expertise en IA et automatisation de Naïm Bsili.",
     "expertiseSubtitle": "Trois axes complémentaires de contribution aux produits.",
-    "humanStory": "Derrière chaque système de design et chaque workflow d’agents IA se trouve une curiosité profonde pour le fonctionnement des choses. Qu’il s’agisse de démonter un mécanisme, d’observer les irritants du quotidien ou d’écrire une logique d’automatisation, le fil conducteur est de rendre les idées concrètes et utiles.",
-    "buildingTitle": "WINNI — identité produit et protocoles d’agents autonomes",
-    "buildingDescription": "Affiner le parcours de récupération QR/NFC entre monde physique et numérique, tout en expérimentant l’orchestration d’agents autonomes avec le Model Context Protocol (MCP), pour relier des objets physiques à des workflows intelligents.",
+    "humanStory": "Derrière chaque système de design et chaque workflow numérique se trouve une curiosité profonde pour le fonctionnement des choses. Qu’il s’agisse de démonter un mécanisme, d’observer les irritants du quotidien ou d’écrire une logique d’automatisation, le fil conducteur est de rendre les idées concrètes et utiles.",
+    "buildingTitle": "WINNI — identité produit et workflows connectés",
+    "buildingDescription": "Affiner le parcours de récupération QR/NFC entre monde physique et numérique, tout en expérimentant des workflows connectés avec le Model Context Protocol (MCP).",
     "closingEyebrow": "PRENONS CONTACT",
-    "buildingNote": "Écosystème d’identité WINNI · Naïm Copilot · protocoles d’agents IA"
+    "buildingNote": "Écosystème d’identité WINNI · workflows IA connectés"
   },
   "copilot": {
     "kicker": "ASSISTANT IA",
@@ -496,7 +496,7 @@
   "resources": {
     "eyebrow": "BIBLIOTHÈQUE DE RESSOURCES & SKILLS",
     "title": "Compétences, outils & systèmes que j’utilise pour penser, concevoir et construire.",
-    "lead": "Bundles de capacités d’agents autonomes, playbooks d’audits heuristiques, templates de design systems et artefacts de référence téléchargeables.",
+    "lead": "Playbooks de workflows, guides d’audits heuristiques, templates de design systems et artefacts de référence téléchargeables.",
     "all": "Toutes les ressources",
     "searchPlaceholder": "Rechercher ressources & tags...",
     "refineLabel": "Affiner les ressources",
@@ -713,7 +713,7 @@
       "roleCompany": "Fonction / Entreprise",
       "optional": "Facultatif",
       "rolePlaceholder": "Ex. : Lead Product Designer chez Acme",
-      "marketingConsent": "Je souhaite recevoir occasionnellement des actualités sur les nouveaux skills d’agents IA, systèmes de design et outils.",
+      "marketingConsent": "Je souhaite recevoir occasionnellement des actualités sur les nouvelles ressources produit, systèmes de design et outils.",
       "cancel": "Annuler",
       "preparing": "Préparation du téléchargement…",
       "download": "Télécharger gratuitement",

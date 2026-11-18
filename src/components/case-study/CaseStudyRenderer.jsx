@@ -23,6 +23,7 @@ import MainLayout from '../../layouts/MainLayout';
 import SEO from '../common/SEO';
 import { useAuth } from '../../admin/context/AuthContext';
 import { isSupabaseConfigured } from '../../lib/supabase';
+import { isHiddenPublicSlug } from '../../config/publicVisibility';
 
 /**
  * Gate outcomes — the only states that matter after the Registry check.
@@ -56,6 +57,11 @@ export default function CaseStudyRenderer() {
       if (isPreviewRequested && authLoading) return;
       setGate(GATE.PENDING);
       setStudyData(null);
+
+      if (!isPreviewRequested && isHiddenPublicSlug(cleanSlug)) {
+        setGate(GATE.BLOCKED);
+        return;
+      }
 
       if (isPreviewRequested && !isAdmin) {
         setGate(GATE.PREVIEW_DENIED);

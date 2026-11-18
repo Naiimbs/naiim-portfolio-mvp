@@ -422,11 +422,11 @@
     "seoTitle": "About — Naïm Bsili | Product Engineer & AI Builder",
     "seoDesc": "Career journey, product design philosophy, and AI automation expertise of Naïm Bsili.",
     "expertiseSubtitle": "Three complementary ways I contribute to product work.",
-    "humanStory": "Behind every design system and agentic workflow is a deep curiosity about how things work. Whether dismantling a mechanical mechanism, observing how people handle friction in everyday tasks, or writing automation logic, the common thread is transforming ideas into something tangible and useful.",
-    "buildingTitle": "WINNI Identity & Autonomous Agent Protocols",
-    "buildingDescription": "Refining the physical-to-digital QR/NFC recovery flow and experimenting with autonomous agent orchestration via Model Context Protocol (MCP) to connect physical objects with intelligent workflows.",
+    "humanStory": "Behind every design system and digital workflow is a deep curiosity about how things work. Whether dismantling a mechanical mechanism, observing how people handle friction in everyday tasks, or writing automation logic, the common thread is transforming ideas into something tangible and useful.",
+    "buildingTitle": "WINNI Identity & Connected Product Workflows",
+    "buildingDescription": "Refining the physical-to-digital QR/NFC recovery flow and experimenting with connected workflows via Model Context Protocol (MCP).",
     "closingEyebrow": "GET IN TOUCH",
-    "buildingNote": "WINNI Identity Ecosystem · Naïm Copilot · AI Agent Protocols"
+    "buildingNote": "WINNI Identity Ecosystem · Connected AI Workflows"
   },
   "copilot": {
     "kicker": "AI ASSISTANT",
@@ -496,7 +496,7 @@
   "resources": {
     "eyebrow": "RESOURCES & SKILLS LIBRARY",
     "title": "Skills, tools & systems I use to think, design and build.",
-    "lead": "Autonomous agent capability bundles, heuristic audit playbooks, design system templates, and downloadable reference artifacts.",
+    "lead": "Reusable workflow playbooks, heuristic audit guides, design system templates, and downloadable reference artifacts.",
     "all": "All Resources",
     "searchPlaceholder": "Search resources & tags...",
     "refineLabel": "Refine resources",
@@ -713,7 +713,7 @@
       "roleCompany": "Role / Company",
       "optional": "Optional",
       "rolePlaceholder": "e.g. Lead Product Designer at Acme",
-      "marketingConsent": "I would like to receive occasional updates about new AI agent skills, design systems, and toolkits.",
+      "marketingConsent": "I would like to receive occasional updates about new product resources, design systems, and toolkits.",
       "cancel": "Cancel",
       "preparing": "Preparing download…",
       "download": "Download for Free",

@@ -110,7 +110,6 @@ export const FALLBACK_PAGES = [
 export const DEFAULT_HEADER_NAV = [
   { id: 'nav-header-1', location: 'header', label: 'Work', href: '/work', item_type: 'link', parent_id: null, sort_order: 10, is_visible: true, open_in_new_tab: false },
   { id: 'nav-header-story', location: 'header', label: 'My Journey', href: '/p/my-journey', item_type: 'link', parent_id: null, sort_order: 15, is_visible: true, open_in_new_tab: false },
-  { id: 'nav-header-2', location: 'header', label: 'Agents', href: '/agents/', item_type: 'link', parent_id: null, sort_order: 20, is_visible: true, open_in_new_tab: false },
   { id: 'nav-header-3', location: 'header', label: 'Resources', href: '/resources', item_type: 'link', parent_id: null, sort_order: 25, is_visible: true, open_in_new_tab: false },
   { id: 'nav-header-5', location: 'header', label: 'Career', href: '#career', item_type: 'link', parent_id: null, sort_order: 40, is_visible: true, open_in_new_tab: false },
   { id: 'nav-header-6', location: 'header', label: 'Lab', href: '#lab', item_type: 'link', parent_id: null, sort_order: 50, is_visible: true, open_in_new_tab: false },
@@ -120,7 +119,6 @@ export const DEFAULT_HEADER_NAV = [
 export const DEFAULT_FOOTER_NAV = [
   { id: 'nav-footer-1', location: 'footer', label: 'Work', href: '/work', item_type: 'link', parent_id: null, sort_order: 10, is_visible: true, open_in_new_tab: false },
   { id: 'nav-footer-2', location: 'footer', label: 'Case Studies', href: '/work', item_type: 'link', parent_id: null, sort_order: 20, is_visible: true, open_in_new_tab: false },
-  { id: 'nav-footer-3', location: 'footer', label: 'Agents', href: '/agents/', item_type: 'link', parent_id: null, sort_order: 30, is_visible: true, open_in_new_tab: false },
   { id: 'nav-footer-4', location: 'footer', label: 'Resources', href: '/resources', item_type: 'link', parent_id: null, sort_order: 35, is_visible: true, open_in_new_tab: false },
   { id: 'nav-footer-6', location: 'footer', label: 'Career', href: '#career', item_type: 'link', parent_id: null, sort_order: 50, is_visible: true, open_in_new_tab: false },
   { id: 'nav-footer-7', location: 'footer', label: 'Lab', href: '#lab', item_type: 'link', parent_id: null, sort_order: 60, is_visible: true, open_in_new_tab: false },
@@ -143,7 +141,7 @@ export const ABOUT_PROPOSAL_SECTIONS = [
       lead: 'I turn complex problems into usable digital products through product design, AI, low-code, and automation.',
       exploreCta: { label: 'Explore My Work', href: '/work' },
       talkCta: { label: "Let's Talk", href: '/about#contact' },
-      buildingNote: 'WINNI Identity Ecosystem · Naïm Copilot · AI Agent Protocols',
+      buildingNote: 'WINNI Identity Ecosystem · Connected AI Workflows',
       portraitUrl: '',
     }, { eyebrow: 'heroEyebrow', headline: 'heroHeadline', lead: 'heroLead', 'exploreCta.label': 'exploreWork', 'talkCta.label': 'letsTalk', buildingNote: 'buildingNote' }),
   },
@@ -221,7 +219,7 @@ export const ABOUT_PROPOSAL_SECTIONS = [
     config: localizeAboutConfig({
       title: 'WINNI Identity & Autonomous Agent Protocols',
       stage: 'ACTIVE DEVELOPMENT',
-      description: 'Refining the physical-to-digital QR/NFC recovery flow and experimenting with autonomous agent orchestration via Model Context Protocol (MCP) to make physical objects interact with intelligent workflows.',
+      description: 'Refining the physical-to-digital QR/NFC recovery flow and experimenting with connected workflows via Model Context Protocol (MCP).',
       link: '/#lab',
     }, { title: 'buildingTitle', stage: 'currentBuildingLabel', description: 'buildingDescription' }),
   },

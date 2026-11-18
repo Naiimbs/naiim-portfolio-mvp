@@ -1,7 +1,7 @@
 const ANSWERS = {
   en: {
     skills: "Naïm combines UX/UI, Product Design, Design Systems, AI-driven product work, Low-Code and Product Operations.",
-    projects: "Relevant work includes WINNI, Assestini, Naïm Copilot, Career OS, and UX/UI work across Saudi government, banking and regulatory sectors.",
+    projects: "Relevant work includes WINNI, Assestini, and UX/UI work across Saudi government, banking and regulatory sectors.",
     ai: "His current AI stack includes n8n, AI agents, RAG, MCP, Google AI Studio, Claude and AI-assisted product workflows.",
     available: "For collaboration, use the Let's Talk button below. The public site can later connect this flow to Naïm's real n8n agent.",
     why: "His approach combines product thinking, UX/UI design and hands-on AI/Low-Code building, allowing ideas to move from concept toward a working product.",
@@ -9,7 +9,7 @@ const ANSWERS = {
   },
   fr: {
     skills: "Naïm allie UX/UI, Design Produit, Design Systems, conception assistée par IA, Low-Code et Product Operations.",
-    projects: "Ses projets phares incluent WINNI, Assestini, Naïm Copilot, Career OS, ainsi que des réalisations UX/UI pour le secteur public saoudien, bancaire et réglementaire.",
+    projects: "Ses projets phares incluent WINNI, Assestini, ainsi que des réalisations UX/UI pour le secteur public saoudien, bancaire et réglementaire.",
     ai: "Sa stack IA actuelle comprend n8n, les agents IA, RAG, MCP, Google AI Studio, Claude et les flux de travail assistés par IA.",
     available: "Pour collaborer, utilisez le bouton « Discutons » ci-dessous. Cette interface est prête à être connectée à l'agent n8n réel de Naïm.",
     why: "Son approche associe vision produit, design UX/UI et développement concret en IA/Low-Code, transformant rapidement une idée en produit fonctionnel.",
@@ -17,7 +17,7 @@ const ANSWERS = {
   },
   ar: {
     skills: "يجمع نعيم بين تصميم تجربة وواجهة المستخدم، وتصميم المنتجات، وأنظمة التصميم، وحلول الذكاء الاصطناعي، والـ Low-Code، وإدارة عمليات المنتجات.",
-    projects: "تشمل أعماله البارزة: WINNI، وAssestini، وNaïm Copilot، وCareer OS، بالإضافة إلى مشاريع تصميم للمؤسسات الحكومية والبنكية والتنظيمية السعودية.",
+    projects: "تشمل أعماله البارزة: WINNI وAssestini، بالإضافة إلى مشاريع تصميم للمؤسسات الحكومية والبنكية والتنظيمية السعودية.",
     ai: "تتضمن أدوات الذكاء الاصطناعي الحالية لديه: n8n، والوكلاء الأذكياء، وRAG، وMCP، وGoogle AI Studio، وClaude، وتدفقات العمل المدعومة بالذكاء الاصطناعي.",
     available: "للتعاون، استخدم زر «لنتحدث» أدناه. هذا النموذج جاهز للربط مع وكيل n8n الفعلي لنعيم.",
     why: "يجمع منهجه بين التفكير في المنتج، وتصميم تجربة المستخدم، والبناء الفعلي بالذكاء الاصطناعي والـ Low-Code، مما ينقل الأفكار من مجرد مفهوم إلى منتج واقعي.",

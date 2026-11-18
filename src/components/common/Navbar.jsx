@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { getHeaderNavigation, getPublicSiteSettings, DEFAULT_HEADER_NAV } from '../../services/siteCms';
 import LanguageSwitcher from './LanguageSwitcher';
 import BrandMark from './BrandMark';
+import { isHiddenPublicRoute } from '../../config/publicVisibility';
 
 export default function Navbar() {
   const { t, i18n } = useTranslation();
@@ -230,7 +231,9 @@ export default function Navbar() {
     );
   };
 
-  const displayItems = (navItems && Array.isArray(navItems) && navItems.length > 0 ? navItems : DEFAULT_HEADER_NAV).filter(Boolean);
+  const displayItems = (navItems && Array.isArray(navItems) && navItems.length > 0 ? navItems : DEFAULT_HEADER_NAV)
+    .filter(Boolean)
+    .filter((item) => !isHiddenPublicRoute(item.href));
 
   const renderCtaButton = () => {
     const isCtaAnchor = ctaHref.startsWith('#') || ctaHref.startsWith('/#');

@@ -5,6 +5,7 @@ import ProjectCard from './ProjectCard';
 import MiniProjectCard from './MiniProjectCard';
 import { getPublishedPublicContent, normalizeRegistryEntry } from '../../services/contentRegistry';
 import { isPublicRouteImplemented } from '../../services/contentRouteResolver';
+import { isHiddenPublicSlug } from '../../config/publicVisibility';
 
 /**
  * WorkCatalog — the /work catalog block.
@@ -47,7 +48,7 @@ export default function WorkCatalog({ config = {} }) {
 
       if (res.data && res.data.length > 0) {
         const supported = res.data.filter(
-          (entry) => (!entry.content_type || entry.content_type === 'case-study') && isPublicRouteImplemented(entry)
+          (entry) => (!entry.content_type || entry.content_type === 'case-study') && isPublicRouteImplemented(entry) && !isHiddenPublicSlug(entry.slug)
         );
         const normalized = supported.map((entry) => normalizeRegistryEntry(entry));
         setEntries(normalized);
