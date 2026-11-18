@@ -4,6 +4,7 @@ import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
 import CvDownloadModal from '../components/common/CvDownloadModal';
 import { useEffect, useState } from 'react';
+import '../styles/resources.css';
 
 export default function MainLayout({ children }) {
   const [isCvModalOpen, setIsCvModalOpen] = useState(false);
