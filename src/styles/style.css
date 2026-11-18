@@ -1097,6 +1097,9 @@ html[lang="fr"] .hero h1 {
     height: auto;
     min-height: 70px;
   }
+  .navbar-actions {
+    flex-wrap: wrap;
+  }
   .navbar-collapse {
     background-color: var(--paper);
     padding: 15px;
@@ -1132,6 +1135,87 @@ html[lang="fr"] .hero h1 {
   }
 }
 @media (max-width: 767.98px) {
+  .site-nav {
+    min-height: 64px;
+  }
+  .site-nav > .container {
+    padding-inline: 16px;
+  }
+  .navbar-brand {
+    min-width: 0;
+    max-width: calc(100% - 52px);
+  }
+  .brand-wordmark {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.83rem;
+  }
+  .beta-badge {
+    display: none;
+  }
+  .navbar-toggler {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .navbar-collapse {
+    margin-top: 8px;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: 0 14px 32px rgba(14, 42, 47, 0.09);
+  }
+  .navbar-nav {
+    gap: 2px !important;
+  }
+  .navbar-nav .nav-link {
+    display: block;
+    min-height: 44px;
+    padding: 10px 12px;
+    border-radius: 10px;
+  }
+  .navbar-nav .nav-link:hover,
+  .navbar-nav .nav-link.active {
+    background: var(--green-soft);
+  }
+  .navbar-actions {
+    display: grid !important;
+    grid-template-columns: minmax(92px, auto) minmax(0, 1fr);
+    gap: 8px !important;
+    width: 100%;
+    margin-top: 12px !important;
+  }
+  .navbar-language,
+  .navbar-cv-button {
+    min-width: 0;
+    width: 100%;
+  }
+  .navbar-language .btn,
+  .navbar-cv-button {
+    min-height: 48px;
+    justify-content: center;
+    white-space: nowrap;
+  }
+  .navbar-language .btn {
+    width: 100%;
+    padding-inline: 10px;
+  }
+  .navbar-cv-button {
+    padding-inline: 12px !important;
+  }
+  .navbar-actions > .btn-dark,
+  .navbar-actions > a.btn-dark {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-height: 52px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+  }
   .section-pad {
     padding: 75px 0;
   }
