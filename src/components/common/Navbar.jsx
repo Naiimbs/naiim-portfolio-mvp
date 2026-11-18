@@ -299,7 +299,12 @@ export default function Navbar() {
           </ul>
           <div className="d-flex align-items-center gap-2 mt-3 mt-lg-0">
             <LanguageSwitcher />
-            <button type="button" className="btn btn-outline-dark rounded-pill px-3" onClick={openCvDownload}>
+            <button
+              type="button"
+              className="btn btn-outline-dark rounded-pill px-3 d-inline-flex align-items-center"
+              onClick={openCvDownload}
+              aria-label={t('nav.downloadCv', 'Download CV')}
+            >
               <i className="bi bi-file-earmark-person me-1"></i>{t('nav.downloadCv', 'Download CV')}
             </button>
             {renderCtaButton()}
