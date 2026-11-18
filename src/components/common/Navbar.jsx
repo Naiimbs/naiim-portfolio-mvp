@@ -297,11 +297,11 @@ export default function Navbar() {
               </li>
             ))}
           </ul>
-          <div className="d-flex align-items-center gap-2 mt-3 mt-lg-0">
-            <LanguageSwitcher />
+          <div className="navbar-actions d-flex align-items-center gap-2 mt-3 mt-lg-0">
+            <LanguageSwitcher className="navbar-language" />
             <button
               type="button"
-              className="btn btn-outline-dark rounded-pill px-3 d-inline-flex align-items-center"
+              className="navbar-cv-button btn btn-outline-dark rounded-pill px-3 d-inline-flex align-items-center"
               onClick={openCvDownload}
               aria-label={t('nav.downloadCv', 'Download CV')}
             >
