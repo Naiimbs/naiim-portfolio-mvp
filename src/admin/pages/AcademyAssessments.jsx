@@ -138,6 +138,7 @@ export default function AcademyAssessments() {
       position: assessmentQuestions.length + 1,
     }).select('id').single();
     let questionSaveFailed = Boolean(insertError);
+    let questionKeyErrorMessage = '';
     if (insertError) {
       setError(insertError.message);
     } else if (objective) {
@@ -148,7 +149,7 @@ export default function AcademyAssessments() {
       });
       if (keyError) {
         questionSaveFailed = true;
-        setError(`The question was saved, but its answer key failed: ${keyError.message}. Complete the missing key in the question card before publishing.`);
+        questionKeyErrorMessage = `The question was saved, but its answer key failed: ${keyError.message}. Complete the missing key in the question card before publishing.`;
       } else {
         setNotice('Question and protected answer key saved.');
       }
@@ -160,6 +161,7 @@ export default function AcademyAssessments() {
         setQuestionForms((current) => ({ ...current, [assessment.id]: EMPTY_QUESTION }));
       }
       await load();
+      if (questionKeyErrorMessage) setError(questionKeyErrorMessage);
     }
     setSaving(false);
   };
