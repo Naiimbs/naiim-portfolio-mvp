@@ -18,6 +18,8 @@ export default function AcademyAssessments() {
   const [lessons, setLessons] = useState([]);
   const [assessments, setAssessments] = useState([]);
   const [questions, setQuestions] = useState([]);
+  const [answerKeyIds, setAnswerKeyIds] = useState(new Set());
+  const [repairAnswers, setRepairAnswers] = useState({});
   const [profiles, setProfiles] = useState([]);
   const [attempts, setAttempts] = useState([]);
   const [answers, setAnswers] = useState([]);
@@ -59,7 +61,13 @@ export default function AcademyAssessments() {
       assessmentIds.length ? supabase.from('iqra_questions').select('id,assessment_id,question_type,prompt,options,points,position').in('assessment_id', assessmentIds).order('position') : Promise.resolve({ data: [], error: null }),
       attemptIds.length ? supabase.from('iqra_attempt_answers').select('id,attempt_id,question_id,answer').in('attempt_id', attemptIds) : Promise.resolve({ data: [], error: null }),
     ]);
-    if (questionResult.error || answerResult.error) setError((questionResult.error || answerResult.error).message);
+    const questionIds = (questionResult.data || []).map((item) => item.id);
+    const keyResult = questionIds.length
+      ? await supabase.from('iqra_question_answer_keys').select('question_id').in('question_id', questionIds)
+      : { data: [], error: null };
+    if (questionResult.error || answerResult.error || keyResult.error) {
+      setError((questionResult.error || answerResult.error || keyResult.error).message);
+    }
     setCourses(courseResult.data || []);
     setModules(moduleResult.data || []);
     setLessons(lessonResult.data || []);
@@ -67,6 +75,7 @@ export default function AcademyAssessments() {
     setProfiles(profileResult.data || []);
     setAttempts(nextAttempts);
     setQuestions(questionResult.data || []);
+    setAnswerKeyIds(new Set((keyResult.data || []).map((item) => item.question_id)));
     setAnswers(answerResult.data || []);
     setLoading(false);
   }, []);
@@ -139,10 +148,7 @@ export default function AcademyAssessments() {
       });
       if (keyError) {
         questionSaveFailed = true;
-        const { error: cleanupError } = await supabase.from('iqra_questions').delete().eq('id', question.id);
-        setError(cleanupError
-          ? `Answer key creation failed: ${keyError.message}. The incomplete question could not be removed (ID: ${question.id}); do not publish this assessment until it is repaired.`
-          : `Answer key creation failed: ${keyError.message}. The incomplete question was removed; retry safely.`);
+        setError(`The question was saved, but its answer key failed: ${keyError.message}. Complete the missing key in the question card before publishing.`);
       } else {
         setNotice('Question and protected answer key saved.');
       }
@@ -153,6 +159,36 @@ export default function AcademyAssessments() {
       if (!questionSaveFailed) {
         setQuestionForms((current) => ({ ...current, [assessment.id]: EMPTY_QUESTION }));
       }
+      await load();
+    }
+    setSaving(false);
+  };
+
+  const repairMissingAnswerKey = async (event, question) => {
+    event.preventDefault();
+    const raw = (repairAnswers[question.id] || '').trim();
+    const values = raw.split(',').map((item) => item.trim()).filter(Boolean);
+    const optionValues = (question.options || []).map((option) => option.value);
+    if (!values.length || values.some((value) => !optionValues.includes(value)) ||
+      (question.question_type === 'single_choice' && values.length !== 1)) {
+      setError(question.question_type === 'single_choice'
+        ? 'Enter one correct value that matches an option.'
+        : 'Enter one or more comma-separated values that match the available options.');
+      return;
+    }
+    setSaving(true);
+    setError('');
+    setNotice('');
+    const correctAnswer = question.question_type === 'single_choice' ? values[0] : values;
+    const { error: keyError } = await supabase.from('iqra_question_answer_keys').insert({
+      question_id: question.id,
+      correct_answer: correctAnswer,
+    });
+    if (keyError) {
+      setError(keyError.message);
+    } else {
+      setRepairAnswers((current) => ({ ...current, [question.id]: '' }));
+      setNotice('Missing answer key completed. The assessment can now be reviewed for publication.');
       await load();
     }
     setSaving(false);
@@ -251,7 +287,21 @@ export default function AcademyAssessments() {
               <div><div className="small text-secondary">{lessonLabel(assessment.lesson_id)}</div><h3 className="h5 fw-bold mb-1">{assessment.title}</h3><p className="small text-secondary mb-0">{assessmentQuestions.length} questions · Pass {assessment.pass_score}% · {assessment.max_attempts || 'Unlimited'} attempts</p></div>
               <div className="d-flex align-items-center gap-2"><span className={`badge rounded-pill ${assessment.is_published ? 'text-bg-success' : 'text-bg-secondary'}`}>{assessment.is_published ? 'Published' : 'Draft'}</span><button type="button" className="btn btn-sm btn-outline-success" onClick={() => togglePublished(assessment)} disabled={saving}>{assessment.is_published ? 'Unpublish' : 'Publish'}</button></div>
             </div>
-            {assessmentQuestions.map((question, index) => <div className="border rounded-3 p-3 mb-2" key={question.id}><div className="small text-secondary">QUESTION {index + 1} · {question.question_type} · {question.points} pts</div><strong>{question.prompt}</strong>{question.options?.length > 0 && <ul className="small text-secondary mb-0 mt-2">{question.options.map((option) => <li key={option.value}>{option.label}</li>)}</ul>}</div>)}
+            {assessmentQuestions.map((question, index) => <div className="border rounded-3 p-3 mb-2" key={question.id}>
+              <div className="small text-secondary">QUESTION {index + 1} · {question.question_type} · {question.points} pts</div>
+              <strong>{question.prompt}</strong>
+              {question.options?.length > 0 && <ul className="small text-secondary mb-0 mt-2">{question.options.map((option) => <li key={option.value}>{option.label}</li>)}</ul>}
+              {!answerKeyIds.has(question.id) && ['single_choice', 'multiple_choice'].includes(question.question_type) && (
+                <form className="bg-light rounded-3 p-3 mt-3" onSubmit={(event) => repairMissingAnswerKey(event, question)}>
+                  <div className="small fw-semibold text-warning mb-2">Answer key missing — complete it before publishing</div>
+                  <label className="form-label small" htmlFor={`repair-answer-${question.id}`}>Correct {question.question_type === 'multiple_choice' ? 'values (comma separated)' : 'value'}</label>
+                  <div className="d-flex gap-2">
+                    <input id={`repair-answer-${question.id}`} className="form-control form-control-sm" value={repairAnswers[question.id] || ''} onChange={(event) => setRepairAnswers((current) => ({ ...current, [question.id]: event.target.value }))} />
+                    <button type="submit" className="btn btn-sm btn-outline-success text-nowrap" disabled={saving}>Save key</button>
+                  </div>
+                </form>
+              )}
+            </div>)}
             {!assessment.is_published && !attempts.some((item) => item.assessment_id === assessment.id) ? <form className="bg-light rounded-3 p-3 mt-3" onSubmit={(event) => addQuestion(event, assessment)}>
               <h4 className="h6 fw-bold mb-3">Add question</h4><div className="row g-2">
                 <div className="col-12 col-lg-3"><label className="form-label small" htmlFor={`question-type-${assessment.id}`}>Type</label><select id={`question-type-${assessment.id}`} className="form-select form-select-sm" value={form.type} onChange={(event) => setQuestionForms((current) => ({ ...current, [assessment.id]: { ...form, type: event.target.value } }))}><option value="single_choice">Single choice</option><option value="multiple_choice">Multiple choice</option><option value="short_text">Short answer (manual)</option><option value="long_text">Long answer (manual)</option></select></div>
