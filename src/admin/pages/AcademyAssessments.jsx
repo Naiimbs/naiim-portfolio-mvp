@@ -75,7 +75,7 @@ export default function AcademyAssessments() {
     setProfiles(profileResult.data || []);
     setAttempts(nextAttempts);
     setQuestions(questionResult.data || []);
-    setAnswerKeyIds(new Set((keyResult.data || []).map((item) => item.question_id)));
+    setAnswerKeyIds(keyResult.error ? new Set(questionIds) : new Set((keyResult.data || []).map((item) => item.question_id)));
     setAnswers(answerResult.data || []);
     setLoading(false);
   }, []);
