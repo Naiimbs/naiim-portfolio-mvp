@@ -21,6 +21,13 @@ const CmsDynamicPage = lazy(() => import('./pages/CmsDynamicPage'));
 
 // Lazy: entire Admin CMS (never shipped to public visitors)
 const AdminGuard = lazy(() => import('./admin/components/AdminGuard'));
+const IqraAdminGuard = lazy(() => import('./admin/components/IqraAdminGuard'));
+const AcademyDashboard = lazy(() => import('./admin/pages/AcademyDashboard'));
+const AcademyCourses = lazy(() => import('./admin/pages/AcademyCourses'));
+const AcademyEnrollments = lazy(() => import('./admin/pages/AcademyEnrollments'));
+const AcademyCurriculum = lazy(() => import('./admin/pages/AcademyCurriculum'));
+const AcademyProgress = lazy(() => import('./admin/pages/AcademyProgress'));
+const AcademyAssessments = lazy(() => import('./admin/pages/AcademyAssessments'));
 const AdminLayout = lazy(() => import('./admin/layouts/AdminLayout'));
 const AdminLogin = lazy(() => import('./admin/pages/AdminLogin'));
 const AdminDashboard = lazy(() => import('./admin/pages/AdminDashboard'));
@@ -140,6 +147,12 @@ export default function App() {
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="content" element={<AdminContent />} />
+              <Route path="academy" element={<IqraAdminGuard><AcademyDashboard /></IqraAdminGuard>} />
+              <Route path="academy/courses" element={<IqraAdminGuard><AcademyCourses /></IqraAdminGuard>} />
+              <Route path="academy/enrollments" element={<IqraAdminGuard><AcademyEnrollments /></IqraAdminGuard>} />
+              <Route path="academy/progress" element={<IqraAdminGuard><AcademyProgress /></IqraAdminGuard>} />
+              <Route path="academy/assessments" element={<IqraAdminGuard><AcademyAssessments /></IqraAdminGuard>} />
+              <Route path="academy/courses/:id" element={<IqraAdminGuard><AcademyCurriculum /></IqraAdminGuard>} />
               <Route path="content/blog/new" element={<AdminBlogEditor />} />
               <Route path="content/blog/:id" element={<AdminBlogEditor />} />
               <Route path="registry" element={<AdminRegistry />} />
