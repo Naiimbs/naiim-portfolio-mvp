@@ -1,17 +1,6 @@
 name: IQRA CMS integration checks
 
 on:
-  push:
-    branches:
-      - integration/iqra-cms-production-2026-11-20
-    paths:
-      - "src/App.jsx"
-      - "src/admin/**"
-      - "scripts/test-iqra-*.mjs"
-      - "supabase/functions/iqra-admin-*/**"
-      - "supabase/tests/fixtures/iqra-admin-e2e.sql"
-      - "package.json"
-      - ".github/workflows/iqra-cms-integration-check.yml"
   pull_request:
     paths:
       - "src/App.jsx"
@@ -21,6 +10,10 @@ on:
       - "supabase/tests/fixtures/iqra-admin-e2e.sql"
       - "package.json"
       - ".github/workflows/iqra-cms-integration-check.yml"
+
+concurrency:
+  group: iqra-cms-integration-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: read
