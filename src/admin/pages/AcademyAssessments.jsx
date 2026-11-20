@@ -128,20 +128,31 @@ export default function AcademyAssessments() {
       points: Number(form.points) || 1,
       position: assessmentQuestions.length + 1,
     }).select('id').single();
-    if (insertError) setError(insertError.message);
-    else if (objective) {
+    let questionSaveFailed = Boolean(insertError);
+    if (insertError) {
+      setError(insertError.message);
+    } else if (objective) {
       const correctAnswer = form.type === 'single_choice' ? answers[0] : answers;
       const { error: keyError } = await supabase.from('iqra_question_answer_keys').insert({
         question_id: question.id,
         correct_answer: correctAnswer,
       });
-      if (keyError) setError(`Question saved, but its answer key failed: ${keyError.message}`);
-      else setNotice('Question and protected answer key saved.');
+      if (keyError) {
+        questionSaveFailed = true;
+        const { error: cleanupError } = await supabase.from('iqra_questions').delete().eq('id', question.id);
+        setError(cleanupError
+          ? `Answer key creation failed: ${keyError.message}. The incomplete question could not be removed (ID: ${question.id}); do not publish this assessment until it is repaired.`
+          : `Answer key creation failed: ${keyError.message}. The incomplete question was removed; retry safely.`);
+      } else {
+        setNotice('Question and protected answer key saved.');
+      }
     } else {
       setNotice('Written-response question saved. Learner submissions will require manual grading.');
     }
     if (!insertError) {
-      setQuestionForms((current) => ({ ...current, [assessment.id]: EMPTY_QUESTION }));
+      if (!questionSaveFailed) {
+        setQuestionForms((current) => ({ ...current, [assessment.id]: EMPTY_QUESTION }));
+      }
       await load();
     }
     setSaving(false);
