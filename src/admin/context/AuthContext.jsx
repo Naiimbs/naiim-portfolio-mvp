@@ -8,6 +8,7 @@ const AuthContext = createContext({
   isAuthenticated: false,
   isAdmin: false,
   isEditor: false,
+  isIqraAdmin: false,
   signIn: async () => {},
   signOut: async () => {},
 });
@@ -52,13 +53,17 @@ export function AuthProvider({ children }) {
     // 1. Get current session, but never block the whole admin shell forever if
     // Supabase is unavailable, blocked, or misconfigured on the deployment.
     withTimeout(supabase.auth.getSession())
-      .then(({ data: { session } }) => {
+      .then(async ({ data: { session } }) => {
         const currentUser = session?.user ?? null;
         setUser(currentUser);
-        setLoading(false);
         if (currentUser) {
-          fetchProfile(currentUser.id).then(setProfile).catch(() => setProfile(null));
+          const userProfile = await fetchProfile(currentUser.id);
+          setProfile(userProfile);
+        } else {
+          setProfile(null);
         }
+        // Keep route guards waiting until the role profile is resolved.
+        setLoading(false);
       })
       .catch((error) => {
         console.warn('[AuthProvider] Session bootstrap failed:', error);
@@ -72,11 +77,15 @@ export function AuthProvider({ children }) {
       (_event, session) => {
         const currentUser = session?.user ?? null;
         setUser(currentUser);
-        setLoading(false);
         if (currentUser) {
-          fetchProfile(currentUser.id).then(setProfile).catch(() => setProfile(null));
+          setLoading(true);
+          fetchProfile(currentUser.id)
+            .then((userProfile) => setProfile(userProfile))
+            .catch(() => setProfile(null))
+            .finally(() => setLoading(false));
         } else {
           setProfile(null);
+          setLoading(false);
         }
       }
     );
@@ -111,6 +120,8 @@ export function AuthProvider({ children }) {
   const isAuthenticated = Boolean(user);
   const isAdmin = profile?.role === 'admin';
   const isEditor = profile?.role === 'editor' || isAdmin;
+  // IQRA authorization is a separate server-managed JWT claim, not a CMS profile role.
+  const isIqraAdmin = user?.app_metadata?.iqra_role === 'admin';
 
   return (
     <AuthContext.Provider
@@ -121,6 +132,7 @@ export function AuthProvider({ children }) {
         isAuthenticated,
         isAdmin,
         isEditor,
+        isIqraAdmin,
         signIn,
         signOut,
       }}
