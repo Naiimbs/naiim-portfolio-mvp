@@ -315,7 +315,7 @@ export default function CaseStudyContentEditor({
     const updated = clone(caseStudy);
     if (!updated.evidence) updated.evidence = {};
     const gallery = Array.isArray(updated.evidence.gallery) ? [...updated.evidence.gallery] : [];
-    gallery.push({ image: '', imageAlt: '', caption: '' });
+    gallery.push({ image: '', imageAlt: '', caption: '', is_visible: true });
     updated.evidence.gallery = gallery;
     onChange(updated);
   };
@@ -336,6 +336,16 @@ export default function CaseStudyContentEditor({
     if (!updated.evidence) updated.evidence = {};
     const gallery = Array.isArray(updated.evidence.gallery) ? [...updated.evidence.gallery] : [];
     gallery.splice(index, 1);
+    updated.evidence.gallery = gallery;
+    onChange(updated);
+  };
+
+  const handleToggleGalleryItemVisibility = (index) => {
+    const updated = clone(caseStudy);
+    if (!updated.evidence) updated.evidence = {};
+    const gallery = Array.isArray(updated.evidence.gallery) ? [...updated.evidence.gallery] : [];
+    if (!gallery[index]) return;
+    gallery[index] = { ...gallery[index], is_visible: gallery[index].is_visible === false };
     updated.evidence.gallery = gallery;
     onChange(updated);
   };
@@ -1432,12 +1442,25 @@ export default function CaseStudyContentEditor({
                 const itemNeedsAlt = Boolean(item.image?.trim() && !item.imageAlt?.trim());
 
                 return (
-                  <div key={gIdx} className="p-3 border rounded bg-white shadow-sm">
+                  <div key={gIdx} className={`p-3 border rounded bg-white shadow-sm ${item.is_visible === false ? 'opacity-50' : ''}`}>
                     <div className="d-flex justify-content-between align-items-center mb-2">
-                      <span className="badge bg-secondary-subtle text-secondary small" style={{ fontSize: '0.68rem' }}>
-                        Gallery Item #{gIdx + 1}
+                      <span className="d-flex align-items-center gap-2">
+                        <span className="badge bg-secondary-subtle text-secondary small" style={{ fontSize: '0.68rem' }}>
+                          Gallery Item #{gIdx + 1}
+                        </span>
+                        {item.is_visible === false && <span className="badge bg-warning-subtle text-warning-emphasis border" style={{ fontSize: '0.65rem' }}>Hidden from public</span>}
                       </span>
                       <div className="d-flex align-items-center gap-1">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-link text-muted p-0 me-1"
+                          disabled={disabled}
+                          onClick={() => handleToggleGalleryItemVisibility(gIdx)}
+                          title={item.is_visible === false ? 'Show image publicly' : 'Hide image publicly'}
+                          aria-label={item.is_visible === false ? 'Show image publicly' : 'Hide image publicly'}
+                        >
+                          <i className={`bi bi-${item.is_visible === false ? 'eye-slash' : 'eye'}`} />
+                        </button>
                         <button
                           type="button"
                           className="btn btn-sm btn-link text-dark p-0"
