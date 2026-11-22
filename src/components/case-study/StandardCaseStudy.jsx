@@ -205,12 +205,12 @@ export default function StandardCaseStudy({ data }) {
               {evidence.caption && <figcaption>{evidence.caption}</figcaption>}
             </figure>
           )}
-          {Array.isArray(evidence.gallery) && evidence.gallery.length > 0 && (
+          {Array.isArray(evidence.gallery) && evidence.gallery.some((item) => item?.is_visible !== false) && (
             <div className="row g-4 mt-2">
-              {evidence.gallery.map((item, idx) => (
-                <div className="col-12 col-md-6" key={idx}>
+              {evidence.gallery.filter((item) => item?.is_visible !== false).map((item, idx) => (
+                <div className="col-12 col-md-6" key={item.id || item.image || idx}>
                   <figure className="case-hero-image mb-0">
-                    <img src={item.image} alt={item.imageAlt || item.caption || evidence.title} />
+                    <img src={item.image} alt={item.imageAlt || item.caption || evidence.title} loading="lazy" />
                     {item.caption && <figcaption>{item.caption}</figcaption>}
                   </figure>
                 </div>
