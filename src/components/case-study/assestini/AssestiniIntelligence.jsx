@@ -8,7 +8,7 @@ export default function AssestiniIntelligence({ content = {} }) {
     'Kanban', 'Gantt', 'Roadmap', 'Calendar', 'Time Tracking',
     'Project Health', 'Margin Visibility', 'SPI', 'CPI', 'Business Control Center',
   ];
-  const featureTags = parseCaseStudyArray(content.featureTagsJson, defaultFeatureTags);
+  const featureTags = parseCaseStudyArray(content.featureTagsJson, defaultFeatureTags).filter((tag) => typeof tag === 'string');
   const dashboardImage = resolveAsset(content.dashboardImage) || kanbanProjectLifeImg;
   const dashboardImageAlt = content.dashboardImageAlt || 'Assestini Business Control Center — Business Health Score 69/100, delivery 100%, finance 45%, operations 55%';
 
