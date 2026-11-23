@@ -1,15 +1,17 @@
 import React from 'react';
+import { parseCaseStudyArray } from '../../../utils/caseStudyContent';
 
 export default function WinniVisualSystem({ content = {} }) {
-  const colorTokens = [
+  const defaultColorTokens = [
     { name: 'Graphite Black', hex: '#111418', role: '#111418 · Text & Primary' },
     { name: 'Muted Slate', hex: '#45575e', role: '#45575E · Body Copy' },
     { name: 'Warm Neutral', hex: '#dfe5e1', role: '#DFE5E1 · Borders' },
     { name: 'Soft Paper', hex: '#f8f9f6', role: '#F8F9F6 · Background' },
     { name: 'Status Emerald', hex: '#087f66', role: '#087F66 · Active State' },
   ];
+  const colorTokens = parseCaseStudyArray(content.colorTokensJson, defaultColorTokens);
 
-  const icons = [
+  const defaultIcons = [
     { name: 'Voiture', icon: 'bi-car-front', colorClass: 'text-dark' },
     { name: 'Moto', icon: 'bi-bicycle', colorClass: 'text-dark' },
     { name: 'Bagage', icon: 'bi-suitcase', colorClass: 'text-dark' },
@@ -17,6 +19,7 @@ export default function WinniVisualSystem({ content = {} }) {
     { name: 'Privé', icon: 'bi-shield-check', colorClass: 'text-success' },
     { name: 'Lieu', icon: 'bi-geo-alt', colorClass: 'text-dark' },
   ];
+  const icons = parseCaseStudyArray(content.iconsJson, defaultIcons);
 
   return (
     <section className="winni-section" id="visual-system">
