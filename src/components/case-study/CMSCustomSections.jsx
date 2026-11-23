@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { resolveAsset } from '../../services/assetRegistry';
 
 /**
  * Optional CMS-authored editorial sections for bespoke case studies.
@@ -23,7 +24,8 @@ export default function CMSCustomSections({ sections = [] }) {
         const body = localized.body || section.body || '';
         const alt = localized.alt || section.alt || title || 'Case study visual';
         const caption = localized.caption || section.caption || '';
-        const isImage = section.type === 'image' && section.image;
+        const imageSrc = section.image ? (resolveAsset(section.image) || section.image) : '';
+        const isImage = section.type === 'image' && imageSrc;
 
         return (
           <section className={`cms-custom-case-section cms-custom-case-section--${section.layout || 'text'}`} key={section.id || index}>
@@ -33,7 +35,7 @@ export default function CMSCustomSections({ sections = [] }) {
               {isImage && (
                 <figure className="cms-custom-case-section__media">
                   <div className="case-image-stage">
-                    <img src={section.image} alt={alt} loading="lazy" decoding="async" />
+                    <img src={imageSrc} alt={alt} loading="lazy" decoding="async" />
                   </div>
                   {caption && <figcaption>{caption}</figcaption>}
                 </figure>
