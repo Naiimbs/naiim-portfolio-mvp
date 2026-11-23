@@ -45,7 +45,7 @@ export default function WinniCaseStudy({ caseStudy = {}, cmsSections = [], previ
       {previewInfo && <div className="preview-mode-banner preview-mode-banner-safe bg-warning text-dark text-center py-2 px-3 fw-semibold small shadow-sm" role="status">SAVED CMS PREVIEW — {previewInfo.title} ({previewInfo.status}/{previewInfo.visibility})</div>}
       <main className="winni-page">
         {/* 01. Hero */}
-        <WinniHero />
+        <WinniHero title={displayTitle} subtitle={displaySubtitle} />
 
         {/* 02. The Problem */}
         <WinniProblem />
