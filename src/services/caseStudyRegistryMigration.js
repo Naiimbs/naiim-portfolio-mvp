@@ -200,6 +200,7 @@ export function normalizeCaseStudyContent(caseStudy, slug = '') {
       subtitle: caseStudy.subtitle || '',
       customComponent: caseStudy.customComponent || null,
       customSections: Array.isArray(caseStudy.customSections) ? caseStudy.customSections : [],
+      nativeSections: caseStudy.nativeSections && typeof caseStudy.nativeSections === 'object' ? caseStudy.nativeSections : {},
       translations: caseStudy.translations && typeof caseStudy.translations === 'object' ? caseStudy.translations : {},
       version: caseStudy.version || 1,
     };
