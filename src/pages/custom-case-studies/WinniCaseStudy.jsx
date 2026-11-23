@@ -62,7 +62,7 @@ export default function WinniCaseStudy({ caseStudy = {}, cmsSections = [], previ
           ['motion', <WinniMotion content={sectionContent('motion')} />],
           ['scope', <WinniScope content={sectionContent('scope')} />],
           ['outcome', <WinniOutcome content={sectionContent('outcome')} />],
-        ].map(([id, component]) => ({ id, component }))}
+        ].map(([id, component]) => ({ id, component }))
           .filter(({ id }) => caseStudy.nativeSectionVisibility?.[id] !== false)
           .sort((a, b) => {
             const defaultOrder = ['problem','idea','challenge','scanExperience','privacy','location','physicalProduct','systemMatrix','visualSystem','motion','scope','outcome'];
