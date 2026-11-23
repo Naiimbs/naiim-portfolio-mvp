@@ -200,21 +200,35 @@ export default function StandardCaseStudy({ data }) {
           </div>
           <h2>{evidence.title}</h2>
           {evidence.image && (
-            <figure className="case-hero-image">
-              <img src={evidence.image} alt={evidence.imageAlt || evidence.title} />
+            <figure className="case-hero-image case-hero-image--feature">
+              <div className="case-image-stage">
+                <img
+                  src={evidence.image}
+                  alt={evidence.imageAlt || evidence.title}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
               {evidence.caption && <figcaption>{evidence.caption}</figcaption>}
             </figure>
           )}
-          {Array.isArray(evidence.gallery) && evidence.gallery.some((item) => item?.is_visible !== false) && (
-            <div className="row g-4 mt-2">
-              {evidence.gallery.filter((item) => item?.is_visible !== false).map((item, idx) => (
-                <div className="col-12 col-md-6" key={item.id || item.image || idx}>
-                  <figure className="case-hero-image mb-0">
-                    <img src={item.image} alt={item.imageAlt || item.caption || evidence.title} loading="lazy" />
+          {Array.isArray(evidence.gallery) && evidence.gallery.some((item) => item?.is_visible !== false && item?.image) && (
+            <div className="case-evidence-gallery" aria-label={evidence.title || 'Visual evidence'}>
+              {evidence.gallery
+                .filter((item) => item?.is_visible !== false && item?.image)
+                .map((item, idx) => (
+                  <figure className="case-evidence-card" key={item.id || item.image || idx}>
+                    <div className="case-image-stage">
+                      <img
+                        src={item.image}
+                        alt={item.imageAlt || item.caption || evidence.title}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </div>
                     {item.caption && <figcaption>{item.caption}</figcaption>}
                   </figure>
-                </div>
-              ))}
+                ))}
             </div>
           )}
         </div>
