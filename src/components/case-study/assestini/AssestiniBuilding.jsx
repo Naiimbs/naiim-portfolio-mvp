@@ -11,7 +11,7 @@ export default function AssestiniBuilding({ content = {} }) {
     { label: 'SYSTEMS', tags: ['Permissions', 'Commercial Workflow', 'Operational Data'], desc: 'Designing the authorization model, plan controls, quote snapshots and audit trail.' },
     { label: 'BUILD', tags: ['React', 'TypeScript', 'Supabase', 'AI Integration'], desc: 'Building the product directly — from design system to working application.' },
   ];
-  const layers = parseCaseStudyArray(content.layersJson, defaultLayers).filter((layer) => layer && typeof layer === 'object');
+  const layers = parseCaseStudyArray(content.layersJson, defaultLayers).filter((layer) => layer && typeof layer === 'object').map((layer) => ({ ...layer, tags: Array.isArray(layer.tags) ? layer.tags.filter((tag) => typeof tag === 'string') : [] }));
   const principleBadges = parseCaseStudyArray(content.principleBadgesJson, [
     'I can design the interface.',
     'I can understand the workflow.',
