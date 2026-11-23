@@ -45,7 +45,7 @@ for (const [slug, contract] of Object.entries(contracts)) {
   for (const [sectionId, fields] of Object.entries(contract.sections)) {
     const sectionMarker = `{ id: '${sectionId}'`;
     assert.ok(editor.includes(sectionMarker), `${slug} CMS editor is missing section group ${sectionId}`);
-    const groupStart = editor.indexOf(sectionMarker);
+    const groupStart = slug === 'assestini' ? editor.lastIndexOf(sectionMarker) : editor.indexOf(sectionMarker);
     const groupEnd = editor.indexOf('},', groupStart);
     for (const field of fields) {
       assert.ok(editor.slice(groupStart, groupEnd).includes(`'${field}'`), `${slug} CMS editor is missing ${sectionId}.${field}`);
