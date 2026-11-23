@@ -53,13 +53,13 @@ export default function WinniCaseStudy({ caseStudy = {}, cmsSections = [], previ
         <WinniProblem content={sectionContent('problem')} />
 
         {/* 03. The Idea */}
-        <WinniIdea />
+        <WinniIdea content={sectionContent('idea')} />
 
         {/* 04. Product Challenge */}
         <WinniChallenge content={sectionContent('challenge')} />
 
         {/* 05. The Scan Experience (5 Screen Sequence) */}
-        <WinniScanExperience />
+        <WinniScanExperience content={sectionContent('scanExperience')} />
 
         {/* 06. Privacy by Design */}
         <WinniPrivacy content={sectionContent('privacy')} />
@@ -68,22 +68,22 @@ export default function WinniCaseStudy({ caseStudy = {}, cmsSections = [], previ
         <WinniLocation content={sectionContent('location')} />
 
         {/* 08. Physical Product */}
-        <WinniPhysicalProduct />
+        <WinniPhysicalProduct content={sectionContent('physicalProduct')} />
 
         {/* 09. Unified System Matrix */}
-        <WinniSystemMatrix />
+        <WinniSystemMatrix content={sectionContent('systemMatrix')} />
 
         {/* 10. Visual System */}
-        <WinniVisualSystem />
+        <WinniVisualSystem content={sectionContent('visualSystem')} />
 
         {/* 11. Motion */}
-        <WinniMotion />
+        <WinniMotion content={sectionContent('motion')} />
 
         {/* 12. Scope of Work (What I Designed) */}
-        <WinniScope />
+        <WinniScope content={sectionContent('scope')} />
 
         {/* 13. The Design Principle + 14. Outcome */}
-        <WinniOutcome />
+        <WinniOutcome content={sectionContent('outcome')} />
 
         {/* 15. Final CTA + Pagination */}
         <CMSCustomSections sections={cmsSections} />
