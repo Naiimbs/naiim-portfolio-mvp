@@ -9,17 +9,11 @@ import { resolveAsset } from './assetRegistry.js';
 import { updateContentRegistryEntry, getAdminContentRegistry } from './contentRegistry.js';
 import legacyCaseStudiesData from '../data/caseStudiesData.json';
 import { normalizeProcessStages } from '../utils/caseStudyStages.js';
+import { shouldSkipCaseStudyMigration } from './customCaseStudyContent.js';
 import { preserveCustomCaseStudyCmsContent } from './customCaseStudyContent.js';
 
 export const LEGACY_CASE_STUDIES_DATA = legacyCaseStudiesData;
 
-/**
- * A case study at version 1 or newer is already migrated.
- * Force is the only mode allowed to refresh legacy-derived content.
- */
-export function shouldSkipCaseStudyMigration(caseStudy, force = false) {
-  return !force && Number(caseStudy?.version) >= 1;
-}
 
 const cleanFileName = (val) => {
   if (!val || typeof val !== 'string') return null;
