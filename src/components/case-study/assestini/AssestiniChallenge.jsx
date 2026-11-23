@@ -1,14 +1,10 @@
 import React from 'react';
+import { parseCaseStudyArray } from '../../../utils/caseStudyContent';
 
 export default function AssestiniChallenge({ content = {} }) {
-  const workflowSteps = [
-    { label: 'Estimate', active: true },
-    { label: 'Define', active: false },
-    { label: 'Quote', active: false },
-    { label: 'Launch', active: false },
-    { label: 'Deliver', active: false },
-    { label: 'Monitor', active: false },
-  ];
+  const workflowSteps = parseCaseStudyArray(content.workflowLabelsJson, [
+    'Estimate', 'Define', 'Quote', 'Launch', 'Deliver', 'Monitor',
+  ]).filter((label) => typeof label === 'string');
 
   return (
     <section className="case-section">
@@ -29,7 +25,7 @@ export default function AssestiniChallenge({ content = {} }) {
           <div className="workflow-row mt-4">
             {workflowSteps.map((step, idx) => (
               <React.Fragment key={idx}>
-                <span className={`workflow-pill ${step.active ? 'active' : ''}`}>{step.label}</span>
+                <span className={`workflow-pill ${idx === 0 ? 'active' : ''}`}>{step}</span>
                 {idx < workflowSteps.length - 1 && <span className="workflow-arrow">→</span>}
               </React.Fragment>
             ))}
@@ -37,14 +33,14 @@ export default function AssestiniChallenge({ content = {} }) {
         </div>
 
         <aside className="case-role">
-          <small>MY ROLE</small>
-          <strong>Product Owner · UX/UI Designer · Builder</strong>
-          <small className="d-block mt-4">FOCUS</small>
-          <strong>Product Design · AI · UX/UI · Product Strategy · Operational Intelligence</strong>
-          <small className="d-block mt-4">TECHNOLOGY</small>
-          <strong>React · TypeScript · Supabase · Gemini</strong>
-          <small className="d-block mt-4">TYPE</small>
-          <strong>Own product / startup</strong>
+          <small>{content.roleLabel || 'MY ROLE'}</small>
+          <strong>{content.roleValue || 'Product Owner · UX/UI Designer · Builder'}</strong>
+          <small className="d-block mt-4">{content.focusLabel || 'FOCUS'}</small>
+          <strong>{content.focusValue || 'Product Design · AI · UX/UI · Product Strategy · Operational Intelligence'}</strong>
+          <small className="d-block mt-4">{content.technologyLabel || 'TECHNOLOGY'}</small>
+          <strong>{content.technologyValue || 'React · TypeScript · Supabase · Gemini'}</strong>
+          <small className="d-block mt-4">{content.typeLabel || 'TYPE'}</small>
+          <strong>{content.typeValue || 'Own product / startup'}</strong>
         </aside>
       </div>
     </section>
