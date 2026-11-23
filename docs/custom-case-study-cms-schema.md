@@ -77,7 +77,7 @@ The WINNI and Assestini case studies retain their bespoke React components for i
 - Arabic sections render RTL.
 - Image sections use contained media so screenshots are not forcibly cropped.
 - Empty or hidden CMS sections are not rendered.
-- The existing bespoke components remain active; CMS editorial blocks are placed before the final CTA.\n- Selected native sections now accept CMS overrides for headings, eyebrow labels and primary copy, with FR/AR overrides. The editor currently exposes WINNI Problem, Product Challenge, Privacy and Location, plus Assestini Challenge, AI Estimation, Commercial Workflow and AI Agents/MCP.
+- The existing bespoke components remain active; CMS editorial blocks are placed before the final CTA.\n- Selected native sections now accept CMS overrides for headings, eyebrow labels and primary copy, with FR/AR overrides. The editor currently exposes 12 WINNI sections (Idea, Problem, Product Challenge, Scan Experience, Privacy, Location, Physical Product, Unified System, Visual System, Motion, Scope and Outcome) and 7 Assestini sections (Challenge, Connected Workflow, AI Estimation, Commercial Workflow, Operational Intelligence, AI Agents/MCP and Product Building).
 
 ## Current limitation
 
