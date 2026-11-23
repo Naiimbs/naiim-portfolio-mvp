@@ -15,7 +15,7 @@ import AssestiniMcp from '../../components/case-study/assestini/AssestiniMcp';
 import AssestiniBuilding from '../../components/case-study/assestini/AssestiniBuilding';
 import AssestiniTechCta from '../../components/case-study/assestini/AssestiniTechCta';
 
-export default function AssestiniCaseStudy({ caseStudy = {}, cmsSections = [] }) {
+export default function AssestiniCaseStudy({ caseStudy = {}, cmsSections = [], previewInfo = null }) {
   const schema = getCaseStudySchema({
     title: caseStudy.title || 'Assestini — AI Operational Intelligence Platform',
     description: caseStudy.subtitle || 'Assestini is an AI-powered operational platform for freelancers, experts, consultants and agencies. From estimation to payment in one connected workflow.',
@@ -31,6 +31,7 @@ export default function AssestiniCaseStudy({ caseStudy = {}, cmsSections = [] })
         schema={schema}
       />
 
+      {previewInfo && <div className="preview-mode-banner preview-mode-banner-safe bg-warning text-dark text-center py-2 px-3 fw-semibold small shadow-sm" role="status">SAVED CMS PREVIEW — {previewInfo.title} ({previewInfo.status}/{previewInfo.visibility})</div>}
       <main className="assestini-page">
         {/* 01. Hero */}
         <AssestiniHero />
