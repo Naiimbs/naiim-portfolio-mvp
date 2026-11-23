@@ -40,7 +40,7 @@ export default function AssestiniMcp({ content = {} }) {
         <div className="row g-5 align-items-center">
           <div className="col-lg-6">
             <div className="eyebrow">
-              <span></span> {content.eyebrow || '06 · AI AGENTS &amp; MCP'}
+              <span></span> {content.eyebrow || '06 · AI AGENTS & MCP'}
             </div>
             <h2>{content.title || 'Making the product accessible to AI.'}</h2>
             <p className="case-copy">
