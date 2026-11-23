@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function WinniOutcome() {
+export default function WinniOutcome({ content = {} }) {
   const steps = [
     {
       num: '01',
@@ -52,11 +52,10 @@ export default function WinniOutcome() {
       <section className="winni-section" id="outcome">
         <div className="container">
           <div className="winni-section-header">
-            <span className="winni-section-num">14 · OUTCOME</span>
-            <h2 className="winni-section-title">From concept to working product.</h2>
+            <span className="winni-section-num">{content.eyebrow || '14 · OUTCOME'}</span>
+            <h2 className="winni-section-title">{content.title || 'From concept to working product.'}</h2>
             <p className="winni-copy">
-              Rather than relying on unverified vanity percentages, the milestone progression documents concrete system
-              deliverables:
+              {content.lead || 'Rather than relying on unverified vanity percentages, the milestone progression documents concrete system deliverables:'}
             </p>
           </div>
 
