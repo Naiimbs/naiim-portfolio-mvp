@@ -95,8 +95,12 @@ This is a partial component-level migration, not full end-to-end editability. Na
 - WINNI Physical Product exposes the three product cards (badge, title, image reference, alt text, description and technical specs) plus print-standard and cut-format copy.
 - WINNI Location exposes both sides of the surveillance-vs-voluntary-sharing comparison, including headings, explanations, approved/rejected copy examples and their supporting bullet lists.
 - WINNI Motion exposes the three motion-state titles, descriptions, preview labels and timing annotations while preserving the existing visual motion previews.
+- WINNI Problem exposes the challenge bullet list, object-category cards, supporting image reference and alt text.
+- WINNI Scope exposes the six multidisciplinary responsibility cards as a structured JSON array.
+- WINNI Outcome exposes the six milestone cards, design-principle statement, and current product-status copy.
+- Assestini Operational Intelligence exposes the delivery/financial detail cards (including their badges) and the product-thinking callout copy.
 - Assestini Workflow screenshots can be replaced through the asset registry, with editable alt text.
 - The Connected Workflow diagram expects exactly six step objects; invalid or incomplete JSON falls back to the built-in six-stage sequence. Other JSON arrays fall back when parsing fails, and malformed non-object entries are filtered from diagram/token collections.
-- Other secondary paragraphs, detailed copy inside remaining diagrams, image selection in other sections, native media captions, and interaction settings remain code-defined.
+- Some secondary paragraphs and detailed copy inside remaining bespoke diagrams, image selection in other native sections, native media captions, and interaction settings remain code-defined. The latest migration adds structured controls for the WINNI Problem, Scope and Outcome sections, plus Assestini Operational Intelligence detail cards and product-thinking callout; this is still not full end-to-end CMS editability.
 
 Continue migrating those fields before describing either bespoke study as fully CMS-editable.
