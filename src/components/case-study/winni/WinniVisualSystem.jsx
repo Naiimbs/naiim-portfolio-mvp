@@ -9,7 +9,7 @@ export default function WinniVisualSystem({ content = {} }) {
     { name: 'Soft Paper', hex: '#f8f9f6', role: '#F8F9F6 · Background' },
     { name: 'Status Emerald', hex: '#087f66', role: '#087F66 · Active State' },
   ];
-  const colorTokens = parseCaseStudyArray(content.colorTokensJson, defaultColorTokens);
+  const colorTokens = parseCaseStudyArray(content.colorTokensJson, defaultColorTokens).filter((token) => token && typeof token === 'object');
 
   const defaultIcons = [
     { name: 'Voiture', icon: 'bi-car-front', colorClass: 'text-dark' },
@@ -19,7 +19,7 @@ export default function WinniVisualSystem({ content = {} }) {
     { name: 'Privé', icon: 'bi-shield-check', colorClass: 'text-success' },
     { name: 'Lieu', icon: 'bi-geo-alt', colorClass: 'text-dark' },
   ];
-  const icons = parseCaseStudyArray(content.iconsJson, defaultIcons);
+  const icons = parseCaseStudyArray(content.iconsJson, defaultIcons).filter((item) => item && typeof item === 'object');
 
   return (
     <section className="winni-section" id="visual-system">
