@@ -114,6 +114,28 @@ export default function CaseStudyContentEditor({
               onChange={(e) => commitCustom({ subtitle: e.target.value })} />
           </div>
         </div>
+        <details className="mb-4">
+          <summary className="small fw-semibold text-success">Case study metadata translations · FR / AR</summary>
+          <div className="row g-3 mt-1">
+            {['fr','ar'].map((locale) => (
+              <div className="col-md-6" key={locale}>
+                <div className="small fw-bold text-uppercase mb-2">{locale}</div>
+                <label className="form-label small">Title</label>
+                <input className="form-control form-control-sm mb-2" value={caseStudy.translations?.[locale]?.title || ''} disabled={disabled}
+                  onChange={(e) => {
+                    const translations = { ...(caseStudy.translations || {}), [locale]: { ...(caseStudy.translations?.[locale] || {}), title: e.target.value } };
+                    commitCustom({ translations });
+                  }} />
+                <label className="form-label small">Subtitle / Description</label>
+                <textarea className="form-control form-control-sm" rows="2" value={caseStudy.translations?.[locale]?.subtitle || ''} disabled={disabled}
+                  onChange={(e) => {
+                    const translations = { ...(caseStudy.translations || {}), [locale]: { ...(caseStudy.translations?.[locale] || {}), subtitle: e.target.value } };
+                    commitCustom({ translations });
+                  }} />
+              </div>
+            ))}
+          </div>
+        </details>
         <div className="d-flex justify-content-between align-items-center mb-3">
           <div><strong className="small">Editable sections</strong><div className="text-muted" style={{fontSize:'0.72rem'}}>Add, reorder, hide and localize text or image sections.</div></div>
           <div className="d-flex gap-2">
