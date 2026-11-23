@@ -1,10 +1,10 @@
 import React from 'react';
 
 export default function ImageBlock({ content = {} }) {
-  const { media_url, url, alt, caption } = content;
+  const { media_url, url, alt, caption, layout = 'feature' } = content;
   const imageSrc = media_url || url;
 
-  if (!imageSrc) {
+  if (!imageSrc || typeof imageSrc !== 'string') {
     return (
       <div className="case-block p-4 bg-light text-center rounded border my-4 text-muted small">
         <i className="bi bi-image fs-3 d-block mb-1"></i>
@@ -14,12 +14,15 @@ export default function ImageBlock({ content = {} }) {
   }
 
   return (
-    <figure className="case-hero-image">
-      <img
-        src={imageSrc}
-        alt={alt || 'Case study visual evidence'}
-        loading="lazy"
-      />
+    <figure className={`case-hero-image case-hero-image--${layout}`}>
+      <div className="case-image-stage">
+        <img
+          src={imageSrc}
+          alt={alt || 'Case study visual evidence'}
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
       {caption && <figcaption>{caption}</figcaption>}
     </figure>
   );
