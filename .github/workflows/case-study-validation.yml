@@ -1,5 +1,5 @@
 name: Case Study Validation
-# CI gate for case-study CMS content, structured arrays, media overrides, section ordering, localization, and production rendering.
+# CI gate for CMS content, structured arrays, media overrides, native order/visibility, localization, and production rendering.
 
 on:
   pull_request:
