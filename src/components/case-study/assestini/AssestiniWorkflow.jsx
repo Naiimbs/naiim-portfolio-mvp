@@ -2,17 +2,16 @@ import React from 'react';
 import assestiniEstimatorImg from '../../../assets/images/Assestini-estimator.webp';
 import modelesWbsImg from '../../../assets/images/modeles-wbs.webp';
 
-export default function AssestiniWorkflow() {
+export default function AssestiniWorkflow({ content = {} }) {
   return (
     <section className="case-section alt">
       <div className="container">
         <div className="eyebrow">
-          <span></span> THE CONNECTED WORKFLOW
+          <span></span> {content.eyebrow || 'THE CONNECTED WORKFLOW'}
         </div>
-        <h2>One workflow instead of disconnected tools.</h2>
+        <h2>{content.title || 'One workflow instead of disconnected tools.'}</h2>
         <p className="case-copy mb-4">
-          The product evolved from a conventional project-management concept toward an AI-powered Product / Operations
-          OS — connecting each stage of the expert services lifecycle into a single, traceable system of record.
+          {content.lead || 'The product evolved from a conventional project-management concept toward an AI-powered Product / Operations OS — connecting each stage of the expert services lifecycle into a single, traceable system of record.'}
         </p>
 
         {/* Inline workflow diagram */}
