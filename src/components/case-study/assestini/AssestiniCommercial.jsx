@@ -1,7 +1,8 @@
 import React from 'react';
+import { parseCaseStudyArray } from '../../../utils/caseStudyContent';
 
 export default function AssestiniCommercial({ content = {} }) {
-  const steps = [
+  const defaultSteps = [
     {
       num: '01',
       title: 'Quotation',
@@ -23,6 +24,7 @@ export default function AssestiniCommercial({ content = {} }) {
       desc: 'Project health, margin, time tracking and operational data connected back to the original commercial scope.',
     },
   ];
+  const steps = parseCaseStudyArray(content.stepsJson, defaultSteps);
 
   return (
     <section className="case-section alt">
