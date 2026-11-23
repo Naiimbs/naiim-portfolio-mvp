@@ -1,38 +1,15 @@
 import React from 'react';
+import { parseCaseStudyArray } from '../../../utils/caseStudyContent';
 
 export default function AssestiniMcp({ content = {} }) {
-  const mcpNodes = [
-    {
-      icon: 'bi-person',
-      title: 'User',
-      sub: 'Expert · Consultant · Agency',
-      type: 'default',
-    },
-    {
-      icon: 'bi-stars',
-      title: 'AI Agent',
-      sub: 'Gemini-powered · Context-aware',
-      type: 'dark',
-    },
-    {
-      icon: null,
-      title: 'MCP Layer',
-      sub: 'Authorization · Plan Controls · Feature Gates',
-      type: 'default',
-    },
-    {
-      icon: 'bi-tools',
-      title: 'Authorized Tools',
-      sub: 'Read · Write · Trigger · Summarize',
-      type: 'default',
-    },
-    {
-      icon: 'bi-database',
-      title: 'Assestini Data & Workflows',
-      sub: 'Projects · Quotes · Time · Finance · Decisions',
-      type: 'accent',
-    },
+  const defaultMcpNodes = [
+    { icon: 'bi-person', title: 'User', sub: 'Expert · Consultant · Agency', type: 'default' },
+    { icon: 'bi-stars', title: 'AI Agent', sub: 'Gemini-powered · Context-aware', type: 'dark' },
+    { icon: null, title: 'MCP Layer', sub: 'Authorization · Plan Controls · Feature Gates', type: 'default' },
+    { icon: 'bi-tools', title: 'Authorized Tools', sub: 'Read · Write · Trigger · Summarize', type: 'default' },
+    { icon: 'bi-database', title: 'Assestini Data & Workflows', sub: 'Projects · Quotes · Time · Finance · Decisions', type: 'accent' },
   ];
+  const mcpNodes = parseCaseStudyArray(content.mcpNodesJson, defaultMcpNodes);
 
   return (
     <section className="case-section">
