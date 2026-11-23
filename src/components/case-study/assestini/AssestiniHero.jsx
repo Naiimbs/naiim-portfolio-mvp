@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import homeAssestiniImg from '../../../assets/images/home-assestini.webp';
 
-export default function AssestiniHero() {
+export default function AssestiniHero({ title, subtitle }) {
   const metadata = [
     'Own product / startup',
     'Product Owner · UX/UI Designer · Builder',
@@ -19,10 +19,9 @@ export default function AssestiniHero() {
         <div className="eyebrow mt-4">
           <span></span> PRODUCT DESIGN · AI PRODUCT · UX/UI · PRODUCT STRATEGY
         </div>
-        <h1>Assestini</h1>
+        <h1>{title || 'Assestini'}</h1>
         <p className="case-hero-lead">
-          AI-powered Operational Intelligence Platform for freelancers, consultants and service businesses.<br />
-          <strong>From idea to payment — in one connected workflow.</strong>
+          {subtitle || <>AI-powered Operational Intelligence Platform for freelancers, consultants and service businesses.<br /><strong>From idea to payment — in one connected workflow.</strong></>}
         </p>
 
         <div className="case-meta">
