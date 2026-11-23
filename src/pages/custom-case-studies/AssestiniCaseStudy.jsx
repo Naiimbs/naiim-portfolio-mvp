@@ -52,7 +52,7 @@ export default function AssestiniCaseStudy({ caseStudy = {}, cmsSections = [], p
           ['intelligence', <AssestiniIntelligence content={sectionContent('intelligence')} />],
           ['mcp', <AssestiniMcp content={sectionContent('mcp')} />],
           ['building', <AssestiniBuilding content={sectionContent('building')} />],
-        ].map(([id, component]) => ({ id, component }))}
+        ].map(([id, component]) => ({ id, component }))
           .filter(({ id }) => caseStudy.nativeSectionVisibility?.[id] !== false)
           .sort((a, b) => {
             const defaultOrder = ['challenge','workflow','estimation','commercial','intelligence','mcp','building'];
