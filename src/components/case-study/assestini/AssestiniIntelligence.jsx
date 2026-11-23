@@ -1,7 +1,7 @@
 import React from 'react';
 import kanbanProjectLifeImg from '../../../assets/images/brainstorming-kanban-project-life.webp';
 
-export default function AssestiniIntelligence() {
+export default function AssestiniIntelligence({ content = {} }) {
   const featureTags = [
     'Kanban',
     'Gantt',
@@ -20,11 +20,11 @@ export default function AssestiniIntelligence() {
       <section className="case-section">
         <div className="container">
           <div className="eyebrow">
-            <span></span> 05 · OPERATIONAL INTELLIGENCE
+            <span></span> {content.eyebrow || '05 · OPERATIONAL INTELLIGENCE'}
           </div>
-          <h2>Beyond task management.</h2>
+          <h2>{content.title || 'Beyond task management.'}</h2>
           <p className="case-copy mb-2">
-            Once the project is launched, Assestini brings delivery and operational visibility into the same experience.
+            {content.lead || 'Once the project is launched, Assestini brings delivery and operational visibility into the same experience.'}
           </p>
 
           {/* Feature tags */}
