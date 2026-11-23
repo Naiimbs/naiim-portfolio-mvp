@@ -9,7 +9,7 @@ export default function AssestiniMcp({ content = {} }) {
     { icon: 'bi-tools', title: 'Authorized Tools', sub: 'Read · Write · Trigger · Summarize', type: 'default' },
     { icon: 'bi-database', title: 'Assestini Data & Workflows', sub: 'Projects · Quotes · Time · Finance · Decisions', type: 'accent' },
   ];
-  const mcpNodes = parseCaseStudyArray(content.mcpNodesJson, defaultMcpNodes);
+  const mcpNodes = parseCaseStudyArray(content.mcpNodesJson, defaultMcpNodes).filter((node) => node && typeof node === 'object');
 
   return (
     <section className="case-section">
