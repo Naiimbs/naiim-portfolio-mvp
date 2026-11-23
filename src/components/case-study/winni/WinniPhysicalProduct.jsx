@@ -40,7 +40,7 @@ export default function WinniPhysicalProduct({ content = {} }) {
   ];
   const products = parseCaseStudyArray(content.productsJson, defaultProducts)
     .filter((item) => item && typeof item === 'object')
-    .map((item) => ({ ...item, image: resolveAsset(item.image) || item.image || '' }));
+    .map((item) => ({ ...item, image: resolveAsset(item.image) || item.image || '', specs: Array.isArray(item.specs) ? item.specs.filter((spec) => spec && typeof spec === 'object') : [] }));
 
   return (
     <section className="winni-section" id="physical-product">
