@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import MainLayout from '../../layouts/MainLayout';
 import SEO from '../../components/common/SEO';
 import { getCaseStudySchema } from '../../lib/schema';
@@ -16,17 +17,22 @@ import AssestiniBuilding from '../../components/case-study/assestini/AssestiniBu
 import AssestiniTechCta from '../../components/case-study/assestini/AssestiniTechCta';
 
 export default function AssestiniCaseStudy({ caseStudy = {}, cmsSections = [], previewInfo = null }) {
+  const { i18n } = useTranslation();
+  const locale = (i18n?.language || 'en').slice(0, 2);
+  const localizedCaseStudy = caseStudy.translations?.[locale] || {};
+  const displayTitle = localizedCaseStudy.title || caseStudy.title;
+  const displaySubtitle = localizedCaseStudy.subtitle || caseStudy.subtitle;
   const schema = getCaseStudySchema({
-    title: caseStudy.title || 'Assestini — AI Operational Intelligence Platform',
-    description: caseStudy.subtitle || 'Assestini is an AI-powered operational platform for freelancers, experts, consultants and agencies. From estimation to payment in one connected workflow.',
+    title: displayTitle || 'Assestini — AI Operational Intelligence Platform',
+    description: displaySubtitle || 'Assestini is an AI-powered operational platform for freelancers, experts, consultants and agencies. From estimation to payment in one connected workflow.',
     slug: 'assestini',
   });
 
   return (
     <MainLayout>
       <SEO
-        title={(caseStudy.title || 'Assestini') + ' — Case Study · Naïm Bsili'}
-        description={caseStudy.subtitle || 'Assestini — AI-powered Operational Intelligence Platform. Product design case study by Naïm Bsili. From estimation to payment in one connected workflow.'}
+        title={(displayTitle || 'Assestini') + ' — Case Study · Naïm Bsili'}
+        description={displaySubtitle || 'Assestini — AI-powered Operational Intelligence Platform. Product design case study by Naïm Bsili. From estimation to payment in one connected workflow.'}
         canonical="/work/assestini/"
         schema={schema}
       />
