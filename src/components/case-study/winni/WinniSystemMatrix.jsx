@@ -1,7 +1,8 @@
 import React from 'react';
+import { parseCaseStudyArray } from '../../../utils/caseStudyContent';
 
 export default function WinniSystemMatrix({ content = {} }) {
-  const matrixRows = [
+  const defaultMatrixRows = [
     {
       num: '01 · Identification',
       physical: 'Durable vinyl sticker with matte black finish and high-contrast QR mark.',
@@ -33,6 +34,7 @@ export default function WinniSystemMatrix({ content = {} }) {
       code: false,
     },
   ];
+  const matrixRows = parseCaseStudyArray(content.matrixRowsJson, defaultMatrixRows);
 
   return (
     <section className="winni-section alt-bg" id="system-touchpoints">
@@ -49,9 +51,9 @@ export default function WinniSystemMatrix({ content = {} }) {
           <table className="winni-matrix-table">
             <thead>
               <tr>
-                <th style={{ width: '25%' }}>TOUCHPOINT</th>
-                <th style={{ width: '35%' }}>PHYSICAL ARTIFACT</th>
-                <th style={{ width: '40%' }}>DIGITAL LAYER</th>
+                <th style={{ width: '25%' }}>{content.touchpointLabel || 'TOUCHPOINT'}</th>
+                <th style={{ width: '35%' }}>{content.physicalLabel || 'PHYSICAL ARTIFACT'}</th>
+                <th style={{ width: '40%' }}>{content.digitalLabel || 'DIGITAL LAYER'}</th>
               </tr>
             </thead>
             <tbody>
