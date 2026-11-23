@@ -1,5 +1,5 @@
 name: Case Study Validation
-# Covers standard case-study CMS, bespoke native-section migration, and renderer syntax/build checks.
+# CI gate for standard CMS, native-section migration, localization, and production rendering.
 
 on:
   pull_request:
