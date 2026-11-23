@@ -3460,3 +3460,17 @@ html { scroll-padding-top: calc(var(--topbar-h, 0px) + 90px); }
   text-align: right;
   line-height: 1.9;
 }
+
+.case-hero[dir="rtl"] h1,
+.case-section[dir="rtl"] h2,
+.case-section[dir="rtl"] h3 {
+  font-family: "Cairo", "Tajawal", sans-serif;
+  letter-spacing: 0;
+}
+.case-hero[dir="rtl"] .case-hero-lead,
+.case-section[dir="rtl"] .case-copy,
+.case-section[dir="rtl"] .case-list,
+.case-section[dir="rtl"] .case-evidence-card figcaption {
+  text-align: right;
+  line-height: 1.9;
+}
