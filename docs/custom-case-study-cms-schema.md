@@ -11,10 +11,24 @@ The WINNI and Assestini case studies retain their bespoke React components for i
   "title": "Case study title",
   "subtitle": "Case study description",
   "translations": {
-    "fr": { "title": "Titre", "subtitle": "Description" },
-    "ar": { "title": "العنوان", "subtitle": "الوصف" }
+    "fr": {
+      "title": "Titre",
+      "subtitle": "Description",
+      "nativeSections": { "problem": { "title": "Titre modifiable" } }
+    },
+    "ar": {
+      "title": "العنوان",
+      "subtitle": "الوصف",
+      "nativeSections": { "problem": { "title": "عنوان قابل للتحرير" } }
+    }
   },
-  "nativeSections": {\n    "problem": { "eyebrow": "02 · THE PROBLEM", "title": "Editable heading", "lead": "Editable introduction" }\n  },\n  "translations": {\n    "fr": { "nativeSections": { "problem": { "title": "Titre modifiable" } } },\n    "ar": { "nativeSections": { "problem": { "title": "عنوان قابل للتحرير" } } }\n  },\n  "customSections": [
+  "nativeSections": {
+    "problem": {
+      "eyebrow": "02 · THE PROBLEM",
+      "title": "Editable heading",
+      "lead": "Editable introduction"
+    }
+  },\n  "customSections": [
     {
       "id": "custom-intro",
       "type": "text",
