@@ -126,6 +126,24 @@ export default function CaseStudyContentEditor({
       { id: 'intelligence', label: '05 · Operational Intelligence', fields: ['eyebrow','title','lead'] },
       { id: 'building', label: '07 · Product Building', fields: ['eyebrow','title','lead'] },
     ];
+    const defaultNativeOrder = slug === 'winni'
+      ? ['problem','idea','challenge','scanExperience','privacy','location','physicalProduct','systemMatrix','visualSystem','motion','scope','outcome']
+      : ['challenge','workflow','estimation','commercial','intelligence','mcp','building'];
+    const savedNativeOrder = Array.isArray(caseStudy.nativeSectionOrder) ? caseStudy.nativeSectionOrder : [];
+    const nativeSectionOrder = [
+      ...savedNativeOrder.filter((id) => defaultNativeOrder.includes(id)),
+      ...defaultNativeOrder.filter((id) => !savedNativeOrder.includes(id)),
+    ];
+    const moveNativeSection = (index, direction) => {
+      const target = index + direction;
+      if (target < 0 || target >= nativeSectionOrder.length) return;
+      const next = [...nativeSectionOrder];
+      [next[index], next[target]] = [next[target], next[index]];
+      commitCustom({ nativeSectionOrder: next });
+    };
+    const setNativeSectionVisibility = (sectionId, isVisible) => commitCustom({
+      nativeSectionVisibility: { ...(caseStudy.nativeSectionVisibility || {}), [sectionId]: isVisible },
+    });
     const nativeLocales = ['en','fr','ar'];
     const nativeFieldValue = (sectionId, field, locale) => locale === 'en'
       ? (caseStudy.nativeSections?.[sectionId]?.[field] || '')
@@ -177,6 +195,30 @@ export default function CaseStudyContentEditor({
             ))}
           </div>
         </details>
+        <div className="border rounded p-3 mb-3">
+          <div className="small fw-semibold mb-1">Native section order & visibility</div>
+          <p className="text-muted small mb-2">Reorder the original case-study sections or hide a section without removing its content.</p>
+          {nativeSectionOrder.map((sectionId, index) => {
+            const group = nativeFieldGroups.find((item) => item.id === sectionId);
+            const isVisible = caseStudy.nativeSectionVisibility?.[sectionId] !== false;
+            return (
+              <div className="d-flex align-items-center gap-2 border rounded px-2 py-2 mb-2" key={sectionId}>
+                <div className="d-flex flex-column gap-1">
+                  <button type="button" className="btn btn-sm btn-light py-0" aria-label={`Move ${group?.label || sectionId} up`}
+                    disabled={disabled || index === 0} onClick={() => moveNativeSection(index, -1)}>↑</button>
+                  <button type="button" className="btn btn-sm btn-light py-0" aria-label={`Move ${group?.label || sectionId} down`}
+                    disabled={disabled || index === nativeSectionOrder.length - 1} onClick={() => moveNativeSection(index, 1)}>↓</button>
+                </div>
+                <div className="flex-grow-1 small">{group?.label || sectionId}</div>
+                <label className="form-check form-switch mb-0">
+                  <input className="form-check-input" type="checkbox" checked={isVisible} disabled={disabled}
+                    onChange={(e) => setNativeSectionVisibility(sectionId, e.target.checked)} />
+                  <span className="form-check-label small">{isVisible ? 'Visible' : 'Hidden'}</span>
+                </label>
+              </div>
+            );
+          })}
+        </div>
         <details className="mb-4 border rounded p-3">
           <summary className="small fw-semibold text-success">Native section content · EN / FR / AR</summary>
           <p className="text-muted small mt-2 mb-3">Edit the original section headings and copy while keeping its existing visual layout, diagrams and interactions.</p>
