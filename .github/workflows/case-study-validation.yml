@@ -1,4 +1,5 @@
 name: Case Study Validation
+# Covers standard case-study CMS and bespoke native-section editor/rendering changes.
 
 on:
   pull_request:
