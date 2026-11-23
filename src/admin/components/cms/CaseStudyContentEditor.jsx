@@ -122,7 +122,7 @@ export default function CaseStudyContentEditor({
       { id: 'estimation', label: '03 · AI Estimation', fields: ['eyebrow','title','lead','highlightsJson','outputsJson'] },
       { id: 'commercial', label: '04 · Commercial Workflow', fields: ['eyebrow','title','lead','stepsJson'] },
       { id: 'mcp', label: '06 · AI Agents & MCP', fields: ['eyebrow','title','lead','paragraph2'] },
-      { id: 'workflow', label: '02 · Connected Workflow', fields: ['eyebrow','title','lead','estimatorImage','estimatorImageAlt','wbsImage','wbsImageAlt'] },
+      { id: 'workflow', label: '02 · Connected Workflow', fields: ['eyebrow','title','lead','workflowStepsJson','estimatorImage','estimatorImageAlt','wbsImage','wbsImageAlt'] },
       { id: 'intelligence', label: '05 · Operational Intelligence', fields: ['eyebrow','title','lead'] },
       { id: 'building', label: '07 · Product Building', fields: ['eyebrow','title','lead'] },
     ];
@@ -237,7 +237,7 @@ export default function CaseStudyContentEditor({
                             <textarea className="form-control form-control-sm font-monospace" rows="7"
                               value={nativeFieldValue(group.id, field, locale)} disabled={disabled}
                               onChange={(e) => updateNativeField(group.id, field, locale, e.target.value)}
-                              placeholder={field === 'screensJson' ? '[{"step":"01 — SCAN","label":"Recognized"}]' : field === 'matrixRowsJson' ? '[{"num":"01 · Identification","physical":"Physical detail","digital":"Digital detail"}]' : field === 'stepsJson' ? '[{"num":"01","title":"Step title","desc":"Step description"}]' : '["First item","Second item"]'} />
+                              placeholder={field === 'screensJson' ? '[{"step":"01 — SCAN","label":"Recognized"}]' : field === 'matrixRowsJson' ? '[{"num":"01 · Identification","physical":"Physical detail","digital":"Digital detail"}]' : field === 'stepsJson' ? '[{"num":"01","title":"Step title","desc":"Step description"}]' : field === 'workflowStepsJson' ? '[{"num":"01","title":"Estimate","subtitle":"AI Estimator Pro","detail":"WBS · Effort · Budget"}]' : '["First item","Second item"]'} />
                             <div className="form-text">JSON array. Invalid JSON falls back to the built-in content until corrected.</div>
                           </>
                         ) : ['lead','paragraph1','paragraph2','context'].includes(field) ? (
