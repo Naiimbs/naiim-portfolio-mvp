@@ -29,14 +29,14 @@ export function preserveCustomCaseStudyCmsContent(migratedCaseStudy, existingCas
     subtitle: existing.subtitle ?? migratedCaseStudy.subtitle ?? '',
     customComponent: existing.customComponent || migratedCaseStudy.customComponent || null,
     customSections: Array.isArray(existing.customSections) ? existing.customSections : [],
-    nativeSections: existing.nativeSections && typeof existing.nativeSections === 'object'
+    nativeSections: existing.nativeSections && typeof existing.nativeSections === 'object' && !Array.isArray(existing.nativeSections)
       ? existing.nativeSections
       : {},
     nativeSectionOrder: Array.isArray(existing.nativeSectionOrder) ? existing.nativeSectionOrder : [],
-    nativeSectionVisibility: existing.nativeSectionVisibility && typeof existing.nativeSectionVisibility === 'object'
+    nativeSectionVisibility: existing.nativeSectionVisibility && typeof existing.nativeSectionVisibility === 'object' && !Array.isArray(existing.nativeSectionVisibility)
       ? existing.nativeSectionVisibility
       : {},
-    translations: existing.translations && typeof existing.translations === 'object'
+    translations: existing.translations && typeof existing.translations === 'object' && !Array.isArray(existing.translations)
       ? existing.translations
       : {},
   };
