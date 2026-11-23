@@ -1,5 +1,5 @@
 name: Case Study Validation
-# CI gate for standard CMS, native-section migration, localization, and production rendering.
+# CI gate for standard CMS, native-section content arrays, asset overrides, localization, and production rendering.
 
 on:
   pull_request:
