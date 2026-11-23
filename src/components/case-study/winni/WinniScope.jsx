@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function WinniScope() {
+export default function WinniScope({ content = {} }) {
   const roles = [
     {
       step: '01 · STRATEGY',
@@ -38,11 +38,10 @@ export default function WinniScope() {
     <section className="winni-section" id="what-i-designed">
       <div className="container">
         <div className="winni-section-header">
-          <span className="winni-section-num">12 · SCOPE OF WORK</span>
-          <h2 className="winni-section-title">What I Designed</h2>
+          <span className="winni-section-num">{content.eyebrow || '12 · SCOPE OF WORK'}</span>
+          <h2 className="winni-section-title">{content.title || 'What I Designed'}</h2>
           <p className="winni-copy">
-            A comprehensive look at the multidisciplinary responsibilities delivered across physical and digital
-            domains.
+            {content.lead || 'A comprehensive look at the multidisciplinary responsibilities delivered across physical and digital domains.'}
           </p>
         </div>
 
