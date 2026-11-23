@@ -8,6 +8,9 @@ on:
       - 'src/components/case-study/**'
       - 'src/pages/custom-case-studies/**'
       - 'src/services/caseStudyRegistryMigration.js'
+      - 'src/services/customCaseStudyContent.js'
+      - 'src/utils/caseStudyContent.js'
+      - 'scripts/test-native-case-study-cms-bindings.mjs'
       - 'src/styles/style.css'
       - 'package.json'
       - 'package-lock.json'
@@ -42,6 +45,9 @@ jobs:
 
       - name: Test localized custom case-study content
         run: npm run test:custom-case-study-content
+
+      - name: Test native case-study CMS bindings
+        run: npm run test:native-case-study-cms
 
       - name: Build production bundle
         run: npm run build
