@@ -40,7 +40,7 @@ export default function AssestiniCaseStudy({ caseStudy = {}, cmsSections = [], p
       {previewInfo && <div className="preview-mode-banner preview-mode-banner-safe bg-warning text-dark text-center py-2 px-3 fw-semibold small shadow-sm" role="status">SAVED CMS PREVIEW — {previewInfo.title} ({previewInfo.status}/{previewInfo.visibility})</div>}
       <main className="assestini-page">
         {/* 01. Hero */}
-        <AssestiniHero />
+        <AssestiniHero title={displayTitle} subtitle={displaySubtitle} />
 
         {/* 02. The Challenge + Role aside */}
         <AssestiniChallenge />
