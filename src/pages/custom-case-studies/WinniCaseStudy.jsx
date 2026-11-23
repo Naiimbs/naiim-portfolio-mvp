@@ -2,6 +2,7 @@ import React from 'react';
 import MainLayout from '../../layouts/MainLayout';
 import SEO from '../../components/common/SEO';
 import { getCaseStudySchema } from '../../lib/schema';
+import CMSCustomSections from '../../components/case-study/CMSCustomSections';
 
 // Subcomponents
 import WinniHero from '../../components/case-study/winni/WinniHero';
@@ -19,19 +20,18 @@ import WinniScope from '../../components/case-study/winni/WinniScope';
 import WinniOutcome from '../../components/case-study/winni/WinniOutcome';
 import WinniCTA from '../../components/case-study/winni/WinniCTA';
 
-export default function WinniCaseStudy() {
+export default function WinniCaseStudy({ caseStudy = {}, cmsSections = [] }) {
   const schema = getCaseStudySchema({
-    title: 'WINNI — Physical + Digital Identity System',
-    description:
-      'WINNI is a physical + digital identity system that helps people reconnect with lost belongings through a simple QR/NFC interaction. Product design case study by Naïm Bsili.',
+    title: caseStudy.title || 'WINNI — Physical + Digital Identity System',
+    description: caseStudy.subtitle || 'WINNI is a physical + digital identity system that helps people reconnect with lost belongings through a simple QR/NFC interaction. Product design case study by Naïm Bsili.',
     slug: 'winni',
   });
 
   return (
     <MainLayout>
       <SEO
-        title="WINNI — Case Study · Naïm Bsili"
-        description="WINNI — Physical + digital identity system that helps people reconnect with lost belongings. Product design case study by Naïm Bsili."
+        title={ (caseStudy.title || 'WINNI') + ' — Case Study · Naïm Bsili' }
+        description={caseStudy.subtitle || 'WINNI — Physical + digital identity system that helps people reconnect with lost belongings. Product design case study by Naïm Bsili.'}
         canonical="/work/winni/"
         schema={schema}
       />
@@ -78,6 +78,7 @@ export default function WinniCaseStudy() {
 
         {/* 15. Final CTA + Pagination */}
         <WinniCTA />
+        <CMSCustomSections sections={cmsSections} />
       </main>
     </MainLayout>
   );
