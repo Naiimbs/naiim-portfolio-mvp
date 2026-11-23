@@ -1,19 +1,16 @@
 import React from 'react';
 import kanbanProjectLifeImg from '../../../assets/images/brainstorming-kanban-project-life.webp';
+import { resolveAsset } from '../../../services/assetRegistry';
+import { parseCaseStudyArray } from '../../../utils/caseStudyContent';
 
 export default function AssestiniIntelligence({ content = {} }) {
-  const featureTags = [
-    'Kanban',
-    'Gantt',
-    'Roadmap',
-    'Calendar',
-    'Time Tracking',
-    'Project Health',
-    'Margin Visibility',
-    'SPI',
-    'CPI',
-    'Business Control Center',
+  const defaultFeatureTags = [
+    'Kanban', 'Gantt', 'Roadmap', 'Calendar', 'Time Tracking',
+    'Project Health', 'Margin Visibility', 'SPI', 'CPI', 'Business Control Center',
   ];
+  const featureTags = parseCaseStudyArray(content.featureTagsJson, defaultFeatureTags);
+  const dashboardImage = resolveAsset(content.dashboardImage) || kanbanProjectLifeImg;
+  const dashboardImageAlt = content.dashboardImageAlt || 'Assestini Business Control Center — Business Health Score 69/100, delivery 100%, finance 45%, operations 55%';
 
   return (
     <>
@@ -37,8 +34,8 @@ export default function AssestiniIntelligence({ content = {} }) {
           {/* Large screenshot */}
           <figure className="case-media mb-3">
             <img
-              src={kanbanProjectLifeImg}
-              alt="Assestini Business Control Center — Business Health Score 69/100, delivery 100%, finance 45%, operations 55%"
+              src={dashboardImage}
+              alt={dashboardImageAlt}
               loading="lazy"
             />
           </figure>
