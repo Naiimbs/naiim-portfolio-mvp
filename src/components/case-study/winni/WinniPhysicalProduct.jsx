@@ -2,13 +2,13 @@ import React from 'react';
 import winniCarTagImg from '../../../assets/images/winni-car-tag-detail-hero.webp';
 import winniMotoTagImg from '../../../assets/images/winni-moto-tag.webp';
 import winniLuggageTagImg from '../../../assets/images/winni-luggage-tag.webp';
+import { resolveAsset } from '../../../services/assetRegistry';
+import { parseCaseStudyArray } from '../../../utils/caseStudyContent';
 
 export default function WinniPhysicalProduct({ content = {} }) {
-  const products = [
+  const defaultProducts = [
     {
-      badge: 'PHOTO 03 · CAR',
-      title: 'Car Vehicle Tag',
-      image: winniCarTagImg,
+      badge: 'PHOTO 03 · CAR', title: 'Car Vehicle Tag', image: winniCarTagImg,
       alt: 'PHOTO 03 — Car WINNI sticker attached to vehicle glass',
       desc: 'Sticker attached to rear window quarter panel or bodywork. Designed to withstand weather, high-pressure car washes, and UV exposure.',
       specs: [
@@ -18,9 +18,7 @@ export default function WinniPhysicalProduct({ content = {} }) {
       ],
     },
     {
-      badge: 'PHOTO 04 · MOTORCYCLE',
-      title: 'Motorcycle Frame Cut',
-      image: winniMotoTagImg,
+      badge: 'PHOTO 04 · MOTORCYCLE', title: 'Motorcycle Frame Cut', image: winniMotoTagImg,
       alt: 'PHOTO 04 — Motorcycle WINNI sticker on metal chassis',
       desc: 'Sticker applied to durable metal chassis or tank. High contrast typography and QR density optimized for immediate smartphone lens focus.',
       specs: [
@@ -30,9 +28,7 @@ export default function WinniPhysicalProduct({ content = {} }) {
       ],
     },
     {
-      badge: 'PHOTO 05 · LUGGAGE',
-      title: 'Travel Tag & Badge',
-      image: winniLuggageTagImg,
+      badge: 'PHOTO 05 · LUGGAGE', title: 'Travel Tag & Badge', image: winniLuggageTagImg,
       alt: 'PHOTO 05 — Premium luggage tag with WINNI identifier in airport',
       desc: 'Attached to hard-shell suitcases or bags in travel environments. Replaces vulnerable paper luggage tags with an indestructible digital link.',
       specs: [
@@ -42,6 +38,9 @@ export default function WinniPhysicalProduct({ content = {} }) {
       ],
     },
   ];
+  const products = parseCaseStudyArray(content.productsJson, defaultProducts)
+    .filter((item) => item && typeof item === 'object')
+    .map((item) => ({ ...item, image: resolveAsset(item.image) || item.image || '' }));
 
   return (
     <section className="winni-section" id="physical-product">
@@ -82,12 +81,11 @@ export default function WinniPhysicalProduct({ content = {} }) {
           <div className="col-12">
             <div className="p-3 bg-light rounded-3 border d-flex flex-wrap align-items-center justify-content-between text-muted small">
               <div>
-                <i className="bi bi-printer me-2 text-dark"></i> <strong>Industrial Print Standards:</strong> 300 DPI
-                CMYK, polymer technical vinyl, non-conductive inks.
+                <i className="bi bi-printer me-2 text-dark"></i> <strong>{content.printStandardsLabel || 'Industrial Print Standards:'}</strong> {content.printStandards || '300 DPI CMYK, polymer technical vinyl, non-conductive inks.'}
               </div>
               <div className="mt-2 mt-md-0">
                 <span className="badge bg-white text-dark border">
-                  Cut formats: Large (70x35mm) · Compact (50x25mm) · Wide (90x30mm)
+                  {content.cutFormats || 'Cut formats: Large (70x35mm) · Compact (50x25mm) · Wide (90x30mm)'}
                 </span>
               </div>
             </div>
