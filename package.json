@@ -10,6 +10,7 @@
     "validate:i18n": "node scripts/validate-locales.mjs",
     "test:case-study-stages": "node scripts/test-case-study-stages.mjs",
     "test:custom-case-study-content": "node scripts/test-custom-case-study-content.mjs",
+    "test:native-case-study-cms": "node scripts/test-native-case-study-cms-bindings.mjs",
     "test:learning-experience": "node scripts/test-learning-experience.mjs",
     "test:learning-player": "node scripts/test-learning-player.mjs",
     "preview": "vite preview",
