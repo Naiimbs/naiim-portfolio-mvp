@@ -1,15 +1,14 @@
 import React from 'react';
 
-export default function WinniScanExperience() {
+export default function WinniScanExperience({ content = {} }) {
   return (
     <section className="winni-section alt-bg" id="scan-experience">
       <div className="container">
         <div className="winni-section-header text-center mx-auto">
-          <span className="winni-section-num">05 · THE SCAN EXPERIENCE</span>
-          <h2 className="winni-section-title">One scan. One clear path.</h2>
+          <span className="winni-section-num">{content.eyebrow || '05 · THE SCAN EXPERIENCE'}</span>
+          <h2 className="winni-section-title">{content.title || 'One scan. One clear path.'}</h2>
           <p className="winni-copy-lg">
-            This is the core interface of WINNI: five sequential mobile states engineered to move from a physical glance
-            to a resolved contact in seconds.
+            {content.lead || 'This is the core interface of WINNI: five sequential mobile states engineered to move from a physical glance to a resolved contact in seconds.'}
           </p>
         </div>
 
