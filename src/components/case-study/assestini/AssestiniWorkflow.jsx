@@ -3,7 +3,9 @@ import assestiniEstimatorImg from '../../../assets/images/Assestini-estimator.we
 import modelesWbsImg from '../../../assets/images/modeles-wbs.webp';
 import { resolveAsset } from '../../../services/assetRegistry';
 
-export default function AssestiniWorkflow({ content = {} }) {\n  const estimatorImage = resolveAsset(content.estimatorImage) || assestiniEstimatorImg;\n  const wbsImage = resolveAsset(content.wbsImage) || modelesWbsImg;
+export default function AssestiniWorkflow({ content = {} }) {
+  const estimatorImage = resolveAsset(content.estimatorImage) || assestiniEstimatorImg;
+  const wbsImage = resolveAsset(content.wbsImage) || modelesWbsImg;
   return (
     <section className="case-section alt">
       <div className="container">
