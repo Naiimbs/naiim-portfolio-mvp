@@ -9,6 +9,7 @@ import { resolveAsset } from './assetRegistry.js';
 import { updateContentRegistryEntry, getAdminContentRegistry } from './contentRegistry.js';
 import legacyCaseStudiesData from '../data/caseStudiesData.json';
 import { normalizeProcessStages } from '../utils/caseStudyStages.js';
+import { preserveCustomCaseStudyCmsContent } from './customCaseStudyContent.js';
 
 export const LEGACY_CASE_STUDIES_DATA = legacyCaseStudiesData;
 
@@ -254,7 +255,7 @@ export function normalizeCaseStudyContent(caseStudy, slug = '') {
 
 /**
  * Executes migration of all case studies to Supabase Content Registry metadata.caseStudy.
- * Idempotent: Skips entries where metadata.caseStudy.version === 1 unless forced.
+ * Idempotent: Skips already-migrated entries unless forced; forced custom migrations preserve CMS content.
  */
 export async function executeCaseStudiesMigration(entries = null, force = false) {
   let list = entries;
@@ -270,15 +271,18 @@ export async function executeCaseStudiesMigration(entries = null, force = false)
     const legacy = legacyCaseStudiesData[entry.slug];
     if (!legacy) continue;
 
-    if (!force && entry.metadata?.caseStudy?.version === 1) {
+    if (!force && Number(entry.metadata?.caseStudy?.version) >= 1) {
       results.push({ slug: entry.slug, status: 'already-migrated', error: null });
       continue;
     }
 
     const migratedCaseStudy = migrateCaseStudyToRegistry(legacy);
+    const nextCaseStudy = migratedCaseStudy?.type === 'custom'
+      ? preserveCustomCaseStudyCmsContent(migratedCaseStudy, entry.metadata?.caseStudy)
+      : migratedCaseStudy;
     const updatedMetadata = {
       ...(entry.metadata || {}),
-      caseStudy: migratedCaseStudy,
+      caseStudy: nextCaseStudy,
     };
 
     const updateRes = await updateContentRegistryEntry(entry.id, {
