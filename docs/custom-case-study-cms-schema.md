@@ -28,7 +28,8 @@ The WINNI and Assestini case studies retain their bespoke React components for i
       "title": "Editable heading",
       "lead": "Editable introduction"
     }
-  },\n  "customSections": [
+  },
+  "customSections": [
     {
       "id": "custom-intro",
       "type": "text",
@@ -65,7 +66,8 @@ The WINNI and Assestini case studies retain their bespoke React components for i
 - Add text and image sections.
 - Reorder sections.
 - Hide/show sections without deleting their content.
-- Edit English content and French/Arabic translations.\n- Edit selected original section headings and copy in the native WINNI and Assestini layouts.
+- Edit English content and French/Arabic translations.
+- Edit selected original section headings and copy in the native WINNI and Assestini layouts.
 - Set image URL/storage URL, alternative text, caption, and layout.
 - Preview saved custom-case-study content using the authenticated admin preview route.
 
