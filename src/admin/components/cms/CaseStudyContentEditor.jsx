@@ -105,7 +105,7 @@ export default function CaseStudyContentEditor({
       commitCustom(next);
     };
     const nativeFieldGroups = slug === 'winni' ? [
-      { id: 'problem', label: '02 · The Problem', fields: ['eyebrow','title','lead','quote'] },
+      { id: 'problem', label: '02 · The Problem', fields: ['eyebrow','title','lead','quote','bulletsJson','objectCardsJson','image','imageAlt'] },
       { id: 'challenge', label: '04 · Product Challenge', fields: ['eyebrow','title','lead','context'] },
       { id: 'privacy', label: '06 · Privacy by Design', fields: ['eyebrow','title','lead','paragraph1','paragraph2','finderTitle','finderDescription','finderBadge','proxyTitle','proxyDescription','proxyNote','ownerTitle','ownerDescription','ownerBadge'] },
       { id: 'location', label: '07 · Location', fields: ['eyebrow','title','lead','rejectedTag','rejectedTitle','rejectedDescription','rejectedQuoteLabel','rejectedQuote','rejectedPointsJson','approvedTag','approvedTitle','approvedDescription','approvedQuoteLabel','approvedQuote','approvedPointsJson'] },
@@ -115,15 +115,15 @@ export default function CaseStudyContentEditor({
       { id: 'systemMatrix', label: '09 · Unified System', fields: ['eyebrow','title','lead','touchpointLabel','physicalLabel','digitalLabel','matrixRowsJson'] },
       { id: 'visualSystem', label: '10 · Visual System', fields: ['eyebrow','title','lead','colorTokensJson','iconsJson'] },
       { id: 'motion', label: '11 · Motion', fields: ['eyebrow','title','lead','scanTitle','scanDescription','scanTiming','messagePreview','messageTitle','messageDescription','messageTiming','returnedPreview','returnedTitle','returnedDescription','returnedTiming'] },
-      { id: 'scope', label: '12 · Scope of Work', fields: ['eyebrow','title','lead'] },
-      { id: 'outcome', label: '14 · Outcome', fields: ['eyebrow','title','lead'] },
+      { id: 'scope', label: '12 · Scope of Work', fields: ['eyebrow','title','lead','rolesJson'] },
+      { id: 'outcome', label: '14 · Outcome', fields: ['eyebrow','title','lead','stepsJson','principleTitle','principleLead','principleBody','principleEmphasis','statusTitle','statusDescription'] },
     ] : [
       { id: 'challenge', label: '01 · The Challenge', fields: ['eyebrow','title','lead','paragraph2','workflowLabelsJson','roleLabel','roleValue','focusLabel','focusValue','technologyLabel','technologyValue','typeLabel','typeValue'] },
       { id: 'estimation', label: '03 · AI Estimation', fields: ['eyebrow','title','lead','highlightsJson','outputsJson'] },
       { id: 'commercial', label: '04 · Commercial Workflow', fields: ['eyebrow','title','lead','stepsJson'] },
       { id: 'mcp', label: '06 · AI Agents & MCP', fields: ['eyebrow','title','lead','paragraph2','mcpNodesJson'] },
       { id: 'workflow', label: '02 · Connected Workflow', fields: ['eyebrow','title','lead','workflowStepsJson','estimatorImage','estimatorImageAlt','wbsImage','wbsImageAlt'] },
-      { id: 'intelligence', label: '05 · Operational Intelligence', fields: ['eyebrow','title','lead','featureTagsJson','dashboardImage','dashboardImageAlt'] },
+      { id: 'intelligence', label: '05 · Operational Intelligence', fields: ['eyebrow','title','lead','featureTagsJson','dashboardImage','dashboardImageAlt','detailCardsJson','principleEyebrow','principleTitle','principleLead','principleBody'] },
       { id: 'building', label: '07 · Product Building', fields: ['eyebrow','title','lead','layersJson','principleEyebrow','principleTitle','principleLead','principleBody','principleBadgesJson','evidenceEyebrow','evidenceTitle','evidenceLead','closingImage','closingImageAlt'] },
     ];
     const defaultNativeOrder = slug === 'winni'
