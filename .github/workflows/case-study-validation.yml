@@ -11,6 +11,7 @@ on:
       - 'src/services/customCaseStudyContent.js'
       - 'src/utils/caseStudyContent.js'
       - 'scripts/test-native-case-study-cms-bindings.mjs'
+      - 'scripts/test-custom-case-study-content.mjs'
       - 'src/styles/style.css'
       - 'package.json'
       - 'package-lock.json'
