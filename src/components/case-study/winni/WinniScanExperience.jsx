@@ -1,7 +1,15 @@
 import React from 'react';
 import { parseCaseStudyArray } from '../../../utils/caseStudyContent';
 
-export default function WinniScanExperience({ content = {} }) {\n  const defaultScreens = [\n    { step: '01 — SCAN', label: 'Recognized' },\n    { step: '02 — REACH', label: 'Safe Contact' },\n    { step: '03 — LOCATION', label: '100% Optional' },\n    { step: '04 — NOTIFY', label: 'Confirmation' },\n    { step: '05 — RETURN', label: 'Owner View' },\n  ];\n  const screens = parseCaseStudyArray(content.screensJson, defaultScreens);
+export default function WinniScanExperience({ content = {} }) {
+  const defaultScreens = [
+    { step: '01 — SCAN', label: 'Recognized' },
+    { step: '02 — REACH', label: 'Safe Contact' },
+    { step: '03 — LOCATION', label: '100% Optional' },
+    { step: '04 — NOTIFY', label: 'Confirmation' },
+    { step: '05 — RETURN', label: 'Owner View' },
+  ];
+  const screens = parseCaseStudyArray(content.screensJson, defaultScreens);
   return (
     <section className="winni-section alt-bg" id="scan-experience">
       <div className="container">
