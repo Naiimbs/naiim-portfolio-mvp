@@ -7,3 +7,37 @@ export function resolveCustomSectionContent(caseStudy = {}, sectionId, locale = 
   const localized = caseStudy.translations?.[locale]?.nativeSections?.[sectionId] || {};
   return { ...base, ...localized };
 }
+
+/**
+ * Merge a legacy custom-case-study migration with the current Registry payload.
+ * A forced migration may refresh legacy metadata, but must never erase CMS-authored
+ * sections, native content, ordering, visibility, or locale overrides.
+ */
+export function preserveCustomCaseStudyCmsContent(migratedCaseStudy, existingCaseStudy = {}) {
+  if (!migratedCaseStudy || migratedCaseStudy.type !== 'custom') return migratedCaseStudy;
+
+  const existing = existingCaseStudy && typeof existingCaseStudy === 'object'
+    ? existingCaseStudy
+    : {};
+
+  return {
+    ...migratedCaseStudy,
+    ...existing,
+    version: Math.max(2, Number(migratedCaseStudy.version) || 1, Number(existing.version) || 1),
+    type: 'custom',
+    title: existing.title || migratedCaseStudy.title || '',
+    subtitle: existing.subtitle ?? migratedCaseStudy.subtitle ?? '',
+    customComponent: existing.customComponent || migratedCaseStudy.customComponent || null,
+    customSections: Array.isArray(existing.customSections) ? existing.customSections : [],
+    nativeSections: existing.nativeSections && typeof existing.nativeSections === 'object'
+      ? existing.nativeSections
+      : {},
+    nativeSectionOrder: Array.isArray(existing.nativeSectionOrder) ? existing.nativeSectionOrder : [],
+    nativeSectionVisibility: existing.nativeSectionVisibility && typeof existing.nativeSectionVisibility === 'object'
+      ? existing.nativeSectionVisibility
+      : {},
+    translations: existing.translations && typeof existing.translations === 'object'
+      ? existing.translations
+      : {},
+  };
+}
