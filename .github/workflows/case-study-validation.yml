@@ -12,6 +12,7 @@ on:
       - 'src/utils/caseStudyContent.js'
       - 'scripts/test-native-case-study-cms-bindings.mjs'
       - 'scripts/test-custom-case-study-content.mjs'
+      - 'docs/custom-case-study-cms-schema.md'
       - 'src/styles/style.css'
       - 'package.json'
       - 'package-lock.json'
