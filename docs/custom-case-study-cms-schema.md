@@ -109,4 +109,10 @@ This is a partial component-level migration, not full end-to-end editability. Na
 - The Connected Workflow diagram expects exactly six step objects; invalid or incomplete JSON falls back to the built-in six-stage sequence. Other JSON arrays fall back when parsing fails, and malformed non-object entries are filtered from diagram/token collections.
 - Some secondary paragraphs and detailed copy inside remaining bespoke diagrams, image selection in other native sections, native media captions, and interaction settings remain code-defined. The latest migration adds structured controls for the WINNI Problem, Scope and Outcome sections, plus Assestini Operational Intelligence detail cards and product-thinking callout; this is still not full end-to-end CMS editability.
 
+### Migration safety
+
+- Non-forced migrations skip any existing case-study schema version greater than or equal to 1, including version 2 records created by this editor.
+- Forced legacy migrations may refresh legacy-derived metadata, but preserve CMS-authored custom sections, native section content, native section order/visibility, and locale overrides for bespoke studies.
+- The regression tests cover both the preservation contract and the version-based skip/force decision.
+
 Continue migrating those fields before describing either bespoke study as fully CMS-editable.
