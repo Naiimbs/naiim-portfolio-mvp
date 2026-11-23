@@ -4,6 +4,7 @@ import MainLayout from '../../layouts/MainLayout';
 import SEO from '../../components/common/SEO';
 import { getCaseStudySchema } from '../../lib/schema';
 import CMSCustomSections from '../../components/case-study/CMSCustomSections';
+import { resolveCustomSectionContent } from '../../services/customCaseStudyContent';
 
 // Subcomponents
 import WinniHero from '../../components/case-study/winni/WinniHero';
@@ -27,6 +28,7 @@ export default function WinniCaseStudy({ caseStudy = {}, cmsSections = [], previ
   const localizedCaseStudy = caseStudy.translations?.[locale] || {};
   const displayTitle = localizedCaseStudy.title || caseStudy.title;
   const displaySubtitle = localizedCaseStudy.subtitle || caseStudy.subtitle;
+  const sectionContent = (key) => resolveCustomSectionContent(caseStudy, key, locale);
   const schema = getCaseStudySchema({
     title: displayTitle || 'WINNI — Physical + Digital Identity System',
     description: displaySubtitle || 'WINNI is a physical + digital identity system that helps people reconnect with lost belongings through a simple QR/NFC interaction. Product design case study by Naïm Bsili.',
@@ -48,22 +50,22 @@ export default function WinniCaseStudy({ caseStudy = {}, cmsSections = [], previ
         <WinniHero title={displayTitle} subtitle={displaySubtitle} />
 
         {/* 02. The Problem */}
-        <WinniProblem />
+        <WinniProblem content={sectionContent('problem')} />
 
         {/* 03. The Idea */}
         <WinniIdea />
 
         {/* 04. Product Challenge */}
-        <WinniChallenge />
+        <WinniChallenge content={sectionContent('challenge')} />
 
         {/* 05. The Scan Experience (5 Screen Sequence) */}
         <WinniScanExperience />
 
         {/* 06. Privacy by Design */}
-        <WinniPrivacy />
+        <WinniPrivacy content={sectionContent('privacy')} />
 
         {/* 07. Location — But Not Tracking */}
-        <WinniLocation />
+        <WinniLocation content={sectionContent('location')} />
 
         {/* 08. Physical Product */}
         <WinniPhysicalProduct />
