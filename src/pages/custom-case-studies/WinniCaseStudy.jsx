@@ -84,8 +84,8 @@ export default function WinniCaseStudy({ caseStudy = {}, cmsSections = [], previ
         <WinniOutcome />
 
         {/* 15. Final CTA + Pagination */}
-        <WinniCTA />
         <CMSCustomSections sections={cmsSections} />
+        <WinniCTA />
       </main>
     </MainLayout>
   );
