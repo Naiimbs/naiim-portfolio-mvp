@@ -47,6 +47,7 @@ export default function CaseStudyRenderer() {
 
   const [gate, setGate] = useState(GATE.PENDING);
   const [studyData, setStudyData] = useState(null);
+  const [customStudyData, setCustomStudyData] = useState(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -57,6 +58,7 @@ export default function CaseStudyRenderer() {
       if (isPreviewRequested && authLoading) return;
       setGate(GATE.PENDING);
       setStudyData(null);
+      setCustomStudyData(null);
 
       if (!isPreviewRequested && isHiddenPublicSlug(cleanSlug)) {
         setGate(GATE.BLOCKED);
@@ -103,27 +105,29 @@ export default function CaseStudyRenderer() {
         return;
       }
 
-      // Custom case studies render standalone React components, not metadata.caseStudy.
-      if (isPreviewRequested && (cleanSlug === 'winni' || cleanSlug === 'assestini')) {
-        setGate(GATE.PREVIEW_UNSUPPORTED);
-        return;
-      }
-
       // Public requests are already filtered to published + public by their query; preview requests are admin/RLS gated.
 
-      // ── Step 2: Custom flagship case studies ─────────────────────────────────
-      // Registry-authorised. Their content is self-contained React components.
-      // The Registry caseStudy metadata holds configuration only (title, subtitle,
-      // customComponent). No structural content is read from it here.
+      // ── Step 2: Normalize the authoritative Registry record ─────────────────
+      const normalizedEntry = normalizeRegistryEntry(registryRes.data);
+
+      // Bespoke case studies retain their React interactions while accepting
+      // CMS-authored editorial sections and saved admin previews.
       if (cleanSlug === 'winni' || cleanSlug === 'assestini') {
+        setCustomStudyData({
+          caseStudy: normalizedEntry?.caseStudy || {},
+          i18n: normalizedEntry?.i18n || {},
+          title: registryRes.data.title || cleanSlug,
+          previewInfo: isPreviewRequested ? {
+            title: registryRes.data.title || cleanSlug,
+            status: registryRes.data.status || 'unknown',
+            visibility: registryRes.data.visibility || 'unknown',
+          } : null,
+        });
         setGate(GATE.ALLOWED);
         return;
       }
 
-      // ── Step 3: Authoritative Registry content (standard case studies) ───────
-      // metadata.caseStudy is the ONLY content source, resolved via normalizeRegistryEntry.
-      // No fallback to local data or any secondary source.
-      const normalizedEntry = normalizeRegistryEntry(registryRes.data);
+      // ── Step 3: Standard case-study content from Registry metadata ──────────
       const studyContent = normalizedEntry?.caseStudy;
 
       if (!studyContent) {
@@ -188,10 +192,18 @@ export default function CaseStudyRenderer() {
 
   // Custom flagship case studies — Registry-authorised, presentation-only components
   if (cleanSlug === 'winni') {
-    return <WinniCaseStudy />;
+    return <WinniCaseStudy
+      caseStudy={customStudyData?.caseStudy || {}}
+      cmsSections={customStudyData?.caseStudy?.customSections || []}
+      previewInfo={customStudyData?.previewInfo || null}
+    />;
   }
   if (cleanSlug === 'assestini') {
-    return <AssestiniCaseStudy />;
+    return <AssestiniCaseStudy
+      caseStudy={customStudyData?.caseStudy || {}}
+      cmsSections={customStudyData?.caseStudy?.customSections || []}
+      previewInfo={customStudyData?.previewInfo || null}
+    />;
   }
 
   // Standard case study — data comes exclusively from Registry metadata.caseStudy
