@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import MainLayout from '../../layouts/MainLayout';
 import SEO from '../../components/common/SEO';
 import { getCaseStudySchema } from '../../lib/schema';
@@ -21,17 +22,22 @@ import WinniOutcome from '../../components/case-study/winni/WinniOutcome';
 import WinniCTA from '../../components/case-study/winni/WinniCTA';
 
 export default function WinniCaseStudy({ caseStudy = {}, cmsSections = [], previewInfo = null }) {
+  const { i18n } = useTranslation();
+  const locale = (i18n?.language || 'en').slice(0, 2);
+  const localizedCaseStudy = caseStudy.translations?.[locale] || {};
+  const displayTitle = localizedCaseStudy.title || caseStudy.title;
+  const displaySubtitle = localizedCaseStudy.subtitle || caseStudy.subtitle;
   const schema = getCaseStudySchema({
-    title: caseStudy.title || 'WINNI — Physical + Digital Identity System',
-    description: caseStudy.subtitle || 'WINNI is a physical + digital identity system that helps people reconnect with lost belongings through a simple QR/NFC interaction. Product design case study by Naïm Bsili.',
+    title: displayTitle || 'WINNI — Physical + Digital Identity System',
+    description: displaySubtitle || 'WINNI is a physical + digital identity system that helps people reconnect with lost belongings through a simple QR/NFC interaction. Product design case study by Naïm Bsili.',
     slug: 'winni',
   });
 
   return (
     <MainLayout>
       <SEO
-        title={ (caseStudy.title || 'WINNI') + ' — Case Study · Naïm Bsili' }
-        description={caseStudy.subtitle || 'WINNI — Physical + digital identity system that helps people reconnect with lost belongings. Product design case study by Naïm Bsili.'}
+        title={ (displayTitle || 'WINNI') + ' — Case Study · Naïm Bsili' }
+        description={displaySubtitle || 'WINNI — Physical + digital identity system that helps people reconnect with lost belongings. Product design case study by Naïm Bsili.'}
         canonical="/work/winni/"
         schema={schema}
       />
