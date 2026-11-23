@@ -44,28 +44,24 @@ export default function AssestiniCaseStudy({ caseStudy = {}, cmsSections = [], p
         {/* 01. Hero */}
         <AssestiniHero title={displayTitle} subtitle={displaySubtitle} />
 
-        {/* 02. The Challenge + Role aside */}
-        <AssestiniChallenge content={sectionContent('challenge')} />
+        {[
+          ['challenge', <AssestiniChallenge content={sectionContent('challenge')} />],
+          ['workflow', <AssestiniWorkflow content={sectionContent('workflow')} />],
+          ['estimation', <AssestiniEstimation content={sectionContent('estimation')} />],
+          ['commercial', <AssestiniCommercial content={sectionContent('commercial')} />],
+          ['intelligence', <AssestiniIntelligence content={sectionContent('intelligence')} />],
+          ['mcp', <AssestiniMcp content={sectionContent('mcp')} />],
+          ['building', <AssestiniBuilding content={sectionContent('building')} />],
+        ].map(([id, component]) => ({ id, component }))}
+          .filter(({ id }) => caseStudy.nativeSectionVisibility?.[id] !== false)
+          .sort((a, b) => {
+            const defaultOrder = ['challenge','workflow','estimation','commercial','intelligence','mcp','building'];
+            const savedOrder = Array.isArray(caseStudy.nativeSectionOrder) ? caseStudy.nativeSectionOrder : [];
+            const order = [...savedOrder, ...defaultOrder.filter((key) => !savedOrder.includes(key))];
+            return order.indexOf(a.id) - order.indexOf(b.id);
+          })
+          .map(({ id, component }) => <React.Fragment key={id}>{component}</React.Fragment>)}
 
-        {/* 03. The Connected Workflow + SVG Diagram + Screenshots */}
-        <AssestiniWorkflow content={sectionContent('workflow')} />
-
-        {/* 04. AI Estimation (Input → AI Processing → Structured Output) */}
-        <AssestiniEstimation content={sectionContent('estimation')} />
-
-        {/* 05. Commercial Workflow (From Quotation to Delivery) */}
-        <AssestiniCommercial content={sectionContent('commercial')} />
-
-        {/* 06. Operational Intelligence + Control Center + Product Thinking */}
-        <AssestiniIntelligence content={sectionContent('intelligence')} />
-
-        {/* 07. AI Agents & MCP Architecture */}
-        <AssestiniMcp content={sectionContent('mcp')} />
-
-        {/* 08. Product Building 5 Layers + Editorial Quote + Product Evidence */}
-        <AssestiniBuilding content={sectionContent('building')} />
-
-        {/* 09. Technology & Tools + Bottom Case Navigation */}
         <CMSCustomSections sections={cmsSections} />
         <AssestiniTechCta />
       </main>
