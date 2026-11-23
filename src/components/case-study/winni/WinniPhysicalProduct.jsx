@@ -3,7 +3,7 @@ import winniCarTagImg from '../../../assets/images/winni-car-tag-detail-hero.web
 import winniMotoTagImg from '../../../assets/images/winni-moto-tag.webp';
 import winniLuggageTagImg from '../../../assets/images/winni-luggage-tag.webp';
 
-export default function WinniPhysicalProduct() {
+export default function WinniPhysicalProduct({ content = {} }) {
   const products = [
     {
       badge: 'PHOTO 03 · CAR',
@@ -47,11 +47,10 @@ export default function WinniPhysicalProduct() {
     <section className="winni-section" id="physical-product">
       <div className="container">
         <div className="winni-section-header">
-          <span className="winni-section-num">08 · PHYSICAL PRODUCT</span>
-          <h2 className="winni-section-title">The interface doesn't end on the screen.</h2>
+          <span className="winni-section-num">{content.eyebrow || '08 · PHYSICAL PRODUCT'}</span>
+          <h2 className="winni-section-title">{content.title || "The interface doesn't end on the screen."}</h2>
           <p className="winni-copy-lg">
-            WINNI exists on the actual object. This tactile existence strongly differentiates the product from a
-            conventional SaaS utility.
+            {content.lead || 'WINNI exists on the actual object. This tactile existence strongly differentiates the product from a conventional SaaS utility.'}
           </p>
         </div>
 
