@@ -64,8 +64,8 @@ export default function AssestiniCaseStudy({ caseStudy = {}, cmsSections = [], p
         <AssestiniBuilding />
 
         {/* 09. Technology & Tools + Bottom Case Navigation */}
-        <AssestiniTechCta />
         <CMSCustomSections sections={cmsSections} />
+        <AssestiniTechCta />
       </main>
     </MainLayout>
   );
