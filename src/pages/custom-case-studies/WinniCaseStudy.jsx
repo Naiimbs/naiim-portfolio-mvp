@@ -49,43 +49,29 @@ export default function WinniCaseStudy({ caseStudy = {}, cmsSections = [], previ
         {/* 01. Hero */}
         <WinniHero title={displayTitle} subtitle={displaySubtitle} />
 
-        {/* 02. The Problem */}
-        <WinniProblem content={sectionContent('problem')} />
+        {[
+          ['problem', <WinniProblem content={sectionContent('problem')} />],
+          ['idea', <WinniIdea content={sectionContent('idea')} />],
+          ['challenge', <WinniChallenge content={sectionContent('challenge')} />],
+          ['scanExperience', <WinniScanExperience content={sectionContent('scanExperience')} />],
+          ['privacy', <WinniPrivacy content={sectionContent('privacy')} />],
+          ['location', <WinniLocation content={sectionContent('location')} />],
+          ['physicalProduct', <WinniPhysicalProduct content={sectionContent('physicalProduct')} />],
+          ['systemMatrix', <WinniSystemMatrix content={sectionContent('systemMatrix')} />],
+          ['visualSystem', <WinniVisualSystem content={sectionContent('visualSystem')} />],
+          ['motion', <WinniMotion content={sectionContent('motion')} />],
+          ['scope', <WinniScope content={sectionContent('scope')} />],
+          ['outcome', <WinniOutcome content={sectionContent('outcome')} />],
+        ].map(([id, component]) => ({ id, component }))}
+          .filter(({ id }) => caseStudy.nativeSectionVisibility?.[id] !== false)
+          .sort((a, b) => {
+            const defaultOrder = ['problem','idea','challenge','scanExperience','privacy','location','physicalProduct','systemMatrix','visualSystem','motion','scope','outcome'];
+            const savedOrder = Array.isArray(caseStudy.nativeSectionOrder) ? caseStudy.nativeSectionOrder : [];
+            const order = [...savedOrder, ...defaultOrder.filter((key) => !savedOrder.includes(key))];
+            return order.indexOf(a.id) - order.indexOf(b.id);
+          })
+          .map(({ id, component }) => <React.Fragment key={id}>{component}</React.Fragment>)}
 
-        {/* 03. The Idea */}
-        <WinniIdea content={sectionContent('idea')} />
-
-        {/* 04. Product Challenge */}
-        <WinniChallenge content={sectionContent('challenge')} />
-
-        {/* 05. The Scan Experience (5 Screen Sequence) */}
-        <WinniScanExperience content={sectionContent('scanExperience')} />
-
-        {/* 06. Privacy by Design */}
-        <WinniPrivacy content={sectionContent('privacy')} />
-
-        {/* 07. Location — But Not Tracking */}
-        <WinniLocation content={sectionContent('location')} />
-
-        {/* 08. Physical Product */}
-        <WinniPhysicalProduct content={sectionContent('physicalProduct')} />
-
-        {/* 09. Unified System Matrix */}
-        <WinniSystemMatrix content={sectionContent('systemMatrix')} />
-
-        {/* 10. Visual System */}
-        <WinniVisualSystem content={sectionContent('visualSystem')} />
-
-        {/* 11. Motion */}
-        <WinniMotion content={sectionContent('motion')} />
-
-        {/* 12. Scope of Work (What I Designed) */}
-        <WinniScope content={sectionContent('scope')} />
-
-        {/* 13. The Design Principle + 14. Outcome */}
-        <WinniOutcome content={sectionContent('outcome')} />
-
-        {/* 15. Final CTA + Pagination */}
         <CMSCustomSections sections={cmsSections} />
         <WinniCTA />
       </main>
