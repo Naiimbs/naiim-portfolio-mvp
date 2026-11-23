@@ -1,8 +1,9 @@
 import React from 'react';
 import assestiniEstimatorImg from '../../../assets/images/Assestini-estimator.webp';
 import modelesWbsImg from '../../../assets/images/modeles-wbs.webp';
+import { resolveAsset } from '../../../services/assetRegistry';
 
-export default function AssestiniWorkflow({ content = {} }) {
+export default function AssestiniWorkflow({ content = {} }) {\n  const estimatorImage = resolveAsset(content.estimatorImage) || assestiniEstimatorImg;\n  const wbsImage = resolveAsset(content.wbsImage) || modelesWbsImg;
   return (
     <section className="case-section alt">
       <div className="container">
@@ -376,17 +377,17 @@ export default function AssestiniWorkflow({ content = {} }) {
           <div className="col-md-6">
             <figure className="case-media">
               <img
-                src={assestiniEstimatorImg}
-                alt="Assestini home dashboard showing Vision Opérationnelle and project delivery pipeline"
-                loading="lazy"
+                src={estimatorImage}
+                alt={content.estimatorImageAlt || 'Assestini home dashboard showing Vision Opérationnelle and project delivery pipeline'}
+                loading="lazy" decoding="async"
               />
             </figure>
           </div>
           <div className="col-md-6">
             <figure className="case-media">
               <img
-                src={modelesWbsImg}
-                alt="Assestini Business Control Center showing Business Health Score, delivery, finance and operations monitoring"
+                src={wbsImage}
+                alt={content.wbsImageAlt || 'Assestini Business Control Center showing Business Health Score, delivery, finance and operations monitoring'}
                 loading="lazy"
               />
             </figure>
