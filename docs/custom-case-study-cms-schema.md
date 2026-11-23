@@ -86,4 +86,12 @@ The WINNI and Assestini case studies retain their bespoke React components for i
 
 ## Current limitation
 
-This is a partial component-level migration, not full end-to-end editability. The 19 native sections expose their eyebrow labels, main headings and primary introductory copy to the CMS. Native section order and visibility are also managed independently from the custom editorial blocks. The WINNI Scan Experience screen labels and System Matrix rows/column labels are editable as JSON arrays/fields. Assestini AI Estimation highlights/output items and Commercial Workflow steps are editable as JSON arrays. The Assestini Workflow screenshots can be replaced through the asset registry, with editable alt text. Other secondary paragraphs, remaining diagram node labels, detailed SVG diagram structure, image selection in other sections, native media captions, and interaction settings remain code-defined. Continue migrating those fields before describing either bespoke study as fully CMS-editable.
+This is a partial component-level migration, not full end-to-end editability. Native section order and visibility are managed independently from the custom editorial blocks.
+
+- WINNI structured controls include Scan Experience screen labels, System Matrix rows/column labels, Privacy diagram node labels/descriptions/badges, and Visual System color-token/icon arrays.
+- Assestini structured controls include AI Estimation highlights/output items, Commercial Workflow steps, the six-stage Connected Workflow SVG labels, Operational Intelligence feature tags/dashboard image + alt text, and MCP architecture nodes.
+- Assestini Workflow screenshots can be replaced through the asset registry, with editable alt text.
+- The Connected Workflow diagram expects exactly six step objects; invalid or incomplete JSON falls back to the built-in six-stage sequence. Other JSON arrays fall back when parsing fails, and malformed non-object entries are filtered from diagram/token collections.
+- Other secondary paragraphs, detailed copy inside remaining diagrams, image selection in other sections, native media captions, and interaction settings remain code-defined.
+
+Continue migrating those fields before describing either bespoke study as fully CMS-editable.
