@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import winniHeroPageImg from '../../../assets/images/winni-hero-page.webp';
 
-export default function WinniHero() {
+export default function WinniHero({ title, subtitle }) {
   const metadata = [
     {
       icon: 'bi-person-badge',
@@ -35,12 +35,11 @@ export default function WinniHero() {
         </div>
 
         <h1 className="winni-hero-title">
-          Giving lost things<br />a way back.
+          {title || <>Giving lost things<br />a way back.</>}
         </h1>
 
         <p className="winni-hero-desc">
-          WINNI is a physical + digital identity system that helps people reconnect with lost belongings through a
-          simple QR/NFC interaction.
+          {subtitle || 'WINNI is a physical + digital identity system that helps people reconnect with lost belongings through a simple QR/NFC interaction.'}
         </p>
 
         <div className="winni-meta-row">
