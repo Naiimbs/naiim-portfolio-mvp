@@ -122,6 +122,16 @@ export function validateCaseStudyContent(caseStudy) {
 
   if (caseStudy.type === 'custom') {
     if (!caseStudy.title) warnings.push('Custom case study has no title.');
+    if (Array.isArray(caseStudy.customSections)) {
+      caseStudy.customSections.forEach((section, index) => {
+        if (section?.type === 'image' && !section.image) {
+          warnings.push(`Custom section #${index + 1} is an image section without an image source.`);
+        }
+        if (section?.type === 'image' && section.image && !section.alt?.trim()) {
+          warnings.push(`Custom section #${index + 1} is missing image alt text.`);
+        }
+      });
+    }
     return {
       valid: errors.length === 0,
       errors,
