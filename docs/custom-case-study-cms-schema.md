@@ -1,6 +1,6 @@
 # Custom Case Study CMS Sections
 
-The WINNI and Assestini case studies retain their bespoke React components for interactive product demonstrations, diagrams, and visual sequences. The Content Registry can additionally store editorial sections under `metadata.caseStudy.customSections`.
+The WINNI and Assestini case studies retain their bespoke React components for interactive product demonstrations, diagrams, and visual sequences. The Content Registry stores additional editorial blocks under `metadata.caseStudy.customSections` and editable copy overrides for selected native sections under `metadata.caseStudy.nativeSections`.
 
 ## Schema
 
@@ -14,7 +14,7 @@ The WINNI and Assestini case studies retain their bespoke React components for i
     "fr": { "title": "Titre", "subtitle": "Description" },
     "ar": { "title": "العنوان", "subtitle": "الوصف" }
   },
-  "customSections": [
+  "nativeSections": {\n    "problem": { "eyebrow": "02 · THE PROBLEM", "title": "Editable heading", "lead": "Editable introduction" }\n  },\n  "translations": {\n    "fr": { "nativeSections": { "problem": { "title": "Titre modifiable" } } },\n    "ar": { "nativeSections": { "problem": { "title": "عنوان قابل للتحرير" } } }\n  },\n  "customSections": [
     {
       "id": "custom-intro",
       "type": "text",
@@ -51,7 +51,7 @@ The WINNI and Assestini case studies retain their bespoke React components for i
 - Add text and image sections.
 - Reorder sections.
 - Hide/show sections without deleting their content.
-- Edit English content and French/Arabic translations.
+- Edit English content and French/Arabic translations.\n- Edit selected original section headings and copy in the native WINNI and Assestini layouts.
 - Set image URL/storage URL, alternative text, caption, and layout.
 - Preview saved custom-case-study content using the authenticated admin preview route.
 
@@ -63,8 +63,8 @@ The WINNI and Assestini case studies retain their bespoke React components for i
 - Arabic sections render RTL.
 - Image sections use contained media so screenshots are not forcibly cropped.
 - Empty or hidden CMS sections are not rendered.
-- The existing bespoke components remain active; CMS sections are currently additional editorial blocks placed before the final CTA.
+- The existing bespoke components remain active; CMS editorial blocks are placed before the final CTA.\n- Selected native sections now accept CMS overrides for headings, eyebrow labels and primary copy, with FR/AR overrides. The editor currently exposes WINNI Problem, Product Challenge, Privacy and Location, plus Assestini Challenge, AI Estimation, Commercial Workflow and AI Agents/MCP.
 
 ## Current limitation
 
-This schema does not yet expose every string, diagram label, screenshot, or interaction configuration inside the pre-existing WINNI and Assestini React subcomponents. Those internal component fields remain code-defined and require a later component-by-component CMS migration before these bespoke studies are fully editable end-to-end.
+This is a partial component-level migration, not full end-to-end editability. Other native sections (including WINNI scan screens, physical product, system matrix, visual system, motion, scope and outcome, and Assestini workflow, operational intelligence and product-building sections) still contain code-defined copy. Diagram node labels, card arrays, screenshots/media selection, alt text/captions, and interaction settings also remain code-defined unless managed through the separate editorial block controls. Continue migrating those fields before describing either bespoke study as fully CMS-editable.
