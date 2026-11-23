@@ -24,7 +24,7 @@ export default function AssestiniWorkflow({ content = {} }) {
       return defaultWorkflowSteps;
     }
   })();
-  const workflowSteps = parsedWorkflowSteps.slice(0, 6);
+  const workflowSteps = parsedWorkflowSteps.slice(0, 6).map((step) => (step && typeof step === 'object' ? step : {}));
   return (
     <section className="case-section alt">
       <div className="container">
