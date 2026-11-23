@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { resolveCustomSectionContent, preserveCustomCaseStudyCmsContent } from '../src/services/customCaseStudyContent.js';
 import { parseCaseStudyArray } from '../src/utils/caseStudyContent.js';
-import { shouldSkipCaseStudyMigration } from '../src/services/caseStudyRegistryMigration.js';
+import { shouldSkipCaseStudyMigration } from '../src/services/customCaseStudyContent.js';
 
 const caseStudy = {
   nativeSections: {
