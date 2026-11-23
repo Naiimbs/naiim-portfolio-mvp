@@ -3507,3 +3507,61 @@ html { scroll-padding-top: calc(var(--topbar-h, 0px) + 90px); }
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+
+/* CMS-authored sections appended to bespoke case studies */
+.cms-custom-case-section {
+  padding: clamp(3.5rem, 7vw, 6.5rem) 0;
+  border-top: 1px solid rgba(20, 35, 30, 0.08);
+}
+.cms-custom-case-section:nth-child(even) {
+  background: #f7f8f6;
+}
+.cms-custom-case-section h2 {
+  max-width: 900px;
+  margin: 0 auto 1.5rem;
+  font-size: clamp(1.8rem, 3.2vw, 3rem);
+  line-height: 1.14;
+  letter-spacing: -0.035em;
+  text-align: center;
+}
+.cms-custom-case-section__body {
+  max-width: 760px;
+  margin: 0 auto;
+  color: #4f5b56;
+  font-size: clamp(1rem, 1.2vw, 1.125rem);
+  line-height: 1.85;
+}
+.cms-custom-case-section__body p {
+  margin: 0 0 1.15rem;
+}
+.cms-custom-case-section__media {
+  max-width: 1120px;
+  margin: 2.5rem auto 0;
+}
+.cms-custom-case-section__media .case-image-stage {
+  overflow: hidden;
+  border-radius: 18px;
+  background: #f0f2ef;
+}
+.cms-custom-case-section__media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 820px;
+  object-fit: contain;
+}
+.cms-custom-case-section__media figcaption {
+  max-width: 760px;
+  margin: 1rem auto 0;
+  color: #69746f;
+  font-size: 0.94rem;
+  line-height: 1.65;
+  text-align: center;
+}
+.cms-custom-case-section[dir="rtl"] {
+  text-align: right;
+}
+.cms-custom-case-section[dir="rtl"] h2 {
+  text-align: right;
+}
