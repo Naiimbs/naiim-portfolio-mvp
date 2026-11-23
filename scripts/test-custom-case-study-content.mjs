@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { resolveCustomSectionContent } from '../src/services/customCaseStudyContent.js';
+import { parseCaseStudyArray } from '../src/utils/caseStudyContent.js';
 
 const caseStudy = {
   nativeSections: {
@@ -36,5 +37,10 @@ assert.deepEqual(resolveCustomSectionContent(caseStudy, 'privacy', 'fr'), {
   title: 'Privacy title',
 });
 assert.deepEqual(resolveCustomSectionContent(caseStudy, 'missing', 'en'), {});
+
+assert.deepEqual(parseCaseStudyArray('[{"title":"A"}]', []), [{ title: 'A' }]);
+assert.deepEqual(parseCaseStudyArray('not valid JSON', [{ title: 'fallback' }]), [{ title: 'fallback' }]);
+assert.deepEqual(parseCaseStudyArray('{"not":"an array"}', ['fallback']), ['fallback']);
+assert.deepEqual(parseCaseStudyArray([{ title: 'direct' }], []), [{ title: 'direct' }]);
 
 console.log('Custom case-study content tests passed.');
