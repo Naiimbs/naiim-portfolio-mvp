@@ -41,3 +41,11 @@ export function preserveCustomCaseStudyCmsContent(migratedCaseStudy, existingCas
       : {},
   };
 }
+
+/**
+ * A case study at version 1 or newer is already migrated.
+ * Force is the only mode allowed to refresh legacy-derived content.
+ */
+export function shouldSkipCaseStudyMigration(caseStudy, force = false) {
+  return !force && Number(caseStudy?.version) >= 1;
+}
