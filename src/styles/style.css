@@ -3559,9 +3559,9 @@ html { scroll-padding-top: calc(var(--topbar-h, 0px) + 90px); }
   line-height: 1.65;
   text-align: center;
 }
-.cms-custom-case-section[dir="rtl"] {
+.cms-custom-case-sections[dir="rtl"] .cms-custom-case-section {
   text-align: right;
 }
-.cms-custom-case-section[dir="rtl"] h2 {
+.cms-custom-case-sections[dir="rtl"] .cms-custom-case-section h2 {
   text-align: right;
 }
