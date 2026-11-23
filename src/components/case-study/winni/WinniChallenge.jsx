@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function WinniChallenge() {
+export default function WinniChallenge({ content = {} }) {
   const traits = [
     {
       title: 'Fast',
@@ -25,14 +25,13 @@ export default function WinniChallenge() {
       <div className="container">
         <div className="row align-items-center g-5">
           <div className="col-lg-6">
-            <span className="winni-section-num">04 · PRODUCT CHALLENGE</span>
-            <h2 className="winni-section-title">Designing the moment between a stranger and an owner.</h2>
+            <span className="winni-section-num">{content.eyebrow || '04 · PRODUCT CHALLENGE'}</span>
+            <h2 className="winni-section-title">{content.title || 'Designing the moment between a stranger and an owner.'}</h2>
             <p className="winni-copy">
-              The most important UX challenge wasn't building another complex management dashboard. It was designing the{' '}
-              <strong>finder experience</strong>.
+              {content.lead || "The most important UX challenge wasn't building another complex management dashboard. It was designing the finder experience."}
             </p>
             <p className="winni-copy">
-              When someone spots an object with a WINNI tag, the context is unpredictable:
+              {content.context || 'When someone spots an object with a WINNI tag, the context is unpredictable:'}
             </p>
             <ul className="case-list">
               <li>
