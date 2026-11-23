@@ -1,15 +1,14 @@
 import React from 'react';
 
-export default function WinniLocation() {
+export default function WinniLocation({ content = {} }) {
   return (
     <section className="winni-section alt-bg" id="location">
       <div className="container">
         <div className="winni-section-header">
-          <span className="winni-section-num">07 · LOCATION</span>
-          <h2 className="winni-section-title">Location is a choice, not surveillance.</h2>
+          <span className="winni-section-num">{content.eyebrow || '07 · LOCATION'}</span>
+          <h2 className="winni-section-title">{content.title || 'Location is a choice, not surveillance.'}</h2>
           <p className="winni-copy-lg">
-            WINNI can allow the finder to share where they found the object. But WINNI is{' '}
-            <strong>not a live tracking system</strong>.
+            {content.lead || 'WINNI can allow the finder to share where they found the object. But WINNI is not a live tracking system.'}
           </p>
         </div>
 
