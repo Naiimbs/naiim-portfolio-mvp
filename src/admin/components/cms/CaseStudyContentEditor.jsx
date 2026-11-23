@@ -121,9 +121,9 @@ export default function CaseStudyContentEditor({
       { id: 'challenge', label: '01 · The Challenge', fields: ['eyebrow','title','lead','paragraph2'] },
       { id: 'estimation', label: '03 · AI Estimation', fields: ['eyebrow','title','lead','highlightsJson','outputsJson'] },
       { id: 'commercial', label: '04 · Commercial Workflow', fields: ['eyebrow','title','lead','stepsJson'] },
-      { id: 'mcp', label: '06 · AI Agents & MCP', fields: ['eyebrow','title','lead','paragraph2'] },
+      { id: 'mcp', label: '06 · AI Agents & MCP', fields: ['eyebrow','title','lead','paragraph2','mcpNodesJson'] },
       { id: 'workflow', label: '02 · Connected Workflow', fields: ['eyebrow','title','lead','workflowStepsJson','estimatorImage','estimatorImageAlt','wbsImage','wbsImageAlt'] },
-      { id: 'intelligence', label: '05 · Operational Intelligence', fields: ['eyebrow','title','lead'] },
+      { id: 'intelligence', label: '05 · Operational Intelligence', fields: ['eyebrow','title','lead','featureTagsJson','dashboardImage','dashboardImageAlt'] },
       { id: 'building', label: '07 · Product Building', fields: ['eyebrow','title','lead'] },
     ];
     const defaultNativeOrder = slug === 'winni'
@@ -237,7 +237,7 @@ export default function CaseStudyContentEditor({
                             <textarea className="form-control form-control-sm font-monospace" rows="7"
                               value={nativeFieldValue(group.id, field, locale)} disabled={disabled}
                               onChange={(e) => updateNativeField(group.id, field, locale, e.target.value)}
-                              placeholder={field === 'screensJson' ? '[{"step":"01 — SCAN","label":"Recognized"}]' : field === 'matrixRowsJson' ? '[{"num":"01 · Identification","physical":"Physical detail","digital":"Digital detail"}]' : field === 'stepsJson' ? '[{"num":"01","title":"Step title","desc":"Step description"}]' : field === 'workflowStepsJson' ? '[{"num":"01","title":"Estimate","subtitle":"AI Estimator Pro","detail":"WBS · Effort · Budget"},{"num":"02","title":"Define","subtitle":"Scope & Structure","detail":"Deliverables · TJM"},{"num":"03","title":"Quote","subtitle":"Commercial Proposal","detail":"Tax · Terms · Price"},{"num":"04","title":"Launch","subtitle":"Project from Quote","detail":"Tasks · Milestones"},{"num":"05","title":"Deliver","subtitle":"Kanban · Gantt · Time","detail":"Progress · Health"},{"num":"06","title":"Monitor","subtitle":"Control Center","detail":"SPI · CPI · Margin"}]' : '["First item","Second item"]'} />
+                              placeholder={field === 'screensJson' ? '[{"step":"01 — SCAN","label":"Recognized"}]' : field === 'matrixRowsJson' ? '[{"num":"01 · Identification","physical":"Physical detail","digital":"Digital detail"}]' : field === 'stepsJson' ? '[{"num":"01","title":"Step title","desc":"Step description"}]' : field === 'workflowStepsJson' ? '[{"num":"01","title":"Estimate","subtitle":"AI Estimator Pro","detail":"WBS · Effort · Budget"},{"num":"02","title":"Define","subtitle":"Scope & Structure","detail":"Deliverables · TJM"},{"num":"03","title":"Quote","subtitle":"Commercial Proposal","detail":"Tax · Terms · Price"},{"num":"04","title":"Launch","subtitle":"Project from Quote","detail":"Tasks · Milestones"},{"num":"05","title":"Deliver","subtitle":"Kanban · Gantt · Time","detail":"Progress · Health"},{"num":"06","title":"Monitor","subtitle":"Control Center","detail":"SPI · CPI · Margin"}]' : field === 'mcpNodesJson' ? '[{"icon":"bi-person","title":"User","sub":"Expert · Consultant · Agency","type":"default"}]' : '["First item","Second item"]'} />
                             <div className="form-text">JSON array. Invalid JSON falls back to the built-in content until corrected.</div>
                           </>
                         ) : ['lead','paragraph1','paragraph2','context'].includes(field) ? (
