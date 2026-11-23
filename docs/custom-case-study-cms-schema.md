@@ -29,6 +29,8 @@ The WINNI and Assestini case studies retain their bespoke React components for i
       "lead": "Editable introduction"
     }
   },
+  "nativeSectionOrder": ["problem", "idea", "challenge"],
+  "nativeSectionVisibility": { "problem": true, "idea": false },
   "customSections": [
     {
       "id": "custom-intro",
@@ -36,9 +38,7 @@ The WINNI and Assestini case studies retain their bespoke React components for i
       "layout": "text",
       "is_visible": true,
       "title": "Section title",
-      "body": "Paragraph one
-
-Paragraph two",
+      "body": "Paragraph one\\n\\nParagraph two",
       "translations": {
         "fr": { "title": "Titre", "body": "Texte" },
         "ar": { "title": "العنوان", "body": "النص" }
