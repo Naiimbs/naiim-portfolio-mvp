@@ -63,15 +63,7 @@ export default function WinniSystemMatrix({ content = {} }) {
                     <strong>{row.num}</strong>
                   </td>
                   <td>{row.physical}</td>
-                  <td>
-                    {row.code ? (
-                      <>
-                        Direct URL resolution to <code>/scan/:winniId</code> without app store redirects.
-                      </>
-                    ) : (
-                      row.digital
-                    )}
-                  </td>
+                  <td>{row.digital}</td>
                 </tr>
               ))}
             </tbody>
