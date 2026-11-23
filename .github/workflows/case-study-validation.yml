@@ -1,5 +1,5 @@
 name: Case Study Validation
-# Covers standard case-study CMS and bespoke native-section editor/rendering changes.
+# Covers standard case-study CMS, bespoke native-section migration, and renderer syntax/build checks.
 
 on:
   pull_request:
