@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function WinniSystemMatrix() {
+export default function WinniSystemMatrix({ content = {} }) {
   const matrixRows = [
     {
       num: '01 · Identification',
@@ -38,11 +38,10 @@ export default function WinniSystemMatrix() {
     <section className="winni-section alt-bg" id="system-touchpoints">
       <div className="container">
         <div className="winni-section-header">
-          <span className="winni-section-num">09 · UNIFIED SYSTEM</span>
-          <h2 className="winni-section-title">One identity. Multiple touchpoints.</h2>
+          <span className="winni-section-num">{content.eyebrow || '09 · UNIFIED SYSTEM'}</span>
+          <h2 className="winni-section-title">{content.title || 'One identity. Multiple touchpoints.'}</h2>
           <p className="winni-copy-lg">
-            A cohesive visual and logical architecture spanning physical stickers, mobile web browsers, and
-            administrative controls.
+            {content.lead || 'A cohesive visual and logical architecture spanning physical stickers, mobile web browsers, and administrative controls.'}
           </p>
         </div>
 
