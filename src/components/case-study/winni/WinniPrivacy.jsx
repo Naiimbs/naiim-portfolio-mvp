@@ -39,9 +39,9 @@ export default function WinniPrivacy({ content = {} }) {
                     <div className="node-icon">
                       <i className="bi bi-person-circle"></i>
                     </div>
-                    <h4>FINDER</h4>
-                    <div className="node-subtitle">Scans physical tag with camera</div>
-                    <span className="badge bg-light text-muted border mt-2">Zero Account</span>
+                    <h4>{content.finderTitle || 'FINDER'}</h4>
+                    <div className="node-subtitle">{content.finderDescription || 'Scans physical tag with camera'}</div>
+                    <span className="badge bg-light text-muted border mt-2">{content.finderBadge || 'Zero Account'}</span>
                   </div>
                 </div>
 
@@ -56,10 +56,10 @@ export default function WinniPrivacy({ content = {} }) {
                     <div className="node-icon text-success">
                       <i className="bi bi-shield-lock-fill"></i>
                     </div>
-                    <h4>WINNI</h4>
-                    <div className="node-subtitle text-light">Secure Communication Proxy</div>
+                    <h4>{content.proxyTitle || 'WINNI'}</h4>
+                    <div className="node-subtitle text-light">{content.proxyDescription || 'Secure Communication Proxy'}</div>
                     <div className="small mt-2 text-warning" style={{ fontSize: '0.7rem' }}>
-                      🔒 Personal data encrypted &amp; masked
+                      {content.proxyNote || '🔒 Personal data encrypted & masked'}
                     </div>
                   </div>
                 </div>
@@ -75,9 +75,9 @@ export default function WinniPrivacy({ content = {} }) {
                     <div className="node-icon">
                       <i className="bi bi-person-check-fill text-success"></i>
                     </div>
-                    <h4>OWNER</h4>
-                    <div className="node-subtitle">Receives push/SMS alert instantly</div>
-                    <span className="badge bg-light text-success border mt-2">100% Private</span>
+                    <h4>{content.ownerTitle || 'OWNER'}</h4>
+                    <div className="node-subtitle">{content.ownerDescription || 'Receives push/SMS alert instantly'}</div>
+                    <span className="badge bg-light text-success border mt-2">{content.ownerBadge || '100% Private'}</span>
                   </div>
                 </div>
               </div>
