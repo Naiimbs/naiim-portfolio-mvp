@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function AssestiniCommercial() {
+export default function AssestiniCommercial({ content = {} }) {
   const steps = [
     {
       num: '01',
@@ -28,13 +28,11 @@ export default function AssestiniCommercial() {
     <section className="case-section alt">
       <div className="container">
         <div className="eyebrow">
-          <span></span> 04 · COMMERCIAL WORKFLOW
+          <span></span> {content.eyebrow || '04 · COMMERCIAL WORKFLOW'}
         </div>
-        <h2>From quotation to delivery.</h2>
+        <h2>{content.title || 'From quotation to delivery.'}</h2>
         <p className="case-copy mb-5">
-          An accepted quotation becomes the commercial reference for the entire project. The{' '}
-          <strong>Accepted Quote Snapshot</strong> preserves the agreed client price, tax configuration, payment
-          terms and scope — creating an immutable source of truth between estimation and delivery.
+          {content.lead || 'An accepted quotation becomes the commercial reference for the entire project. The Accepted Quote Snapshot preserves the agreed client price, tax configuration, payment terms and scope — creating an immutable source of truth between estimation and delivery.'}
         </p>
 
         {/* Quote → Project sequence with process steps */}
