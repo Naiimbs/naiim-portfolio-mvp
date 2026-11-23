@@ -107,7 +107,7 @@ export default function CaseStudyContentEditor({
     const nativeFieldGroups = slug === 'winni' ? [
       { id: 'problem', label: '02 · The Problem', fields: ['eyebrow','title','lead','quote'] },
       { id: 'challenge', label: '04 · Product Challenge', fields: ['eyebrow','title','lead','context'] },
-      { id: 'privacy', label: '06 · Privacy by Design', fields: ['eyebrow','title','lead','paragraph1','paragraph2'] },
+      { id: 'privacy', label: '06 · Privacy by Design', fields: ['eyebrow','title','lead','paragraph1','paragraph2','finderTitle','finderDescription','finderBadge','proxyTitle','proxyDescription','proxyNote','ownerTitle','ownerDescription','ownerBadge'] },
       { id: 'location', label: '07 · Location', fields: ['eyebrow','title','lead'] },
       { id: 'idea', label: '03 · The Idea', fields: ['eyebrow','title','lead'] },
       { id: 'scanExperience', label: '05 · Scan Experience', fields: ['eyebrow','title','lead','screensJson'] },
