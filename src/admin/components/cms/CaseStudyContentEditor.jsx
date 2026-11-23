@@ -195,7 +195,7 @@ export default function CaseStudyContentEditor({
                             <textarea className="form-control form-control-sm font-monospace" rows="7"
                               value={nativeFieldValue(group.id, field, locale)} disabled={disabled}
                               onChange={(e) => updateNativeField(group.id, field, locale, e.target.value)}
-                              placeholder="Paste a valid JSON array" />
+                              placeholder={field === 'screensJson' ? '[{"step":"01 — SCAN","label":"Recognized"}]' : field === 'matrixRowsJson' ? '[{"num":"01 · Identification","physical":"Physical detail","digital":"Digital detail"}]' : field === 'stepsJson' ? '[{"num":"01","title":"Step title","desc":"Step description"}]' : '["First item","Second item"]'} />
                             <div className="form-text">JSON array. Invalid JSON falls back to the built-in content until corrected.</div>
                           </>
                         ) : ['lead','paragraph1','paragraph2','context'].includes(field) ? (
@@ -205,7 +205,8 @@ export default function CaseStudyContentEditor({
                         ) : (
                           <input className="form-control form-control-sm"
                             value={nativeFieldValue(group.id, field, locale)} disabled={disabled}
-                            onChange={(e) => updateNativeField(group.id, field, locale, e.target.value)} />
+                            onChange={(e) => updateNativeField(group.id, field, locale, e.target.value)}
+                            placeholder={field.toLowerCase().includes('image') ? 'Asset registry path or image URL' : 'Leave empty to keep the built-in content'} />
                         )}
                       </div>
                     ))}
