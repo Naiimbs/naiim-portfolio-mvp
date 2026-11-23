@@ -13,6 +13,14 @@ import { preserveCustomCaseStudyCmsContent } from './customCaseStudyContent.js';
 
 export const LEGACY_CASE_STUDIES_DATA = legacyCaseStudiesData;
 
+/**
+ * A case study at version 1 or newer is already migrated.
+ * Force is the only mode allowed to refresh legacy-derived content.
+ */
+export function shouldSkipCaseStudyMigration(caseStudy, force = false) {
+  return !force && Number(caseStudy?.version) >= 1;
+}
+
 const cleanFileName = (val) => {
   if (!val || typeof val !== 'string') return null;
   return val.split('?')[0].split('#')[0].replace(/^.*[\\/]/, '');
@@ -271,7 +279,7 @@ export async function executeCaseStudiesMigration(entries = null, force = false)
     const legacy = legacyCaseStudiesData[entry.slug];
     if (!legacy) continue;
 
-    if (!force && Number(entry.metadata?.caseStudy?.version) >= 1) {
+    if (shouldSkipCaseStudyMigration(entry.metadata?.caseStudy, force)) {
       results.push({ slug: entry.slug, status: 'already-migrated', error: null });
       continue;
     }
