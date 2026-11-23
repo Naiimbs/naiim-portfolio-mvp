@@ -114,7 +114,7 @@ export default function CaseStudyContentEditor({
       { id: 'physicalProduct', label: '08 · Physical Product', fields: ['eyebrow','title','lead','productsJson','printStandardsLabel','printStandards','cutFormats'] },
       { id: 'systemMatrix', label: '09 · Unified System', fields: ['eyebrow','title','lead','touchpointLabel','physicalLabel','digitalLabel','matrixRowsJson'] },
       { id: 'visualSystem', label: '10 · Visual System', fields: ['eyebrow','title','lead','colorTokensJson','iconsJson'] },
-      { id: 'motion', label: '11 · Motion', fields: ['eyebrow','title','lead'] },
+      { id: 'motion', label: '11 · Motion', fields: ['eyebrow','title','lead','scanTitle','scanDescription','scanTiming','messagePreview','messageTitle','messageDescription','messageTiming','returnedPreview','returnedTitle','returnedDescription','returnedTiming'] },
       { id: 'scope', label: '12 · Scope of Work', fields: ['eyebrow','title','lead'] },
       { id: 'outcome', label: '14 · Outcome', fields: ['eyebrow','title','lead'] },
     ] : [
