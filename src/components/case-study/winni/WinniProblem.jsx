@@ -1,7 +1,7 @@
 import React from 'react';
 import winniObjectFamilyImg from '../../../assets/images/winni-object-family.webp';
 
-export default function WinniProblem() {
+export default function WinniProblem({ content = {} }) {
   const objectCards = [
     {
       icon: 'bi-car-front',
@@ -25,13 +25,12 @@ export default function WinniProblem() {
       <div className="container">
         <div className="row align-items-start g-5">
           <div className="col-lg-6">
-            <span className="winni-section-num">02 · THE PROBLEM</span>
+            <span className="winni-section-num">{content.eyebrow || '02 · THE PROBLEM'}</span>
             <h2 className="winni-section-title">
-              When something gets lost, the object loses its connection to its owner.
+              {content.title || 'When something gets lost, the object loses its connection to its owner.'}
             </h2>
             <p className="winni-copy">
-              Most physical belongings have no practical way to identify their owner without exposing private
-              information.
+              {content.lead || 'Most physical belongings have no practical way to identify their owner without exposing private information.'}
             </p>
             <ul className="case-list mt-3 mb-4">
               <li>
@@ -46,7 +45,7 @@ export default function WinniProblem() {
               </li>
             </ul>
             <div className="winni-pullquote">
-              “What if every physical object could have a digital identity?”
+              {content.quote || '“What if every physical object could have a digital identity?”'}
             </div>
           </div>
           <div className="col-lg-6">
