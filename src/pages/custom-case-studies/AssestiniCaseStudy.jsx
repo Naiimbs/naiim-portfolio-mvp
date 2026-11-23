@@ -4,6 +4,7 @@ import MainLayout from '../../layouts/MainLayout';
 import SEO from '../../components/common/SEO';
 import { getCaseStudySchema } from '../../lib/schema';
 import CMSCustomSections from '../../components/case-study/CMSCustomSections';
+import { resolveCustomSectionContent } from '../../services/customCaseStudyContent';
 
 // Subcomponents
 import AssestiniHero from '../../components/case-study/assestini/AssestiniHero';
@@ -22,6 +23,7 @@ export default function AssestiniCaseStudy({ caseStudy = {}, cmsSections = [], p
   const localizedCaseStudy = caseStudy.translations?.[locale] || {};
   const displayTitle = localizedCaseStudy.title || caseStudy.title;
   const displaySubtitle = localizedCaseStudy.subtitle || caseStudy.subtitle;
+  const sectionContent = (key) => resolveCustomSectionContent(caseStudy, key, locale);
   const schema = getCaseStudySchema({
     title: displayTitle || 'Assestini — AI Operational Intelligence Platform',
     description: displaySubtitle || 'Assestini is an AI-powered operational platform for freelancers, experts, consultants and agencies. From estimation to payment in one connected workflow.',
@@ -43,22 +45,22 @@ export default function AssestiniCaseStudy({ caseStudy = {}, cmsSections = [], p
         <AssestiniHero title={displayTitle} subtitle={displaySubtitle} />
 
         {/* 02. The Challenge + Role aside */}
-        <AssestiniChallenge />
+        <AssestiniChallenge content={sectionContent('challenge')} />
 
         {/* 03. The Connected Workflow + SVG Diagram + Screenshots */}
         <AssestiniWorkflow />
 
         {/* 04. AI Estimation (Input → AI Processing → Structured Output) */}
-        <AssestiniEstimation />
+        <AssestiniEstimation content={sectionContent('estimation')} />
 
         {/* 05. Commercial Workflow (From Quotation to Delivery) */}
-        <AssestiniCommercial />
+        <AssestiniCommercial content={sectionContent('commercial')} />
 
         {/* 06. Operational Intelligence + Control Center + Product Thinking */}
         <AssestiniIntelligence />
 
         {/* 07. AI Agents & MCP Architecture */}
-        <AssestiniMcp />
+        <AssestiniMcp content={sectionContent('mcp')} />
 
         {/* 08. Product Building 5 Layers + Editorial Quote + Product Evidence */}
         <AssestiniBuilding />
