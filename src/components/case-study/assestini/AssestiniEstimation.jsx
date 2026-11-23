@@ -1,15 +1,18 @@
 import React from 'react';
+import { parseCaseStudyArray } from '../../../utils/caseStudyContent';
 
 export default function AssestiniEstimation({ content = {} }) {
-  const highlights = ['WBS Generation', 'Effort Calibration', 'Budget Mapping', 'TJM Estimation'];
+  const defaultHighlights = ['WBS Generation', 'Effort Calibration', 'Budget Mapping', 'TJM Estimation'];
 
-  const outputs = [
+  const defaultOutputs = [
     'Work Breakdown Structure',
     'Estimated effort per task',
     'Project delivery structure',
     'TJM budget calculation',
     '→ Ready for quotation',
   ];
+  const highlights = parseCaseStudyArray(content.highlightsJson, defaultHighlights);
+  const outputs = parseCaseStudyArray(content.outputsJson, defaultOutputs);
 
   return (
     <section className="case-section">
