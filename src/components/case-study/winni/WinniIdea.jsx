@@ -1,6 +1,20 @@
 import React from 'react';
+import { parseCaseStudyArray } from '../../../utils/caseStudyContent';
+
+const DEFAULT_JOURNEY_STEPS = ['SCAN', 'REACH', 'OPTIONAL LOCATION', 'NOTIFY', 'RETURN'];
+const DEFAULT_DIAGRAM_CARDS = [
+  { eyebrow: '01 · PHYSICAL', title: 'Physical Object', subtitle: 'Car, Moto, Luggage', detail: 'Lost in real-world context' },
+  { eyebrow: '02 · IDENTITY', title: 'WINNI Tag', subtitle: 'Durable QR / NFC', detail: 'Attached to object body' },
+  { eyebrow: '03 · FINDER', title: 'Finder Phone', subtitle: 'Zero app install', detail: 'Scans tag, reaches owner' },
+  { eyebrow: '04 · RECOVERY', title: 'Owner Notified', subtitle: 'Private & Instant', detail: 'Receives alert + returns' },
+];
 
 export default function WinniIdea({ content = {} }) {
+  const journeySteps = parseCaseStudyArray(content.journeyStepsJson, DEFAULT_JOURNEY_STEPS)
+    .filter((step) => typeof step === 'string');
+  const diagramCards = parseCaseStudyArray(content.diagramCardsJson, DEFAULT_DIAGRAM_CARDS)
+    .filter((card) => card && typeof card === 'object');
+  const diagramLabel = content.diagramAlt || 'Four touchpoints connecting a physical object, WINNI tag, finder phone and owner notification';
   return (
     <section className="winni-section alt-bg" id="idea">
       <div className="container">
@@ -14,23 +28,19 @@ export default function WinniIdea({ content = {} }) {
 
         <div className="row g-4 align-items-center mb-5">
           <div className="col-lg-5">
-            <h3 className="fs-4 fw-bold mb-3">The return is the story.</h3>
+            <h3 className="fs-4 fw-bold mb-3">{content.storyTitle || "The return is the story."}</h3>
             <p className="winni-copy">
-              Technology is not the narrative—the safe return of the belongings is the narrative. WINNI establishes a
-              direct, frictionless bridge between the physical world and a private cloud channel.
+              {content.storyBody || 'Technology is not the narrative—the safe return of the belongings is the narrative. WINNI establishes a direct, frictionless bridge between the physical world and a private cloud channel.'}
             </p>
             <div className="p-4 bg-white rounded-3 border mt-3">
-              <div className="small fw-bold text-uppercase text-muted mb-2 tracking-wide">Core Recovery Journey</div>
+              <div className="small fw-bold text-uppercase text-muted mb-2 tracking-wide">{content.journeyLabel || "Core Recovery Journey"}</div>
               <div className="d-flex flex-wrap align-items-center gap-2 fw-bold text-dark font-monospace small">
-                <span className="badge bg-dark text-white px-2 py-1">SCAN</span>
-                <i className="bi bi-arrow-right text-muted"></i>
-                <span className="badge bg-light text-dark border px-2 py-1">REACH</span>
-                <i className="bi bi-arrow-right text-muted"></i>
-                <span className="badge bg-light text-dark border px-2 py-1">OPTIONAL LOCATION</span>
-                <i className="bi bi-arrow-right text-muted"></i>
-                <span className="badge bg-light text-dark border px-2 py-1">NOTIFY</span>
-                <i className="bi bi-arrow-right text-muted"></i>
-                <span className="badge bg-success text-white px-2 py-1">RETURN</span>
+                {journeySteps.map((step, idx) => (
+                  <React.Fragment key={idx}>
+                    <span className={`badge ${idx === journeySteps.length - 1 ? 'bg-success text-white' : idx === 0 ? 'bg-dark text-white' : 'bg-light text-dark border'} px-2 py-1`}>{step}</span>
+                    {idx < journeySteps.length - 1 && <i className="bi bi-arrow-right text-muted"></i>}
+                  </React.Fragment>
+                ))}
               </div>
             </div>
           </div>
@@ -61,7 +71,7 @@ export default function WinniIdea({ content = {} }) {
                     fill="#087f66"
                     letterSpacing="0.08em"
                   >
-                    01 · PHYSICAL
+                    {diagramCards[0]?.eyebrow || '01 · PHYSICAL'}
                   </text>
                   <path
                     d="M 24 64 L 32 50 L 52 50 L 58 64 Z M 22 64 L 60 64 L 62 76 L 20 76 Z"
@@ -81,13 +91,13 @@ export default function WinniIdea({ content = {} }) {
                     fontWeight="700"
                     fill="#111418"
                   >
-                    Physical Object
+                    {diagramCards[0]?.title || 'Physical Object'}
                   </text>
                   <text x="76" y="80" fontFamily="'DM Sans', sans-serif" fontSize="12" fill="#718187">
-                    Car, Moto, Luggage
+                    {diagramCards[0]?.subtitle || 'Car, Moto, Luggage'}
                   </text>
                   <text x="24" y="112" fontFamily="'DM Sans', sans-serif" fontSize="12" fill="#718187">
-                    Lost in real-world context
+                    {diagramCards[0]?.detail || 'Lost in real-world context'}
                   </text>
                 </g>
 
@@ -125,7 +135,7 @@ export default function WinniIdea({ content = {} }) {
                     fill="#65d6b4"
                     letterSpacing="0.08em"
                   >
-                    02 · IDENTITY
+                    {diagramCards[1]?.eyebrow || '02 · IDENTITY'}
                   </text>
                   <rect
                     x="24"
@@ -151,13 +161,13 @@ export default function WinniIdea({ content = {} }) {
                     fontWeight="700"
                     fill="#ffffff"
                   >
-                    WINNI Tag
+                    {diagramCards[1]?.title || 'WINNI Tag'}
                   </text>
                   <text x="64" y="80" fontFamily="'DM Sans', sans-serif" fontSize="12" fill="#b8c0c4">
-                    Durable QR / NFC
+                    {diagramCards[1]?.subtitle || 'Durable QR / NFC'}
                   </text>
                   <text x="24" y="112" fontFamily="'DM Sans', sans-serif" fontSize="12" fill="#b8c0c4">
-                    Attached to object body
+                    {diagramCards[1]?.detail || 'Attached to object body'}
                   </text>
                 </g>
 
@@ -195,7 +205,7 @@ export default function WinniIdea({ content = {} }) {
                     fill="#087f66"
                     letterSpacing="0.08em"
                   >
-                    03 · FINDER
+                    {diagramCards[2]?.eyebrow || '03 · FINDER'}
                   </text>
                   <rect
                     x="24"
@@ -227,13 +237,13 @@ export default function WinniIdea({ content = {} }) {
                     fontWeight="700"
                     fill="#111418"
                   >
-                    Finder Phone
+                    {diagramCards[2]?.title || 'Finder Phone'}
                   </text>
                   <text x="56" y="80" fontFamily="'DM Sans', sans-serif" fontSize="12" fill="#718187">
-                    Zero app install
+                    {diagramCards[2]?.subtitle || 'Zero app install'}
                   </text>
                   <text x="24" y="112" fontFamily="'DM Sans', sans-serif" fontSize="12" fill="#718187">
-                    Scans tag, reaches owner
+                    {diagramCards[2]?.detail || 'Scans tag, reaches owner'}
                   </text>
                 </g>
 
@@ -271,7 +281,7 @@ export default function WinniIdea({ content = {} }) {
                     fill="#087f66"
                     letterSpacing="0.08em"
                   >
-                    04 · RECOVERY
+                    {diagramCards[3]?.eyebrow || '04 · RECOVERY'}
                   </text>
                   <path
                     d="M 24 53 L 36 49 L 48 53 C 48 68 36 78 36 78 C 36 78 24 68 24 53 Z"
@@ -297,13 +307,13 @@ export default function WinniIdea({ content = {} }) {
                     fontWeight="700"
                     fill="#111418"
                   >
-                    Owner Notified
+                    {diagramCards[3]?.title || 'Owner Notified'}
                   </text>
                   <text x="60" y="80" fontFamily="'DM Sans', sans-serif" fontSize="12" fill="#718187">
-                    Private &amp; Instant
+                    {diagramCards[3]?.subtitle || 'Private & Instant'}
                   </text>
                   <text x="24" y="112" fontFamily="'DM Sans', sans-serif" fontSize="12" fill="#718187">
-                    Receives alert + returns
+                    {diagramCards[3]?.detail || 'Receives alert + returns'}
                   </text>
                 </g>
 
