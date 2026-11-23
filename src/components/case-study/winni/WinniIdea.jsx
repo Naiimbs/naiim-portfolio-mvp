@@ -1,15 +1,14 @@
 import React from 'react';
 
-export default function WinniIdea() {
+export default function WinniIdea({ content = {} }) {
   return (
     <section className="winni-section alt-bg" id="idea">
       <div className="container">
         <div className="winni-section-header">
-          <span className="winni-section-num">03 · THE IDEA</span>
-          <h2 className="winni-section-title">Give your things a way back.</h2>
+          <span className="winni-section-num">{content.eyebrow || '03 · THE IDEA'}</span>
+          <h2 className="winni-section-title">{content.title || 'Give your things a way back.'}</h2>
           <p className="winni-copy-lg">
-            WINNI connects a physical object to a private digital identity. A finder doesn't need to download an
-            application or create an account. They simply scan the WINNI tag.
+            {content.lead || "WINNI connects a physical object to a private digital identity. A finder doesn't need to download an application or create an account. They simply scan the WINNI tag."}
           </p>
         </div>
 
