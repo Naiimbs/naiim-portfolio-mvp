@@ -73,7 +73,7 @@ assert.equal(shouldSkipCaseStudyMigration({ version: 2 }), true);
 assert.equal(shouldSkipCaseStudyMigration({ version: 2 }, true), false);
 assert.equal(shouldSkipCaseStudyMigration({ version: 0 }), false);
 
-assert.deepEqual(parseCaseStudyArray('[{"title":"A"}]', [{ title: 'A' }]);
+assert.deepEqual(parseCaseStudyArray('[{"title":"A"}]', []), [{ title: 'A' }]);
 assert.deepEqual(parseCaseStudyArray('not valid JSON', [{ title: 'fallback' }]), [{ title: 'fallback' }]);
 assert.deepEqual(parseCaseStudyArray('{"not":"an array"}', ['fallback']), ['fallback']);
 assert.deepEqual(parseCaseStudyArray([{ title: 'direct' }], []), [{ title: 'direct' }]);
