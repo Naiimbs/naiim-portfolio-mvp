@@ -2,6 +2,7 @@ import React from 'react';
 import MainLayout from '../../layouts/MainLayout';
 import SEO from '../../components/common/SEO';
 import { getCaseStudySchema } from '../../lib/schema';
+import CMSCustomSections from '../../components/case-study/CMSCustomSections';
 
 // Subcomponents
 import AssestiniHero from '../../components/case-study/assestini/AssestiniHero';
@@ -14,19 +15,18 @@ import AssestiniMcp from '../../components/case-study/assestini/AssestiniMcp';
 import AssestiniBuilding from '../../components/case-study/assestini/AssestiniBuilding';
 import AssestiniTechCta from '../../components/case-study/assestini/AssestiniTechCta';
 
-export default function AssestiniCaseStudy() {
+export default function AssestiniCaseStudy({ caseStudy = {}, cmsSections = [] }) {
   const schema = getCaseStudySchema({
-    title: 'Assestini — AI Operational Intelligence Platform',
-    description:
-      'Assestini is an AI-powered operational platform for freelancers, experts, consultants and agencies. From estimation to payment in one connected workflow.',
+    title: caseStudy.title || 'Assestini — AI Operational Intelligence Platform',
+    description: caseStudy.subtitle || 'Assestini is an AI-powered operational platform for freelancers, experts, consultants and agencies. From estimation to payment in one connected workflow.',
     slug: 'assestini',
   });
 
   return (
     <MainLayout>
       <SEO
-        title="Assestini — Case Study · Naïm Bsili"
-        description="Assestini — AI-powered Operational Intelligence Platform. Product design case study by Naïm Bsili. From estimation to payment in one connected workflow."
+        title={(caseStudy.title || 'Assestini') + ' — Case Study · Naïm Bsili'}
+        description={caseStudy.subtitle || 'Assestini — AI-powered Operational Intelligence Platform. Product design case study by Naïm Bsili. From estimation to payment in one connected workflow.'}
         canonical="/work/assestini/"
         schema={schema}
       />
@@ -58,6 +58,7 @@ export default function AssestiniCaseStudy() {
 
         {/* 09. Technology & Tools + Bottom Case Navigation */}
         <AssestiniTechCta />
+        <CMSCustomSections sections={cmsSections} />
       </main>
     </MainLayout>
   );
