@@ -1,7 +1,13 @@
 import React from 'react';
 import { parseCaseStudyArray } from '../../../utils/caseStudyContent';
 
-const DEFAULT_JOURNEY_STEPS = ['SCAN', 'REACH', 'OPTIONAL LOCATION', 'NOTIFY', 'RETURN'];
+const DEFAULT_JOURNEY_STEPS = [
+  { label: 'SCAN', detail: 'No account' },
+  { label: 'REACH', detail: 'Private msg' },
+  { label: 'LOCATION', detail: '100% Optional' },
+  { label: 'NOTIFY', detail: 'Owner alert' },
+  { label: 'RETURN', detail: 'Solved' },
+];
 const DEFAULT_DIAGRAM_CARDS = [
   { eyebrow: '01 · PHYSICAL', title: 'Physical Object', subtitle: 'Car, Moto, Luggage', detail: 'Lost in real-world context' },
   { eyebrow: '02 · IDENTITY', title: 'WINNI Tag', subtitle: 'Durable QR / NFC', detail: 'Attached to object body' },
@@ -11,7 +17,10 @@ const DEFAULT_DIAGRAM_CARDS = [
 
 export default function WinniIdea({ content = {} }) {
   const journeySteps = parseCaseStudyArray(content.journeyStepsJson, DEFAULT_JOURNEY_STEPS)
-    .filter((step) => typeof step === 'string');
+    .filter((step) => typeof step === 'string' || (step && typeof step === 'object'))
+    .map((step, idx) => typeof step === 'string'
+      ? { label: step, detail: DEFAULT_JOURNEY_STEPS[idx]?.detail || '' }
+      : step);
   const diagramCards = parseCaseStudyArray(content.diagramCardsJson, DEFAULT_DIAGRAM_CARDS)
     .filter((card) => card && typeof card === 'object');
   const diagramLabel = content.diagramAlt || 'Four touchpoints connecting a physical object, WINNI tag, finder phone and owner notification';
@@ -37,7 +46,7 @@ export default function WinniIdea({ content = {} }) {
               <div className="d-flex flex-wrap align-items-center gap-2 fw-bold text-dark font-monospace small">
                 {journeySteps.map((step, idx) => (
                   <React.Fragment key={idx}>
-                    <span className={`badge ${idx === journeySteps.length - 1 ? 'bg-success text-white' : idx === 0 ? 'bg-dark text-white' : 'bg-light text-dark border'} px-2 py-1`}>{step}</span>
+                    <span className={`badge ${idx === journeySteps.length - 1 ? 'bg-success text-white' : idx === 0 ? 'bg-dark text-white' : 'bg-light text-dark border'} px-2 py-1`}>{step.label || ''}</span>
                     {idx < journeySteps.length - 1 && <i className="bi bi-arrow-right text-muted"></i>}
                   </React.Fragment>
                 ))}
@@ -338,7 +347,7 @@ export default function WinniIdea({ content = {} }) {
                   fill="#718187"
                   letterSpacing="0.12em"
                 >
-                  CORE RECOVERY JOURNEY
+                  {content.journeyLabel || 'CORE RECOVERY JOURNEY'}
                 </text>
 
                 {/* Step 1: SCAN */}
@@ -356,10 +365,10 @@ export default function WinniIdea({ content = {} }) {
                     fill="#24353a"
                     letterSpacing="0.05em"
                   >
-                    SCAN
+                    {journeySteps[0]?.label || 'SCAN'}
                   </text>
                   <text x="96" y="29" fontFamily="'DM Sans', sans-serif" fontSize="11" fill="#718187">
-                    No account
+                    {journeySteps[0]?.detail || 'No account'}
                   </text>
                 </g>
 
@@ -384,10 +393,10 @@ export default function WinniIdea({ content = {} }) {
                     fill="#24353a"
                     letterSpacing="0.05em"
                   >
-                    REACH
+                    {journeySteps[1]?.label || 'REACH'}
                   </text>
                   <text x="100" y="29" fontFamily="'DM Sans', sans-serif" fontSize="11" fill="#718187">
-                    Private msg
+                    {journeySteps[1]?.detail || 'Private msg'}
                   </text>
                 </g>
 
@@ -412,10 +421,10 @@ export default function WinniIdea({ content = {} }) {
                     fill="#24353a"
                     letterSpacing="0.05em"
                   >
-                    LOCATION
+                    {journeySteps[2]?.label || 'LOCATION'}
                   </text>
                   <text x="122" y="29" fontFamily="'DM Sans', sans-serif" fontSize="11" fill="#718187">
-                    100% Optional
+                    {journeySteps[2]?.detail || '100% Optional'}
                   </text>
                 </g>
 
@@ -440,10 +449,10 @@ export default function WinniIdea({ content = {} }) {
                     fill="#24353a"
                     letterSpacing="0.05em"
                   >
-                    NOTIFY
+                    {journeySteps[3]?.label || 'NOTIFY'}
                   </text>
                   <text x="106" y="29" fontFamily="'DM Sans', sans-serif" fontSize="11" fill="#718187">
-                    Owner alert
+                    {journeySteps[3]?.detail || 'Owner alert'}
                   </text>
                 </g>
 
@@ -468,10 +477,10 @@ export default function WinniIdea({ content = {} }) {
                     fill="#075b4b"
                     letterSpacing="0.05em"
                   >
-                    RETURN
+                    {journeySteps[4]?.label || 'RETURN'}
                   </text>
                   <text x="110" y="29" fontFamily="'DM Sans', sans-serif" fontSize="11" fill="#087f66">
-                    Solved
+                    {journeySteps[4]?.detail || 'Solved'}
                   </text>
                 </g>
               </svg>
