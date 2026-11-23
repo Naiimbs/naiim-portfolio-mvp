@@ -1,15 +1,14 @@
 import React from 'react';
 
-export default function WinniMotion() {
+export default function WinniMotion({ content = {} }) {
   return (
     <section className="winni-section alt-bg" id="motion">
       <div className="container">
         <div className="winni-section-header">
-          <span className="winni-section-num">11 · MOTION</span>
-          <h2 className="winni-section-title">Motion should reassure, not entertain.</h2>
+          <span className="winni-section-num">{content.eyebrow || '11 · MOTION'}</span>
+          <h2 className="winni-section-title">{content.title || 'Motion should reassure, not entertain.'}</h2>
           <p className="winni-copy-lg">
-            Motion is intentionally restrained because the product needs to communicate confidence and continuity
-            rather than entertainment.
+            {content.lead || 'Motion is intentionally restrained because the product needs to communicate confidence and continuity rather than entertainment.'}
           </p>
         </div>
 
