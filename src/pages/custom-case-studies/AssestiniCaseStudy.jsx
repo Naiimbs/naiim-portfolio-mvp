@@ -48,7 +48,7 @@ export default function AssestiniCaseStudy({ caseStudy = {}, cmsSections = [], p
         <AssestiniChallenge content={sectionContent('challenge')} />
 
         {/* 03. The Connected Workflow + SVG Diagram + Screenshots */}
-        <AssestiniWorkflow />
+        <AssestiniWorkflow content={sectionContent('workflow')} />
 
         {/* 04. AI Estimation (Input → AI Processing → Structured Output) */}
         <AssestiniEstimation content={sectionContent('estimation')} />
@@ -57,13 +57,13 @@ export default function AssestiniCaseStudy({ caseStudy = {}, cmsSections = [], p
         <AssestiniCommercial content={sectionContent('commercial')} />
 
         {/* 06. Operational Intelligence + Control Center + Product Thinking */}
-        <AssestiniIntelligence />
+        <AssestiniIntelligence content={sectionContent('intelligence')} />
 
         {/* 07. AI Agents & MCP Architecture */}
         <AssestiniMcp content={sectionContent('mcp')} />
 
         {/* 08. Product Building 5 Layers + Editorial Quote + Product Evidence */}
-        <AssestiniBuilding />
+        <AssestiniBuilding content={sectionContent('building')} />
 
         {/* 09. Technology & Tools + Bottom Case Navigation */}
         <CMSCustomSections sections={cmsSections} />
