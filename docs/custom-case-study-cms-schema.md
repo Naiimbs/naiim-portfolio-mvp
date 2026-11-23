@@ -36,7 +36,9 @@ The WINNI and Assestini case studies retain their bespoke React components for i
       "layout": "text",
       "is_visible": true,
       "title": "Section title",
-      "body": "Paragraph one\n\nParagraph two",
+      "body": "Paragraph one
+
+Paragraph two",
       "translations": {
         "fr": { "title": "Titre", "body": "Texte" },
         "ar": { "title": "العنوان", "body": "النص" }
@@ -79,8 +81,9 @@ The WINNI and Assestini case studies retain their bespoke React components for i
 - Arabic sections render RTL.
 - Image sections use contained media so screenshots are not forcibly cropped.
 - Empty or hidden CMS sections are not rendered.
-- The existing bespoke components remain active; CMS editorial blocks are placed before the final CTA.\n- Selected native sections now accept CMS overrides for headings, eyebrow labels and primary copy, with FR/AR overrides. The editor currently exposes 12 WINNI sections (Idea, Problem, Product Challenge, Scan Experience, Privacy, Location, Physical Product, Unified System, Visual System, Motion, Scope and Outcome) and 7 Assestini sections (Challenge, Connected Workflow, AI Estimation, Commercial Workflow, Operational Intelligence, AI Agents/MCP and Product Building).
+- The existing bespoke components remain active; CMS editorial blocks are placed before the final CTA.
+- Selected native sections now accept CMS overrides for headings, eyebrow labels and primary copy, with FR/AR overrides. The editor currently exposes 12 WINNI sections (Idea, Problem, Product Challenge, Scan Experience, Privacy, Location, Physical Product, Unified System, Visual System, Motion, Scope and Outcome) and 7 Assestini sections (Challenge, Connected Workflow, AI Estimation, Commercial Workflow, Operational Intelligence, AI Agents/MCP and Product Building).
 
 ## Current limitation
 
-This is a partial component-level migration, not full end-to-end editability. The 19 native sections expose their eyebrow labels, main headings and primary introductory copy to the CMS. The WINNI Scan Experience screen labels and System Matrix rows/column labels are now editable as JSON arrays/fields. Assestini AI Estimation highlights/output items and Commercial Workflow steps are editable as JSON arrays. The Assestini Workflow screenshots can be replaced through the asset registry and their alt text edited. Other secondary paragraphs, remaining diagram node labels, detailed SVG diagram structure, image selection in other sections, native media captions, and interaction settings remain code-defined. Continue migrating those fields before describing either bespoke study as fully CMS-editable.
+This is a partial component-level migration, not full end-to-end editability. The 19 native sections expose their eyebrow labels, main headings and primary introductory copy to the CMS. The WINNI Scan Experience screen labels and System Matrix rows/column labels are editable as JSON arrays/fields. Assestini AI Estimation highlights/output items and Commercial Workflow steps are editable as JSON arrays. The Assestini Workflow screenshots can be replaced through the asset registry, with editable alt text. Other secondary paragraphs, remaining diagram node labels, detailed SVG diagram structure, image selection in other sections, native media captions, and interaction settings remain code-defined. Continue migrating those fields before describing either bespoke study as fully CMS-editable.
