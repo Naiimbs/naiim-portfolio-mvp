@@ -40,5 +40,8 @@ jobs:
       - name: Test case-study stages
         run: npm run test:case-study-stages
 
+      - name: Test localized custom case-study content
+        run: npm run test:custom-case-study-content
+
       - name: Build production bundle
         run: npm run build
