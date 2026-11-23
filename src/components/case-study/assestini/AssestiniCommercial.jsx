@@ -24,7 +24,7 @@ export default function AssestiniCommercial({ content = {} }) {
       desc: 'Project health, margin, time tracking and operational data connected back to the original commercial scope.',
     },
   ];
-  const steps = parseCaseStudyArray(content.stepsJson, defaultSteps);
+  const steps = parseCaseStudyArray(content.stepsJson, defaultSteps).filter((step) => step && typeof step === 'object');
 
   return (
     <section className="case-section alt">
