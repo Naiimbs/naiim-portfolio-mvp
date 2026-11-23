@@ -90,6 +90,36 @@ export default function CaseStudyContentEditor({
       commitCustom({ customSections: next });
     };
     const removeSection = (index) => commitCustom({ customSections: sections.filter((_, i) => i !== index) });
+    const updateNativeField = (sectionId, field, locale, value) => {
+      const next = clone(caseStudy);
+      if (locale === 'en') {
+        next.nativeSections = { ...(next.nativeSections || {}), [sectionId]: { ...(next.nativeSections?.[sectionId] || {}), [field]: value } };
+      } else {
+        next.translations = { ...(next.translations || {}), [locale]: {
+          ...(next.translations?.[locale] || {}),
+          nativeSections: { ...(next.translations?.[locale]?.nativeSections || {}), [sectionId]: {
+            ...(next.translations?.[locale]?.nativeSections?.[sectionId] || {}), [field]: value
+          }}
+        }};
+      }
+      commitCustom(next);
+    };
+    const nativeFieldGroups = slug === 'winni' ? [
+      { id: 'problem', label: '02 · The Problem', fields: ['eyebrow','title','lead','quote'] },
+      { id: 'challenge', label: '04 · Product Challenge', fields: ['eyebrow','title','lead','context'] },
+      { id: 'privacy', label: '06 · Privacy by Design', fields: ['eyebrow','title','lead','paragraph1','paragraph2'] },
+      { id: 'location', label: '07 · Location', fields: ['eyebrow','title','lead'] },
+    ] : [
+      { id: 'challenge', label: '01 · The Challenge', fields: ['eyebrow','title','lead','paragraph2'] },
+      { id: 'estimation', label: '03 · AI Estimation', fields: ['eyebrow','title','lead'] },
+      { id: 'commercial', label: '04 · Commercial Workflow', fields: ['eyebrow','title','lead'] },
+      { id: 'mcp', label: '06 · AI Agents & MCP', fields: ['eyebrow','title','lead','paragraph2'] },
+    ];
+    const nativeLocales = ['en','fr','ar'];
+    const nativeFieldValue = (sectionId, field, locale) => locale === 'en'
+      ? (caseStudy.nativeSections?.[sectionId]?.[field] || '')
+      : (caseStudy.translations?.[locale]?.nativeSections?.[sectionId]?.[field] || '');
+
 
     return (
       <div className="admin-card mb-4">
@@ -135,6 +165,36 @@ export default function CaseStudyContentEditor({
               </div>
             ))}
           </div>
+        </details>
+        <details className="mb-4 border rounded p-3">
+          <summary className="small fw-semibold text-success">Native section content · EN / FR / AR</summary>
+          <p className="text-muted small mt-2 mb-3">Edit the original section headings and copy while keeping its existing visual layout, diagrams and interactions.</p>
+          {nativeFieldGroups.map((group) => (
+            <details className="border rounded p-3 mb-3" key={group.id}>
+              <summary className="small fw-bold">{group.label}</summary>
+              <div className="row g-3 mt-1">
+                {nativeLocales.map((locale) => (
+                  <div className="col-lg-4" key={locale}>
+                    <div className="small fw-bold text-uppercase mb-2">{locale}</div>
+                    {group.fields.map((field) => (
+                      <div className="mb-2" key={field}>
+                        <label className="form-label small text-muted mb-1">{field}</label>
+                        {['lead','paragraph1','paragraph2','context'].includes(field) ? (
+                          <textarea className="form-control form-control-sm" rows="3"
+                            value={nativeFieldValue(group.id, field, locale)} disabled={disabled}
+                            onChange={(e) => updateNativeField(group.id, field, locale, e.target.value)} />
+                        ) : (
+                          <input className="form-control form-control-sm"
+                            value={nativeFieldValue(group.id, field, locale)} disabled={disabled}
+                            onChange={(e) => updateNativeField(group.id, field, locale, e.target.value)} />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </details>
+          ))}
         </details>
         <div className="d-flex justify-content-between align-items-center mb-3">
           <div><strong className="small">Editable sections</strong><div className="text-muted" style={{fontSize:'0.72rem'}}>Add, reorder, hide and localize text or image sections.</div></div>
