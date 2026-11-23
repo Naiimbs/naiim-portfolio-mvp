@@ -112,8 +112,8 @@ export function validateCaseStudyContent(caseStudy) {
     };
   }
 
-  if (caseStudy.version !== 1) {
-    errors.push(`Invalid or missing case study version: ${caseStudy.version} (expected 1).`);
+  if (![1, 2].includes(caseStudy.version)) {
+    errors.push(`Invalid or missing case study version: ${caseStudy.version} (expected 1 or 2).`);
   }
 
   if (caseStudy.type !== 'standard' && caseStudy.type !== 'custom') {
@@ -189,6 +189,8 @@ export function normalizeCaseStudyContent(caseStudy, slug = '') {
       title: caseStudy.title || '',
       subtitle: caseStudy.subtitle || '',
       customComponent: caseStudy.customComponent || null,
+      customSections: Array.isArray(caseStudy.customSections) ? caseStudy.customSections : [],
+      translations: caseStudy.translations && typeof caseStudy.translations === 'object' ? caseStudy.translations : {},
       version: caseStudy.version || 1,
     };
   }
