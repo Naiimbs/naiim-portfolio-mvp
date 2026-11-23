@@ -20,7 +20,7 @@ import WinniScope from '../../components/case-study/winni/WinniScope';
 import WinniOutcome from '../../components/case-study/winni/WinniOutcome';
 import WinniCTA from '../../components/case-study/winni/WinniCTA';
 
-export default function WinniCaseStudy({ caseStudy = {}, cmsSections = [] }) {
+export default function WinniCaseStudy({ caseStudy = {}, cmsSections = [], previewInfo = null }) {
   const schema = getCaseStudySchema({
     title: caseStudy.title || 'WINNI — Physical + Digital Identity System',
     description: caseStudy.subtitle || 'WINNI is a physical + digital identity system that helps people reconnect with lost belongings through a simple QR/NFC interaction. Product design case study by Naïm Bsili.',
@@ -36,6 +36,7 @@ export default function WinniCaseStudy({ caseStudy = {}, cmsSections = [] }) {
         schema={schema}
       />
 
+      {previewInfo && <div className="preview-mode-banner preview-mode-banner-safe bg-warning text-dark text-center py-2 px-3 fw-semibold small shadow-sm" role="status">SAVED CMS PREVIEW — {previewInfo.title} ({previewInfo.status}/{previewInfo.visibility})</div>}
       <main className="winni-page">
         {/* 01. Hero */}
         <WinniHero />
