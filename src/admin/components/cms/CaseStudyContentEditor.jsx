@@ -109,11 +109,22 @@ export default function CaseStudyContentEditor({
       { id: 'challenge', label: '04 · Product Challenge', fields: ['eyebrow','title','lead','context'] },
       { id: 'privacy', label: '06 · Privacy by Design', fields: ['eyebrow','title','lead','paragraph1','paragraph2'] },
       { id: 'location', label: '07 · Location', fields: ['eyebrow','title','lead'] },
+      { id: 'idea', label: '03 · The Idea', fields: ['eyebrow','title','lead'] },
+      { id: 'scanExperience', label: '05 · Scan Experience', fields: ['eyebrow','title','lead'] },
+      { id: 'physicalProduct', label: '08 · Physical Product', fields: ['eyebrow','title','lead'] },
+      { id: 'systemMatrix', label: '09 · Unified System', fields: ['eyebrow','title','lead'] },
+      { id: 'visualSystem', label: '10 · Visual System', fields: ['eyebrow','title','lead'] },
+      { id: 'motion', label: '11 · Motion', fields: ['eyebrow','title','lead'] },
+      { id: 'scope', label: '12 · Scope of Work', fields: ['eyebrow','title','lead'] },
+      { id: 'outcome', label: '14 · Outcome', fields: ['eyebrow','title','lead'] },
     ] : [
       { id: 'challenge', label: '01 · The Challenge', fields: ['eyebrow','title','lead','paragraph2'] },
       { id: 'estimation', label: '03 · AI Estimation', fields: ['eyebrow','title','lead'] },
       { id: 'commercial', label: '04 · Commercial Workflow', fields: ['eyebrow','title','lead'] },
       { id: 'mcp', label: '06 · AI Agents & MCP', fields: ['eyebrow','title','lead','paragraph2'] },
+      { id: 'workflow', label: '02 · Connected Workflow', fields: ['eyebrow','title','lead'] },
+      { id: 'intelligence', label: '05 · Operational Intelligence', fields: ['eyebrow','title','lead'] },
+      { id: 'building', label: '07 · Product Building', fields: ['eyebrow','title','lead'] },
     ];
     const nativeLocales = ['en','fr','ar'];
     const nativeFieldValue = (sectionId, field, locale) => locale === 'en'
