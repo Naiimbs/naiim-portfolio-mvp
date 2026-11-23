@@ -84,6 +84,11 @@ The WINNI and Assestini case studies retain their bespoke React components for i
 - The existing bespoke components remain active; CMS editorial blocks are placed before the final CTA.
 - Selected native sections now accept CMS overrides for headings, eyebrow labels and primary copy, with FR/AR overrides. The editor currently exposes 12 WINNI sections (Idea, Problem, Product Challenge, Scan Experience, Privacy, Location, Physical Product, Unified System, Visual System, Motion, Scope and Outcome) and 7 Assestini sections (Challenge, Connected Workflow, AI Estimation, Commercial Workflow, Operational Intelligence, AI Agents/MCP and Product Building).
 
+## Automated contract validation
+
+- `npm run test:native-case-study-cms` checks the 12 WINNI and 7 Assestini editor section groups, declared native fields, page-to-section content wiring, and EN / FR / AR storage/resolution paths.
+- This is a static contract test. It does not replace browser-based visual QA or authenticated CMS save/preview verification.
+
 ## Current limitation
 
 This is a partial component-level migration, not full end-to-end editability. Native section order and visibility are managed independently from the custom editorial blocks.
