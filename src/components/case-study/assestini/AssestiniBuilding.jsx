@@ -1,7 +1,7 @@
 import React from 'react';
 import decisionAgentImg from '../../../assets/images/décision-assistace-agent.webp';
 
-export default function AssestiniBuilding() {
+export default function AssestiniBuilding({ content = {} }) {
   const layers = [
     {
       label: 'PRODUCT',
@@ -44,13 +44,11 @@ export default function AssestiniBuilding() {
       <section className="case-section alt">
         <div className="container">
           <div className="eyebrow">
-            <span></span> 07 · PRODUCT BUILDING
+            <span></span> {content.eyebrow || '07 · PRODUCT BUILDING'}
           </div>
-          <h2>Beyond the interface.</h2>
+          <h2>{content.title || 'Beyond the interface.'}</h2>
           <p className="case-copy mb-5">
-            Assestini reflects how I work as a product designer and builder. I move between product strategy, UX, AI
-            architecture and implementation — designing not only what the user sees, but also the workflows and systems
-            behind the experience.
+            {content.lead || 'Assestini reflects how I work as a product designer and builder. I move between product strategy, UX, AI architecture and implementation — designing not only what the user sees, but also the workflows and systems behind the experience.'}
           </p>
 
           <div className="layer-stack">
