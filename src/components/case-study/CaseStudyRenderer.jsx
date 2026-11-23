@@ -271,7 +271,7 @@ function PreviewAccessDenied() {
   );
 }
 
-*
+/**
  * CaseStudyRenderer.jsx
  *
  * Phase 13.1 — Registry-authoritative renderer.
