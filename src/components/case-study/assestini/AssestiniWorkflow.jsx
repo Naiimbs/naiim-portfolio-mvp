@@ -381,7 +381,7 @@ export default function AssestiniWorkflow({ content = {} }) {
               <img
                 src={estimatorImage}
                 alt={content.estimatorImageAlt || 'Assestini home dashboard showing Vision Opérationnelle and project delivery pipeline'}
-                loading="lazy" decoding="async"
+                loading="lazy" decoding="async" decoding="async"
               />
             </figure>
           </div>
@@ -390,7 +390,7 @@ export default function AssestiniWorkflow({ content = {} }) {
               <img
                 src={wbsImage}
                 alt={content.wbsImageAlt || 'Assestini Business Control Center showing Business Health Score, delivery, finance and operations monitoring'}
-                loading="lazy"
+                loading="lazy" decoding="async"
               />
             </figure>
           </div>
