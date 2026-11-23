@@ -1,7 +1,8 @@
 import React from 'react';
+import { parseCaseStudyArray } from '../../../utils/caseStudyContent';
 
-export default function WinniSystemMatrix() {
-  const matrixRows = [
+export default function WinniSystemMatrix({ content = {} }) {
+  const defaultMatrixRows = [
     {
       num: '01 · Identification',
       physical: 'Durable vinyl sticker with matte black finish and high-contrast QR mark.',
@@ -33,16 +34,16 @@ export default function WinniSystemMatrix() {
       code: false,
     },
   ];
+  const matrixRows = parseCaseStudyArray(content.matrixRowsJson, defaultMatrixRows);
 
   return (
     <section className="winni-section alt-bg" id="system-touchpoints">
       <div className="container">
         <div className="winni-section-header">
-          <span className="winni-section-num">09 · UNIFIED SYSTEM</span>
-          <h2 className="winni-section-title">One identity. Multiple touchpoints.</h2>
+          <span className="winni-section-num">{content.eyebrow || '09 · UNIFIED SYSTEM'}</span>
+          <h2 className="winni-section-title">{content.title || 'One identity. Multiple touchpoints.'}</h2>
           <p className="winni-copy-lg">
-            A cohesive visual and logical architecture spanning physical stickers, mobile web browsers, and
-            administrative controls.
+            {content.lead || 'A cohesive visual and logical architecture spanning physical stickers, mobile web browsers, and administrative controls.'}
           </p>
         </div>
 
@@ -50,9 +51,9 @@ export default function WinniSystemMatrix() {
           <table className="winni-matrix-table">
             <thead>
               <tr>
-                <th style={{ width: '25%' }}>TOUCHPOINT</th>
-                <th style={{ width: '35%' }}>PHYSICAL ARTIFACT</th>
-                <th style={{ width: '40%' }}>DIGITAL LAYER</th>
+                <th style={{ width: '25%' }}>{content.touchpointLabel || 'TOUCHPOINT'}</th>
+                <th style={{ width: '35%' }}>{content.physicalLabel || 'PHYSICAL ARTIFACT'}</th>
+                <th style={{ width: '40%' }}>{content.digitalLabel || 'DIGITAL LAYER'}</th>
               </tr>
             </thead>
             <tbody>
@@ -62,15 +63,7 @@ export default function WinniSystemMatrix() {
                     <strong>{row.num}</strong>
                   </td>
                   <td>{row.physical}</td>
-                  <td>
-                    {row.code ? (
-                      <>
-                        Direct URL resolution to <code>/scan/:winniId</code> without app store redirects.
-                      </>
-                    ) : (
-                      row.digital
-                    )}
-                  </td>
+                  <td>{row.digital}</td>
                 </tr>
               ))}
             </tbody>

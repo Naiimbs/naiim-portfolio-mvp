@@ -45,93 +45,295 @@ export default function CaseStudyContentEditor({
     );
   }
 
-  // ── Custom Case Study Informational View ───────────────────────────────────
+  // ── Custom Case Study CMS Sections ─────────────────────────────────────────
   if (isCustom) {
     const customTitle = caseStudy.title || '';
     const customSubtitle = caseStudy.subtitle || '';
     const customComponent = caseStudy.customComponent || (slug === 'winni' ? 'WinniCaseStudy' : 'AssestiniCaseStudy');
+    const sections = Array.isArray(caseStudy.customSections) ? caseStudy.customSections : [];
+    const locales = ['en', 'fr', 'ar'];
 
-    const handleCustomChange = (field, value) => {
-      const updated = {
-        ...clone(caseStudy),
-        version: 1,
-        type: 'custom',
-        [field]: value,
-      };
-      onChange(updated);
+    const commitCustom = (next) => onChange({ ...clone(caseStudy), version: 2, type: 'custom', ...next });
+    const updateSection = (index, patch) => {
+      const next = [...sections];
+      next[index] = { ...next[index], ...patch };
+      commitCustom({ customSections: next });
     };
+    const updateTranslation = (index, locale, field, value) => {
+      const next = [...sections];
+      const section = { ...next[index] };
+      section.translations = { ...(section.translations || {}) };
+      section.translations[locale] = { ...(section.translations[locale] || {}), [field]: value };
+      next[index] = section;
+      commitCustom({ customSections: next });
+    };
+    const moveSection = (index, direction) => {
+      const target = index + direction;
+      if (target < 0 || target >= sections.length) return;
+      const next = [...sections];
+      [next[index], next[target]] = [next[target], next[index]];
+      commitCustom({ customSections: next });
+    };
+    const addSection = (type) => {
+      const next = [...sections, {
+        id: `custom-${Date.now()}`,
+        type,
+        is_visible: true,
+        layout: type === 'image' ? 'wide' : 'text',
+        title: '',
+        body: '',
+        image: '',
+        alt: '',
+        caption: '',
+        translations: {},
+      }];
+      commitCustom({ customSections: next });
+    };
+    const removeSection = (index) => commitCustom({ customSections: sections.filter((_, i) => i !== index) });
+    const updateNativeField = (sectionId, field, locale, value) => {
+      const next = clone(caseStudy);
+      if (locale === 'en') {
+        next.nativeSections = { ...(next.nativeSections || {}), [sectionId]: { ...(next.nativeSections?.[sectionId] || {}), [field]: value } };
+      } else {
+        next.translations = { ...(next.translations || {}), [locale]: {
+          ...(next.translations?.[locale] || {}),
+          nativeSections: { ...(next.translations?.[locale]?.nativeSections || {}), [sectionId]: {
+            ...(next.translations?.[locale]?.nativeSections?.[sectionId] || {}), [field]: value
+          }}
+        }};
+      }
+      commitCustom(next);
+    };
+    const nativeFieldGroups = slug === 'winni' ? [
+      { id: 'problem', label: '02 · The Problem', fields: ['eyebrow','title','lead','quote','bulletsJson','objectCardsJson','image','imageAlt'] },
+      { id: 'challenge', label: '04 · Product Challenge', fields: ['eyebrow','title','lead','context'] },
+      { id: 'privacy', label: '06 · Privacy by Design', fields: ['eyebrow','title','lead','paragraph1','paragraph2','finderTitle','finderDescription','finderBadge','proxyTitle','proxyDescription','proxyNote','ownerTitle','ownerDescription','ownerBadge'] },
+      { id: 'location', label: '07 · Location', fields: ['eyebrow','title','lead','rejectedTag','rejectedTitle','rejectedDescription','rejectedQuoteLabel','rejectedQuote','rejectedPointsJson','approvedTag','approvedTitle','approvedDescription','approvedQuoteLabel','approvedQuote','approvedPointsJson'] },
+      { id: 'idea', label: '03 · The Idea', fields: ['eyebrow','title','lead','storyTitle','storyBody','journeyLabel','journeyStepsJson','diagramCardsJson','diagramAlt'] },
+      { id: 'scanExperience', label: '05 · Scan Experience', fields: ['eyebrow','title','lead','screensJson'] },
+      { id: 'physicalProduct', label: '08 · Physical Product', fields: ['eyebrow','title','lead','productsJson','printStandardsLabel','printStandards','cutFormats'] },
+      { id: 'systemMatrix', label: '09 · Unified System', fields: ['eyebrow','title','lead','touchpointLabel','physicalLabel','digitalLabel','matrixRowsJson'] },
+      { id: 'visualSystem', label: '10 · Visual System', fields: ['eyebrow','title','lead','colorTokensJson','iconsJson'] },
+      { id: 'motion', label: '11 · Motion', fields: ['eyebrow','title','lead','scanTitle','scanDescription','scanTiming','messagePreview','messageTitle','messageDescription','messageTiming','returnedPreview','returnedTitle','returnedDescription','returnedTiming'] },
+      { id: 'scope', label: '12 · Scope of Work', fields: ['eyebrow','title','lead','rolesJson'] },
+      { id: 'outcome', label: '14 · Outcome', fields: ['eyebrow','title','lead','stepsJson','principleTitle','principleLead','principleBody','principleEmphasis','statusTitle','statusDescription'] },
+    ] : [
+      { id: 'challenge', label: '01 · The Challenge', fields: ['eyebrow','title','lead','paragraph2','workflowLabelsJson','roleLabel','roleValue','focusLabel','focusValue','technologyLabel','technologyValue','typeLabel','typeValue'] },
+      { id: 'estimation', label: '03 · AI Estimation', fields: ['eyebrow','title','lead','highlightsJson','outputsJson'] },
+      { id: 'commercial', label: '04 · Commercial Workflow', fields: ['eyebrow','title','lead','stepsJson'] },
+      { id: 'mcp', label: '06 · AI Agents & MCP', fields: ['eyebrow','title','lead','paragraph2','mcpNodesJson'] },
+      { id: 'workflow', label: '02 · Connected Workflow', fields: ['eyebrow','title','lead','workflowStepsJson','estimatorImage','estimatorImageAlt','wbsImage','wbsImageAlt'] },
+      { id: 'intelligence', label: '05 · Operational Intelligence', fields: ['eyebrow','title','lead','featureTagsJson','dashboardImage','dashboardImageAlt','detailCardsJson','principleEyebrow','principleTitle','principleLead','principleBody'] },
+      { id: 'building', label: '07 · Product Building', fields: ['eyebrow','title','lead','layersJson','principleEyebrow','principleTitle','principleLead','principleBody','principleBadgesJson','evidenceEyebrow','evidenceTitle','evidenceLead','closingImage','closingImageAlt'] },
+    ];
+    const defaultNativeOrder = slug === 'winni'
+      ? ['problem','idea','challenge','scanExperience','privacy','location','physicalProduct','systemMatrix','visualSystem','motion','scope','outcome']
+      : ['challenge','workflow','estimation','commercial','intelligence','mcp','building'];
+    const savedNativeOrder = Array.isArray(caseStudy.nativeSectionOrder) ? caseStudy.nativeSectionOrder : [];
+    const nativeSectionOrder = [
+      ...savedNativeOrder.filter((id) => defaultNativeOrder.includes(id)),
+      ...defaultNativeOrder.filter((id) => !savedNativeOrder.includes(id)),
+    ];
+    const moveNativeSection = (index, direction) => {
+      const target = index + direction;
+      if (target < 0 || target >= nativeSectionOrder.length) return;
+      const next = [...nativeSectionOrder];
+      [next[index], next[target]] = [next[target], next[index]];
+      commitCustom({ nativeSectionOrder: next });
+    };
+    const setNativeSectionVisibility = (sectionId, isVisible) => commitCustom({
+      nativeSectionVisibility: { ...(caseStudy.nativeSectionVisibility || {}), [sectionId]: isVisible },
+    });
+    const nativeLocales = ['en','fr','ar'];
+    const nativeFieldValue = (sectionId, field, locale) => locale === 'en'
+      ? (caseStudy.nativeSections?.[sectionId]?.[field] || '')
+      : (caseStudy.translations?.[locale]?.nativeSections?.[sectionId]?.[field] || '');
+
 
     return (
       <div className="admin-card mb-4">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h6
-            style={{
-              fontFamily: 'Space Grotesk, sans-serif',
-              fontSize: '0.75rem',
-              fontWeight: 700,
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-              color: '#087f66',
-              marginBottom: 0,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-            }}
-          >
-            <i className="bi bi-stars text-success" />
-            Case Study Content · Custom Bespoke
+        <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+          <h6 className="text-success text-uppercase fw-bold small mb-0">
+            <i className="bi bi-stars me-2" /> Custom Case Study · CMS Sections
           </h6>
-          <span className="badge bg-success-subtle text-success border border-success-subtle px-2 py-1" style={{ fontSize: '0.68rem' }}>
-            Version 1 · Custom
-          </span>
+          <span className="badge bg-success-subtle text-success border">Version 2 · Editable</span>
         </div>
-
-        {/* Informational Panel */}
-        <div className="p-3 rounded border mb-3" style={{ background: '#f0fdf4', borderColor: '#bbf7d0', fontSize: '0.8rem' }}>
-          <div className="d-flex align-items-start gap-2">
-            <i className="bi bi-info-circle-fill text-success flex-shrink-0 mt-1" />
-            <div>
-              <div className="fw-bold text-dark mb-1">Custom Flagship Case Study</div>
-              <div className="text-secondary mb-2" style={{ lineHeight: 1.5 }}>
-                This project uses a bespoke, interactive presentation component (<code>&lt;{customComponent} /&gt;</code>).
-                Its rich custom interactions and physical diagrams are self-contained.
+        <div className="alert alert-light border small">
+          <strong>{customComponent}</strong> keeps its bespoke diagrams and interactions. These CMS sections add editable content blocks without replacing the custom experience.
+        </div>
+        <div className="row g-3 mb-4">
+          <div className="col-md-6">
+            <label className="form-label small fw-semibold">Case Study Title</label>
+            <input className="form-control form-control-sm" value={customTitle} disabled={disabled}
+              onChange={(e) => commitCustom({ title: e.target.value })} />
+          </div>
+          <div className="col-md-6">
+            <label className="form-label small fw-semibold">Case Study Subtitle</label>
+            <input className="form-control form-control-sm" value={customSubtitle} disabled={disabled}
+              onChange={(e) => commitCustom({ subtitle: e.target.value })} />
+          </div>
+        </div>
+        <details className="mb-4">
+          <summary className="small fw-semibold text-success">Case study metadata translations · FR / AR</summary>
+          <div className="row g-3 mt-1">
+            {['fr','ar'].map((locale) => (
+              <div className="col-md-6" key={locale}>
+                <div className="small fw-bold text-uppercase mb-2">{locale}</div>
+                <label className="form-label small">Title</label>
+                <input className="form-control form-control-sm mb-2" value={caseStudy.translations?.[locale]?.title || ''} disabled={disabled}
+                  onChange={(e) => {
+                    const translations = { ...(caseStudy.translations || {}), [locale]: { ...(caseStudy.translations?.[locale] || {}), title: e.target.value } };
+                    commitCustom({ translations });
+                  }} />
+                <label className="form-label small">Subtitle / Description</label>
+                <textarea className="form-control form-control-sm" rows="2" value={caseStudy.translations?.[locale]?.subtitle || ''} disabled={disabled}
+                  onChange={(e) => {
+                    const translations = { ...(caseStudy.translations || {}), [locale]: { ...(caseStudy.translations?.[locale] || {}), subtitle: e.target.value } };
+                    commitCustom({ translations });
+                  }} />
               </div>
-              <ul className="mb-0 ps-3 text-secondary" style={{ fontSize: '0.74rem' }}>
-                <li><strong>Registry controls:</strong> Publication state, catalog metadata, SEO schema, and routing.</li>
-                <li><strong>Presentation:</strong> Preserved faithfully without interference from standard templates.</li>
-              </ul>
+            ))}
+          </div>
+        </details>
+        <div className="border rounded p-3 mb-3">
+          <div className="small fw-semibold mb-1">Native section order & visibility</div>
+          <p className="text-muted small mb-2">Reorder the original case-study sections or hide a section without removing its content.</p>
+          {nativeSectionOrder.map((sectionId, index) => {
+            const group = nativeFieldGroups.find((item) => item.id === sectionId);
+            const isVisible = caseStudy.nativeSectionVisibility?.[sectionId] !== false;
+            return (
+              <div className="d-flex align-items-center gap-2 border rounded px-2 py-2 mb-2" key={sectionId}>
+                <div className="d-flex flex-column gap-1">
+                  <button type="button" className="btn btn-sm btn-light py-0" aria-label={`Move ${group?.label || sectionId} up`}
+                    disabled={disabled || index === 0} onClick={() => moveNativeSection(index, -1)}>↑</button>
+                  <button type="button" className="btn btn-sm btn-light py-0" aria-label={`Move ${group?.label || sectionId} down`}
+                    disabled={disabled || index === nativeSectionOrder.length - 1} onClick={() => moveNativeSection(index, 1)}>↓</button>
+                </div>
+                <div className="flex-grow-1 small">{group?.label || sectionId}</div>
+                <label className="form-check form-switch mb-0">
+                  <input className="form-check-input" type="checkbox" checked={isVisible} disabled={disabled}
+                    onChange={(e) => setNativeSectionVisibility(sectionId, e.target.checked)} />
+                  <span className="form-check-label small">{isVisible ? 'Visible' : 'Hidden'}</span>
+                </label>
+              </div>
+            );
+          })}
+        </div>
+        <details className="mb-4 border rounded p-3">
+          <summary className="small fw-semibold text-success">Native section content · EN / FR / AR</summary>
+          <p className="text-muted small mt-2 mb-3">Edit the original section headings and copy while keeping its existing visual layout, diagrams and interactions.</p>
+          {nativeFieldGroups.map((group) => (
+            <details className="border rounded p-3 mb-3" key={group.id}>
+              <summary className="small fw-bold">{group.label}</summary>
+              <div className="row g-3 mt-1">
+                {nativeLocales.map((locale) => (
+                  <div className="col-lg-4" key={locale}>
+                    <div className="small fw-bold text-uppercase mb-2">{locale}</div>
+                    {group.fields.map((field) => (
+                      <div className="mb-2" key={field}>
+                        <label className="form-label small text-muted mb-1">{field}</label>
+                        {field.endsWith('Json') ? (
+                          <>
+                            <textarea className="form-control form-control-sm font-monospace" rows="7"
+                              value={nativeFieldValue(group.id, field, locale)} disabled={disabled}
+                              onChange={(e) => updateNativeField(group.id, field, locale, e.target.value)}
+                              placeholder={field === 'diagramCardsJson' ? '[{"eyebrow":"01 · PHYSICAL","title":"Physical Object","subtitle":"Car, Moto, Luggage","detail":"Lost in real-world context"},{"eyebrow":"02 · IDENTITY","title":"WINNI Tag","subtitle":"Durable QR / NFC","detail":"Attached to object body"},{"eyebrow":"03 · FINDER","title":"Finder Phone","subtitle":"Zero app install","detail":"Scans tag, reaches owner"},{"eyebrow":"04 · RECOVERY","title":"Owner Notified","subtitle":"Private & Instant","detail":"Receives alert + returns"}]' : field === 'journeyStepsJson' ? '[{"label":"SCAN","detail":"No account"},{"label":"REACH","detail":"Private msg"},{"label":"LOCATION","detail":"100% Optional"},{"label":"NOTIFY","detail":"Owner alert"},{"label":"RETURN","detail":"Solved"}]' : field === 'bulletsJson' ? '[{"title":"A phone number","text":"Why this creates friction"}]' : field === 'objectCardsJson' ? '[{"icon":"bi-car-front","title":"Car","desc":"Vehicle tag"}]' : field === 'rolesJson' ? '[{"step":"01 · STRATEGY","title":"Product Strategy","desc":"Editable scope detail"}]' : field === 'stepsJson' ? '[{"num":"01","title":"Physical product concept","desc":"Milestone detail"}]' : field === 'detailCardsJson' ? '[{"eyebrow":"DELIVERY TRACKING","title":"Project health","description":"Editable explanation","badges":["SPI","CPI"]}]' : field === 'screensJson' ? '[{"step":"01 — SCAN","label":"Recognized"}]' : field === 'matrixRowsJson' ? '[{"num":"01 · Identification","physical":"Physical detail","digital":"Digital detail"}]' : field === 'stepsJson' ? '[{"num":"01","title":"Step title","desc":"Step description"}]' : field === 'workflowStepsJson' ? '[{"num":"01","title":"Estimate","subtitle":"AI Estimator Pro","detail":"WBS · Effort · Budget"},{"num":"02","title":"Define","subtitle":"Scope & Structure","detail":"Deliverables · TJM"},{"num":"03","title":"Quote","subtitle":"Commercial Proposal","detail":"Tax · Terms · Price"},{"num":"04","title":"Launch","subtitle":"Project from Quote","detail":"Tasks · Milestones"},{"num":"05","title":"Deliver","subtitle":"Kanban · Gantt · Time","detail":"Progress · Health"},{"num":"06","title":"Monitor","subtitle":"Control Center","detail":"SPI · CPI · Margin"}]' : field === 'mcpNodesJson' ? '[{"icon":"bi-person","title":"User","sub":"Expert · Consultant · Agency","type":"default"}]' : field === 'colorTokensJson' ? '[{"name":"Graphite Black","hex":"#111418","role":"Text & Primary"}]' : field === 'iconsJson' ? '[{"name":"Car","icon":"bi-car-front","colorClass":"text-dark"}]' : field === 'layersJson' ? '[{"label":"PRODUCT","tags":["Vision","Strategy","Features"],"desc":"Layer description"}]' : field === 'principleBadgesJson' ? '["I can design the interface.","I can understand the workflow."]' : field === 'productsJson' ? '[{"badge":"PHOTO 03 · CAR","title":"Car Vehicle Tag","image":"/assets/images/winni-car-tag-detail-hero.webp","alt":"Car WINNI tag","desc":"Product description","specs":[{"icon":"bi-shield-check","text":"Waterproof vinyl"}]}]' : field === 'rejectedPointsJson' || field === 'approvedPointsJson' ? '["First point","Second point","Third point"]' : field === 'workflowLabelsJson' ? '["Estimate","Define","Quote","Launch","Deliver","Monitor"]' : '["First item","Second item"]'} />
+                            <div className="form-text">JSON array. Invalid JSON falls back to the built-in content until corrected.</div>
+                          </>
+                        ) : ['lead','paragraph1','paragraph2','context','principleLead','principleBody','statusDescription','storyBody'].includes(field) ? (
+                          <textarea className="form-control form-control-sm" rows="3"
+                            value={nativeFieldValue(group.id, field, locale)} disabled={disabled}
+                            onChange={(e) => updateNativeField(group.id, field, locale, e.target.value)} />
+                        ) : (
+                          <input className="form-control form-control-sm"
+                            value={nativeFieldValue(group.id, field, locale)} disabled={disabled}
+                            onChange={(e) => updateNativeField(group.id, field, locale, e.target.value)}
+                            placeholder={field.toLowerCase().includes('image') ? 'Asset registry path or image URL' : 'Leave empty to keep the built-in content'} />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </details>
+          ))}
+        </details>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <div><strong className="small">Editable sections</strong><div className="text-muted" style={{fontSize:'0.72rem'}}>Add, reorder, hide and localize text or image sections.</div></div>
+          <div className="d-flex gap-2">
+            <button type="button" className="btn btn-sm btn-outline-success" disabled={disabled} onClick={() => addSection('text')}><i className="bi bi-plus-lg me-1" /> Text</button>
+            <button type="button" className="btn btn-sm btn-outline-success" disabled={disabled} onClick={() => addSection('image')}><i className="bi bi-image me-1" /> Image</button>
+          </div>
+        </div>
+        {sections.length === 0 && <div className="text-muted small border rounded p-3">No custom CMS sections yet. The original bespoke case study remains unchanged.</div>}
+        {sections.map((section, index) => (
+          <div className="border rounded p-3 mb-3" key={section.id || index}>
+            <div className="d-flex justify-content-between align-items-center gap-2 mb-3">
+              <div className="d-flex align-items-center gap-2">
+                <span className="badge bg-dark">{String(index + 1).padStart(2, '0')}</span>
+                <strong className="small text-uppercase">{section.type || 'text'} section</strong>
+                {section.is_visible === false && <span className="badge bg-secondary">Hidden</span>}
+              </div>
+              <div className="d-flex gap-1">
+                <button type="button" className="btn btn-sm btn-light" title="Move up" disabled={disabled || index===0} onClick={() => moveSection(index,-1)}><i className="bi bi-chevron-up" /></button>
+                <button type="button" className="btn btn-sm btn-light" title="Move down" disabled={disabled || index===sections.length-1} onClick={() => moveSection(index,1)}><i className="bi bi-chevron-down" /></button>
+                <button type="button" className="btn btn-sm btn-light" title="Toggle visibility" disabled={disabled} onClick={() => updateSection(index,{is_visible:section.is_visible===false})}><i className={`bi bi-${section.is_visible===false?'eye-slash':'eye'}`} /></button>
+                <button type="button" className="btn btn-sm btn-outline-danger" title="Delete section" disabled={disabled} onClick={() => removeSection(index)}><i className="bi bi-trash" /></button>
+              </div>
             </div>
+            <div className="row g-2 mb-3">
+              <div className="col-md-4">
+                <label className="form-label small">Section type</label>
+                <select className="form-select form-select-sm" value={section.type || 'text'} disabled={disabled} onChange={(e) => updateSection(index,{type:e.target.value})}>
+                  <option value="text">Text</option><option value="image">Image</option>
+                </select>
+              </div>
+              <div className="col-md-4">
+                <label className="form-label small">Image layout</label>
+                <select className="form-select form-select-sm" value={section.layout || 'wide'} disabled={disabled || section.type!=='image'} onChange={(e) => updateSection(index,{layout:e.target.value})}>
+                  <option value="wide">Wide / contained</option><option value="feature">Feature</option><option value="split">Split</option>
+                </select>
+              </div>
+              <div className="col-md-4">
+                <label className="form-label small">Default language</label>
+                <span className="form-control form-control-sm bg-light">English (EN)</span>
+              </div>
+            </div>
+            <div className="row g-2">
+              <div className="col-md-6">
+                <label className="form-label small">Title · EN</label>
+                <input className="form-control form-control-sm" value={section.title || ''} disabled={disabled} onChange={(e)=>updateSection(index,{title:e.target.value})} />
+              </div>
+              <div className="col-md-6">
+                <label className="form-label small">Body · EN</label>
+                <textarea className="form-control form-control-sm" rows="3" value={section.body || ''} disabled={disabled} onChange={(e)=>updateSection(index,{body:e.target.value})} />
+              </div>
+              {section.type === 'image' && <>
+                <div className="col-12"><label className="form-label small">Image URL / Storage path</label><input className="form-control form-control-sm" value={section.image || ''} disabled={disabled} onChange={(e)=>updateSection(index,{image:e.target.value})} /></div>
+                <div className="col-md-6"><label className="form-label small">Alt text · EN</label><input className="form-control form-control-sm" value={section.alt || ''} disabled={disabled} onChange={(e)=>updateSection(index,{alt:e.target.value})} /></div>
+                <div className="col-md-6"><label className="form-label small">Caption · EN</label><input className="form-control form-control-sm" value={section.caption || ''} disabled={disabled} onChange={(e)=>updateSection(index,{caption:e.target.value})} /></div>
+              </>}
+            </div>
+            <details className="mt-3">
+              <summary className="small fw-semibold text-success">Translations · FR / AR</summary>
+              <div className="row g-3 mt-1">
+                {locales.filter((locale)=>locale!=='en').map((locale)=>(
+                  <div className="col-md-6" key={locale}>
+                    <div className="small fw-bold text-uppercase mb-2">{locale}</div>
+                    <label className="form-label small">Title</label>
+                    <input className="form-control form-control-sm mb-2" value={section.translations?.[locale]?.title || ''} disabled={disabled} onChange={(e)=>updateTranslation(index,locale,'title',e.target.value)} />
+                    <label className="form-label small">Body</label>
+                    <textarea className="form-control form-control-sm mb-2" rows="3" value={section.translations?.[locale]?.body || ''} disabled={disabled} onChange={(e)=>updateTranslation(index,locale,'body',e.target.value)} />
+                    {section.type === 'image' && <>
+                      <label className="form-label small">Alt text</label><input className="form-control form-control-sm mb-2" value={section.translations?.[locale]?.alt || ''} disabled={disabled} onChange={(e)=>updateTranslation(index,locale,'alt',e.target.value)} />
+                      <label className="form-label small">Caption</label><input className="form-control form-control-sm" value={section.translations?.[locale]?.caption || ''} disabled={disabled} onChange={(e)=>updateTranslation(index,locale,'caption',e.target.value)} />
+                    </>}
+                  </div>
+                ))}
+              </div>
+            </details>
           </div>
-        </div>
-
-        <div className="row g-3">
-          <div className="col-md-6">
-            <label className="form-label fw-semibold small text-dark mb-1" style={{ fontSize: '0.8rem' }}>
-              Case Study Title
-            </label>
-            <input
-              type="text"
-              className="form-control form-control-sm"
-              value={customTitle}
-              onChange={(e) => handleCustomChange('title', e.target.value)}
-              placeholder="e.g. WINNI"
-              disabled={disabled}
-            />
-          </div>
-          <div className="col-md-6">
-            <label className="form-label fw-semibold small text-dark mb-1" style={{ fontSize: '0.8rem' }}>
-              Case Study Subtitle
-            </label>
-            <input
-              type="text"
-              className="form-control form-control-sm"
-              value={customSubtitle}
-              onChange={(e) => handleCustomChange('subtitle', e.target.value)}
-              placeholder="e.g. Giving lost things a way back."
-              disabled={disabled}
-            />
-          </div>
-        </div>
+        ))}
       </div>
     );
   }
@@ -315,7 +517,7 @@ export default function CaseStudyContentEditor({
     const updated = clone(caseStudy);
     if (!updated.evidence) updated.evidence = {};
     const gallery = Array.isArray(updated.evidence.gallery) ? [...updated.evidence.gallery] : [];
-    gallery.push({ image: '', imageAlt: '', caption: '' });
+    gallery.push({ image: '', imageAlt: '', caption: '', is_visible: true });
     updated.evidence.gallery = gallery;
     onChange(updated);
   };
@@ -336,6 +538,16 @@ export default function CaseStudyContentEditor({
     if (!updated.evidence) updated.evidence = {};
     const gallery = Array.isArray(updated.evidence.gallery) ? [...updated.evidence.gallery] : [];
     gallery.splice(index, 1);
+    updated.evidence.gallery = gallery;
+    onChange(updated);
+  };
+
+  const handleToggleGalleryItemVisibility = (index) => {
+    const updated = clone(caseStudy);
+    if (!updated.evidence) updated.evidence = {};
+    const gallery = Array.isArray(updated.evidence.gallery) ? [...updated.evidence.gallery] : [];
+    if (!gallery[index]) return;
+    gallery[index] = { ...gallery[index], is_visible: gallery[index].is_visible === false };
     updated.evidence.gallery = gallery;
     onChange(updated);
   };
@@ -1432,12 +1644,25 @@ export default function CaseStudyContentEditor({
                 const itemNeedsAlt = Boolean(item.image?.trim() && !item.imageAlt?.trim());
 
                 return (
-                  <div key={gIdx} className="p-3 border rounded bg-white shadow-sm">
+                  <div key={gIdx} className={`p-3 border rounded bg-white shadow-sm ${item.is_visible === false ? 'opacity-50' : ''}`}>
                     <div className="d-flex justify-content-between align-items-center mb-2">
-                      <span className="badge bg-secondary-subtle text-secondary small" style={{ fontSize: '0.68rem' }}>
-                        Gallery Item #{gIdx + 1}
+                      <span className="d-flex align-items-center gap-2">
+                        <span className="badge bg-secondary-subtle text-secondary small" style={{ fontSize: '0.68rem' }}>
+                          Gallery Item #{gIdx + 1}
+                        </span>
+                        {item.is_visible === false && <span className="badge bg-warning-subtle text-warning-emphasis border" style={{ fontSize: '0.65rem' }}>Hidden from public</span>}
                       </span>
                       <div className="d-flex align-items-center gap-1">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-link text-muted p-0 me-1"
+                          disabled={disabled}
+                          onClick={() => handleToggleGalleryItemVisibility(gIdx)}
+                          title={item.is_visible === false ? 'Show image publicly' : 'Hide image publicly'}
+                          aria-label={item.is_visible === false ? 'Show image publicly' : 'Hide image publicly'}
+                        >
+                          <i className={`bi bi-${item.is_visible === false ? 'eye-slash' : 'eye'}`} />
+                        </button>
                         <button
                           type="button"
                           className="btn btn-sm btn-link text-dark p-0"

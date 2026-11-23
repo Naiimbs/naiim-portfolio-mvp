@@ -1,38 +1,15 @@
 import React from 'react';
+import { parseCaseStudyArray } from '../../../utils/caseStudyContent';
 
-export default function AssestiniMcp() {
-  const mcpNodes = [
-    {
-      icon: 'bi-person',
-      title: 'User',
-      sub: 'Expert · Consultant · Agency',
-      type: 'default',
-    },
-    {
-      icon: 'bi-stars',
-      title: 'AI Agent',
-      sub: 'Gemini-powered · Context-aware',
-      type: 'dark',
-    },
-    {
-      icon: null,
-      title: 'MCP Layer',
-      sub: 'Authorization · Plan Controls · Feature Gates',
-      type: 'default',
-    },
-    {
-      icon: 'bi-tools',
-      title: 'Authorized Tools',
-      sub: 'Read · Write · Trigger · Summarize',
-      type: 'default',
-    },
-    {
-      icon: 'bi-database',
-      title: 'Assestini Data & Workflows',
-      sub: 'Projects · Quotes · Time · Finance · Decisions',
-      type: 'accent',
-    },
+export default function AssestiniMcp({ content = {} }) {
+  const defaultMcpNodes = [
+    { icon: 'bi-person', title: 'User', sub: 'Expert · Consultant · Agency', type: 'default' },
+    { icon: 'bi-stars', title: 'AI Agent', sub: 'Gemini-powered · Context-aware', type: 'dark' },
+    { icon: null, title: 'MCP Layer', sub: 'Authorization · Plan Controls · Feature Gates', type: 'default' },
+    { icon: 'bi-tools', title: 'Authorized Tools', sub: 'Read · Write · Trigger · Summarize', type: 'default' },
+    { icon: 'bi-database', title: 'Assestini Data & Workflows', sub: 'Projects · Quotes · Time · Finance · Decisions', type: 'accent' },
   ];
+  const mcpNodes = parseCaseStudyArray(content.mcpNodesJson, defaultMcpNodes).filter((node) => node && typeof node === 'object');
 
   return (
     <section className="case-section">
@@ -40,18 +17,14 @@ export default function AssestiniMcp() {
         <div className="row g-5 align-items-center">
           <div className="col-lg-6">
             <div className="eyebrow">
-              <span></span> 06 · AI AGENTS &amp; MCP
+              <span></span> {content.eyebrow || '06 · AI AGENTS & MCP'}
             </div>
-            <h2>Making the product accessible to AI.</h2>
+            <h2>{content.title || 'Making the product accessible to AI.'}</h2>
             <p className="case-copy">
-              Assestini explores how AI can interact with the product itself — not just assist users within it. An MCP
-              (Model Context Protocol) layer provides controlled access to product capabilities and data, with
-              authorization and feature/plan controls.
+              {content.lead || 'Assestini explores how AI can interact with the product itself — not just assist users within it. An MCP (Model Context Protocol) layer provides controlled access to product capabilities and data, with authorization and feature/plan controls.'}
             </p>
             <p className="case-copy mt-3">
-              This creates a foundation for AI Agents to perform operational tasks: summarizing project health, flagging
-              financial risk, triggering billing workflows, and managing approvals — within a controlled, permissioned
-              environment.
+              {content.paragraph2 || 'This creates a foundation for AI Agents to perform operational tasks: summarizing project health, flagging financial risk, triggering billing workflows, and managing approvals — within a controlled, permissioned environment.'}
             </p>
             <ul className="case-list mt-3">
               <li>

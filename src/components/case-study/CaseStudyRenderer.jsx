@@ -8,9 +8,9 @@
  *
  * Flow:
  *   1. Public requests require published + public; `?preview=true` requires admin + the same Supabase RLS.
- *   2. Custom slugs render standalone components publicly; saved draft preview is unsupported for them.
+ *   2. Custom slugs retain bespoke components while reading editable sections from metadata.caseStudy.
  *   3. Standard slugs use metadata.caseStudy → normalizeRegistryEntry() → StandardCaseStudy for preview and public.
- *   4. Missing or unavailable data never falls back to local case-study content.
+ *   4. Both custom and standard case studies support authenticated saved previews; no local content fallback is used.
  */
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useSearchParams } from 'react-router-dom';
@@ -35,7 +35,6 @@ const GATE = {
   ERROR: 'error',              // Registry unreachable or unconfigured
   CONTENT_MISSING: 'content_missing', // Registry entry exists but metadata.caseStudy absent
   PREVIEW_DENIED: 'preview_denied', // Draft preview requires an authenticated admin session
-  PREVIEW_UNSUPPORTED: 'preview_unsupported', // Custom component is not driven by saved caseStudy metadata
 };
 
 export default function CaseStudyRenderer() {
@@ -47,6 +46,7 @@ export default function CaseStudyRenderer() {
 
   const [gate, setGate] = useState(GATE.PENDING);
   const [studyData, setStudyData] = useState(null);
+  const [customStudyData, setCustomStudyData] = useState(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -57,6 +57,7 @@ export default function CaseStudyRenderer() {
       if (isPreviewRequested && authLoading) return;
       setGate(GATE.PENDING);
       setStudyData(null);
+      setCustomStudyData(null);
 
       if (!isPreviewRequested && isHiddenPublicSlug(cleanSlug)) {
         setGate(GATE.BLOCKED);
@@ -103,27 +104,29 @@ export default function CaseStudyRenderer() {
         return;
       }
 
-      // Custom case studies render standalone React components, not metadata.caseStudy.
-      if (isPreviewRequested && (cleanSlug === 'winni' || cleanSlug === 'assestini')) {
-        setGate(GATE.PREVIEW_UNSUPPORTED);
-        return;
-      }
-
       // Public requests are already filtered to published + public by their query; preview requests are admin/RLS gated.
 
-      // ── Step 2: Custom flagship case studies ─────────────────────────────────
-      // Registry-authorised. Their content is self-contained React components.
-      // The Registry caseStudy metadata holds configuration only (title, subtitle,
-      // customComponent). No structural content is read from it here.
+      // ── Step 2: Normalize the authoritative Registry record ─────────────────
+      const normalizedEntry = normalizeRegistryEntry(registryRes.data);
+
+      // Bespoke case studies retain their React interactions while accepting
+      // CMS-authored editorial sections and saved admin previews.
       if (cleanSlug === 'winni' || cleanSlug === 'assestini') {
+        setCustomStudyData({
+          caseStudy: normalizedEntry?.caseStudy || {},
+          i18n: normalizedEntry?.i18n || {},
+          title: registryRes.data.title || cleanSlug,
+          previewInfo: isPreviewRequested ? {
+            title: registryRes.data.title || cleanSlug,
+            status: registryRes.data.status || 'unknown',
+            visibility: registryRes.data.visibility || 'unknown',
+          } : null,
+        });
         setGate(GATE.ALLOWED);
         return;
       }
 
-      // ── Step 3: Authoritative Registry content (standard case studies) ───────
-      // metadata.caseStudy is the ONLY content source, resolved via normalizeRegistryEntry.
-      // No fallback to local data or any secondary source.
-      const normalizedEntry = normalizeRegistryEntry(registryRes.data);
+      // ── Step 3: Standard case-study content from Registry metadata ──────────
       const studyContent = normalizedEntry?.caseStudy;
 
       if (!studyContent) {
@@ -180,18 +183,23 @@ export default function CaseStudyRenderer() {
   if (gate === GATE.PREVIEW_DENIED) {
     return <PreviewAccessDenied />;
   }
-  if (gate === GATE.PREVIEW_UNSUPPORTED) {
-    return <PreviewUnsupported />;
-  }
 
   // ── ALLOWED ──────────────────────────────────────────────────────────────────
 
   // Custom flagship case studies — Registry-authorised, presentation-only components
   if (cleanSlug === 'winni') {
-    return <WinniCaseStudy />;
+    return <WinniCaseStudy
+      caseStudy={customStudyData?.caseStudy || {}}
+      cmsSections={customStudyData?.caseStudy?.customSections || []}
+      previewInfo={customStudyData?.previewInfo || null}
+    />;
   }
   if (cleanSlug === 'assestini') {
-    return <AssestiniCaseStudy />;
+    return <AssestiniCaseStudy
+      caseStudy={customStudyData?.caseStudy || {}}
+      cmsSections={customStudyData?.caseStudy?.customSections || []}
+      previewInfo={customStudyData?.previewInfo || null}
+    />;
   }
 
   // Standard case study — data comes exclusively from Registry metadata.caseStudy
@@ -257,63 +265,6 @@ function PreviewAccessDenied() {
             Sign in with an authorized administrator account, then reopen the saved preview link. Draft content is not exposed on the public route.
           </p>
           <Link to="/admin/login" className="btn btn-primary-custom rounded-pill px-4 mt-3">Admin sign in</Link>
-        </div>
-      </section>
-    </MainLayout>
-  );
-}
-
-function PreviewUnsupported() {
-  return (
-    <MainLayout>
-      <SEO title="Preview unavailable — Case Study" description="This custom case study is not rendered from saved Standard Case Study fields." robots="noindex, nofollow" />
-      <section className="section-pad" style={{ minHeight: '60vh', display: 'flex', alignItems: 'center' }}>
-        <div className="container text-center">
-          <div className="eyebrow justify-content-center"><span></span> PREVIEW UNAVAILABLE</div>
-          <h2>This custom case study has no saved CMS body preview</h2>
-          <p className="hero-lead mx-auto" style={{ maxWidth: '540px' }}>
-            This entry renders through a standalone React component rather than <code>metadata.caseStudy</code>. The saved draft preview is currently supported for standard case studies only.
-          </p>
-          <Link to="/admin/registry" className="btn btn-primary-custom rounded-pill px-4 mt-3">Back to Content Registry</Link>
-        </div>
-      </section>
-    </MainLayout>
-  );
-}
-
-/**
- * RegistryContentMissingState — shown when the Registry entry is published
- * but metadata.caseStudy body content has not been populated.
- *
- * This is a data integrity / admin issue, not a user error.
- * The content must be migrated via the Admin Registry panel.
- * We must not fall back to local data.
- */
-function RegistryContentMissingState({ slug }) {
-  return (
-    <MainLayout>
-      <SEO
-        title="Content Unavailable — Case Study"
-        description="This case study content is not yet available."
-        robots="noindex, nofollow"
-      />
-      <section
-        className="section-pad"
-        style={{ minHeight: '60vh', display: 'flex', alignItems: 'center' }}
-      >
-        <div className="container text-center">
-          <div className="eyebrow justify-content-center">
-            <span></span> CONTENT UNAVAILABLE
-          </div>
-          <h2>Case Study Not Ready</h2>
-          <p className="hero-lead mx-auto" style={{ maxWidth: '540px' }}>
-            This case study is registered but its content has not been published yet.
-          </p>
-          <div className="d-flex gap-3 justify-content-center mt-3 flex-wrap">
-            <Link to="/work" className="btn btn-primary-custom rounded-pill px-4">
-              <i className="bi bi-arrow-left"></i> Back to Work
-            </Link>
-          </div>
         </div>
       </section>
     </MainLayout>

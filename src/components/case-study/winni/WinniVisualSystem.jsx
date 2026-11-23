@@ -1,15 +1,17 @@
 import React from 'react';
+import { parseCaseStudyArray } from '../../../utils/caseStudyContent';
 
-export default function WinniVisualSystem() {
-  const colorTokens = [
+export default function WinniVisualSystem({ content = {} }) {
+  const defaultColorTokens = [
     { name: 'Graphite Black', hex: '#111418', role: '#111418 · Text & Primary' },
     { name: 'Muted Slate', hex: '#45575e', role: '#45575E · Body Copy' },
     { name: 'Warm Neutral', hex: '#dfe5e1', role: '#DFE5E1 · Borders' },
     { name: 'Soft Paper', hex: '#f8f9f6', role: '#F8F9F6 · Background' },
     { name: 'Status Emerald', hex: '#087f66', role: '#087F66 · Active State' },
   ];
+  const colorTokens = parseCaseStudyArray(content.colorTokensJson, defaultColorTokens).filter((token) => token && typeof token === 'object');
 
-  const icons = [
+  const defaultIcons = [
     { name: 'Voiture', icon: 'bi-car-front', colorClass: 'text-dark' },
     { name: 'Moto', icon: 'bi-bicycle', colorClass: 'text-dark' },
     { name: 'Bagage', icon: 'bi-suitcase', colorClass: 'text-dark' },
@@ -17,16 +19,16 @@ export default function WinniVisualSystem() {
     { name: 'Privé', icon: 'bi-shield-check', colorClass: 'text-success' },
     { name: 'Lieu', icon: 'bi-geo-alt', colorClass: 'text-dark' },
   ];
+  const icons = parseCaseStudyArray(content.iconsJson, defaultIcons).filter((item) => item && typeof item === 'object');
 
   return (
     <section className="winni-section" id="visual-system">
       <div className="container">
         <div className="winni-section-header">
-          <span className="winni-section-num">10 · VISUAL SYSTEM</span>
-          <h2 className="winni-section-title">Quiet technology.</h2>
+          <span className="winni-section-num">{content.eyebrow || '10 · VISUAL SYSTEM'}</span>
+          <h2 className="winni-section-title">{content.title || 'Quiet technology.'}</h2>
           <p className="winni-copy-lg">
-            Designed around black, white, graphite, and warm neutrals. Functional color is introduced only when it
-            communicates a verified system state.
+            {content.lead || 'Designed around black, white, graphite, and warm neutrals. Functional color is introduced only when it communicates a verified system state.'}
           </p>
         </div>
 

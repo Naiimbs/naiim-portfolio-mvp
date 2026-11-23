@@ -9,8 +9,11 @@ import { resolveAsset } from './assetRegistry.js';
 import { updateContentRegistryEntry, getAdminContentRegistry } from './contentRegistry.js';
 import legacyCaseStudiesData from '../data/caseStudiesData.json';
 import { normalizeProcessStages } from '../utils/caseStudyStages.js';
+import { shouldSkipCaseStudyMigration } from './customCaseStudyContent.js';
+import { preserveCustomCaseStudyCmsContent } from './customCaseStudyContent.js';
 
 export const LEGACY_CASE_STUDIES_DATA = legacyCaseStudiesData;
+
 
 const cleanFileName = (val) => {
   if (!val || typeof val !== 'string') return null;
@@ -112,8 +115,8 @@ export function validateCaseStudyContent(caseStudy) {
     };
   }
 
-  if (caseStudy.version !== 1) {
-    errors.push(`Invalid or missing case study version: ${caseStudy.version} (expected 1).`);
+  if (![1, 2].includes(caseStudy.version)) {
+    errors.push(`Invalid or missing case study version: ${caseStudy.version} (expected 1 or 2).`);
   }
 
   if (caseStudy.type !== 'standard' && caseStudy.type !== 'custom') {
@@ -122,6 +125,16 @@ export function validateCaseStudyContent(caseStudy) {
 
   if (caseStudy.type === 'custom') {
     if (!caseStudy.title) warnings.push('Custom case study has no title.');
+    if (Array.isArray(caseStudy.customSections)) {
+      caseStudy.customSections.forEach((section, index) => {
+        if (section?.type === 'image' && !section.image) {
+          warnings.push(`Custom section #${index + 1} is an image section without an image source.`);
+        }
+        if (section?.type === 'image' && section.image && !section.alt?.trim()) {
+          warnings.push(`Custom section #${index + 1} is missing image alt text.`);
+        }
+      });
+    }
     return {
       valid: errors.length === 0,
       errors,
@@ -189,6 +202,11 @@ export function normalizeCaseStudyContent(caseStudy, slug = '') {
       title: caseStudy.title || '',
       subtitle: caseStudy.subtitle || '',
       customComponent: caseStudy.customComponent || null,
+      customSections: Array.isArray(caseStudy.customSections) ? caseStudy.customSections : [],
+      nativeSections: caseStudy.nativeSections && typeof caseStudy.nativeSections === 'object' ? caseStudy.nativeSections : {},
+      nativeSectionOrder: Array.isArray(caseStudy.nativeSectionOrder) ? caseStudy.nativeSectionOrder : [],
+      nativeSectionVisibility: caseStudy.nativeSectionVisibility && typeof caseStudy.nativeSectionVisibility === 'object' ? caseStudy.nativeSectionVisibility : {},
+      translations: caseStudy.translations && typeof caseStudy.translations === 'object' ? caseStudy.translations : {},
       version: caseStudy.version || 1,
     };
   }
@@ -239,7 +257,7 @@ export function normalizeCaseStudyContent(caseStudy, slug = '') {
 
 /**
  * Executes migration of all case studies to Supabase Content Registry metadata.caseStudy.
- * Idempotent: Skips entries where metadata.caseStudy.version === 1 unless forced.
+ * Idempotent: Skips already-migrated entries unless forced; forced custom migrations preserve CMS content.
  */
 export async function executeCaseStudiesMigration(entries = null, force = false) {
   let list = entries;
@@ -255,15 +273,18 @@ export async function executeCaseStudiesMigration(entries = null, force = false)
     const legacy = legacyCaseStudiesData[entry.slug];
     if (!legacy) continue;
 
-    if (!force && entry.metadata?.caseStudy?.version === 1) {
+    if (shouldSkipCaseStudyMigration(entry.metadata?.caseStudy, force)) {
       results.push({ slug: entry.slug, status: 'already-migrated', error: null });
       continue;
     }
 
     const migratedCaseStudy = migrateCaseStudyToRegistry(legacy);
+    const nextCaseStudy = migratedCaseStudy?.type === 'custom'
+      ? preserveCustomCaseStudyCmsContent(migratedCaseStudy, entry.metadata?.caseStudy)
+      : migratedCaseStudy;
     const updatedMetadata = {
       ...(entry.metadata || {}),
-      caseStudy: migratedCaseStudy,
+      caseStudy: nextCaseStudy,
     };
 
     const updateRes = await updateContentRegistryEntry(entry.id, {

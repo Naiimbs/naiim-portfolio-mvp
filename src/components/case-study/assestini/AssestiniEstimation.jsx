@@ -1,27 +1,28 @@
 import React from 'react';
+import { parseCaseStudyArray } from '../../../utils/caseStudyContent';
 
-export default function AssestiniEstimation() {
-  const highlights = ['WBS Generation', 'Effort Calibration', 'Budget Mapping', 'TJM Estimation'];
+export default function AssestiniEstimation({ content = {} }) {
+  const defaultHighlights = ['WBS Generation', 'Effort Calibration', 'Budget Mapping', 'TJM Estimation'];
 
-  const outputs = [
+  const defaultOutputs = [
     'Work Breakdown Structure',
     'Estimated effort per task',
     'Project delivery structure',
     'TJM budget calculation',
     '→ Ready for quotation',
   ];
+  const highlights = parseCaseStudyArray(content.highlightsJson, defaultHighlights);
+  const outputs = parseCaseStudyArray(content.outputsJson, defaultOutputs);
 
   return (
     <section className="case-section">
       <div className="container">
         <div className="eyebrow">
-          <span></span> 03 · AI ESTIMATION
+          <span></span> {content.eyebrow || '03 · AI ESTIMATION'}
         </div>
-        <h2>From project information to an executable plan.</h2>
+        <h2>{content.title || 'From project information to an executable plan.'}</h2>
         <p className="case-copy mb-5">
-          The AI Estimator Pro can work from documents, text input or URLs — transforming raw project information into
-          structured estimation outputs. The experience uses Gemini to make estimation part of the product workflow
-          rather than a separate AI experiment.
+          {content.lead || 'The AI Estimator Pro can work from documents, text input or URLs — transforming raw project information into structured estimation outputs. The experience uses Gemini to make estimation part of the product workflow rather than a separate AI experiment.'}
         </p>
 
         {/* AI sequence: Input → AI → Structured Output */}

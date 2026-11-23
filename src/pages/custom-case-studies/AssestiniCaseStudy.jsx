@@ -1,7 +1,10 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import MainLayout from '../../layouts/MainLayout';
 import SEO from '../../components/common/SEO';
 import { getCaseStudySchema } from '../../lib/schema';
+import CMSCustomSections from '../../components/case-study/CMSCustomSections';
+import { resolveCustomSectionContent } from '../../services/customCaseStudyContent';
 
 // Subcomponents
 import AssestiniHero from '../../components/case-study/assestini/AssestiniHero';
@@ -14,49 +17,52 @@ import AssestiniMcp from '../../components/case-study/assestini/AssestiniMcp';
 import AssestiniBuilding from '../../components/case-study/assestini/AssestiniBuilding';
 import AssestiniTechCta from '../../components/case-study/assestini/AssestiniTechCta';
 
-export default function AssestiniCaseStudy() {
+export default function AssestiniCaseStudy({ caseStudy = {}, cmsSections = [], previewInfo = null }) {
+  const { i18n } = useTranslation();
+  const locale = (i18n?.language || 'en').slice(0, 2);
+  const localizedCaseStudy = caseStudy.translations?.[locale] || {};
+  const displayTitle = localizedCaseStudy.title || caseStudy.title;
+  const displaySubtitle = localizedCaseStudy.subtitle || caseStudy.subtitle;
+  const sectionContent = (key) => resolveCustomSectionContent(caseStudy, key, locale);
   const schema = getCaseStudySchema({
-    title: 'Assestini — AI Operational Intelligence Platform',
-    description:
-      'Assestini is an AI-powered operational platform for freelancers, experts, consultants and agencies. From estimation to payment in one connected workflow.',
+    title: displayTitle || 'Assestini — AI Operational Intelligence Platform',
+    description: displaySubtitle || 'Assestini is an AI-powered operational platform for freelancers, experts, consultants and agencies. From estimation to payment in one connected workflow.',
     slug: 'assestini',
   });
 
   return (
     <MainLayout>
       <SEO
-        title="Assestini — Case Study · Naïm Bsili"
-        description="Assestini — AI-powered Operational Intelligence Platform. Product design case study by Naïm Bsili. From estimation to payment in one connected workflow."
+        title={(displayTitle || 'Assestini') + ' — Case Study · Naïm Bsili'}
+        description={displaySubtitle || 'Assestini — AI-powered Operational Intelligence Platform. Product design case study by Naïm Bsili. From estimation to payment in one connected workflow.'}
         canonical="/work/assestini/"
         schema={schema}
       />
 
+      {previewInfo && <div className="preview-mode-banner preview-mode-banner-safe bg-warning text-dark text-center py-2 px-3 fw-semibold small shadow-sm" role="status">SAVED CMS PREVIEW — {previewInfo.title} ({previewInfo.status}/{previewInfo.visibility})</div>}
       <main className="assestini-page">
         {/* 01. Hero */}
-        <AssestiniHero />
+        <AssestiniHero title={displayTitle} subtitle={displaySubtitle} />
 
-        {/* 02. The Challenge + Role aside */}
-        <AssestiniChallenge />
+        {[
+          ['challenge', <AssestiniChallenge content={sectionContent('challenge')} />],
+          ['workflow', <AssestiniWorkflow content={sectionContent('workflow')} />],
+          ['estimation', <AssestiniEstimation content={sectionContent('estimation')} />],
+          ['commercial', <AssestiniCommercial content={sectionContent('commercial')} />],
+          ['intelligence', <AssestiniIntelligence content={sectionContent('intelligence')} />],
+          ['mcp', <AssestiniMcp content={sectionContent('mcp')} />],
+          ['building', <AssestiniBuilding content={sectionContent('building')} />],
+        ].map(([id, component]) => ({ id, component }))
+          .filter(({ id }) => caseStudy.nativeSectionVisibility?.[id] !== false)
+          .sort((a, b) => {
+            const defaultOrder = ['challenge','workflow','estimation','commercial','intelligence','mcp','building'];
+            const savedOrder = Array.isArray(caseStudy.nativeSectionOrder) ? caseStudy.nativeSectionOrder : [];
+            const order = [...savedOrder, ...defaultOrder.filter((key) => !savedOrder.includes(key))];
+            return order.indexOf(a.id) - order.indexOf(b.id);
+          })
+          .map(({ id, component }) => <React.Fragment key={id}>{component}</React.Fragment>)}
 
-        {/* 03. The Connected Workflow + SVG Diagram + Screenshots */}
-        <AssestiniWorkflow />
-
-        {/* 04. AI Estimation (Input → AI Processing → Structured Output) */}
-        <AssestiniEstimation />
-
-        {/* 05. Commercial Workflow (From Quotation to Delivery) */}
-        <AssestiniCommercial />
-
-        {/* 06. Operational Intelligence + Control Center + Product Thinking */}
-        <AssestiniIntelligence />
-
-        {/* 07. AI Agents & MCP Architecture */}
-        <AssestiniMcp />
-
-        {/* 08. Product Building 5 Layers + Editorial Quote + Product Evidence */}
-        <AssestiniBuilding />
-
-        {/* 09. Technology & Tools + Bottom Case Navigation */}
+        <CMSCustomSections sections={cmsSections} />
         <AssestiniTechCta />
       </main>
     </MainLayout>

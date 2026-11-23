@@ -1,40 +1,41 @@
 import React from 'react';
 
 export default function GalleryBlock({ content = {} }) {
-  const { media = [], caption } = content;
+  const { media = [], caption, layout = 'grid' } = content;
+  const visibleMedia = Array.isArray(media)
+    ? media.filter((item) => item?.is_visible !== false)
+    : [];
 
-  if (!media || media.length === 0) {
-    return null;
-  }
+  if (visibleMedia.length === 0) return null;
+
+  const layoutClass = ['feature', 'wide', 'split', 'grid'].includes(layout)
+    ? layout
+    : 'grid';
 
   return (
-    <figure className="case-block my-4">
-      <div className={`row g-3 ${media.length === 1 ? 'row-cols-1' : media.length === 2 ? 'row-cols-1 row-cols-md-2' : 'row-cols-1 row-cols-md-3'}`}>
-        {media.map((item, idx) => {
-          const src = item.media_url || item.url || item;
-          const alt = item.alt || `Gallery item ${idx + 1}`;
+    <figure className={`case-block case-gallery-block case-gallery-block--${layoutClass} my-4`}>
+      <div className="case-evidence-gallery">
+        {visibleMedia.map((item, idx) => {
+          const src = item?.media_url || item?.url || item;
+          const alt = item?.alt || item?.imageAlt || `Gallery item ${idx + 1}`;
           if (!src || typeof src !== 'string') return null;
 
           return (
-            <div className="col" key={idx}>
-              <div className="overflow-hidden rounded-3 border" style={{ backgroundColor: '#ffffff' }}>
+            <figure className="case-evidence-card" key={item?.id || src || idx}>
+              <div className="case-image-stage">
                 <img
                   src={src}
                   alt={alt}
-                  className="w-100 h-auto d-block"
-                  style={{ objectFit: 'cover' }}
                   loading="lazy"
+                  decoding="async"
                 />
               </div>
-            </div>
+              {item?.caption && <figcaption>{item.caption}</figcaption>}
+            </figure>
           );
         })}
       </div>
-      {caption && (
-        <figcaption className="text-center text-muted small mt-2">
-          {caption}
-        </figcaption>
-      )}
+      {caption && <figcaption className="case-gallery-caption">{caption}</figcaption>}
     </figure>
   );
 }
