@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function WinniVisualSystem() {
+export default function WinniVisualSystem({ content = {} }) {
   const colorTokens = [
     { name: 'Graphite Black', hex: '#111418', role: '#111418 · Text & Primary' },
     { name: 'Muted Slate', hex: '#45575e', role: '#45575E · Body Copy' },
@@ -22,11 +22,10 @@ export default function WinniVisualSystem() {
     <section className="winni-section" id="visual-system">
       <div className="container">
         <div className="winni-section-header">
-          <span className="winni-section-num">10 · VISUAL SYSTEM</span>
-          <h2 className="winni-section-title">Quiet technology.</h2>
+          <span className="winni-section-num">{content.eyebrow || '10 · VISUAL SYSTEM'}</span>
+          <h2 className="winni-section-title">{content.title || 'Quiet technology.'}</h2>
           <p className="winni-copy-lg">
-            Designed around black, white, graphite, and warm neutrals. Functional color is introduced only when it
-            communicates a verified system state.
+            {content.lead || 'Designed around black, white, graphite, and warm neutrals. Functional color is introduced only when it communicates a verified system state.'}
           </p>
         </div>
 
