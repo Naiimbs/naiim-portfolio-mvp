@@ -29,7 +29,7 @@ export default function CMSCustomSections({ sections = [] }) {
           <section className={`cms-custom-case-section cms-custom-case-section--${section.layout || 'text'}`} key={section.id || index}>
             <div className="container">
               {title && <h2>{title}</h2>}
-              {body && <div className="cms-custom-case-section__body">{body.split(/\\n{2,}/).map((paragraph, paragraphIndex) => <p key={paragraphIndex}>{paragraph}</p>)}</div>}
+              {body && <div className="cms-custom-case-section__body">{body.split(String.fromCharCode(10).repeat(2)).map((paragraph, paragraphIndex) => <p key={paragraphIndex}>{paragraph}</p>)}</div>}
               {isImage && (
                 <figure className="cms-custom-case-section__media">
                   <div className="case-image-stage">
