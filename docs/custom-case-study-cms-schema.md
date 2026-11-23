@@ -96,7 +96,7 @@ This is a partial component-level migration, not full end-to-end editability. Na
 - WINNI Location exposes both sides of the surveillance-vs-voluntary-sharing comparison, including headings, explanations, approved/rejected copy examples and their supporting bullet lists.
 - WINNI Motion exposes the three motion-state titles, descriptions, preview labels and timing annotations while preserving the existing visual motion previews.
 - WINNI Problem exposes the challenge bullet list, object-category cards, supporting image reference and alt text.
-- WINNI Idea exposes the recovery-journey labels, four SVG touchpoint cards, supporting story copy and diagram alternative text.
+- WINNI Idea exposes the recovery-journey labels and supporting details in both the HTML journey strip and SVG sequence, four SVG touchpoint cards, supporting story copy and diagram alternative text.
 - WINNI Scope exposes the six multidisciplinary responsibility cards as a structured JSON array.
 - WINNI Outcome exposes the six milestone cards, design-principle statement, and current product-status copy.
 - Assestini Operational Intelligence exposes the delivery/financial detail cards (including their badges) and the product-thinking callout copy.
