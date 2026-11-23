@@ -110,19 +110,19 @@ export default function CaseStudyContentEditor({
       { id: 'privacy', label: '06 · Privacy by Design', fields: ['eyebrow','title','lead','paragraph1','paragraph2'] },
       { id: 'location', label: '07 · Location', fields: ['eyebrow','title','lead'] },
       { id: 'idea', label: '03 · The Idea', fields: ['eyebrow','title','lead'] },
-      { id: 'scanExperience', label: '05 · Scan Experience', fields: ['eyebrow','title','lead'] },
+      { id: 'scanExperience', label: '05 · Scan Experience', fields: ['eyebrow','title','lead','screensJson'] },
       { id: 'physicalProduct', label: '08 · Physical Product', fields: ['eyebrow','title','lead'] },
-      { id: 'systemMatrix', label: '09 · Unified System', fields: ['eyebrow','title','lead'] },
+      { id: 'systemMatrix', label: '09 · Unified System', fields: ['eyebrow','title','lead','touchpointLabel','physicalLabel','digitalLabel','matrixRowsJson'] },
       { id: 'visualSystem', label: '10 · Visual System', fields: ['eyebrow','title','lead'] },
       { id: 'motion', label: '11 · Motion', fields: ['eyebrow','title','lead'] },
       { id: 'scope', label: '12 · Scope of Work', fields: ['eyebrow','title','lead'] },
       { id: 'outcome', label: '14 · Outcome', fields: ['eyebrow','title','lead'] },
     ] : [
       { id: 'challenge', label: '01 · The Challenge', fields: ['eyebrow','title','lead','paragraph2'] },
-      { id: 'estimation', label: '03 · AI Estimation', fields: ['eyebrow','title','lead'] },
-      { id: 'commercial', label: '04 · Commercial Workflow', fields: ['eyebrow','title','lead'] },
+      { id: 'estimation', label: '03 · AI Estimation', fields: ['eyebrow','title','lead','highlightsJson','outputsJson'] },
+      { id: 'commercial', label: '04 · Commercial Workflow', fields: ['eyebrow','title','lead','stepsJson'] },
       { id: 'mcp', label: '06 · AI Agents & MCP', fields: ['eyebrow','title','lead','paragraph2'] },
-      { id: 'workflow', label: '02 · Connected Workflow', fields: ['eyebrow','title','lead'] },
+      { id: 'workflow', label: '02 · Connected Workflow', fields: ['eyebrow','title','lead','estimatorImage','estimatorImageAlt','wbsImage','wbsImageAlt'] },
       { id: 'intelligence', label: '05 · Operational Intelligence', fields: ['eyebrow','title','lead'] },
       { id: 'building', label: '07 · Product Building', fields: ['eyebrow','title','lead'] },
     ];
@@ -190,7 +190,15 @@ export default function CaseStudyContentEditor({
                     {group.fields.map((field) => (
                       <div className="mb-2" key={field}>
                         <label className="form-label small text-muted mb-1">{field}</label>
-                        {['lead','paragraph1','paragraph2','context'].includes(field) ? (
+                        {field.endsWith('Json') ? (
+                          <>
+                            <textarea className="form-control form-control-sm font-monospace" rows="7"
+                              value={nativeFieldValue(group.id, field, locale)} disabled={disabled}
+                              onChange={(e) => updateNativeField(group.id, field, locale, e.target.value)}
+                              placeholder="Paste a valid JSON array" />
+                            <div className="form-text">JSON array. Invalid JSON falls back to the built-in content until corrected.</div>
+                          </>
+                        ) : ['lead','paragraph1','paragraph2','context'].includes(field) ? (
                           <textarea className="form-control form-control-sm" rows="3"
                             value={nativeFieldValue(group.id, field, locale)} disabled={disabled}
                             onChange={(e) => updateNativeField(group.id, field, locale, e.target.value)} />
