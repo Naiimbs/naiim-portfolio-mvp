@@ -193,7 +193,7 @@ export default function StandardCaseStudy({ data }) {
   const renderEvidence = () => {
     if (!evidence || evidence.is_visible === false) return null;
     return (
-      <section className="case-section" key="evidence">
+      <section className="case-section" key="evidence" dir={currentLang === 'ar' ? 'rtl' : 'ltr'}>
         <div className="container">
           <div className="eyebrow">
             <span></span> {evidence.eyebrow}
@@ -289,7 +289,7 @@ export default function StandardCaseStudy({ data }) {
 
       {/* 1. Hero */}
       {hero.is_visible !== false && (
-        <section className="case-hero">
+        <section className="case-hero" dir={currentLang === 'ar' ? 'rtl' : 'ltr'}>
           <div className="container">
             <Link className="text-link" to="/#work">
               <i className="bi bi-arrow-left"></i> {t('caseStudy.backToWork')}
