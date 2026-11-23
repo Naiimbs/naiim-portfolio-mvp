@@ -1,6 +1,7 @@
 import React from 'react';
+import { parseCaseStudyArray } from '../../../utils/caseStudyContent';
 
-export default function WinniScanExperience({ content = {} }) {
+export default function WinniScanExperience({ content = {} }) {\n  const defaultScreens = [\n    { step: '01 — SCAN', label: 'Recognized' },\n    { step: '02 — REACH', label: 'Safe Contact' },\n    { step: '03 — LOCATION', label: '100% Optional' },\n    { step: '04 — NOTIFY', label: 'Confirmation' },\n    { step: '05 — RETURN', label: 'Owner View' },\n  ];\n  const screens = parseCaseStudyArray(content.screensJson, defaultScreens);
   return (
     <section className="winni-section alt-bg" id="scan-experience">
       <div className="container">
@@ -16,8 +17,8 @@ export default function WinniScanExperience({ content = {} }) {
         <div className="winni-screens-row">
           {/* Screen 01: Scan */}
           <div className="winni-screen-col">
-            <div className="winni-screen-step">01 — SCAN</div>
-            <div className="winni-screen-label">Recognized</div>
+            <div className="winni-screen-step">{screens[0]?.step || '01 — SCAN'}</div>
+            <div className="winni-screen-label">{screens[0]?.label || 'Recognized'}</div>
             <div className="winni-phone-frame">
               <div className="winni-phone-speaker"></div>
               <div className="winni-phone-screen">
@@ -57,8 +58,8 @@ export default function WinniScanExperience({ content = {} }) {
 
           {/* Screen 02: Reach */}
           <div className="winni-screen-col">
-            <div className="winni-screen-step">02 — REACH</div>
-            <div className="winni-screen-label">Safe Contact</div>
+            <div className="winni-screen-step">{screens[1]?.step || '02 — REACH'}</div>
+            <div className="winni-screen-label">{screens[1]?.label || 'Safe Contact'}</div>
             <div className="winni-phone-frame">
               <div className="winni-phone-speaker"></div>
               <div className="winni-phone-screen">
@@ -118,8 +119,8 @@ export default function WinniScanExperience({ content = {} }) {
 
           {/* Screen 03: Optional Location */}
           <div className="winni-screen-col">
-            <div className="winni-screen-step">03 — LOCATION</div>
-            <div className="winni-screen-label">100% Optional</div>
+            <div className="winni-screen-step">{screens[2]?.step || '03 — LOCATION'}</div>
+            <div className="winni-screen-label">{screens[2]?.label || '100% Optional'}</div>
             <div className="winni-phone-frame">
               <div className="winni-phone-speaker"></div>
               <div className="winni-phone-screen">
@@ -174,8 +175,8 @@ export default function WinniScanExperience({ content = {} }) {
 
           {/* Screen 04: Notify */}
           <div className="winni-screen-col">
-            <div className="winni-screen-step">04 — NOTIFY</div>
-            <div className="winni-screen-label">Confirmation</div>
+            <div className="winni-screen-step">{screens[3]?.step || '04 — NOTIFY'}</div>
+            <div className="winni-screen-label">{screens[3]?.label || 'Confirmation'}</div>
             <div className="winni-phone-frame">
               <div className="winni-phone-speaker"></div>
               <div className="winni-phone-screen text-center justify-content-center">
@@ -216,8 +217,8 @@ export default function WinniScanExperience({ content = {} }) {
 
           {/* Screen 05: Return */}
           <div className="winni-screen-col">
-            <div className="winni-screen-step">05 — RETURN</div>
-            <div className="winni-screen-label">Owner View</div>
+            <div className="winni-screen-step">{screens[4]?.step || '05 — RETURN'}</div>
+            <div className="winni-screen-label">{screens[4]?.label || 'Owner View'}</div>
             <div className="winni-phone-frame">
               <div className="winni-phone-speaker"></div>
               <div className="winni-phone-screen">
