@@ -91,6 +91,7 @@ This is a partial component-level migration, not full end-to-end editability. Na
 - WINNI structured controls include Scan Experience screen labels, System Matrix rows/column labels, Privacy diagram node labels/descriptions/badges, and Visual System color-token/icon arrays.
 - Assestini structured controls include AI Estimation highlights/output items, Commercial Workflow steps, the six-stage Connected Workflow SVG labels, Operational Intelligence feature tags/dashboard image + alt text, and MCP architecture nodes.
 - Assestini Product Building exposes its five product/UX/AI/systems/build layers, principle badges, editorial quote copy, evidence heading/copy, and closing evidence image + alt text.
+- Assestini Challenge exposes the six workflow-stage labels and the role, focus, technology and product-type metadata shown in its sidebar.
 - WINNI Physical Product exposes the three product cards (badge, title, image reference, alt text, description and technical specs) plus print-standard and cut-format copy.
 - WINNI Location exposes both sides of the surveillance-vs-voluntary-sharing comparison, including headings, explanations, approved/rejected copy examples and their supporting bullet lists.
 - WINNI Motion exposes the three motion-state titles, descriptions, preview labels and timing annotations while preserving the existing visual motion previews.
