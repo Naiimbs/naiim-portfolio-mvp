@@ -10,6 +10,7 @@ export default function AdminLayout() {
 
   const getPageTitle = (path) => {
     if (path === '/admin') return 'Dashboard';
+    if (path.startsWith('/admin/academy')) return 'My Academy';
     if (path.startsWith('/admin/registry')) return 'Content Registry';
     if (path.startsWith('/admin/projects')) return 'Projects';
     if (path.startsWith('/admin/case-studies')) return 'Case Studies';

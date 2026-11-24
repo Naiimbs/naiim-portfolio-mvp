@@ -1,0 +1,77 @@
+name: Supabase migration replay
+
+on:
+  push:
+    branches:
+      - feature/my-academy-mvp
+      - release/my-academy-clean
+    paths:
+      - ".github/workflows/supabase-migration-replay.yml"
+      - "supabase/**"
+      - "src/App.jsx"
+      - "src/admin/pages/Academy*.jsx"
+      - "src/admin/components/**"
+      - "src/admin/context/**"
+      - "scripts/test-academy-access.mjs"
+      - "package.json"
+      - "package-lock.json"
+  pull_request:
+    paths:
+      - ".github/workflows/supabase-migration-replay.yml"
+      - "supabase/**"
+      - "src/App.jsx"
+      - "src/admin/pages/Academy*.jsx"
+      - "src/admin/components/**"
+      - "src/admin/context/**"
+      - "scripts/test-academy-access.mjs"
+      - "package.json"
+      - "package-lock.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  app-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Verify Academy access boundaries
+        run: npm run test:academy-access
+
+      - name: Build the React application
+        run: npm run build
+
+  migration-replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Start local Supabase stack
+        run: supabase start
+
+      - name: Replay every migration on a clean local database
+        run: supabase db reset
+
+      - name: Stop local Supabase stack
+        if: always()
+        run: supabase stop --no-backup

@@ -15,7 +15,7 @@ export default function AdminSidebar() {
   const [expandedGroups, setExpandedGroups] = useState(() => {
     try {
       const saved = localStorage.getItem('admin_sidebar_expanded_groups');
-      return saved ? JSON.parse(saved) : { CONTENT: true, RESOURCES: true, AI_AUTOMATION: true, SYSTEM: false };
+      return saved ? JSON.parse(saved) : { CONTENT: true, ACADEMY: true, RESOURCES: true, AI_AUTOMATION: true, SYSTEM: false };
     } catch {
       return { CONTENT: true, RESOURCES: true, AI_AUTOMATION: true, SYSTEM: false };
     }
@@ -68,6 +68,19 @@ export default function AdminSidebar() {
           { to: '/admin/case-studies', label: 'Case Studies', icon: 'bi-journal-richtext' },
           { to: '/admin/navigation', label: 'Navigation', icon: 'bi-compass' },
           { to: '/admin/registry', label: 'Content Registry', icon: 'bi-grid-3x3-gap' },
+        ],
+      },
+      {
+        id: 'ACADEMY',
+        title: 'MY ACADEMY',
+        isGroup: true,
+        icon: 'bi-mortarboard',
+        rootPath: '/admin/academy',
+        activePrefixes: ['/admin/academy'],
+        items: [
+          { to: '/admin/academy', label: 'Academy Overview', icon: 'bi-grid-1x2', end: true },
+          { to: '/admin/academy/courses', label: 'Courses', icon: 'bi-journal-richtext' },
+          { to: '/admin/academy/enrollments', label: 'Enrollments', icon: 'bi-people' },
         ],
       },
       {
@@ -198,6 +211,7 @@ export default function AdminSidebar() {
 
       <nav className="admin-nav overflow-auto">
         {navSections.map((section) => {
+          if (section.id === 'ACADEMY' && !isAdmin) return null;
           if (!section.isGroup) {
             // Standalone top-level family
             return (
