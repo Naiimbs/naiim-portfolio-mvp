@@ -45,3 +45,21 @@ npm run test:unified-case-study
 
 The test covers standard/custom normalization, legacy preservation, ordering,
 visibility, EN/FR/AR resolution, and unsupported section handling.
+
+
+## Runtime renderer bridge (Phase 2)
+
+The public registry gate remains unchanged. Standard case studies with
+`metadata.caseStudy.version === 3` are routed to `UnifiedCaseStudy`; existing
+Standard V1 payloads continue through `StandardCaseStudy`, and WINNI /
+Assettini continue through their bespoke components.
+
+The V3 renderer resolves sections through the allowlisted `SectionResolver`,
+respects enabled state and order, localizes section content, and renders the
+eight core section types plus editorial, image, and project-module blocks.
+Unknown section types remain unrendered rather than being interpreted as
+component paths. Saved admin preview context is retained.
+
+This phase does not change the CMS editor, convert existing registry records,
+write to Supabase, or deploy. The CMS must be upgraded in a later phase before
+authors can create and save V3 sections through the admin interface.

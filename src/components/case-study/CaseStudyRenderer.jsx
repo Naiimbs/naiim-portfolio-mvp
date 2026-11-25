@@ -16,6 +16,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { getAdminContentRegistryEntryBySlug, getPublishedPublicContentBySlug, normalizeRegistryEntry } from '../../services/contentRegistry';
 import StandardCaseStudy from './StandardCaseStudy';
+import UnifiedCaseStudy from './UnifiedCaseStudy';
 import CaseStudyNotFound from './CaseStudyNotFound';
 import WinniCaseStudy from '../../pages/custom-case-studies/WinniCaseStudy';
 import AssestiniCaseStudy from '../../pages/custom-case-studies/AssestiniCaseStudy';
@@ -207,7 +208,9 @@ export default function CaseStudyRenderer() {
     return <CaseStudyNotFound slug={slug} />;
   }
 
-  return <StandardCaseStudy data={studyData} />;
+  return studyData.version === 3
+    ? <UnifiedCaseStudy data={studyData} />
+    : <StandardCaseStudy data={studyData} />;
 }
 
 // ── Error states ──────────────────────────────────────────────────────────────
