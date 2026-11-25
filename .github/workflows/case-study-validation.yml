@@ -9,10 +9,13 @@ on:
       - 'src/pages/custom-case-studies/**'
       - 'src/services/caseStudyRegistryMigration.js'
       - 'src/services/customCaseStudyContent.js'
+      - 'src/services/caseStudySchema.js'
       - 'src/utils/caseStudyContent.js'
       - 'scripts/test-native-case-study-cms-bindings.mjs'
       - 'scripts/test-custom-case-study-content.mjs'
+      - 'scripts/test-unified-case-study-foundation.mjs'
       - 'docs/custom-case-study-cms-schema.md'
+      - 'docs/unified-case-study-architecture.md'
       - 'src/styles/style.css'
       - 'package.json'
       - 'package-lock.json'
@@ -50,6 +53,9 @@ jobs:
 
       - name: Test native case-study CMS bindings
         run: npm run test:native-case-study-cms
+
+      - name: Test unified case-study schema
+        run: npm run test:unified-case-study
 
       - name: Build production bundle
         run: npm run build
