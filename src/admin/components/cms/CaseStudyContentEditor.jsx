@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { resolveAsset } from '../../../services/assetRegistry';
 import { FDE_STAGE_TYPES, createFdeStage, createStageId, getFdeStageLabel, normalizeProcessStages } from '../../../utils/caseStudyStages';
+import UnifiedCaseStudyEditor from './UnifiedCaseStudyEditor';
+import { normalizeCaseStudyToV3 } from '../../../services/caseStudySchema';
 
 /**
  * CaseStudyContentEditor.jsx
@@ -23,6 +25,7 @@ export default function CaseStudyContentEditor({
   disabled = false,
   isPublishedAndPublic = false,
   slug = '',
+  translations = {},
 }) {
   const isCustom = caseStudy?.type === 'custom' || slug === 'winni' || slug === 'assestini';
 
@@ -43,6 +46,11 @@ export default function CaseStudyContentEditor({
         <div>No case study content found for this entry.</div>
       </div>
     );
+  }
+
+  // V3 standard projects use the shared builder; legacy Standard and bespoke Custom editors stay intact.
+  if (caseStudy.version === 3) {
+    return <UnifiedCaseStudyEditor caseStudy={caseStudy} onChange={onChange} disabled={disabled} slug={slug} />;
   }
 
   // ── Custom Case Study CMS Sections ─────────────────────────────────────────
@@ -635,6 +643,23 @@ export default function CaseStudyContentEditor({
 
   return (
     <div className="admin-card mb-4">
+      <div className="alert alert-success-subtle border d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <div>
+          <strong className="small d-block">A unified Case Study Builder is available</strong>
+          <span className="small text-muted">Upgrade this Standard V1 content to the V3 section model. The original payload is preserved in the V3 legacy snapshot.</span>
+        </div>
+        <button
+          type="button"
+          className="btn btn-sm btn-success"
+          disabled={disabled}
+          onClick={() => onChange({
+            ...normalizeCaseStudyToV3(caseStudy, { slug, i18n: translations }),
+            type: 'standard',
+          })}
+        >
+          <i className="bi bi-arrow-repeat me-1" /> Upgrade to V3
+        </button>
+      </div>
       {/* Editor Header */}
       <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 pb-3 border-bottom">
         <div>

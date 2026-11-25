@@ -5,6 +5,13 @@ import {
   getVisibleCaseStudySections,
 } from '../src/services/caseStudySchema.js';
 import { resolveCaseStudySections } from '../src/components/case-study/SectionResolver.js';
+import {
+  createCaseStudySection,
+  getAvailableCaseStudySectionTypes,
+  moveCaseStudySection,
+  removeCaseStudySection,
+  updateCaseStudySectionContent,
+} from '../src/services/caseStudyEditorModel.js';
 
 const standard = {
   version: 1,
@@ -21,6 +28,16 @@ const normalizedStandard = normalizeCaseStudyToV3(standard, { slug: 'sample' });
 assert.equal(normalizedStandard.version, CASE_STUDY_SCHEMA_VERSION);
 assert.equal(normalizedStandard.slug, 'sample');
 assert.equal(normalizedStandard.legacy.hero.title, 'A project', 'legacy payload must be preserved');
+const localizedStandard = normalizeCaseStudyToV3(standard, {
+  slug: 'sample',
+  i18n: { fr: { title: 'Un projet', description: 'Description française', caseStudy: { hero: { title: 'Un projet' }, challenge: { copy: 'Contexte français' } } } },
+});
+assert.equal(localizedStandard.sections[0].content.fr.title, 'Un projet', 'legacy French hero copy is preserved');
+assert.equal(localizedStandard.sections[0].content.fr.lead, 'Description française', 'legacy top-level French description maps to the overview lead');
+const localizedProblem = localizedStandard.sections.find((section) => section.id === 'problem');
+assert.equal(localizedProblem.content.fr.copy, 'Contexte français', 'legacy French challenge copy is preserved');
+assert.equal(localizedProblem.content.fr.title, 'Problem', 'untranslated fields fall back to English');
+
 assert.deepEqual(
   normalizedStandard.sections.map((section) => section.id),
   ['project-overview', 'system-technology', 'problem', 'product-thinking', 'experience-design'],
@@ -58,6 +75,9 @@ const v3 = normalizeCaseStudyToV3({
 });
 assert.equal(v3.sections.length, 1, 'unknown V3 sections are preserved by normalization');
 assert.equal(resolveCaseStudySections(v3).unsupported.length, 1, 'unknown section types are not rendered');
+const malformedV3 = normalizeCaseStudyToV3({ version: 3, type: 'standard', metadata: { title: 'Incomplete' } });
+assert.deepEqual(malformedV3.sections, [], 'malformed V3 payloads remain V3 and do not fall back to the legacy shape');
+
 
 const coreTypes = [
   'project-overview',
@@ -96,7 +116,36 @@ const localeFallback = getVisibleCaseStudySections({
   }],
 }, 'ar');
 assert.equal(localeFallback[0].resolvedContent.title, 'English fallback', 'missing locale content falls back to English');
+const partialLocaleFallback = getVisibleCaseStudySections({
+  sections: [{
+    id: 'overview',
+    type: 'project-overview',
+    enabled: true,
+    order: 0,
+    content: { en: { title: 'English title', lead: 'English lead' }, fr: { title: 'Titre français' } },
+  }],
+}, 'fr');
+assert.deepEqual(partialLocaleFallback[0].resolvedContent, {
+  title: 'Titre français',
+  lead: 'English lead',
+}, 'untranslated fields fall back individually to English');
 
 
+
+
+const editorOverview = createCaseStudySection('project-overview', 0, 'overview');
+const editorProblem = createCaseStudySection('problem', 1, 'problem');
+const editorImage = createCaseStudySection('image', 2, 'image');
+assert.equal(editorOverview.category, 'core');
+assert.equal(editorImage.category, 'module');
+assert.deepEqual(
+  getAvailableCaseStudySectionTypes([editorOverview, editorProblem]).slice(0, 6),
+  ['product-thinking', 'experience-design', 'system-technology', 'building-product', 'product-experience', 'outcomes-learnings'],
+  'the builder only offers core sections that have not already been added',
+);
+const translatedSections = updateCaseStudySectionContent([editorOverview], 'overview', 'ar', 'title', 'نظرة عامة');
+assert.equal(translatedSections[0].content.ar.title, 'نظرة عامة');
+assert.deepEqual(moveCaseStudySection([editorOverview, editorProblem, editorImage], 'image', 0).map((section) => section.id), ['image', 'overview', 'problem']);
+assert.deepEqual(removeCaseStudySection([editorOverview, editorProblem], 'overview').map((section) => section.id), ['problem']);
 assert.equal(normalizeCaseStudyToV3(null), null);
 console.log('Unified Case Study foundation tests passed.');

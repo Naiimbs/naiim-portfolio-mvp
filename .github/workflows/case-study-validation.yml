@@ -5,12 +5,17 @@ on:
   pull_request:
     paths:
       - 'src/admin/components/cms/CaseStudyContentEditor.jsx'
+      - 'src/admin/components/cms/UnifiedCaseStudyEditor.jsx'
+      - 'src/admin/pages/AdminRegistryEntry.jsx'
       - 'src/components/case-study/**'
       - 'src/pages/custom-case-studies/**'
       - 'src/services/caseStudyRegistryMigration.js'
       - 'src/services/customCaseStudyContent.js'
       - 'src/services/caseStudySchema.js'
+      - 'src/services/caseStudyEditorModel.js'
+      - 'src/services/contentRegistry.js'
       - 'src/utils/caseStudyContent.js'
+      - 'src/utils/registryHealth.js'
       - 'scripts/test-native-case-study-cms-bindings.mjs'
       - 'scripts/test-custom-case-study-content.mjs'
       - 'scripts/test-unified-case-study-foundation.mjs'
