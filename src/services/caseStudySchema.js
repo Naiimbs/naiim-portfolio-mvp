@@ -56,12 +56,14 @@ function standardSections(source) {
   ];
 
   const requestedOrder = Array.isArray(source.sectionOrder) ? source.sectionOrder : [];
+  const legacyOrderIds = ['hero', 'challenge', 'contribution', 'evidence', 'technology'];
   const rank = new Map(requestedOrder.map((id, index) => [id, index]));
+  const legacyRank = new Map(requestedOrder.map((id, index) => [id, index]));
   return standard
     .map((section) => ({
       ...section,
       enabled: source[section.id === 'project-overview' ? 'hero' : section.id === 'problem' ? 'challenge' : section.id === 'product-thinking' ? 'contribution' : section.id === 'experience-design' ? 'evidence' : 'technology']?.is_visible !== false,
-      order: rank.has(section.id) ? rank.get(section.id) : section.order,
+      order: rank.has(section.id) ? rank.get(section.id) : legacyRank.has(legacyOrderIds[['project-overview', 'problem', 'product-thinking', 'experience-design', 'system-technology'].indexOf(section.id)]) ? legacyRank.get(legacyOrderIds[['project-overview', 'problem', 'product-thinking', 'experience-design', 'system-technology'].indexOf(section.id)]) : section.order,
     }))
     .sort((a, b) => a.order - b.order);
 }
