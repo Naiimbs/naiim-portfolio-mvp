@@ -59,5 +59,44 @@ const v3 = normalizeCaseStudyToV3({
 assert.equal(v3.sections.length, 1, 'unknown V3 sections are preserved by normalization');
 assert.equal(resolveCaseStudySections(v3).unsupported.length, 1, 'unknown section types are not rendered');
 
+const coreTypes = [
+  'project-overview',
+  'problem',
+  'product-thinking',
+  'experience-design',
+  'system-technology',
+  'building-product',
+  'product-experience',
+  'outcomes-learnings',
+];
+const resolvedCore = resolveCaseStudySections({
+  version: 3,
+  slug: 'v3-project',
+  sections: coreTypes.map((type, index) => ({
+    id: type,
+    type,
+    enabled: true,
+    order: index,
+    content: { en: { title: type } },
+  })),
+}, { locale: 'en' });
+assert.deepEqual(
+  resolvedCore.sections.map((section) => section.type),
+  coreTypes,
+  'the unified renderer resolves all eight optional core section types in order',
+);
+assert.equal(resolvedCore.unsupported.length, 0);
+const localeFallback = getVisibleCaseStudySections({
+  sections: [{
+    id: 'overview',
+    type: 'project-overview',
+    enabled: true,
+    order: 0,
+    content: { en: { title: 'English fallback' } },
+  }],
+}, 'ar');
+assert.equal(localeFallback[0].resolvedContent.title, 'English fallback', 'missing locale content falls back to English');
+
+
 assert.equal(normalizeCaseStudyToV3(null), null);
 console.log('Unified Case Study foundation tests passed.');
