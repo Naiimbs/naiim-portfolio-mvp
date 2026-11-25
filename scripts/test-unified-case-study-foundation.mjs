@@ -23,7 +23,7 @@ assert.equal(normalizedStandard.slug, 'sample');
 assert.equal(normalizedStandard.legacy.hero.title, 'A project', 'legacy payload must be preserved');
 assert.deepEqual(
   normalizedStandard.sections.map((section) => section.id),
-  ['system-technology', 'problem', 'product-thinking', 'experience-design', 'project-overview'],
+  ['project-overview', 'system-technology', 'problem', 'product-thinking', 'experience-design'],
   'legacy section order is respected; overview remains available',
 );
 
