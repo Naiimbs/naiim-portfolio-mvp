@@ -11,6 +11,7 @@ import legacyCaseStudiesData from '../data/caseStudiesData.json';
 import { normalizeProcessStages } from '../utils/caseStudyStages.js';
 import { shouldSkipCaseStudyMigration } from './customCaseStudyContent.js';
 import { preserveCustomCaseStudyCmsContent } from './customCaseStudyContent.js';
+import { normalizeCaseStudyToV3 } from './caseStudySchema.js';
 
 export const LEGACY_CASE_STUDIES_DATA = legacyCaseStudiesData;
 
@@ -115,8 +116,32 @@ export function validateCaseStudyContent(caseStudy) {
     };
   }
 
-  if (![1, 2].includes(caseStudy.version)) {
-    errors.push(`Invalid or missing case study version: ${caseStudy.version} (expected 1 or 2).`);
+  if (![1, 2, 3].includes(caseStudy.version)) {
+    errors.push(`Invalid or missing case study version: ${caseStudy.version} (expected 1, 2 or 3).`);
+  }
+
+  if (caseStudy.version === 3) {
+    if (!Array.isArray(caseStudy.sections)) {
+      errors.push('V3 case study sections must be an array.');
+    } else {
+      const ids = new Set();
+      caseStudy.sections.forEach((section, index) => {
+        if (!section || typeof section !== 'object' || typeof section.id !== 'string' || !section.id.trim()) {
+          errors.push(`V3 section #${index + 1} is missing a stable id.`);
+        } else if (ids.has(section.id)) {
+          errors.push(`V3 section id "${section.id}" is duplicated.`);
+        } else {
+          ids.add(section.id);
+        }
+        if (!section || typeof section.type !== 'string' || !section.type.trim()) {
+          errors.push(`V3 section #${index + 1} is missing a section type.`);
+        }
+        if (section && section.content !== undefined && (typeof section.content !== 'object' || section.content === null || Array.isArray(section.content))) {
+          errors.push(`V3 section #${index + 1} content must be a locale object.`);
+        }
+      });
+    }
+    return { valid: errors.length === 0, errors, warnings };
   }
 
   if (caseStudy.type !== 'standard' && caseStudy.type !== 'custom') {
@@ -192,8 +217,57 @@ export function validateCaseStudyContent(caseStudy) {
  * Normalizes case-study content from Registry metadata for public rendering.
  * Resolves static/bundled image asset strings into active Vite URLs.
  */
-export function normalizeCaseStudyContent(caseStudy, slug = '') {
+const V3_MEDIA_FIELDS = new Set(['image', 'src', 'cover', 'heroImage', 'estimatorImage', 'wbsImage', 'dashboardImage', 'closingImage']);
+
+function normalizeV3SectionMedia(section) {
+  const content = section?.content && typeof section.content === 'object' ? section.content : {};
+  const normalizedContent = Object.fromEntries(Object.entries(content).map(([locale, raw]) => {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return [locale, raw];
+    const next = { ...raw };
+    for (const field of V3_MEDIA_FIELDS) {
+      if (typeof next[field] === 'string' && next[field].trim()) next[field] = resolveAsset(next[field]) || next[field];
+    }
+    if (Array.isArray(next.gallery)) {
+      next.gallery = next.gallery.map((item) => (
+        item && typeof item === 'object' && typeof item.image === 'string'
+          ? { ...item, image: resolveAsset(item.image) || item.image }
+          : item
+      ));
+    }
+    if (Array.isArray(next.process)) {
+      next.process = next.process.map((stage) => ({
+        ...stage,
+        media: Array.isArray(stage?.media) ? stage.media.map((item) => ({
+          ...item,
+          url: typeof item?.url === 'string' ? (resolveAsset(item.url) || item.url) : item?.url,
+          image: typeof item?.image === 'string' ? (resolveAsset(item.image) || item.image) : item?.image,
+        })) : stage?.media,
+      }));
+    }
+    return [locale, next];
+  }));
+  return { ...section, content: normalizedContent };
+}
+
+export function normalizeCaseStudyContent(caseStudy, slug = '', i18n = {}) {
   if (!caseStudy) return null;
+
+  // V3 is already a unified section collection. Preserve its metadata and section payloads
+  // instead of projecting it back into the legacy Standard V1 shape.
+  if (caseStudy.version === 3) {
+    const normalized = normalizeCaseStudyToV3(caseStudy, { slug, i18n });
+    return {
+      ...normalized,
+      slug,
+      type: 'standard',
+      version: 3,
+      metadata: {
+        ...(normalized.metadata && typeof normalized.metadata === 'object' ? normalized.metadata : {}),
+        cover: typeof normalized.metadata?.cover === 'string' ? (resolveAsset(normalized.metadata.cover) || normalized.metadata.cover) : normalized.metadata?.cover,
+      },
+      sections: normalized.sections.map(normalizeV3SectionMedia),
+    };
+  }
 
   if (caseStudy.type === 'custom') {
     return {

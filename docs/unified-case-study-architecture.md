@@ -63,3 +63,30 @@ component paths. Saved admin preview context is retained.
 This phase does not change the CMS editor, convert existing registry records,
 write to Supabase, or deploy. The CMS must be upgraded in a later phase before
 authors can create and save V3 sections through the admin interface.
+
+
+## CMS Builder (Phase 3)
+
+The Registry Case Study editor now has a V3-only builder path. Existing Standard
+V1 content displays an explicit **Upgrade to V3** action; the conversion is
+performed in memory and retains the complete original payload under
+`legacy`. The editor does not silently upgrade or write to the database.
+
+The V3 builder supports:
+- Editing the Project Overview metadata and section content
+- Adding each core section type once
+- Adding repeatable Editorial, Image, and Project-specific Module blocks
+- Reordering by drag-and-drop or accessible move controls
+- Hiding and removing sections
+- Editing EN / FR / AR content and structured JSON fields
+- Preserving locale fallback: untranslated fields inherit English copy
+
+Registry normalization keeps V3 `sections` intact, resolves known bundled
+media references, and merges legacy Registry translations only where V3
+section-localized content has not supplied an override. Publishing readiness
+requires a visible Project Overview with a title and lead; the other core
+sections remain optional.
+
+The editor remains compatible with the existing V1 Standard and V2 bespoke
+WINNI / Assettini paths. This phase does not migrate Supabase records
+automatically, alter RLS, or deploy.

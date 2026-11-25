@@ -494,7 +494,7 @@ export function normalizeRegistryEntry(entry, presentationAsset = null) {
     DEFAULT_LOGO_MARKS[entry.slug] ||
     null;
 
-  const caseStudy = meta.caseStudy ? normalizeCaseStudyContent(meta.caseStudy, entry.slug) : null;
+  const caseStudy = meta.caseStudy ? normalizeCaseStudyContent(meta.caseStudy, entry.slug, meta.i18n || entry.i18n || {}) : null;
   const page = meta.page || null;
   const presentation = {
     badge,

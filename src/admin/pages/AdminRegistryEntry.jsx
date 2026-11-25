@@ -516,7 +516,16 @@ export default function AdminRegistryEntry() {
 
     // Case Study validation (Section 9)
     if (contentType === 'case-study' && isPubliclyVisible(status, visibility)) {
-      if (caseStudy?.type === 'standard') {
+      if (caseStudy?.version === 3 && caseStudy?.type === 'standard') {
+        const overview = (Array.isArray(caseStudy.sections) ? caseStudy.sections : []).find((section) => section?.type === 'project-overview' && section.enabled !== false);
+        const overviewContent = overview?.content?.en || {};
+        if (!(caseStudy.metadata?.title || overviewContent.title)?.trim()) {
+          errs.caseStudyHeroTitle = 'Project Overview title is required for published V3 case studies.';
+        }
+        if (!(caseStudy.metadata?.subtitle || overviewContent.lead)?.trim()) {
+          errs.caseStudyHeroLead = 'Project Overview lead is required for published V3 case studies.';
+        }
+      } else if (caseStudy?.type === 'standard') {
         if (!caseStudy?.hero?.title?.trim()) {
           errs.caseStudyHeroTitle = 'Hero Title is required for published case studies.';
         }
@@ -1170,6 +1179,7 @@ export default function AdminRegistryEntry() {
                 disabled={saving}
                 isPublishedAndPublic={isPubliclyVisible(status, visibility)}
                 slug={slug}
+                translations={translations}
               />
             )}
 

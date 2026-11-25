@@ -93,18 +93,61 @@ export function computeEntryHealth(entry) {
         });
       }
     } else {
-      if (meta.caseStudy.version === 1) {
+      if ([1, 2, 3].includes(meta.caseStudy.version)) {
         score += 1;
       } else {
         issues.push({
           level: 'error',
           code: 'CASE_STUDY_VERSION_INVALID',
           field: 'caseStudy.version',
-          message: `Case study version is invalid (${meta.caseStudy.version || 'missing'}, expected 1).`,
+          message: `Case study version is invalid (${meta.caseStudy.version || 'missing'}, expected 1, 2 or 3).`,
         });
       }
 
-      if (meta.caseStudy.type === 'standard') {
+      if (meta.caseStudy.version === 3 && meta.caseStudy.type === 'standard') {
+        const sections = Array.isArray(meta.caseStudy.sections) ? meta.caseStudy.sections : [];
+        const overview = sections.find((section) => section?.type === 'project-overview' && section.enabled !== false);
+        const overviewContent = overview?.content?.en || {};
+        if (!(meta.caseStudy.metadata?.title || overviewContent.title)?.trim()) {
+          issues.push({
+            level: isPublishedAndPublic ? 'error' : 'warning',
+            code: 'CASE_STUDY_OVERVIEW_TITLE_MISSING',
+            field: 'caseStudy.metadata.title',
+            message: 'V3 case study Project Overview is missing a title.',
+          });
+        }
+        if (!(meta.caseStudy.metadata?.subtitle || overviewContent.lead)?.trim()) {
+          issues.push({
+            level: isPublishedAndPublic ? 'error' : 'warning',
+            code: 'CASE_STUDY_OVERVIEW_LEAD_MISSING',
+            field: 'caseStudy.metadata.subtitle',
+            message: 'V3 case study Project Overview is missing a lead.',
+          });
+        }
+        if (!sections.some((section) => section?.enabled !== false)) {
+          issues.push({
+            level: isPublishedAndPublic ? 'error' : 'warning',
+            code: 'CASE_STUDY_NO_VISIBLE_SECTIONS',
+            field: 'caseStudy.sections',
+            message: 'V3 case study has no visible sections.',
+          });
+        }
+        sections.filter((section) => section?.enabled !== false).forEach((section) => {
+          const localeContent = section?.content?.en || {};
+          const images = [
+            ...(localeContent.image ? [{ image: localeContent.image, alt: localeContent.imageAlt || localeContent.alt }] : []),
+            ...(Array.isArray(localeContent.gallery) ? localeContent.gallery.filter((item) => item?.image) : []),
+          ];
+          if (images.some((image) => !image.alt?.trim())) {
+            issues.push({
+              level: 'warning',
+              code: 'CASE_STUDY_IMAGE_ALT_MISSING',
+              field: `caseStudy.sections.${section.id}.content.en`,
+              message: `Section "${section.id}" contains an image without alt text.`,
+            });
+          }
+        });
+      } else if (meta.caseStudy.type === 'standard') {
         const hero = meta.caseStudy.hero || {};
         const challenge = meta.caseStudy.challenge || {};
         const contribution = meta.caseStudy.contribution || {};
@@ -297,12 +340,38 @@ export function getCaseStudyPublishingReadiness(entry) {
     return { isReady: false, gates, advisories };
   }
 
-  // Gate: version must be 1
-  if (cs.version !== 1) {
-    gates.push({ id: 'INVALID_VERSION', message: `Case study version is invalid (got ${cs.version ?? 'missing'}, expected 1).` });
+  // V1, V2 and V3 have explicit compatibility paths.
+  if (![1, 2, 3].includes(cs.version)) {
+    gates.push({ id: 'INVALID_VERSION', message: `Case study version is invalid (got ${cs.version ?? 'missing'}, expected 1, 2 or 3).` });
   }
 
-  if (cs.type === 'standard') {
+  if (cs.version === 3 && cs.type === 'standard') {
+    const sections = Array.isArray(cs.sections) ? cs.sections : [];
+    const overview = sections.find((section) => section?.type === 'project-overview' && section.enabled !== false);
+    const overviewContent = overview?.content?.en || {};
+    if (!overview) {
+      gates.push({ id: 'MISSING_PROJECT_OVERVIEW', message: 'A visible Project Overview section is required.' });
+    }
+    if (!(cs.metadata?.title || overviewContent.title)?.trim()) {
+      gates.push({ id: 'MISSING_OVERVIEW_TITLE', message: 'Project Overview title is missing.' });
+    }
+    if (!(cs.metadata?.subtitle || overviewContent.lead)?.trim()) {
+      gates.push({ id: 'MISSING_OVERVIEW_LEAD', message: 'Project Overview lead text is missing.' });
+    }
+    if (!sections.some((section) => section?.enabled !== false)) {
+      gates.push({ id: 'NO_VISIBLE_SECTIONS', message: 'At least one section must be visible.' });
+    }
+    sections.filter((section) => section?.enabled !== false).forEach((section) => {
+      const localeContent = section?.content?.en || {};
+      const images = [
+        ...(localeContent.image ? [{ image: localeContent.image, alt: localeContent.imageAlt || localeContent.alt }] : []),
+        ...(Array.isArray(localeContent.gallery) ? localeContent.gallery.filter((item) => item?.image) : []),
+      ];
+      if (images.some((image) => !image.alt?.trim())) {
+        advisories.push({ id: `MISSING_IMAGE_ALT_${section.id}`, message: `Section "${section.id}" contains an image without alt text.` });
+      }
+    });
+  } else if (cs.type === 'standard') {
     // ── Blocking (standard) ──────────────────────────────────────────────
     if (!cs.hero?.title?.trim()) {
       gates.push({ id: 'MISSING_HERO_TITLE', message: 'Hero section title is missing.' });
@@ -376,7 +445,7 @@ export function getCaseStudyPublishingReadiness(entry) {
     }
     // No standard section requirements for custom — bespoke components self-render
 
-  } else if (cs.version === 1) {
+  } else if (cs.type !== 'standard' && cs.type !== 'custom') {
     // type is set but unrecognized
     gates.push({ id: 'UNKNOWN_TYPE', message: `Case study type "${cs.type}" is not recognized. Expected "standard" or "custom".` });
   }
