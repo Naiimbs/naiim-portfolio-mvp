@@ -126,11 +126,11 @@ export function normalizeCaseStudyToV3(input, { slug = '' } = {}) {
       sections: input.sections
         .filter((section) => isRecord(section) && typeof section.id === 'string' && typeof section.type === 'string')
         .map((section, index) => ({
+          ...clone(section),
           category: section.category === 'module' ? 'module' : 'core',
           enabled: section.enabled !== false,
           order: Number.isFinite(section.order) ? section.order : index,
           content: isRecord(section.content) ? clone(section.content) : {},
-          ...clone(section),
         }))
         .sort((a, b) => a.order - b.order),
     };
